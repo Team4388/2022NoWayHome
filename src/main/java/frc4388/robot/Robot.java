@@ -75,12 +75,16 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector",
-     * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-     * = new MyAutoCommand(); break; case "Default Auto": default:
-     * autonomousCommand = new ExampleCommand(); break; }
-     */
+    /*String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
+    switch (autoSelected) {
+      case "My Auto":
+        autonomousCommand = new MyAutoCommand();
+        break;
+      case "Default Auto":
+      default:
+        autonomousCommand = new ExampleCommand();
+        break;
+    }*/
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
