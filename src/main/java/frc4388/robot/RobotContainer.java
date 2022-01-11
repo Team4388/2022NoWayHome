@@ -32,9 +32,6 @@ public class RobotContainer {
     private final RobotMap m_robotMap = new RobotMap();
 
     /* Subsystems */
-    //private final ArcadeDrive m_robotArcadeDrive = new ArcadeDrive(m_robotMap.leftFrontMotor, m_robotMap.rightFrontMotor,
-           // m_robotMap.leftBackMotor, m_robotMap.rightBackMotor, m_robotMap.driveTrain, m_robotMap.gyroDrive);
-
     private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
         m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
         m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
@@ -59,12 +56,8 @@ public class RobotContainer {
         configureButtonBindings();
 
         /* Default Commands */
-        // drives the arcade drive with a two-axis input from the driver controller
-        /*m_robotArcadeDrive.setDefaultCommand(
-                new RunCommand(() -> m_robotArcadeDrive.driveWithInput(getDriverController().getLeftYAxis(),
-                        getDriverController().getRightXAxis()), m_robotArcadeDrive));*/
 
-        // drives the swerve drive with a two-axis input from the driver controller
+        // drives the swerve drive with a two-axis input from the driver controller, with a one dimensional rotational axis
         m_robotSwerveDrive.setDefaultCommand(
                 new RunCommand(() -> m_robotSwerveDrive.driveWithInput(getDriverController().getLeftXAxis(),
                         getDriverController().getLeftYAxis(), getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
@@ -80,13 +73,15 @@ public class RobotContainer {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        /**TODO
+         * Decide on button layout
+         * Add buttons for all functions
+         * /
         /* Driver Buttons */
-        // test command to spin the robot while pressing A on the driver controller
-        //new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
-                //.whileHeld(() -> m_robotArcadeDrive.driveWithInput(0, 1));
+
 
         /* Operator Buttons */
-        // activates "Lit Mode"
+            // activates "Lit Mode"
         new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
                 .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
                 .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
@@ -98,7 +93,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // no auto
+        // no auto :(
         return new InstantCommand();
     }
 

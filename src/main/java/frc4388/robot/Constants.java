@@ -19,17 +19,11 @@ import frc4388.utility.LEDPatterns;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final class ArcadeDriveConstants {
-        public static final int DRIVE_LEFT_FRONT_CAN_ID = 2;
-        public static final int DRIVE_RIGHT_FRONT_CAN_ID = 4;
-	    public static final int DRIVE_LEFT_BACK_CAN_ID = 3;
-        public static final int DRIVE_RIGHT_BACK_CAN_ID = 5;
-        
-        public static final int DRIVE_PIGEON_ID = 6;
 
-        public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
-    }
-
+    /**
+     * The SwerveDriveConstants class provides IDs, scalars, conversions, configurtions, PIDs, etc.
+     * and more for the SwerveDrive subsystem, the SwerveModule subsystem, and all commands related
+     */
     public static final class SwerveDriveConstants {
         public static final double ROTATION_SPEED = 0.1;
         public static final double WHEEL_SPEED = 0.1;
@@ -66,13 +60,23 @@ public final class Constants {
         public static final double NEUTRAL_DEADBAND = 0.04;
         public static final double OPEN_LOOP_RAMP_RATE = 0.2;
         public static final int REMOTE_0 = 0;
+
+        //misc
+        public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
     }
+
+    /**
+     * The LEDConstants class contains the ID and the patterns for the LED Subsystem
+     */
     public static final class LEDConstants {
         public static final int LED_SPARK_ID = 0;
 
         public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.FOREST_WAVES;
     }
 
+    /**
+     * The OIConstants class contains the ID for the XBox controllers
+     */
     public static final class OIConstants {
         public static final int XBOX_DRIVER_ID = 0;
         public static final int XBOX_OPERATOR_ID = 1;
