@@ -5,17 +5,17 @@ package frc4388.utility.controller;
  */
 public interface IHandController {
 
-	public double getLeftXAxis();
+  public double getLeftXAxis();
 
-	public double getLeftYAxis();
+  public double getLeftYAxis();
 
-	public double getRightXAxis();
-	
-	public double getRightYAxis();
+  public double getRightXAxis();
 
-	public double getLeftTriggerAxis();
+  public double getRightYAxis();
 
-	public double getRightTriggerAxis();
+  public double getLeftTriggerAxis();
 
-	public int getDpadAngle();
+  public double getRightTriggerAxis();
+
+  public int getDpadAngle();
 }

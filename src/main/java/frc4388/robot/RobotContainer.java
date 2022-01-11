@@ -1,9 +1,6 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc4388.robot;
 
@@ -13,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
-import frc4388.robot.subsystems.ArcadeDrive;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
@@ -28,105 +24,94 @@ import frc4388.utility.controller.XboxController;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    /* RobotMap */
-    private final RobotMap m_robotMap = new RobotMap();
+  /* RobotMap */
+  private final RobotMap m_robotMap = new RobotMap();
 
-    /* Subsystems */
-    //private final ArcadeDrive m_robotArcadeDrive = new ArcadeDrive(m_robotMap.leftFrontMotor, m_robotMap.rightFrontMotor,
-           // m_robotMap.leftBackMotor, m_robotMap.rightBackMotor, m_robotMap.driveTrain, m_robotMap.gyroDrive);
+  /* Subsystems */
+  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
+    m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
+    m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
+    m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
+    m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
+    m_robotMap.leftFrontEncoder,
+    m_robotMap.rightFrontEncoder,
+    m_robotMap.leftBackEncoder,
+    m_robotMap.rightBackEncoder
+  );
 
-    private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-        m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
-        m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
-        m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
-        m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
-        m_robotMap.leftFrontEncoder,
-        m_robotMap.rightFrontEncoder,
-        m_robotMap.leftBackEncoder,
-        m_robotMap.rightBackEncoder
-    );
+  private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
-    private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  /* Controllers */
+  private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
+  private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
 
-    /* Controllers */
-    private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
-    private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
+  public RobotContainer() {
+    configureButtonBindings();
 
-    /**
-     * The container for the robot. Contains subsystems, OI devices, and commands.
-     */
-    public RobotContainer() {
-        configureButtonBindings();
+    /* Default Commands */
+    // drives the swerve drive with a two-axis input from the driver controller
+    m_robotSwerveDrive.setDefaultCommand(
+        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(getDriverController().getLeftXAxis(),
+            getDriverController().getLeftYAxis(), getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
-        /* Default Commands */
-        // drives the arcade drive with a two-axis input from the driver controller
-        /*m_robotArcadeDrive.setDefaultCommand(
-                new RunCommand(() -> m_robotArcadeDrive.driveWithInput(getDriverController().getLeftYAxis(),
-                        getDriverController().getRightXAxis()), m_robotArcadeDrive));*/
+    // continually sends updates to the Blinkin LED controller to keep the lights on
+    m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+  }
 
-        // drives the swerve drive with a two-axis input from the driver controller
-        m_robotSwerveDrive.setDefaultCommand(
-                new RunCommand(() -> m_robotSwerveDrive.driveWithInput(getDriverController().getLeftXAxis(),
-                        getDriverController().getLeftYAxis(), getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+  /**
+   * Use this method to define your button->command mappings. Buttons can be
+   * created by instantiating a {@link GenericHID} or one of its subclasses
+   * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
+   * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   */
+  private void configureButtonBindings() {
+    /* Driver Buttons */
 
-        // continually sends updates to the Blinkin LED controller to keep the lights on
-        m_robotLED.setDefaultCommand(new RunCommand(() -> m_robotLED.updateLED(), m_robotLED));
-    }
+    /* Operator Buttons */
+    // activates "Lit Mode"
+    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+        .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
+        .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+  }
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by instantiating a {@link GenericHID} or one of its subclasses
-     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
-     * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
-    private void configureButtonBindings() {
-        /* Driver Buttons */
-        // test command to spin the robot while pressing A on the driver controller
-        //new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
-                //.whileHeld(() -> m_robotArcadeDrive.driveWithInput(0, 1));
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    // no auto
+    return new InstantCommand();
+  }
 
-        /* Operator Buttons */
-        // activates "Lit Mode"
-        new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
-                .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
-                .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
-    }
+  /**
+   * Add your docs here.
+   */
+  public IHandController getDriverController() {
+    return m_driverXbox;
+  }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        // no auto
-        return new InstantCommand();
-    }
+  /**
+   * Add your docs here.
+   */
+  public IHandController getOperatorController() {
+    return m_operatorXbox;
+  }
 
-    /**
-     * Add your docs here.
-     */
-    public IHandController getDriverController() {
-        return m_driverXbox;
-    }
+  /**
+   * Add your docs here.
+   */
+  public Joystick getOperatorJoystick() {
+    return m_operatorXbox.getJoyStick();
+  }
 
-    /**
-     * Add your docs here.
-     */
-    public IHandController getOperatorController() {
-        return m_operatorXbox;
-    }
-
-    /**
-     * Add your docs here.
-     */
-    public Joystick getOperatorJoystick() {
-        return m_operatorXbox.getJoyStick();
-    }
-
-    /**
-     * Add your docs here.
-     */
-    public Joystick getDriverJoystick() {
-        return m_driverXbox.getJoyStick();
-    }
+  /**
+   * Add your docs here.
+   */
+  public Joystick getDriverJoystick() {
+    return m_driverXbox.getJoyStick();
+  }
 }
