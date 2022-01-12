@@ -21,4 +21,12 @@ public class Intake extends SubsystemBase {
   public void runWithTriggers(double leftTrigger, double rightTrigger){
 
   }
+
+  public void runIntake(double input) {
+    m_intakeMotor.set(input);
+  }
+
+  Public vod runExtender(double input) {
+    m_extenderMotor.set(input);
+  }
 }
