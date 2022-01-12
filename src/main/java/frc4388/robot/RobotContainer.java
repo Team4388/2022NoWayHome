@@ -54,8 +54,8 @@ public class RobotContainer {
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
     m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(getDriverController().getLeftXAxis(),
-            getDriverController().getLeftYAxis(), getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
+            getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));

@@ -42,10 +42,15 @@ public final class Constants {
     public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
     public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
     // ofsets are in degrees
-    public static final float LEFT_FRONT_ENCODER_OFFSET = 0;
-    public static final float RIGHT_FRONT_ENCODER_OFFSET = 0;
-    public static final float LEFT_BACK_ENCODER_OFFSET = 0;
-    public static final float RIGHT_BACK_ENCODER_OFFSET = 0;
+    //ofsets are in degrees
+        // public static final double LEFT_FRONT_ENCODER_OFFSET = 181.494141;    
+        // public static final double RIGHT_FRONT_ENCODER_OFFSET = 360. - 59.238281;   
+        // public static final double LEFT_BACK_ENCODER_OFFSET = 360. - 128.144531;     
+        // public static final double RIGHT_BACK_ENCODER_OFFSET = 0.933594;
+        public static final double LEFT_FRONT_ENCODER_OFFSET = 180.0;
+        public static final double RIGHT_FRONT_ENCODER_OFFSET = 300.0;
+        public static final double LEFT_BACK_ENCODER_OFFSET = 360.0 - 128.0;
+        public static final double RIGHT_BACK_ENCODER_OFFSET = 0.0;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;
