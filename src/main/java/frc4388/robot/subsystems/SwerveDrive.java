@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
-import frc4388.utility.RobotGyro;
 
 public class SwerveDrive extends SubsystemBase {
   SwerveDriveKinematics m_kinematics;
@@ -39,27 +38,15 @@ public class SwerveDrive extends SubsystemBase {
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
 
-  Translation2d m_frontLeftLocation = 
-      new Translation2d(
-          Units.inchesToMeters(halfHeight), 
-          Units.inchesToMeters(halfWidth));
-  Translation2d m_frontRightLocation =
-       new Translation2d(
-          Units.inchesToMeters(halfHeight), 
-          Units.inchesToMeters(-halfWidth));
-  Translation2d m_backLeftLocation = 
-      new Translation2d(
-          Units.inchesToMeters(-halfHeight), 
-          Units.inchesToMeters(halfWidth));
-  Translation2d m_backRightLocation = 
-      new Translation2d(
-          Units.inchesToMeters(-halfHeight), 
-          Units.inchesToMeters(-halfWidth));
-      //setSwerveGains();
+  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(halfWidth));
+  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(-halfWidth));
+  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
+  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
+  // setSwerveGains();
       
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
   public SwerveModule[] modules;
-  public RobotGyro gyro; //TODO Add Gyro Lol
+  public Gyro gyro; //TODO Add Gyro Lol
 
 
   public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
