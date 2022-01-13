@@ -19,10 +19,10 @@ public class Intake extends SubsystemBase {
   }
 
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
-    m_intakeMotor.set(input);
+    m_intakeMotor.set(rightTrigger - leftTrigger);
   }
 
-  public void runExtender(double input) {
-    m_extenderMotor.set(input);
+  public void runExtender(boolean extended) {
+    m_extenderMotor.set(extended ? 1 : 0);
   }
 }
