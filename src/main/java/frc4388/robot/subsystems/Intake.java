@@ -18,15 +18,11 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void runWithTriggers(double leftTrigger, double rightTrigger){
-
-  }
-
-  public void runIntake(double input) {
+  public void runWithTriggers(double leftTrigger, double rightTrigger) {
     m_intakeMotor.set(input);
   }
 
-  Public vod runExtender(double input) {
+  public void runExtender(double input) {
     m_extenderMotor.set(input);
   }
 }
