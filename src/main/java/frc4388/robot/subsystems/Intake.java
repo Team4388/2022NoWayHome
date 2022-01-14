@@ -4,13 +4,19 @@
 
 package frc4388.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
-  /** Creates a new Intake. */
-  public Intake() {
+  private WPI_TalonFX m_intakeMotor;
+  private WPI_TalonFX m_extenderMotor;
 
+  /** Creates a new Intake. */
+  public Intake(WPI_TalonFX m_intakeMotor, WPI_TalonFX m_extenderMotor) {
+    this.m_intakeMotor = m_intakeMotor;
+    this.m_extenderMotor = m_extenderMotor; 
   }
 
   @Override
