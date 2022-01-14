@@ -6,7 +6,7 @@ package frc4388.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class intake extends SubsystemBase {
+public class Intake extends SubsystemBase {
   /** Creates a new intake. */
   public intake() {}
 
