@@ -74,6 +74,8 @@ public class RobotContainer {
     /* Driver Buttons */
 
     /* Operator Buttons */
+
+    // extends and retracts the extender 
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_intake.runExtender(true))
         .whenReleased(() -> m_intake.runExtender(false));
