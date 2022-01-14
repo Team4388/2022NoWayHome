@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
+import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
@@ -39,6 +40,7 @@ public class RobotContainer {
     m_robotMap.rightBackEncoder
   );
 
+  private final Intake m_intake = new Intake(null, null);
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   /* Controllers */
@@ -59,6 +61,7 @@ public class RobotContainer {
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+    // dri
   }
 
   /**
@@ -71,6 +74,10 @@ public class RobotContainer {
     /* Driver Buttons */
 
     /* Operator Buttons */
+    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+        .whenPressed(() -> m_intake.runExtender(true))
+        .whenReleased(() -> m_intake.runExtender(false));
+
     // activates "Lit Mode"
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
