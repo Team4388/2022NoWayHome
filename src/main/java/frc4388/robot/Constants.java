@@ -75,8 +75,12 @@ public final class Constants {
 
   public static final class ClimberConstants {
     /* TODO: Update motor IDS */
-    public static final int MOTOR_1_ID = -1;
-    public static final int MOTOR_2_ID = -1;
+    public static final int SHOULDER_ID = -1;
+    public static final int ELBOW_ID = -1;
+
+    // TODO Update this stuff too
+    public static final double UPPER_ARM_LENGTH = 50; // Units should be in cm
+    public static final double LOWER_ARM_LENGTH = 50;
   }
   /**
    * The OIConstants class contains the ID for the XBox controllers

@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import frc4388.robot.Constants.ClimberConstants;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 
@@ -92,4 +93,7 @@ public class RobotMap {
     //rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
   }
 
+  /* Climb Subsystem */
+  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOLDER_ID); // TODO
+  public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
 }
