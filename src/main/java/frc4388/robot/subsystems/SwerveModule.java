@@ -71,7 +71,7 @@ public class SwerveModule extends SubsystemBase {
    * Set the speed + rotation of the swerve module from a SwerveModuleState object
    * @param desiredState - A SwerveModuleState representing the desired new state of the module
    */
-  public void setDesiredState(SwerveModuleState desiredState) {
+  public void setDesiredState(SwerveModuleState desiredState, boolean ignoreAngle) {
     Rotation2d currentRotation = getAngle();
     
     SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
@@ -85,7 +85,9 @@ public class SwerveModule extends SubsystemBase {
     // Convert the CANCoder from it's position reading back to ticks
     double currentTicks = canCoder.getPosition() / canCoder.configGetFeedbackCoefficient();
     double desiredTicks = currentTicks + deltaTicks;
-    angleMotor.set(TalonFXControlMode.Position, desiredTicks);
+    if (!ignoreAngle){
+      angleMotor.set(TalonFXControlMode.Position, desiredTicks);
+    }
 
 
     double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);

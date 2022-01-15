@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
@@ -53,6 +54,9 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
   public SwerveModule[] modules;
   public WPI_PigeonIMU m_gyro; //TODO Add Gyro Lol
+
+  public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
+  public boolean ignoreAngles;
 
   public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
   WPI_TalonFX leftBackSteerMotor,WPI_TalonFX leftBackWheelMotor,WPI_TalonFX rightBackSteerMotor,WPI_TalonFX rightBackWheelMotor, CANCoder leftFrontEncoder,
@@ -93,6 +97,8 @@ public class SwerveDrive extends SubsystemBase {
  */
   public void driveWithInput(double[] speeds, double rot, boolean fieldRelative)
   {
+      if (speeds[0] == 0 && speeds[1] == 0) ignoreAngles = true;
+      else ignoreAngles = false;
       // Temporary janky raw joysticks
       float[] driveController = new float[HAL.kMaxJoystickAxes];
       HAL.getJoystickAxes((byte) 0, driveController);
@@ -127,18 +133,18 @@ public class SwerveDrive extends SubsystemBase {
       // System.out.println("Inputx: " + speeds[0] + "   Inputy: " + speeds[1]);
       /*var speeds = new ChassisSpeeds(strafeX, strafeY, rotate * SwerveDriveConstants.ROTATION_SPEED //in rad/s );
       driveFromSpeeds(speeds);*/
-      double xSpeedMetersPerSecond = -speeds[0] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
-      double ySpeedMetersPerSecond = speeds[1] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
+      double xSpeedMetersPerSecond = -speeds[0] * speedAdjust;
+      double ySpeedMetersPerSecond = speeds[1] * speedAdjust;
       SwerveModuleState[] states =
           kinematics.toSwerveModuleStates(
               fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, m_gyro.getRotation2d())
-                : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3));
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+                : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
        SwerveDriveKinematics.desaturateWheelSpeeds(states, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
        for (int i = 0; i < states.length; i++) {
           SwerveModule module = modules[i];
           SwerveModuleState state = states[i];
-          module.setDesiredState(state);
+          module.setDesiredState(state, ignoreAngle);
     }
   }
   
@@ -151,4 +157,12 @@ public class SwerveDrive extends SubsystemBase {
     super.periodic();
   }
 
+  public void highSpeed(boolean shift){
+    if (shift){
+      speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST;
+    }
+    else{
+      speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
+    }
+  }
 }

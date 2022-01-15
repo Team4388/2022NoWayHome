@@ -22,11 +22,12 @@ import frc4388.utility.LEDPatterns;
  */
 public final class Constants {
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 0.1;
+    public static final double ROTATION_SPEED = 3;
     public static final double WHEEL_SPEED = 0.1;
     public static final double WIDTH = 22;
     public static final double HEIGHT = 22;
-    public static final double JOYSTICK_TO_METERS_PER_SECOND = 11;
+    public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
+    public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
     public static final double MAX_SPEED_FEET_PER_SEC = 20;
     public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20;
       //IDs

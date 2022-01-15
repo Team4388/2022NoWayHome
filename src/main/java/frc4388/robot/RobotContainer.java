@@ -77,16 +77,21 @@ public class RobotContainer {
     /* Driver Buttons */
     /*new JoystickButton(getDriverJoystick(), XboxController.Y_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.resetGyro());*/
+
+    new JoystickButton(getDriverJoystick(), XboxController.LEFT_BUMPER_BUTTON)
+      .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+
+
+    new JoystickButton(getDriverJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
+      .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+
+
+
     /* Operator Buttons */
     // activates "Lit Mode"
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
-
-    // new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
-    // .whenPressed(() -> {
-    //   m_robotSwerveDrive.m_gyro.setYaw(0);
-    // });
   }
 
   /**
