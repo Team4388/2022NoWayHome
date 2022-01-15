@@ -83,10 +83,10 @@ public class RobotContainer {
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
 
-    new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
-    .whenPressed(() -> {
-      m_robotSwerveDrive.m_gyro.setYaw(0);
-    });
+    // new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
+    // .whenPressed(() -> {
+    //   m_robotSwerveDrive.m_gyro.setYaw(0);
+    // });
   }
 
   /**

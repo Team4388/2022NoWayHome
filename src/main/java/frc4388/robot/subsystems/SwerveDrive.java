@@ -4,6 +4,7 @@
 
 package frc4388.robot.subsystems;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -95,10 +96,30 @@ public class SwerveDrive extends SubsystemBase {
       // Temporary janky raw joysticks
       float[] driveController = new float[HAL.kMaxJoystickAxes];
       HAL.getJoystickAxes((byte) 0, driveController);
+      // ByteBuffer buttons = new 
+      ByteBuffer num_buttons_buffer = ByteBuffer.allocateDirect(1);
+      int buttons_int = HAL.getJoystickButtons((byte) 0, num_buttons_buffer);
+      int num_buttons = num_buttons_buffer.get(0);
+      boolean[] buttons = new boolean[num_buttons];
+      for (int i = 0; i < num_buttons; i++) {
+        buttons[i] = (buttons_int & 1 << i) > 0;
+      }
+      if (buttons[0]) 
+        m_gyro.reset();
       float leftXAxis = driveController[0];
       float leftYAxis = driveController[1];
       float rightXAxis = driveController[4];
-      float rightYAxis = driveController[5];
+      leftXAxis = XboxController.inDeadZone(leftYAxis) ? 0.f : leftXAxis;
+      leftYAxis = XboxController.inDeadZone(leftYAxis) ? 0.f : leftYAxis;
+      rightXAxis = XboxController.inDeadZone(rightXAxis) ? 0.f : rightXAxis;
+      leftXAxis *= leftXAxis * leftXAxis;
+      leftYAxis *= leftYAxis * leftYAxis;
+      rightXAxis *= rightXAxis * rightXAxis;
+      double[] dashboardNums = new double[HAL.kMaxJoystickAxes];
+      for (int i = 0; i < HAL.kMaxJoystickAxes; i++) {
+        dashboardNums[i] = (double)((int)(driveController[i] * 100.f)) / 100.d;
+      }
+      SmartDashboard.putNumberArray("axes", dashboardNums);
       speeds = XboxController.ClampJoystickAxis(leftXAxis, leftYAxis);
       rot = -rightXAxis;
 

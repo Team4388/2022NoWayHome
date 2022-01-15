@@ -85,7 +85,7 @@ public class XboxController implements IHandController
    * @param input from an axis on the controller
    * @return true if input falls in deadzone, false if input falls outside deadzone
    */
-  private boolean inDeadZone(double input){
+  public static boolean inDeadZone(double input){
     return (Math.abs(input) < DEADZONE);
   }
 
