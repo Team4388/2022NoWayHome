@@ -72,8 +72,9 @@ public final class Constants {
     public static final double SERIALIZER_SHOOTER_BELT_SPEED = 1.0; // TODO (currently max power, DO NOT RUN)
     
     // CAN IDs
-    public static final int SERIALIZER_BELT = 1; // TODO
-    public static final int SERIALIZER_SHOOTER_BELT = 1; // TODO
+    public static final int SERIALIZER_BELT = -1; // TODO
+    public static final int SERIALIZER_SHOOTER_BELT = -1; // TODO
+    public static final int SERIALIZER_BELT_BEAM = -1; // TODO
   }
 
   public static final class LEDConstants {
