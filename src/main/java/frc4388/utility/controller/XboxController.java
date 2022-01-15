@@ -1,6 +1,7 @@
 package frc4388.utility.controller;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This is a wrapper for the WPILib Joystick class that represents an XBox 
@@ -51,6 +52,20 @@ public class XboxController implements IHandController
   private static final double DEADZONE = 0.1;
 
   private Joystick m_stick;
+
+  public static double[] ClampJoystickAxis(double x, double y) {
+    double square_mag = x * x + y * y;
+    double[] ret = {x,y};
+    if (square_mag > 1.d) {
+      double mag = Math.sqrt(square_mag);
+      ret[0] = x / mag;
+      ret[1] = y / mag;
+    }
+    double [] to_smart_dashboard = {square_mag, x, y, ret[0], ret[1]};
+    SmartDashboard.putNumberArray("Input", to_smart_dashboard);
+    System.err.println("TEST");
+    return ret;
+  }
 
   /**
      * Add your docs here.

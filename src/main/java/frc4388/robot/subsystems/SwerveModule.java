@@ -73,6 +73,7 @@ public class SwerveModule extends SubsystemBase {
    */
   public void setDesiredState(SwerveModuleState desiredState) {
     Rotation2d currentRotation = getAngle();
+    
     SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
     SwerveModuleState state = SwerveModuleState.optimize(desiredState, currentRotation);
 

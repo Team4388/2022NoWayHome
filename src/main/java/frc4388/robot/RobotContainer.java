@@ -36,7 +36,8 @@ public class RobotContainer {
     m_robotMap.leftFrontEncoder,
     m_robotMap.rightFrontEncoder,
     m_robotMap.leftBackEncoder,
-    m_robotMap.rightBackEncoder
+    m_robotMap.rightBackEncoder,
+    m_robotMap.gyro
   );
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
@@ -54,8 +55,13 @@ public class RobotContainer {
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
     m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
-            getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
+          XboxController.ClampJoystickAxis(
+              getDriverController().getLeftXAxis(),
+              getDriverController().getLeftYAxis()), 
+          -getDriverController().getRightXAxis(), 
+          true),
+           m_robotSwerveDrive));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
@@ -69,7 +75,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-
+    /*new JoystickButton(getDriverJoystick(), XboxController.Y_BUTTON)
+      .whenPressed(() -> m_robotSwerveDrive.resetGyro());*/
     /* Operator Buttons */
     // activates "Lit Mode"
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)

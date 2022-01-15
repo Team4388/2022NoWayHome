@@ -6,6 +6,7 @@ package frc4388.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -46,14 +47,14 @@ public class SwerveDrive extends SubsystemBase {
       
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
   public SwerveModule[] modules;
-  public Gyro gyro; //TODO Add Gyro Lol
+  public WPI_PigeonIMU m_gyro; //TODO Add Gyro Lol
 
 
   public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
   WPI_TalonFX leftBackSteerMotor,WPI_TalonFX leftBackWheelMotor,WPI_TalonFX rightBackSteerMotor,WPI_TalonFX rightBackWheelMotor, CANCoder leftFrontEncoder,
   CANCoder rightFrontEncoder,
   CANCoder leftBackEncoder,
-  CANCoder rightBackEncoder)
+  CANCoder rightBackEncoder, WPI_PigeonIMU gyro)
   {
       m_leftFrontSteerMotor = leftFrontSteerMotor;
       m_leftFrontWheelMotor = leftFrontWheelMotor;
@@ -67,6 +68,7 @@ public class SwerveDrive extends SubsystemBase {
       m_rightFrontEncoder = rightFrontEncoder;
       m_leftBackEncoder = leftBackEncoder;
       m_rightBackEncoder = rightBackEncoder; 
+      m_gyro = gyro;
 
       modules = new SwerveModule[] {
           new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
@@ -74,35 +76,40 @@ public class SwerveDrive extends SubsystemBase {
           new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
           new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
       };
-      //gyro.reset(); 
+      m_gyro.reset(); 
   }
 //https://github.com/ZachOrr/MK3-Swerve-Example
  /**
  * Method to drive the robot using joystick info.
  *
- * @param xSpeed Speed of the robot in the x direction (forward).
- * @param ySpeed Speed of the robot in the y direction (sideways).
+ * @param speeds[0] Speed of the robot in the x direction (forward).
+ * @param speeds[1] Speed of the robot in the y direction (sideways).
  * @param rot Angular rate of the robot.
  * @param fieldRelative Whether the provided x and y speeds are relative to the field.
  */
-  public void driveWithInput(double xSpeed, double ySpeed, double rot, boolean fieldRelative)
+  public void driveWithInput(double[] speeds, double rot, boolean fieldRelative)
   {
+      System.out.println("Inputx: " + speeds[0] + "   Inputy: " + speeds[1]);
       /*var speeds = new ChassisSpeeds(strafeX, strafeY, rotate * SwerveDriveConstants.ROTATION_SPEED //in rad/s );
       driveFromSpeeds(speeds);*/
-      double xSpeedMetersPerSecond = xSpeed * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
-      double ySpeedMetersPerSecond = ySpeed * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
+      double xSpeedMetersPerSecond = -speeds[0] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
+      double ySpeedMetersPerSecond = speeds[1] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
       SwerveModuleState[] states =
           kinematics.toSwerveModuleStates(
               fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, gyro.getRotation2d())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3));
        SwerveDriveKinematics.desaturateWheelSpeeds(states, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
        for (int i = 0; i < states.length; i++) {
           SwerveModule module = modules[i];
           SwerveModuleState state = states[i];
           module.setDesiredState(state);
+    }
   }
-  }
+
+  /*public void resetGyro(){
+    m_gyro.reset(); 
+  }*/
   //Converts a ChassisSpeed to SwerveModuleStates (targets)
   public void driveFromSpeeds(ChassisSpeeds speeds)
   {

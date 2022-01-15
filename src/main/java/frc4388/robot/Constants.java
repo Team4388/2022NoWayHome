@@ -26,9 +26,10 @@ public final class Constants {
     public static final double WHEEL_SPEED = 0.1;
     public static final double WIDTH = 22;
     public static final double HEIGHT = 22;
-    public static final double JOYSTICK_TO_METERS_PER_SECOND = 5;
-    public static final double MAX_SPEED_FEET_PER_SEC = 16;
+    public static final double JOYSTICK_TO_METERS_PER_SECOND = 2;
+    public static final double MAX_SPEED_FEET_PER_SEC = 20;
     public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20;
+      //IDs
     public static final int LEFT_FRONT_STEER_CAN_ID = 2;
     public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
     public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
@@ -41,6 +42,7 @@ public final class Constants {
     public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
     public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
     public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
+    public static final int GYRO_ID = 14;
     // ofsets are in degrees
     // public static final double LEFT_FRONT_ENCODER_OFFSET = 181.494141;
     // public static final double RIGHT_FRONT_ENCODER_OFFSET = 360. - 59.238281;
@@ -55,7 +57,7 @@ public final class Constants {
     public static final int SWERVE_SLOT_IDX = 0;
     public static final int SWERVE_PID_LOOP_IDX = 1;
     public static final int SWERVE_TIMEOUT_MS = 30;
-    public static final Gains SWERVE_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SWERVE_GAINS = new Gains(1.0, 0.0, 1.0, 0.0, 0, 1.0);
 
     // swerve configuration
     public static final double NEUTRAL_DEADBAND = 0.04;
