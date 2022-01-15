@@ -24,6 +24,8 @@ public class XboxControllerRaw implements IHandController {
   
     public static final int LEFT_JOYSTICK_BUTTON = 8;
     public static final int RIGHT_JOYSTICK_BUTTON = 9;
+    
+    private static final double DEADZONE = 0.1;
 
   private int m_buttons = 0;
   private int m_numButtons;
@@ -42,30 +44,51 @@ public class XboxControllerRaw implements IHandController {
   public boolean getButton(int index) {
       return (m_buttons & 1 << index) > 0;
   }
+
+  /**
+   * Checks if the input falls within the deadzone.
+   * @param input from an axis on the controller
+   * @return true if input falls in deadzone, false if input falls outside deadzone
+   */
+  public static boolean inDeadZone(double input){
+    return (Math.abs(input) < DEADZONE);
+  }
+
+  /**
+   * Updates an input to have a deadzone around the 0 position
+   * @param input from an axis on the controller
+   * @return updated input
+   */
+  private double getAxisWithDeadZoneCheck(double input){
+    if(inDeadZone(input)){
+      return 0.0;       
+    } else {
+      return input;
+    }
+  }
+
   public double getLeftXAxis() {
-      return m_axes[LEFT_X_AXIS];
+      return getAxisWithDeadZoneCheck(m_axes[LEFT_X_AXIS]);
   }
 
   public double getLeftYAxis() {
-      
-    return m_axes[LEFT_Y_AXIS];
+    return getAxisWithDeadZoneCheck(m_axes[LEFT_Y_AXIS]);
   }
 
   public double getRightXAxis() {
-      
-    return m_axes[RIGHT_X_AXIS];
+    return getAxisWithDeadZoneCheck(m_axes[RIGHT_X_AXIS]);
   }
 
   public double getRightYAxis() {
-    return m_axes[RIGHT_Y_AXIS];
+    return getAxisWithDeadZoneCheck(m_axes[RIGHT_Y_AXIS]);
   }
 
   public double getLeftTriggerAxis() {
-    return m_axes[LEFT_TRIGGER_AXIS];
+    return getAxisWithDeadZoneCheck(m_axes[LEFT_TRIGGER_AXIS]);
   }
 
   public double getRightTriggerAxis() {
-    return m_axes[RIGHT_TRIGGER_AXIS];
+    return getAxisWithDeadZoneCheck(m_axes[RIGHT_TRIGGER_AXIS]);
   }
 
   public int getDpadAngle() {
