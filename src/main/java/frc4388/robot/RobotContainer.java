@@ -40,7 +40,7 @@ public class RobotContainer {
     m_robotMap.rightBackEncoder
   );
 
-  private final Serializer m_robotSerializer = new Serializer();
+  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt);
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
