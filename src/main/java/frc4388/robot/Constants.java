@@ -67,6 +67,15 @@ public final class Constants {
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
   }
 
+  public static final class SerializerConstants {
+    public static final double SERIALIZER_BELT_SPEED = 1.0; // TODO (currently max power, DO NOT RUN)
+    public static final double SERIALIZER_SHOOTER_BELT_SPEED = 1.0; // TODO (currently max power, DO NOT RUN)
+    
+    // CAN IDs
+    public static final int SERIALIZER_BELT = 1; // TODO
+    public static final int SERIALIZER_SHOOTER_BELT = 1; // TODO
+  }
+
   public static final class LEDConstants {
     public static final int LED_SPARK_ID = 0;
 

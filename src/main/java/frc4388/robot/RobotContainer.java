@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.LED;
+import frc4388.robot.subsystems.Serializer;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.controller.IHandController;
@@ -38,6 +39,8 @@ public class RobotContainer {
     m_robotMap.leftBackEncoder,
     m_robotMap.rightBackEncoder
   );
+
+  private final Serializer m_robotSerializer = new Serializer();
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
