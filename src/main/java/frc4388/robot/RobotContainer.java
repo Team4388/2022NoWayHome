@@ -5,6 +5,9 @@
 package frc4388.robot;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,7 +49,7 @@ public class RobotContainer {
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
 
-  private static final boolean BYPASS_DS_CONTROLLER = true;
+  private final boolean bypassDSController = true;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -55,14 +58,14 @@ public class RobotContainer {
     configureButtonBindings();
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
-    m_robotSwerveDrive.setDefaultCommand(new RunCommand(() -> {
-        float[] joystickAxes = new float[HAL.kMaxJoystickAxes];
-        if (BYPASS_DS_CONTROLLER) HAL.getJoystickAxes((byte) getDriverController().getPort(), joystickAxes);
-        double leftXAxis = BYPASS_DS_CONTROLLER ? joystickAxes[XboxController.Axis.kLeftX.value] : getDriverController().getLeftX();
-        double leftYAxis = BYPASS_DS_CONTROLLER ? joystickAxes[XboxController.Axis.kLeftY.value] : getDriverController().getLeftY();
-        double rightXAxis = BYPASS_DS_CONTROLLER ?  joystickAxes[XboxController.Axis.kRightX.value] : getDriverController().getRightX();
-        m_robotSwerveDrive.driveWithInput(clampJoystickAxis(leftXAxis, leftYAxis), -rightXAxis, true);
-      }, m_robotSwerveDrive
+    float[] joystickAxes = new float[HAL.kMaxJoystickAxes];
+    HAL.getJoystickAxes((byte) getDriverController().getPort(), joystickAxes);
+    double leftXAxis = bypassDSController ? joystickAxes[XboxController.Axis.kLeftX.value] : getDriverController().getLeftX();
+    double leftYAxis = bypassDSController ? joystickAxes[XboxController.Axis.kLeftY.value] : getDriverController().getLeftY();
+    double rightXAxis = bypassDSController ?  joystickAxes[XboxController.Axis.kRightX.value] : getDriverController().getRightX();
+    m_robotSwerveDrive.setDefaultCommand(new RunCommand(() -> 
+      m_robotSwerveDrive.driveWithInput(clampJoystickAxis(leftXAxis, leftYAxis), -rightXAxis, true),
+      m_robotSwerveDrive
     ));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
