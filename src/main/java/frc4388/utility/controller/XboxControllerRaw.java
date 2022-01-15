@@ -25,15 +25,22 @@ public class XboxControllerRaw implements IHandController {
     public static final int LEFT_JOYSTICK_BUTTON = 8;
     public static final int RIGHT_JOYSTICK_BUTTON = 9;
     
-    private static final double DEADZONE = 0.1;
+    private static final double DEADZONE = 0.08;
 
+  private int m_ID;
   private int m_buttons = 0;
   private int m_numButtons;
   private ByteBuffer m_buttonCountBuffer = ByteBuffer.allocateDirect(1);
   float[] m_axes = new float[HAL.kMaxJoystickAxes];
+
+  public XboxControllerRaw(int id) {
+    m_ID = id;
+  }
+
+
   public void updateInput() {
-    HAL.getJoystickAxes((byte) 0, m_axes);    
-    m_buttons = HAL.getJoystickButtons((byte) 0, m_buttonCountBuffer);
+    HAL.getJoystickAxes((byte) m_ID, m_axes);
+    m_buttons = HAL.getJoystickButtons((byte) m_ID, m_buttonCountBuffer);
     m_numButtons = m_buttonCountBuffer.get(0);
   }
 

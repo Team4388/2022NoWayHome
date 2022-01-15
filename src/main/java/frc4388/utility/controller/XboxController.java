@@ -53,6 +53,8 @@ public class XboxController implements IHandController
 
   private Joystick m_stick;
 
+  public void updateInput() {}
+
   public static double[] ClampJoystickAxis(double x, double y) {
     double square_mag = x * x + y * y;
     double[] ret = {x,y};
