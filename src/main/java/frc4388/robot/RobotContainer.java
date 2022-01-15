@@ -4,6 +4,7 @@
 
 package frc4388.robot;
 
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -51,7 +52,6 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureButtonBindings();
-
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
     m_robotSwerveDrive.setDefaultCommand(
@@ -82,6 +82,11 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+
+    new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
+    .whenPressed(() -> {
+      m_robotSwerveDrive.m_gyro.setYaw(0);
+    });
   }
 
   /**

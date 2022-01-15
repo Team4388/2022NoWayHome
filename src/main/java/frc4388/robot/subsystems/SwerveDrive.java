@@ -4,10 +4,13 @@
 
 package frc4388.robot.subsystems;
 
+import java.util.Arrays;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -19,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
+import frc4388.utility.controller.XboxController;
 
 public class SwerveDrive extends SubsystemBase {
   SwerveDriveKinematics m_kinematics;
@@ -48,7 +52,6 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
   public SwerveModule[] modules;
   public WPI_PigeonIMU m_gyro; //TODO Add Gyro Lol
-
 
   public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
   WPI_TalonFX leftBackSteerMotor,WPI_TalonFX leftBackWheelMotor,WPI_TalonFX rightBackSteerMotor,WPI_TalonFX rightBackWheelMotor, CANCoder leftFrontEncoder,
@@ -89,7 +92,18 @@ public class SwerveDrive extends SubsystemBase {
  */
   public void driveWithInput(double[] speeds, double rot, boolean fieldRelative)
   {
-      System.out.println("Inputx: " + speeds[0] + "   Inputy: " + speeds[1]);
+      // Temporary janky raw joysticks
+      float[] driveController = new float[HAL.kMaxJoystickAxes];
+      HAL.getJoystickAxes((byte) 0, driveController);
+      float leftXAxis = driveController[0];
+      float leftYAxis = driveController[1];
+      float rightXAxis = driveController[4];
+      float rightYAxis = driveController[5];
+      speeds = XboxController.ClampJoystickAxis(leftXAxis, leftYAxis);
+      rot = -rightXAxis;
+
+
+      // System.out.println("Inputx: " + speeds[0] + "   Inputy: " + speeds[1]);
       /*var speeds = new ChassisSpeeds(strafeX, strafeY, rotate * SwerveDriveConstants.ROTATION_SPEED //in rad/s );
       driveFromSpeeds(speeds);*/
       double xSpeedMetersPerSecond = -speeds[0] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
@@ -106,75 +120,14 @@ public class SwerveDrive extends SubsystemBase {
           module.setDesiredState(state);
     }
   }
-
-  /*public void resetGyro(){
-    m_gyro.reset(); 
-  }*/
-  //Converts a ChassisSpeed to SwerveModuleStates (targets)
-  public void driveFromSpeeds(ChassisSpeeds speeds)
-  {
-      //https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html 
-      // Convert to module states
-      SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(speeds);
-
-      // Front left module state
-      SwerveModuleState leftFront = SwerveModuleState.optimize(moduleStates[0], Rotation2d.fromDegrees(m_leftFrontEncoder.getPosition()));
-      // Front right module state
-      SwerveModuleState rightFront = SwerveModuleState.optimize(moduleStates[1], Rotation2d.fromDegrees(m_rightFrontEncoder.getPosition()));
-      // Back left module state
-      SwerveModuleState leftBack = SwerveModuleState.optimize(moduleStates[2], Rotation2d.fromDegrees(m_leftBackEncoder.getPosition()));
-      // Back right module state
-      SwerveModuleState rightBack = SwerveModuleState.optimize(moduleStates[3], Rotation2d.fromDegrees(m_rightBackEncoder.getPosition()));
-      
-      //Set the motors
-      setSwerveMotors(leftFront, leftBack, rightFront, rightBack);
+  
+  @Override
+  public void periodic() {
+    System.err.println(m_gyro.getFusedHeading() +"    aaa");
+    // m_gyro.setFusedHeadingToCompass();
+    // m_gyro.setYawToCompass();
+    // m_gyro.getRotation2d();
+    super.periodic();
   }
 
-  //Sets steering motors to PID values
-  public void setSwerveMotors(SwerveModuleState leftFront, SwerveModuleState leftBack, SwerveModuleState rightFront, SwerveModuleState rightBack)
-  {
-      /*//Set the Wheel motor speeds
-      m_leftFrontWheelMotor.set(m_leftFrontSteerMotor.get() + leftFront.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      m_rightFrontWheelMotor.set(m_rightFrontSteerMotor.get() + rightFront.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      m_leftBackWheelMotor.set(m_leftBackSteerMotor.get() + leftBack.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      m_rightBackWheelMotor.set(m_rightBackSteerMotor.get() + rightBack.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      //PID
-      m_leftFrontSteerMotor.set(TalonFXControlMode.Position, leftFront.angle.getDegrees() * 12000);
-      m_rightFrontSteerMotor.set(TalonFXControlMode.Position, rightFront.angle.getDegrees() * 12000);
-      m_leftBackSteerMotor.set(TalonFXControlMode.Position, leftBack.angle.getDegrees() * 12000);
-      m_rightBackSteerMotor.set(TalonFXControlMode.Position, rightBack.angle.getDegrees());
-      System.out.println("Target: " + leftFront.angle.getDegrees());*/
-  }    
-  
-  /*public void setSwerveGains(){
-      m_leftFrontSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_leftFrontSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftFrontSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftFrontSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftFrontSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_rightFrontSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_leftBackSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_rightBackSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      
-  }*/
-
-
-
-  // public void driveFieldRelative(double awayFromStation, double towardLeftBoundary, double rotate)
-  // {
-  //     var speeds = ChassisSpeeds.fromFieldRelativeSpeeds(awayFromStation, towardLeftBoundary, 
-  //         rotate * SwerveDriveConstants.RotationSpeed, /*get odometry angle*/)
-  // }
 }

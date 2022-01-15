@@ -114,8 +114,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    System.err.println("TEST");
-    
   }
 
   /**

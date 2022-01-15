@@ -63,7 +63,6 @@ public class XboxController implements IHandController
     }
     double [] to_smart_dashboard = {square_mag, x, y, ret[0], ret[1]};
     SmartDashboard.putNumberArray("Input", to_smart_dashboard);
-    System.err.println("TEST");
     return ret;
   }
 
