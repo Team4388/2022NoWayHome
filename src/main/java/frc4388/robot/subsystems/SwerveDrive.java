@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
-import frc4388.utility.controller.XboxController;
 
 public class SwerveDrive extends SubsystemBase {
   SwerveDriveKinematics m_kinematics;
@@ -92,38 +91,26 @@ public class SwerveDrive extends SubsystemBase {
  */
   public void driveWithInput(double[] speeds, double rot, boolean fieldRelative)
   {
-      // Temporary janky raw joysticks
-      float[] driveController = new float[HAL.kMaxJoystickAxes];
-      HAL.getJoystickAxes((byte) 0, driveController);
-      float leftXAxis = driveController[0];
-      float leftYAxis = driveController[1];
-      float rightXAxis = driveController[4];
-      float rightYAxis = driveController[5];
-      speeds = XboxController.ClampJoystickAxis(leftXAxis, leftYAxis);
-      rot = -rightXAxis;
-
-
-      // System.out.println("Inputx: " + speeds[0] + "   Inputy: " + speeds[1]);
-      /*var speeds = new ChassisSpeeds(strafeX, strafeY, rotate * SwerveDriveConstants.ROTATION_SPEED //in rad/s );
-      driveFromSpeeds(speeds);*/
-      double xSpeedMetersPerSecond = -speeds[0] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
-      double ySpeedMetersPerSecond = speeds[1] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
-      SwerveModuleState[] states =
-          kinematics.toSwerveModuleStates(
-              fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, m_gyro.getRotation2d())
-                : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3));
-       SwerveDriveKinematics.desaturateWheelSpeeds(states, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
-       for (int i = 0; i < states.length; i++) {
-          SwerveModule module = modules[i];
-          SwerveModuleState state = states[i];
-          module.setDesiredState(state);
+    // System.out.println("Inputx: " + speeds[0] + "   Inputy: " + speeds[1]);
+    /*var speeds = new ChassisSpeeds(strafeX, strafeY, rotate * SwerveDriveConstants.ROTATION_SPEED //in rad/s );
+    driveFromSpeeds(speeds);*/
+    double xSpeedMetersPerSecond = -speeds[0] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
+    double ySpeedMetersPerSecond = speeds[1] * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
+    SwerveModuleState[] states =
+        kinematics.toSwerveModuleStates(
+            fieldRelative
+              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, m_gyro.getRotation2d())
+              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3));
+      SwerveDriveKinematics.desaturateWheelSpeeds(states, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
+      for (int i = 0; i < states.length; i++) {
+        SwerveModule module = modules[i];
+        SwerveModuleState state = states[i];
+        module.setDesiredState(state);
     }
   }
   
   @Override
   public void periodic() {
-    System.err.println(m_gyro.getFusedHeading() +"    aaa");
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
     // m_gyro.getRotation2d();

@@ -5,7 +5,11 @@
 package frc4388.robot;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -14,8 +18,6 @@ import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
-import frc4388.utility.controller.IHandController;
-import frc4388.utility.controller.XboxController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -47,6 +49,8 @@ public class RobotContainer {
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
 
+  private final boolean bypassDSController = true;
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -54,19 +58,30 @@ public class RobotContainer {
     configureButtonBindings();
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
-    m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
-          XboxController.ClampJoystickAxis(
-              getDriverController().getLeftXAxis(),
-              getDriverController().getLeftYAxis()), 
-          -getDriverController().getRightXAxis(), 
-          true),
-           m_robotSwerveDrive));
+    float[] joystickAxes = new float[HAL.kMaxJoystickAxes];
+    HAL.getJoystickAxes((byte) getDriverController().getPort(), joystickAxes);
+    double leftXAxis = bypassDSController ? joystickAxes[XboxController.Axis.kLeftX.value] : getDriverController().getLeftX();
+    double leftYAxis = bypassDSController ? joystickAxes[XboxController.Axis.kLeftY.value] : getDriverController().getLeftY();
+    double rightXAxis = bypassDSController ?  joystickAxes[XboxController.Axis.kRightX.value] : getDriverController().getRightX();
+    m_robotSwerveDrive.setDefaultCommand(new RunCommand(() -> 
+      m_robotSwerveDrive.driveWithInput(clampJoystickAxis(leftXAxis, leftYAxis), -rightXAxis, true),
+      m_robotSwerveDrive
+    ));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
   }
-
+  private static double[] clampJoystickAxis(double x, double y) {
+    double squareMag = x * x + y * y;
+    double[] ret = { x, y };
+    if (squareMag > 1.d) {
+      double mag = Math.sqrt(squareMag);
+      ret[0] = x / mag;
+      ret[1] = y / mag;
+    }
+    SmartDashboard.putNumberArray("Input", new double[] {squareMag, x, y, ret[0], ret[1]});
+    return ret;
+  }
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
@@ -79,11 +94,11 @@ public class RobotContainer {
       .whenPressed(() -> m_robotSwerveDrive.resetGyro());*/
     /* Operator Buttons */
     // activates "Lit Mode"
-    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
 
-    new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
+    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
     .whenPressed(() -> {
       m_robotSwerveDrive.m_gyro.setYaw(0);
     });
@@ -102,28 +117,14 @@ public class RobotContainer {
   /**
    * Add your docs here.
    */
-  public IHandController getDriverController() {
+  public XboxController getDriverController() {
     return m_driverXbox;
   }
 
   /**
    * Add your docs here.
    */
-  public IHandController getOperatorController() {
+  public XboxController getOperatorController() {
     return m_operatorXbox;
-  }
-
-  /**
-   * Add your docs here.
-   */
-  public Joystick getOperatorJoystick() {
-    return m_operatorXbox.getJoyStick();
-  }
-
-  /**
-   * Add your docs here.
-   */
-  public Joystick getDriverJoystick() {
-    return m_driverXbox.getJoyStick();
   }
 }
