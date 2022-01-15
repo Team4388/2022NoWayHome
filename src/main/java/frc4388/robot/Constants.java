@@ -73,6 +73,11 @@ public final class Constants {
     public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.FOREST_WAVES;
   }
 
+  public static final class ClimberConstants {
+    /* TODO: Update motor IDS */
+    public static final int MOTOR_1_ID = -1;
+    public static final int MOTOR_2_ID = -1;
+  }
   /**
    * The OIConstants class contains the ID for the XBox controllers
    */
