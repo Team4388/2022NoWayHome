@@ -5,6 +5,7 @@
 package frc4388.robot;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -47,6 +48,7 @@ public class RobotContainer {
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
 
   private static final boolean BYPASS_DS_CONTROLLER = true;
+  private static final double HAL_JOYSTICK_DEADBAND = 0.1;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -58,9 +60,9 @@ public class RobotContainer {
     m_robotSwerveDrive.setDefaultCommand(new RunCommand(() -> {
         float[] joystickAxes = new float[HAL.kMaxJoystickAxes];
         if (BYPASS_DS_CONTROLLER) HAL.getJoystickAxes((byte) getDriverController().getPort(), joystickAxes);
-        double leftXAxis = BYPASS_DS_CONTROLLER ? joystickAxes[XboxController.Axis.kLeftX.value] : getDriverController().getLeftX();
-        double leftYAxis = BYPASS_DS_CONTROLLER ? joystickAxes[XboxController.Axis.kLeftY.value] : getDriverController().getLeftY();
-        double rightXAxis = BYPASS_DS_CONTROLLER ?  joystickAxes[XboxController.Axis.kRightX.value] : getDriverController().getRightX();
+        double leftXAxis = BYPASS_DS_CONTROLLER ? MathUtil.applyDeadband(joystickAxes[XboxController.Axis.kLeftX.value], HAL_JOYSTICK_DEADBAND) : getDriverController().getLeftX();
+        double leftYAxis = BYPASS_DS_CONTROLLER ? MathUtil.applyDeadband(joystickAxes[XboxController.Axis.kLeftY.value], HAL_JOYSTICK_DEADBAND) : getDriverController().getLeftY();
+        double rightXAxis = BYPASS_DS_CONTROLLER ?  MathUtil.applyDeadband(joystickAxes[XboxController.Axis.kRightX.value], HAL_JOYSTICK_DEADBAND) : getDriverController().getRightX();
         m_robotSwerveDrive.driveWithInput(clampJoystickAxis(leftXAxis, leftYAxis), -rightXAxis, true);
       }, m_robotSwerveDrive
     ));
