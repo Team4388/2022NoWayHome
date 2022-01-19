@@ -93,4 +93,14 @@ public class SwerveModule extends SubsystemBase {
     double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
     driveMotor.set(angleMotor.get() + feetPerSecond / SwerveDriveConstants.SPEED_FEET_PER_SECOND_AT_FULL_POWER);
   }
+
+  /**
+   * Returns the current state of the module.
+   *
+   * @return The current state of the module.
+   */
+  public SwerveModuleState getState() {
+    return new SwerveModuleState(driveMotor.getSelectedSensorVelocity(), new Rotation2d(canCoder.getPosition()));
+  }
+
 }

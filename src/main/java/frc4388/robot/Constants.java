@@ -65,6 +65,9 @@ public final class Constants {
     public static final double OPEN_LOOP_RAMP_RATE = 0.2;
     public static final int REMOTE_0 = 0;
 
+    // conversions
+    // 5.12 rev motor = 1 rev wheel
+
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
   }

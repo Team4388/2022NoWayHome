@@ -12,6 +12,9 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -52,8 +55,20 @@ public class SwerveDrive extends SubsystemBase {
   // setSwerveGains();
       
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+
   public SwerveModule[] modules;
-  public WPI_PigeonIMU m_gyro; //TODO Add Gyro Lol
+  public WPI_PigeonIMU m_gyro;
+
+  /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
+  below are robot specific, and should be tuned. */
+  private final SwerveDrivePoseEstimator m_poseEstimator =
+      new SwerveDrivePoseEstimator(
+          m_gyro.getRotation2d(),
+          new Pose2d(),
+          m_kinematics,
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+          VecBuilder.fill(Units.degreesToRadians(0.01)),
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
@@ -101,40 +116,7 @@ public class SwerveDrive extends SubsystemBase {
       else ignoreAngles = false;
       speeds[0] *= speeds[0] * speeds[0];
       speeds[1] *= speeds[1] * speeds[1];
-      // // Temporary janky raw joysticks
-      // float[] driveController = new float[HAL.kMaxJoystickAxes];
-      // HAL.getJoystickAxes((byte) 0, driveController);
-      // // ByteBuffer buttons = new 
-      // ByteBuffer num_buttons_buffer = ByteBuffer.allocateDirect(1);
-      // int buttons_int = HAL.getJoystickButtons((byte) 0, num_buttons_buffer);
-      // int num_buttons = num_buttons_buffer.get(0);
-      // boolean[] buttons = new boolean[num_buttons];
-      // for (int i = 0; i < num_buttons; i++) {
-      //   buttons[i] = (buttons_int & 1 << i) > 0;
-      // }
-      // if (buttons[0]) 
-      //   m_gyro.reset();
-      // float leftXAxis = driveController[0];
-      // float leftYAxis = driveController[1];
-      // float rightXAxis = driveController[4];
-      // leftXAxis = XboxController.inDeadZone(leftYAxis) ? 0.f : leftXAxis;
-      // leftYAxis = XboxController.inDeadZone(leftYAxis) ? 0.f : leftYAxis;
-      // rightXAxis = XboxController.inDeadZone(rightXAxis) ? 0.f : rightXAxis;
-      // leftXAxis *= leftXAxis * leftXAxis;
-      // leftYAxis *= leftYAxis * leftYAxis;
-      // rightXAxis *= rightXAxis * rightXAxis;
-      // double[] dashboardNums = new double[HAL.kMaxJoystickAxes];
-      // for (int i = 0; i < HAL.kMaxJoystickAxes; i++) {
-      //   dashboardNums[i] = (double)((int)(driveController[i] * 100.f)) / 100.d;
-      // }
-      // SmartDashboard.putNumberArray("axes", dashboardNums);
-      // speeds = XboxController.ClampJoystickAxis(leftXAxis, leftYAxis);
-      // rot = -rightXAxis;
 
-
-      // System.out.println("Inputx: " + speeds[0] + "   Inputy: " + speeds[1]);
-      /*var speeds = new ChassisSpeeds(strafeX, strafeY, rotate * SwerveDriveConstants.ROTATION_SPEED //in rad/s );
-      driveFromSpeeds(speeds);*/
       double xSpeedMetersPerSecond = -speeds[0] * speedAdjust;
       double ySpeedMetersPerSecond = speeds[1] * speedAdjust;
       SwerveModuleState[] states =
@@ -158,6 +140,22 @@ public class SwerveDrive extends SubsystemBase {
     // m_gyro.getRotation2d();
     super.periodic();
   }
+
+  /** Updates the field relative position of the robot. */
+  public void updateOdometry() {
+    m_poseEstimator.update( m_gyro.getRotation2d(), 
+                            m_frontLeftLocation.getState(), 
+                            m_frontRightLocation.getState(), 
+                            m_backLeftLocation.getState(), 
+                            m_backRightLocation.getState());
+  
+      // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
+      // a real robot, this must be calculated based either on latency or timestamps.
+      m_poseEstimator.addVisionMeasurement(
+          ExampleGlobalMeasurementSensor.getEstimatedGlobalPose(
+              m_poseEstimator.getEstimatedPosition()),
+          Timer.getFPGATimestamp() - 0.3);
+    }
 
   public void highSpeed(boolean shift){
     if (shift){
