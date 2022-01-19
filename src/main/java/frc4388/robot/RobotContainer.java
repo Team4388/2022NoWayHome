@@ -46,8 +46,8 @@ public class RobotContainer {
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   /* Controllers */
-  private final XboxControllerRaw m_driverXbox = new XboxControllerRaw(OIConstants.XBOX_DRIVER_ID);
-  private final XboxControllerRaw m_operatorXbox = new XboxControllerRaw(OIConstants.XBOX_OPERATOR_ID);
+  private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
+  private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -77,25 +77,25 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    // new JoystickButton(getDriverJoystick(), XboxController.Y_BUTTON)
-    new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.Y_BUTTON)
+    new JoystickButton(getDriverJoystick(), XboxController.Y_BUTTON)
+    // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.Y_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.m_gyro.reset());
 
-    // new JoystickButton(getDriverJoystick(), XboxController.LEFT_BUMPER_BUTTON)
-    new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
+    new JoystickButton(getDriverJoystick(), XboxController.LEFT_BUMPER_BUTTON)
+    // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
 
 
-    // new JoystickButton(getDriverJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
-    new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.RIGHT_BUMPER_BUTTON)
+    new JoystickButton(getDriverJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
+    // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.RIGHT_BUMPER_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
 
 
     /* Operator Buttons */
     // activates "Lit Mode"
-    // new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
-    new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.A_BUTTON)
+    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+    // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
   }
@@ -124,17 +124,17 @@ public class RobotContainer {
     return m_operatorXbox;
   }
 
-  // /**
-  //  * Add your docs here.
-  //  */
-  // public Joystick getOperatorJoystick() {
-  //   return m_operatorXbox.getJoyStick();
-  // }
+  /**
+   * Add your docs here.
+   */
+  public Joystick getOperatorJoystick() {
+    return m_operatorXbox.getJoyStick();
+  }
 
-  // /**
-  //  * Add your docs here.
-  //  */
-  // public Joystick getDriverJoystick() {
-  //   return m_driverXbox.getJoyStick();
-  // }
+  /**
+   * Add your docs here.
+   */
+  public Joystick getDriverJoystick() {
+    return m_driverXbox.getJoyStick();
+  }
 }
