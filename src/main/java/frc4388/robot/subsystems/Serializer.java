@@ -27,13 +27,19 @@ public class Serializer extends SubsystemBase{
     setSerializerState(total);
   }
   public void setSerializerState(boolean state) {
-    double serializerBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_BELT_SPEED : 0.d;
-    double serializerShooterBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_SHOOTER_BELT_SPEED : 0.d;
-
-    m_serializerBelt.set(serializerBeltSpeed);
-    m_serializerShooterBelt.set(serializerShooterBeltSpeed);
-
+    setSerializerBeltState(state);
+    setSerializerShooterBeltState(state);
     serializerState = state;
+  }
+
+  public void setSerializerBeltState(boolean state) {
+    double serializerBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_BELT_SPEED : 0.d;
+    m_serializerBelt.set(serializerBeltSpeed);
+  }
+
+  public void setSerializerShooterBeltState(boolean state) {
+    double serializerShooterBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_SHOOTER_BELT_SPEED : 0.d;
+    m_serializerShooterBelt.set(serializerShooterBeltSpeed);
   }
   
   public boolean getSerializerState() {
