@@ -6,6 +6,7 @@ package frc4388.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.ClimberConstants;
@@ -94,6 +95,7 @@ public class RobotMap {
   }
 
   /* Climb Subsystem */
-  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOLDER_ID); // TODO
+  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
   public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
+  public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(ClimberConstants.GYRO_ID); // TODO
 }
