@@ -44,12 +44,13 @@ public class Climber extends SubsystemBase {
 
     // The angle to the target point
     double theta = Math.atan(yTarget / xTarget) + tiltAngle; // TODO rename variable
+    
     // Correct target position for tilt
     xTarget = Math.cos(theta) * mag;
     yTarget = Math.sin(theta) * mag;
     
     // Law and Order: Cosines edition
-    double shoulderAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(mag, 2) -Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2)) /
+    double shoulderAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(mag, 2) - Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2)) /
       (2.d * ClimberConstants.LOWER_ARM_LENGTH * mag));
     shoulderAngle = theta - shoulderAngle;
     
@@ -71,6 +72,12 @@ public class Climber extends SubsystemBase {
     }
 
     return angles;
+  }
+
+  public double getRobotTilt() {
+    double[] ypr = new double[3];
+    m_gyro.getYawPitchRoll(ypr);
+    return ypr[1]; // Pitch
   }
 
   public void setJointAngles(double[] angles) {

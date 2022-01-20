@@ -42,7 +42,7 @@ public class RobotContainer {
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
-  private final Climber m_climber = new Climber(m_robotMap.shoulder, m_robotMap.elbow);
+  private final Climber m_climber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro);
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
