@@ -97,9 +97,8 @@ public class RobotMap {
   /*Boom Boom Subsystem*/ 
   public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
   public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
-  void ConfigureShooterMotorControllers()
-  {
-    
+  void ConfigureShooterMotorControllers() {
+
   }
 
 

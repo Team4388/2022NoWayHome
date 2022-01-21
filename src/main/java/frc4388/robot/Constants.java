@@ -88,7 +88,9 @@ public final class Constants {
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
-    
+    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
+    public static final double SHOOTER_TURRET_MIN = -1.0;
     
   }
 }
