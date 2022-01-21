@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -52,6 +53,12 @@ public class SwerveDrive extends SubsystemBase {
   Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(-halfWidth));
   Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
   Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
+  
+  SwerveModule m_frontLeft = new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
+  SwerveModule m_frontRight = new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
+  SwerveModule m_backLeft = new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
+  SwerveModule m_backRight = new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
+
   // setSwerveGains();
       
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
@@ -94,10 +101,10 @@ public class SwerveDrive extends SubsystemBase {
       m_gyro = gyro;
 
       modules = new SwerveModule[] {
-          new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
-          new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
-          new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
-          new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
+          m_frontLeft, // Front Left
+          m_frontRight, // Front Right
+          m_backLeft, // Back Left
+          m_backRight  // Back Right
       };
       m_gyro.reset(); 
   }
@@ -144,17 +151,17 @@ public class SwerveDrive extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     m_poseEstimator.update( m_gyro.getRotation2d(), 
-                            m_frontLeftLocation.getState(), 
-                            m_frontRightLocation.getState(), 
-                            m_backLeftLocation.getState(), 
-                            m_backRightLocation.getState());
+                            m_frontLeft.getState(), 
+                            m_frontRight.getState(), 
+                            m_backLeft.getState(), 
+                            m_backRight.getState());
   
       // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
       // a real robot, this must be calculated based either on latency or timestamps.
       m_poseEstimator.addVisionMeasurement(
           ExampleGlobalMeasurementSensor.getEstimatedGlobalPose(
               m_poseEstimator.getEstimatedPosition()),
-          Timer.getFPGATimestamp() - 0.3);
+          Timer.getFPGATimestamp() - 0.1);
     }
 
   public void highSpeed(boolean shift){

@@ -30,7 +30,8 @@ public final class Constants {
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
     public static final double MAX_SPEED_FEET_PER_SEC = 20;
     public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20;
-      //IDs
+    
+    //IDs
     public static final int LEFT_FRONT_STEER_CAN_ID = 2;
     public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
     public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
@@ -44,11 +45,8 @@ public final class Constants {
     public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
     public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
     public static final int GYRO_ID = 14;
+    
     // ofsets are in degrees
-    // public static final double LEFT_FRONT_ENCODER_OFFSET = 181.494141;
-    // public static final double RIGHT_FRONT_ENCODER_OFFSET = 360. - 59.238281;
-    // public static final double LEFT_BACK_ENCODER_OFFSET = 360. - 128.144531;
-    // public static final double RIGHT_BACK_ENCODER_OFFSET = 0.933594;
     public static final double LEFT_FRONT_ENCODER_OFFSET = 180.0;
     public static final double RIGHT_FRONT_ENCODER_OFFSET = 300.0;
     public static final double LEFT_BACK_ENCODER_OFFSET = 360.0 - 128.0;
@@ -66,7 +64,22 @@ public final class Constants {
     public static final int REMOTE_0 = 0;
 
     // conversions
-    // 5.12 rev motor = 1 rev wheel
+    // gear ratio: 5.12 rev motor = 1 rev wheel
+    // wheel diameter: official = 4 in, measured = 3.8 in
+    /* Ratio Calculation */
+    public static final double MOTOR_REV_PER_WHEEL_REV = 5.12;
+    public static final double WHEEL_DIAMETER_INCHES = 3.8;
+    public static final double TICKS_PER_MOTOR_REV = 2048;
+    public static final double INCHES_PER_WHEEL_REV = WHEEL_DIAMETER_INCHES * Math.PI;
+    public static final double INCHES_PER_METER = 39.370;
+    public static final double METERS_PER_INCH = 1/INCHES_PER_METER;
+    
+    public static final double WHEEL_REV_PER_MOTOR_REV = 1/MOTOR_REV_PER_WHEEL_REV;
+    public static final double TICKS_PER_WHEEL_REV = TICKS_PER_MOTOR_REV * MOTOR_REV_PER_WHEEL_REV;
+    public static final double TICKS_PER_INCH = TICKS_PER_WHEEL_REV/INCHES_PER_WHEEL_REV;
+    public static final double INCHES_PER_TICK = 1/TICKS_PER_INCH;
+    public static final double TICK_TIME_TO_SECONDS = 0.1;
+    public static final double SECONDS_TO_TICK_TIME = 1/TICK_TIME_TO_SECONDS;
 
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;

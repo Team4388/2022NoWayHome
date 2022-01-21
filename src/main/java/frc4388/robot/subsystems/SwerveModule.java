@@ -100,7 +100,7 @@ public class SwerveModule extends SubsystemBase {
    * @return The current state of the module.
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveMotor.getSelectedSensorVelocity(), new Rotation2d(canCoder.getPosition()));
+    return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK * SwerveDriveConstants.METERS_PER_INCH * 10, new Rotation2d(canCoder.getPosition()));
   }
 
 }
