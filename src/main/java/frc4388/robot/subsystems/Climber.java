@@ -2,6 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+/*
+Safety
+Hooks
+Add 
+Overextension when lower arm is resting check in processing
+*/
+
 package frc4388.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -18,7 +25,7 @@ public class Climber extends SubsystemBase {
 
   private WPI_PigeonIMU m_gyro;
 
-  private double[] position = {0.d, 0.d}; // TODO change position
+  private double[] position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
   
   public Climber(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_PigeonIMU gyro) {
     m_shoulder = shoulder;
@@ -62,6 +69,7 @@ public class Climber extends SubsystemBase {
     // Law and Order: Cosines edition
     double shoulderAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(mag, 2) - Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2)) /
       (2.d * ClimberConstants.LOWER_ARM_LENGTH * mag));
+      //shoulderAngle = acos(LowerArmLength^2 + mag^2)
     shoulderAngle = theta - shoulderAngle;
     
     double elbowAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2) - Math.pow(mag, 2)) /

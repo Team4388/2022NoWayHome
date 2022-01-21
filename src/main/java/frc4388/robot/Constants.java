@@ -95,8 +95,8 @@ public final class Constants {
     public static final int ELBOW_SLOT_IDX = 0;
     public static final int ELBOW_PID_LOOP_IDX = 1;
 
-    public static final Gains SHOULDER_GAINS = new Gains(1.0, 1.0, 1.0, 1.0, 0, 1.0);
-    public static final Gains ELBOW_GAINS = new Gains(1.0, 1.0, 1.0, 1.0, 0, 1.0);
+    public static final Gains SHOULDER_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains ELBOW_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
 
     public static final int CLIMBER_TIMEOUT_MS = 100;
   }
