@@ -15,6 +15,8 @@ public class Climber extends SubsystemBase {
   private WPI_TalonFX m_elbow;
 
   private WPI_PigeonIMU m_gyro;
+
+  private double[] position = {0.d, 0.d};
   
   public Climber(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_PigeonIMU gyro) {
     m_shoulder = shoulder;
@@ -77,7 +79,7 @@ public class Climber extends SubsystemBase {
   public double getRobotTilt() {
     double[] ypr = new double[3];
     m_gyro.getYawPitchRoll(ypr);
-    return ypr[1]; // Pitch
+    return Math.toRadians(ypr[1]); // Pitch
   }
 
   public void setJointAngles(double[] angles) {
@@ -86,5 +88,15 @@ public class Climber extends SubsystemBase {
 
   public void setJointAngles(double shoulderAngle, double elbowAngle) {
     // Set PIDs
+  }
+
+  public void controlWithInput(double xInput, double yInput) {
+    position[0] += xInput * ClimberConstants.MOVE_SPEED;
+    position[1] += yInput * ClimberConstants.MOVE_SPEED;
+
+    double tiltAngle = getRobotTilt();
+
+    double[] jointAngles = getJointAngles(position[0], position[1], tiltAngle);
+    setJointAngles(jointAngles);
   }
 }

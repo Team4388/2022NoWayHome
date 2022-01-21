@@ -85,6 +85,8 @@ public final class Constants {
 
     public static final double MAX_ARM_LENGTH = LOWER_ARM_LENGTH + UPPER_ARM_LENGTH;
     public static final double MIN_ARM_LENGTH = Math.abs(LOWER_ARM_LENGTH + UPPER_ARM_LENGTH);
+    
+    public static final double MOVE_SPEED = 50; // cm per second
   }
   /**
    * The OIConstants class contains the ID for the XBox controllers
