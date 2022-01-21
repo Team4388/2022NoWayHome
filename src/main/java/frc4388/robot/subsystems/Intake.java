@@ -14,9 +14,9 @@ public class Intake extends SubsystemBase {
   private WPI_TalonFX m_extenderMotor;
 
   /** Creates a new Intake. */
-  public Intake(WPI_TalonFX m_intakeMotor, WPI_TalonFX m_extenderMotor) {
-    this.m_intakeMotor = m_intakeMotor;
-    this.m_extenderMotor = m_extenderMotor; 
+  public Intake(WPI_TalonFX intakeMotor, WPI_TalonFX extenderMotor) {
+    m_intakeMotor = intakeMotor;
+    m_extenderMotor = extenderMotor; 
   }
 
   @Override
@@ -29,6 +29,12 @@ public class Intake extends SubsystemBase {
   }
 
   public void runExtender(boolean extended) {
-    m_extenderMotor.set(extended ? 1 : 0);
+    m_extenderMotor.set(extended ? 1 : -1);
   }
 }
+
+/*
+ Function toggle extender
+            bool = !bool
+Configure limit switches forward and reverse
+*/
