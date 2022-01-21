@@ -40,7 +40,7 @@ public class RobotContainer {
     m_robotMap.rightBackEncoder
   );
 
-  private final Intake m_intake = new Intake(null, null);
+  private final Intake m_robotIntake = new Intake(null, null);
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   /* Controllers */
@@ -59,8 +59,12 @@ public class RobotContainer {
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(getDriverController().getLeftXAxis(),
             getDriverController().getLeftYAxis(), getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
+    m_robotIntake.setDefaultCommand(
+        new RunCommand(() -> m_robotIntake.runWithTriggers(
+          getDriverController().getLeftTriggerAxis(), getDriverController().getRightTriggerAxis()),m_robotIntake));
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+    m_robotLED.setDefaultCommand(
+        new RunCommand(m_robotLED::updateLED, m_robotLED));                      
     // dri
   }
 
@@ -77,8 +81,8 @@ public class RobotContainer {
 
     // extends and retracts the extender 
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
-        .whenPressed(() -> m_intake.runExtender(true))
-        .whenReleased(() -> m_intake.runExtender(false));
+        .whenPressed(() -> m_robotIntake.runExtender(true))
+        .whenReleased(() -> m_robotIntake.runExtender(false));
 
     // activates "Lit Mode"
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
