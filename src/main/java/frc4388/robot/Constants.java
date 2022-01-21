@@ -87,6 +87,18 @@ public final class Constants {
     public static final double MIN_ARM_LENGTH = Math.abs(LOWER_ARM_LENGTH + UPPER_ARM_LENGTH);
     
     public static final double MOVE_SPEED = 50; // cm per second
+
+    // PID Constants
+    public static final int SHOULDER_SLOT_IDX = 0;
+    public static final int SHOULDER_PID_LOOP_IDX = 1;
+
+    public static final int ELBOW_SLOT_IDX = 0;
+    public static final int ELBOW_PID_LOOP_IDX = 1;
+
+    public static final Gains SHOULDER_GAINS = new Gains(1.0, 1.0, 1.0, 1.0, 0, 1.0);
+    public static final Gains ELBOW_GAINS = new Gains(1.0, 1.0, 1.0, 1.0, 0, 1.0);
+
+    public static final int CLIMBER_TIMEOUT_MS = 100;
   }
   /**
    * The OIConstants class contains the ID for the XBox controllers
