@@ -4,6 +4,9 @@
 
 package frc4388.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import frc4388.utility.Gains;
 import frc4388.utility.LEDPatterns;
 
@@ -28,8 +31,8 @@ public final class Constants {
     public static final double HEIGHT = 22;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
-    public static final double MAX_SPEED_FEET_PER_SEC = 20;
-    public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20;
+    public static final double MAX_SPEED_FEET_PER_SEC = 20; // redundant constant?
+    public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20; // redundant constant?
     
     //IDs
     public static final int LEFT_FRONT_STEER_CAN_ID = 2;
@@ -83,6 +86,8 @@ public final class Constants {
 
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
+    // TODO: put in real numbers for the hub
+    public static final Pose2d HUB_POSE = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
   }
 
   public static final class LEDConstants {

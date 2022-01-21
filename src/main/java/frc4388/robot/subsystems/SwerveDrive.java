@@ -12,6 +12,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.StateSpaceUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -148,6 +149,36 @@ public class SwerveDrive extends SubsystemBase {
     super.periodic();
   }
 
+  /**
+   * Get a "noisy" fake global pose reading.
+   *
+   * @param estimatedRobotPose The robot pose.
+   */
+  // TEST FAKE CODE FROM EXAMPLE
+  public static Pose2d getEstimatedGlobalPose(Pose2d estimatedRobotPose) {
+    var rand =
+        StateSpaceUtil.makeWhiteNoiseVector(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+    return new Pose2d(
+        estimatedRobotPose.getX() + rand.get(0, 0),
+        estimatedRobotPose.getY() + rand.get(1, 0),
+        estimatedRobotPose.getRotation().plus(new Rotation2d(rand.get(2, 0))));
+  }
+
+  /**
+   * Returns a scalar from your distance to the hub to your target distance.
+   * 
+   * @param target_dist The target distance.
+   * @return A scalar that multiplies your distance from the hub to get your target distance.
+   */
+  public double getScalarForLine(double target_dist) {
+    Pose2d p1 = m_poseEstimator.getEstimatedPosition();
+    Pose2d p2 = SwerveDriveConstants.HUB_POSE;
+
+    double dist = Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
+
+    return target_dist/dist;
+  }
+
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     m_poseEstimator.update( m_gyro.getRotation2d(), 
@@ -159,7 +190,7 @@ public class SwerveDrive extends SubsystemBase {
       // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
       // a real robot, this must be calculated based either on latency or timestamps.
       m_poseEstimator.addVisionMeasurement(
-          ExampleGlobalMeasurementSensor.getEstimatedGlobalPose(
+          SwerveDrive.getEstimatedGlobalPose(
               m_poseEstimator.getEstimatedPosition()),
           Timer.getFPGATimestamp() - 0.1);
     }
