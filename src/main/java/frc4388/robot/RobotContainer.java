@@ -10,8 +10,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
+import frc4388.robot.subsystems.BoomBoom;
+import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
+import frc4388.robot.subsystems.Turret;
+import frc4388.robot.subsystems.Vision;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.controller.IHandController;
 import frc4388.utility.controller.XboxController;
@@ -40,7 +44,10 @@ public class RobotContainer {
   );
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
-
+  private final BoomBoom m_robotBoomBoom = new BoomBoom();
+  private final Hood m_robotHood = new Hood();
+  private final Turret m_robotTurret = new Turret();
+  private final Vision m_robotVison = new Vision();
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);

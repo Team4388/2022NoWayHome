@@ -4,6 +4,8 @@
 
 package frc4388.robot;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
 import frc4388.utility.Gains;
 import frc4388.utility.LEDPatterns;
 
@@ -79,5 +81,14 @@ public final class Constants {
   public static final class OIConstants {
     public static final int XBOX_DRIVER_ID = 0;
     public static final int XBOX_OPERATOR_ID = 1;
+  }
+  public static final class ShooterConstants {
+    /* PID Constants Shooter */
+    public static final int SHOOTER_TIMEOUT_MS = 30;
+    public static final int SHOOTER_SLOT_IDX = 0;
+    public static final int SHOOTER_PID_LOOP_IDX = 1;
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
+
+    
   }
 }
