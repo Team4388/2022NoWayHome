@@ -167,9 +167,22 @@ public class Climber extends SubsystemBase {
 
     double tiltAngle = m_groundRelative ? getRobotTilt() : 0.d;
 
-    System.out.println(getJointAngles(0, 0, 0));
+    double[] testAngles = getJointAngles(0, 0, 0);
+    System.out.println("origin: " + testAngles[0] + ", " + testAngles[1]);
+    
+    double[] testAngles2 = getJointAngles(5000, 5000, 0);
+    System.out.println("extended: " + testAngles2[0] + ", " + testAngles2[1]);
+    
+    double[] testAngles3 = getJointAngles(0, 75, 0);
+    System.out.println("just y: " + testAngles3[0] + ", " + testAngles3[1]);
+    
+    double[] testAngles4 = getJointAngles(75, 0, 0);
+    System.out.println("just x: " + testAngles4[0] + ", " + testAngles4[1]);
+    
+    double[] testAngles5 = getJointAngles(-75, 0, 0);
+    System.out.println("just x: " + testAngles5[0] + ", " + testAngles5[1]);
 
     double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
-    setJointAngles(jointAngles);
+    //setJointAngles(jointAngles);
   }
 }
