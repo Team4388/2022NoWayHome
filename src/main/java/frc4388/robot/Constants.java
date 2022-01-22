@@ -98,7 +98,24 @@ public final class Constants {
     public static final int SHOOTER_FALCON_BALLER_ID =; //unknown value, fix later//
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID =; //"//
   
-    public static final Gains DRUM_SHOOTER_GAINS = new Gains(x,y,z,a,b);//x,y,z,a,b are not actual values, fix laterS
+    public static final Gains DRUM_SHOOTER_GAINS = new Gains(x,y,z,a,b);//x,y,z,a,b are not actual values, fix later
+
+
+    public static final class VisionConstants {
+      public static final double TURN_P_VALUE = "unknown" // needs to be figured out after testing
+      public static final double X_ANGLE_ERROR = "alsoUnknown" //""//
+      public static final double TURN_P_VALUE = "alsoAlsoUnknown" //""//
+      public static final double GRAV = "alsoAlsoAlsoUnknown" //""//
+      public static final double TARGET_HEIGHT = "alsoAlsoAlsoAlsoUnknown" //""//
+      
+
+
+
+
+
+
+
+    }
 
   }
 }
