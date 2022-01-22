@@ -99,9 +99,9 @@ public class RobotMap {
   /* Climb Subsystem */
   public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
   public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
-  public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(ClimberConstants.GYRO_ID); // TODO
+  public final WPI_PigeonIMU gyro = null;//new WPI_PigeonIMU(ClimberConstants.GYRO_ID); // TODO
 
   /* Hooks Subsystem */
-  public final Servo leftHook = new Servo(HooksConstants.LEFT_HOOK_ID);
-  public final Servo rightHook = new Servo(HooksConstants.RIGHT_HOOK_ID);
+  //public final Servo leftHook = new Servo(HooksConstants.LEFT_HOOK_ID);
+  //public final Servo rightHook = new Servo(HooksConstants.RIGHT_HOOK_ID);
 }

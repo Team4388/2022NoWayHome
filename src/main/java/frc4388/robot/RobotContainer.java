@@ -43,9 +43,9 @@ public class RobotContainer {
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
-  private final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro);
+  private final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
 
-  private final Hooks m_hooks = new Hooks(m_robotMap.leftHook, m_robotMap.rightHook);
+  //private final Hooks m_hooks = new Hooks(m_robotMap.leftHook, m_robotMap.rightHook);
 
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
@@ -59,15 +59,14 @@ public class RobotContainer {
 
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
-    m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
-            getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+    // m_robotSwerveDrive.setDefaultCommand(
+    //     new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
+    //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
     // moves climber in xy space with two-axis input from the operator controller
     m_robotClimber.setDefaultCommand(
         new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftXAxis(),
-            getOperatorController().getLeftYAxis(),
-            getDriverJoystick().getRawButtonPressed(XboxController.A_BUTTON)), m_robotClimber));
+            getOperatorController().getLeftYAxis()), m_robotClimber));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
@@ -88,9 +87,9 @@ public class RobotContainer {
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
     
-    new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
-        .whenPressed(() -> m_hooks.setOpen(true))
-        .whenReleased(() -> m_hooks.setOpen(false));
+    // new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
+    //     .whenPressed(() -> m_hooks.setOpen(true))
+    //     .whenReleased(() -> m_hooks.setOpen(false));
   }
 
   /**

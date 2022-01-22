@@ -77,8 +77,8 @@ public final class Constants {
 
   public static final class ClimberConstants {
     /* TODO: Update motor IDS */
-    public static final int SHOULDER_ID = -1;
-    public static final int ELBOW_ID = -1;
+    public static final int SHOULDER_ID = 1;
+    public static final int ELBOW_ID = 3;
     public static final int GYRO_ID = -1;
 
     // TODO Update this stuff too
@@ -88,7 +88,7 @@ public final class Constants {
     public static final double MAX_ARM_LENGTH = 100;
     public static final double MIN_ARM_LENGTH = 5;
     
-    public static final double MOVE_SPEED = 50; // cm per second
+    public static final double MOVE_SPEED = .2; // cm per second
 
     public static final double SHOULDER_RESTING_ANGLE = 0;
     public static final double ELBOW_RESTING_ANGLE = 0;
@@ -103,7 +103,7 @@ public final class Constants {
     public static final Gains SHOULDER_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
     public static final Gains ELBOW_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
 
-    public static final int CLIMBER_TIMEOUT_MS = 100;
+    public static final int CLIMBER_TIMEOUT_MS = 50;
   }
 
   public static final class HooksConstants {

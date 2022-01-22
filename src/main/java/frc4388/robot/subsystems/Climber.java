@@ -24,10 +24,11 @@ public class Climber extends SubsystemBase {
   private WPI_TalonFX m_elbow;
 
   private WPI_PigeonIMU m_gyro;
+  private boolean m_groundRelative;
 
   private double[] m_position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
   
-  public Climber(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_PigeonIMU gyro) {
+  public Climber(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_PigeonIMU gyro, boolean groundRelative) {
     m_shoulder = shoulder;
     m_shoulder.configFactoryDefault();
     m_shoulder.setNeutralMode(NeutralMode.Brake);
@@ -36,7 +37,12 @@ public class Climber extends SubsystemBase {
     m_elbow.configFactoryDefault();
     m_elbow.setNeutralMode(NeutralMode.Brake);
 
-    m_gyro = gyro;
+    setClimberGains();
+
+    if(groundRelative)
+      m_gyro = gyro;
+    
+    m_groundRelative = groundRelative;
   }
 
   /* getJointAngles
@@ -93,6 +99,8 @@ public class Climber extends SubsystemBase {
         elbowAngle += Math.PI;
     }
 
+    angles[0] = shoulderAngle;
+    angles[1] = elbowAngle;
     return angles;
   }
 
@@ -119,11 +127,14 @@ public class Climber extends SubsystemBase {
   }
 
   public void setJointAngles(double[] angles) {
+    System.out.println(angles);
     setJointAngles(angles[0], angles[1]);
   }
 
   public void setJointAngles(double shoulderAngle, double elbowAngle) {
     // Convert radians to ticks
+    System.out.println("angles: " + shoulderAngle + ", " + elbowAngle);
+
     double shoulderPosition = (shoulderAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
     double elbowPosition = (elbowAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
 
@@ -131,14 +142,13 @@ public class Climber extends SubsystemBase {
     m_elbow.set(TalonFXControlMode.Position, elbowPosition);
   }
 
-  public void controlWithInput(double xInput, double yInput, boolean safety) {
-    if(!safety)
-      return;
-
+  public void controlWithInput(double xInput, double yInput) {
     m_position[0] += xInput * ClimberConstants.MOVE_SPEED;
     m_position[1] += yInput * ClimberConstants.MOVE_SPEED;
 
-    double tiltAngle = getRobotTilt();
+    System.out.println("x: " + m_position[0] + " y: " + m_position[1]);
+
+    double tiltAngle = m_groundRelative ? getRobotTilt() : 0.d;
 
     double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
     setJointAngles(jointAngles);
