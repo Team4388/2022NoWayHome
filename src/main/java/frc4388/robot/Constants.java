@@ -42,10 +42,15 @@ public final class Constants {
     public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
     public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
     // ofsets are in degrees
-    public static final float LEFT_FRONT_ENCODER_OFFSET = 0;
-    public static final float RIGHT_FRONT_ENCODER_OFFSET = 0;
-    public static final float LEFT_BACK_ENCODER_OFFSET = 0;
-    public static final float RIGHT_BACK_ENCODER_OFFSET = 0;
+    //ofsets are in degrees
+        // public static final double LEFT_FRONT_ENCODER_OFFSET = 181.494141;    
+        // public static final double RIGHT_FRONT_ENCODER_OFFSET = 360. - 59.238281;   
+        // public static final double LEFT_BACK_ENCODER_OFFSET = 360. - 128.144531;     
+        // public static final double RIGHT_BACK_ENCODER_OFFSET = 0.933594;
+        public static final double LEFT_FRONT_ENCODER_OFFSET = 180.0;
+        public static final double RIGHT_FRONT_ENCODER_OFFSET = 300.0;
+        public static final double LEFT_BACK_ENCODER_OFFSET = 360.0 - 128.0;
+        public static final double RIGHT_BACK_ENCODER_OFFSET = 0.0;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;
@@ -60,6 +65,16 @@ public final class Constants {
 
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
+  }
+
+  public static final class SerializerConstants {
+    public static final double SERIALIZER_BELT_SPEED = 1.0; // TODO (currently max power, DO NOT RUN)
+    public static final double SERIALIZER_SHOOTER_BELT_SPEED = 1.0; // TODO (currently max power, DO NOT RUN)
+    
+    // CAN IDs
+    public static final int SERIALIZER_BELT = -1; // TODO
+    public static final int SERIALIZER_SHOOTER_BELT = -1; // TODO
+    public static final int SERIALIZER_BELT_BEAM = -1; // TODO
   }
 
   public static final class LEDConstants {

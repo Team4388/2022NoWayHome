@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
+import frc4388.robot.subsystems.Serializer;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.controller.IHandController;
@@ -41,6 +42,8 @@ public class RobotContainer {
   );
 
   private final Intake m_robotIntake = new Intake(null, null);
+  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt);
+
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   /* Controllers */
@@ -56,8 +59,8 @@ public class RobotContainer {
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
     m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(getDriverController().getLeftXAxis(),
-            getDriverController().getLeftYAxis(), getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
+            getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
@@ -88,6 +91,10 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+    
+    new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
+        .whenPressed(() -> m_robotSerializer.setSerializerStateWithBeam(true, m_robotSerializer.getBeam()))
+        .whenReleased(() -> m_robotSerializer.setSerializerStateWithBeam(false, m_robotSerializer.getBeam()));
   }
 
   /**

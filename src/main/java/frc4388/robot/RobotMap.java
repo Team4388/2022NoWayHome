@@ -9,6 +9,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.LEDConstants;
+import frc4388.robot.Constants.SerializerConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 
 /**
@@ -92,4 +93,8 @@ public class RobotMap {
     //rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
   }
 
+  /* Serializer Subsystem */
+
+  public final Spark serializerBelt = new Spark(SerializerConstants.SERIALIZER_BELT);
+  public final Spark serializerShooterBelt = new Spark(SerializerConstants.SERIALIZER_SHOOTER_BELT);
 }
