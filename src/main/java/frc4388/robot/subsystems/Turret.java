@@ -8,10 +8,30 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Turret extends SubsystemBase {
   /** Creates a new Turret. */
-  public Turret() {}
+ public CANSparkMax m_turretMotor;
+  //Variables
+  public Turret() {
+    m_turretMotor = turretMotor;
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+  public void turnWithJoystick (double input)
+  {
+    m_turretMotor.set(input);
+
+  }
+
+  //function turnWithJoystick(double input)
+  //   motor.set(input)
 }
+
+
+
+/** TODO
+* setPosition function
+* Limit switches
+**/
