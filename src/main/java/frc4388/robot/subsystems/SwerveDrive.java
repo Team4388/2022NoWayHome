@@ -8,24 +8,20 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
-import edu.wpi.first.math.StateSpaceUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
 
 public class SwerveDrive extends SubsystemBase {
-  SwerveDriveKinematics m_kinematics;
   private WPI_TalonFX m_leftFrontSteerMotor;
   private WPI_TalonFX m_leftFrontWheelMotor;
   private WPI_TalonFX m_rightFrontSteerMotor;
@@ -51,14 +47,14 @@ public class SwerveDrive extends SubsystemBase {
 
   // setSwerveGains();
       
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+  private SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
   public SwerveModule[] modules;
   public WPI_PigeonIMU m_gyro;
 
   /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
   below are robot specific, and should be tuned. */
-  private final SwerveDrivePoseEstimator m_poseEstimator;
+  private SwerveDrivePoseEstimator m_poseEstimator;
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
@@ -119,7 +115,7 @@ public class SwerveDrive extends SubsystemBase {
       double xSpeedMetersPerSecond = -speeds[0] * speedAdjust;
       double ySpeedMetersPerSecond = speeds[1] * speedAdjust;
       SwerveModuleState[] states =
-          kinematics.toSwerveModuleStates(
+          m_kinematics.toSwerveModuleStates(
               fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
@@ -133,26 +129,16 @@ public class SwerveDrive extends SubsystemBase {
   
   @Override
   public void periodic() {
-    System.err.println(m_gyro.getFusedHeading() +"    aaa");
+    //System.err.println(m_gyro.getFusedHeading() +"    aaa");
+    updateOdometry();
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
-    // m_gyro.getRotation2d();
+    // System.out.println(m_gyro.getRotation2d());
+    // System.out.println(modules[0].getState());
+    // System.out.println(modules[1].getState());
+    // System.out.println(modules[2].getState());
+    // System.out.println(modules[3].getState());
     super.periodic();
-  }
-
-  /**
-   * Get a "noisy" fake global pose reading.
-   *
-   * @param estimatedRobotPose The robot pose.
-   */
-  // TEST FAKE CODE FROM EXAMPLE
-  public static Pose2d getEstimatedGlobalPose(Pose2d estimatedRobotPose) {
-    var rand =
-        StateSpaceUtil.makeWhiteNoiseVector(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-    return new Pose2d(
-        estimatedRobotPose.getX() + rand.get(0, 0),
-        estimatedRobotPose.getY() + rand.get(1, 0),
-        estimatedRobotPose.getRotation().plus(new Rotation2d(rand.get(2, 0))));
   }
 
   /**
@@ -171,11 +157,22 @@ public class SwerveDrive extends SubsystemBase {
    * @param target_dist The target distance.
    * @return A scalar that multiplies your distance from the hub to get your target distance.
    */
-  public double getScalarForLine(double target_dist) {
+  public Pose2d poseGivenDist(double target_dist) {
     Pose2d p1 = m_poseEstimator.getEstimatedPosition();
     Pose2d p2 = SwerveDriveConstants.HUB_POSE;
 
-    return target_dist/distBtwPoses(p1, p2);
+    double scalar = target_dist/distBtwPoses(p1, p2);
+    Pose2d new_pose = new Pose2d(p1.getX() * scalar, p1.getY() * scalar, p1.getRotation());
+
+    return new_pose;
+  }
+
+  /**
+   * Gets the current pose of the robot.
+   * @return Robot's current pose.
+   */
+  public Pose2d getOdometry() {
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   /** Updates the field relative position of the robot. */
@@ -188,10 +185,9 @@ public class SwerveDrive extends SubsystemBase {
   
       // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
       // a real robot, this must be calculated based either on latency or timestamps.
-      m_poseEstimator.addVisionMeasurement(
-          SwerveDrive.getEstimatedGlobalPose(
-              m_poseEstimator.getEstimatedPosition()),
-          Timer.getFPGATimestamp() - 0.1);
+      // m_poseEstimator.addVisionMeasurement(
+      //         m_poseEstimator.getEstimatedPosition(),
+      //     Timer.getFPGATimestamp() - 0.1);
     }
 
   public void highSpeed(boolean shift){

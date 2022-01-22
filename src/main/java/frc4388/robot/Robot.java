@@ -5,6 +5,8 @@
 package frc4388.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc4388.utility.RobotTime;
@@ -49,6 +51,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
+    SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
+    SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
   }
 
   /**
@@ -63,6 +68,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    // SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
+    // SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
+    // SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
   }
 
   /**
@@ -114,8 +122,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.getDriverController().updateInput();
-    m_robotContainer.getOperatorController().updateInput();
+    // m_robotContainer.getDriverController().updateInput();
+    // m_robotContainer.getOperatorController().updateInput();
   }
 
   /**

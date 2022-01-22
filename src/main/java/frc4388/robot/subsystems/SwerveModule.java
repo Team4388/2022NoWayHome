@@ -27,7 +27,7 @@ public class SwerveModule extends SubsystemBase {
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
   private static double kEncoderTicksPerRotation = 4096;
-
+  private SwerveModuleState state;
 
 
   /** Creates a new SwerveModule. */
@@ -61,7 +61,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
 
-  public Rotation2d getAngle() {
+  private Rotation2d getAngle() {
     // Note: This assumes the CANCoders are setup with the default feedback coefficient
     // and the sesnor value reports degrees.
     return Rotation2d.fromDegrees(canCoder.getAbsolutePosition());
@@ -74,8 +74,8 @@ public class SwerveModule extends SubsystemBase {
   public void setDesiredState(SwerveModuleState desiredState, boolean ignoreAngle) {
     Rotation2d currentRotation = getAngle();
     
-    SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
-    SwerveModuleState state = SwerveModuleState.optimize(desiredState, currentRotation);
+    //SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
+    state = SwerveModuleState.optimize(desiredState, currentRotation);
 
     // Find the difference between our current rotational position + our new rotational position
     Rotation2d rotationDelta = state.angle.minus(currentRotation);
@@ -100,7 +100,8 @@ public class SwerveModule extends SubsystemBase {
    * @return The current state of the module.
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK * SwerveDriveConstants.METERS_PER_INCH * 10, new Rotation2d(canCoder.getPosition()));
+    // return state;
+    return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK * SwerveDriveConstants.METERS_PER_INCH * 10, getAngle());
   }
 
 }

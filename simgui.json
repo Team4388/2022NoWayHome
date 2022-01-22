@@ -7,5 +7,10 @@
       "/LiveWindow/SwerveModule": "Subsystem",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
     }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "open": true
+    }
   }
 }

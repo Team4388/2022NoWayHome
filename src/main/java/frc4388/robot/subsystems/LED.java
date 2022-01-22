@@ -32,7 +32,7 @@ public class LED extends SubsystemBase {
 
   @Override
   public void periodic(){
-    SmartDashboard.putNumber("LED", m_currentPattern.getValue());
+    //SmartDashboard.putNumber("LED", m_currentPattern.getValue());
   }
 
   /**
