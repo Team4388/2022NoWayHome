@@ -72,11 +72,15 @@ public final class Constants {
     public static final double SERIALIZER_SHOOTER_BELT_SPEED = 1.0; // TODO (currently max power, DO NOT RUN)
     
     // CAN IDs
-    public static final int SERIALIZER_BELT = -1; // TODO
-    public static final int SERIALIZER_SHOOTER_BELT = -1; // TODO
-    public static final int SERIALIZER_BELT_BEAM = -1; // TODO
+    public static final int SERIALIZER_BELT = 1; // TODO
+    public static final int SERIALIZER_SHOOTER_BELT = 2; // TODO
+    public static final int SERIALIZER_BELT_BEAM = 3; // TODO
   }
-
+  public static final class IntakeConstants {
+    // CAN IDs
+    public static final int INTAKE_MOTOR = 3;
+    public static final int EXTENDER_MOTOR = 4;
+  }
   public static final class LEDConstants {
     public static final int LED_SPARK_ID = 0;
 

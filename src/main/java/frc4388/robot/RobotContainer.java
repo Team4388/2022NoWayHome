@@ -41,7 +41,7 @@ public class RobotContainer {
     m_robotMap.rightBackEncoder
   );
 
-  private final Intake m_robotIntake = new Intake(null, null);
+  private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor);
   private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt);
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);

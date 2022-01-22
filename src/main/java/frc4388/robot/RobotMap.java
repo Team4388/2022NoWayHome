@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import frc4388.robot.Constants.IntakeConstants;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.SerializerConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
@@ -97,4 +98,8 @@ public class RobotMap {
 
   public final Spark serializerBelt = new Spark(SerializerConstants.SERIALIZER_BELT);
   public final Spark serializerShooterBelt = new Spark(SerializerConstants.SERIALIZER_SHOOTER_BELT);
+  
+  /* Intake Subsytem */
+  public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
+  public final Spark extenderMotor = new Spark(IntakeConstants.EXTENDER_MOTOR);
 }
