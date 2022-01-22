@@ -8,16 +8,42 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.SmartDashboard.SmartDashboard;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.ShooterTables;
+import frc4388.utility.Gains;
+import frc4388.utility.Trims;
+import frc4388.utility.controller.IHandController;
 
 public class BoomBoom extends SubsystemBase {
-public WPI_TalonFX m_shooterFalconLeft;
-public WPI_TalonFX m_shooterFalconRight;
+public WPI_TalonFX m_shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_BALLER_ID);
+public WPI_TalonFX m_shooterFalconRight= new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_BALLER_FOLLOWER_ID);
 public ShooterTables m_shooterTable;
+public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
+public static BoomBoom m_boomBoom;
+public static IHandController m_driverController; //not sure if driverController in 2022 = m_controller in 2020
 
+double velP;
+double input;
+
+public boolean m_isDrumReady = false;
+public double m_fireVel;
+
+public Trims shooterTrims;
+
+public Hood m_hoodSubsystem;
+public Turret m_turretSubsystem;
+
+/*
+* Creates new BoomBoom subsystem, has drum shooter and angle adjuster
+*/
+public BoomBoom(){
+//Testing purposes resetting gyros
+//resetGryoAngleADj();
+shooterTrims = new Trims(0,0);
+}
   /** Creates a new BoomBoom. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
   m_shooterFalconLeft = shooterFalconLeft;
@@ -56,12 +82,42 @@ public ShooterTables m_shooterTable;
   public void periodic() {
     // This method will be called once per scheduler run
     // Abhi was here 
+try {
+  // SmartDashboard.putNumber("Drum Velocity", m_shooterFalconLeft.getSelectedSensorVelocity());
+
+  // SmartDashboard.putNumber("Drum Velocity CSV", m_fireVel);
+
+  // SmartDashboard.putNumber("Shooter Temp C", m_shooterFalconLeft.getTemperature()); //all these values should be "defined" elsewhere, fix this
+
+  // SmartDashboard.putNumber("Shooter Current", m_shooterFalconLeft.getSupplyCurrent());
+
+  // SmartDashboard.putNumber("Drum Ready", m_isDrumReady);
+} catch (Exception e) {
+  //TODO: handle exception
+}
+
+  }
+
+  public void passRequiredSubsystem(Hood subsystem0, Turret subsystem1) {
+    m_hoodSubsystem = subsystem0;
+    m_turretSubsystem = subsystem1;
+  }
+
+  public double addFireVel(){
+    return m_fireVel;
   }
 public void runDrumShooter(double speed) {
     m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed);
     m_shooterFalconRight.follow(m_shooterFalconLeft);
   }    
 
+public void setShooterGains() {
+  m_shooterFalconLeft.selectProfileSlot(ShooterConstants.SHOOTER_SLOT_IDX, ShooterConstants.SHOOTER_PID_LOOP_IDX);
+  m_shooterFalconLeft.config_kF(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kF, ShooterConstants.SHOOTER_TIMEOUT_MS);
+  m_shooterFalconLeft.config_kP(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kP, ShooterConstants.SHOOTER_TIMEOUT_MS);
+  m_shooterFalconLeft.config_kI(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kI, ShooterConstants.SHOOTER_TIMEOUT_MS);
+  m_shooterFalconLeft.config_kD(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kD, ShooterConstants.SHOOTER_TIMEOUT_MS);
+}
 
   public void runDrumShooterVelocityPID(double targetVel) {
     m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); //Init
