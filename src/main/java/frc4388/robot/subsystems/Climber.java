@@ -60,13 +60,17 @@ public class Climber extends SubsystemBase {
     if(mag > ClimberConstants.MAX_ARM_LENGTH) {
       xTarget = (xTarget / mag) * ClimberConstants.MAX_ARM_LENGTH;
       yTarget = (yTarget / mag) * ClimberConstants.MAX_ARM_LENGTH;
+      mag = ClimberConstants.MAX_ARM_LENGTH;
     } else if(mag < ClimberConstants.MIN_ARM_LENGTH) {
       xTarget = (xTarget / mag) * ClimberConstants.MIN_ARM_LENGTH;
       yTarget = (yTarget / mag) * ClimberConstants.MIN_ARM_LENGTH;
+      mag = ClimberConstants.MIN_ARM_LENGTH;
     }
 
     // The angle to the target point
     double theta = Math.atan(yTarget / xTarget) + tiltAngle; // TODO rename variable
+    if(xTarget < 0.d)
+      theta += Math.PI;
     
     // Correct target position for tilt
     xTarget = Math.cos(theta) * mag;
