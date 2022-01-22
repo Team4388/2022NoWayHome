@@ -68,8 +68,12 @@ public class RobotContainer {
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
     
 
+
     //Turret default command
     
+
+    m_robotTurret.setDefaultCommand(
+        new RunCommand(() -> m_robotTurret.aimToCenter()));
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses

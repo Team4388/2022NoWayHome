@@ -8,11 +8,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Turret extends SubsystemBase {
   /** Creates a new Turret. */
-  //Motor object
+ public CANSparkMax m_turretMotor;
   //Variables
-  public Turret(/*Motor argument*/ */) {
-    //Motor object = motor argument
-    //Config motor
+  public Turret() {
+    m_turretMotor = turretMotor;
   }
 
   @Override
@@ -20,16 +19,19 @@ public class Turret extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public void turnWithJoystick (double input)
+  {
+    m_turretMotor.set(input);
+
+  }
+
   //function turnWithJoystick(double input)
   //   motor.set(input)
 }
 
 
+
 /** TODO
-* Constants ID
-* RobotMap configs
-* RobotContainer defaultCommand and Instantiation
-* turnWithJoystick function
 * setPosition function
 * Limit switches
 **/
