@@ -154,6 +154,8 @@ public class Climber extends SubsystemBase {
 
     double tiltAngle = m_groundRelative ? getRobotTilt() : 0.d;
 
+    System.out.println(getJointAngles(0, 0, 0));
+
     double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
     setJointAngles(jointAngles);
   }
