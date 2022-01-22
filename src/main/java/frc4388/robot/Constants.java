@@ -86,7 +86,7 @@ public final class Constants {
     public static final double LOWER_ARM_LENGTH = 50;
 
     public static final double MAX_ARM_LENGTH = 100;
-    public static final double MIN_ARM_LENGTH = 5;
+    public static final double MIN_ARM_LENGTH = 0;
     
     public static final double MOVE_SPEED = .2; // cm per second
 

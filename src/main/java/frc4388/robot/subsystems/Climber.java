@@ -101,19 +101,29 @@ public class Climber extends SubsystemBase {
     double elbowAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2) - Math.pow(mag, 2)) /
       (2.d * ClimberConstants.LOWER_ARM_LENGTH * ClimberConstants.UPPER_ARM_LENGTH));
     //elbowAngle = Math.PI - elbowAngle;
+    System.out.println("sa1: " + shoulderAngle);
+    System.out.println("ea1: " + elbowAngle);
   
     // If the climber is resting on the robot base, rotate the upper arm in the direction of the target
     if(shoulderAngle <= ClimberConstants.SHOULDER_RESTING_ANGLE) {
       shoulderAngle = ClimberConstants.SHOULDER_RESTING_ANGLE;
       double xDiff = xTarget - ClimberConstants.LOWER_ARM_LENGTH;
+      System.out.println("xDiff: " + xDiff);
   
       elbowAngle = Math.atan(-yTarget / xDiff);
+      System.out.println("ea2: " + elbowAngle);
+      if(elbowAngle < 0) {
+        elbowAngle = Math.PI - Math.abs(elbowAngle);
+      }
+
       if(elbowAngle < ClimberConstants.ELBOW_RESTING_ANGLE)
         elbowAngle = ClimberConstants.ELBOW_RESTING_ANGLE;
+      System.out.println("ea3: " + elbowAngle);
   
       // Deal with negative wraparound
-      if(xDiff >= 0.d)
-        elbowAngle += Math.PI;
+      // if(xDiff >= 0.d)
+      //   elbowAngle += Math.PI;
+      // System.out.println("ea4: " + elbowAngle);
     }
   
     angles[0] = shoulderAngle;
@@ -182,7 +192,10 @@ public class Climber extends SubsystemBase {
     double[] testAngles5 = getJointAngles(-75, 0, 0);
     System.out.println("just x: " + testAngles5[0] + ", " + testAngles5[1]);
 
+    double[] testAngles6 = getJointAngles(60, 25, 0);
+    System.out.println("just xy: " + testAngles6[0] + ", " + testAngles6[1]);
+
     double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
-    //setJointAngles(jointAngles);
+    setJointAngles(jointAngles);
   }
 }
