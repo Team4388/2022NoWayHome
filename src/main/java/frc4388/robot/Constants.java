@@ -21,6 +21,8 @@ import frc4388.utility.LEDPatterns;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final double TICKS_PER_ROTATION_FX = 2048;
+
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 0.1;
     public static final double WHEEL_SPEED = 0.1;
@@ -83,10 +85,13 @@ public final class Constants {
     public static final double UPPER_ARM_LENGTH = 50; // Units should be in cm
     public static final double LOWER_ARM_LENGTH = 50;
 
-    public static final double MAX_ARM_LENGTH = LOWER_ARM_LENGTH + UPPER_ARM_LENGTH;
-    public static final double MIN_ARM_LENGTH = Math.abs(LOWER_ARM_LENGTH + UPPER_ARM_LENGTH);
+    public static final double MAX_ARM_LENGTH = 100;
+    public static final double MIN_ARM_LENGTH = 5;
     
     public static final double MOVE_SPEED = 50; // cm per second
+
+    public static final double SHOULDER_RESTING_ANGLE = 0;
+    public static final double ELBOW_RESTING_ANGLE = 0;
 
     // PID Constants
     public static final int SHOULDER_SLOT_IDX = 0;
@@ -99,6 +104,14 @@ public final class Constants {
     public static final Gains ELBOW_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
 
     public static final int CLIMBER_TIMEOUT_MS = 100;
+  }
+
+  public static final class HooksConstants {
+    public static final int LEFT_HOOK_ID = -1;
+    public static final int RIGHT_HOOK_ID = -1;
+
+    public static final double OPEN_POSITION = 0;
+    public static final double CLOSE_POSITION = 0;
   }
   /**
    * The OIConstants class contains the ID for the XBox controllers

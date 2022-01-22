@@ -5,8 +5,7 @@
 /*
 Safety
 Hooks
-Add 
-Overextension when lower arm is resting check in processing
+Add
 */
 
 package frc4388.robot.subsystems;
@@ -17,6 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc4388.robot.Constants;
 import frc4388.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
@@ -25,7 +25,7 @@ public class Climber extends SubsystemBase {
 
   private WPI_PigeonIMU m_gyro;
 
-  private double[] position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
+  private double[] m_position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
   
   public Climber(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_PigeonIMU gyro) {
     m_shoulder = shoulder;
@@ -77,16 +77,20 @@ public class Climber extends SubsystemBase {
     elbowAngle = Math.PI - elbowAngle;
 
     // If the climber is resting on the robot base, rotate the upper arm in the direction of the target
-    if(shoulderAngle <= 0.d) {
-      shoulderAngle = 0.d;
+    if(shoulderAngle <= ClimberConstants.SHOULDER_RESTING_ANGLE) {
+      shoulderAngle = ClimberConstants.SHOULDER_RESTING_ANGLE;
       double xDiff = xTarget - ClimberConstants.LOWER_ARM_LENGTH;
 
       elbowAngle = Math.atan(-yTarget / xDiff);
+      if(elbowAngle < ClimberConstants.ELBOW_RESTING_ANGLE)
+        elbowAngle = ClimberConstants.ELBOW_RESTING_ANGLE;
+
+
       elbowAngle = Math.PI - elbowAngle;
 
-      if(xDiff >= 0.d) {
+      // Deal with negative wraparound
+      if(xDiff >= 0.d)
         elbowAngle += Math.PI;
-      }
     }
 
     return angles;
@@ -120,20 +124,23 @@ public class Climber extends SubsystemBase {
 
   public void setJointAngles(double shoulderAngle, double elbowAngle) {
     // Convert radians to ticks
-    double shoulderPosition = (shoulderAngle * 1024.d) / Math.PI;
-    double elbowPosition = (elbowAngle * 1024.d) / Math.PI;
+    double shoulderPosition = (shoulderAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
+    double elbowPosition = (elbowAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
 
     m_shoulder.set(TalonFXControlMode.Position, shoulderPosition);
     m_elbow.set(TalonFXControlMode.Position, elbowPosition);
   }
 
-  public void controlWithInput(double xInput, double yInput) {
-    position[0] += xInput * ClimberConstants.MOVE_SPEED;
-    position[1] += yInput * ClimberConstants.MOVE_SPEED;
+  public void controlWithInput(double xInput, double yInput, boolean safety) {
+    if(!safety)
+      return;
+
+    m_position[0] += xInput * ClimberConstants.MOVE_SPEED;
+    m_position[1] += yInput * ClimberConstants.MOVE_SPEED;
 
     double tiltAngle = getRobotTilt();
 
-    double[] jointAngles = getJointAngles(position[0], position[1], tiltAngle);
+    double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
     setJointAngles(jointAngles);
   }
 }

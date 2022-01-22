@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Climber;
+import frc4388.robot.subsystems.Hooks;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
@@ -43,6 +44,9 @@ public class RobotContainer {
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   private final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro);
+
+  private final Hooks m_hooks = new Hooks(m_robotMap.leftHook, m_robotMap.rightHook);
+
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -62,7 +66,8 @@ public class RobotContainer {
     // moves climber in xy space with two-axis input from the operator controller
     m_robotClimber.setDefaultCommand(
         new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftXAxis(),
-            getOperatorController().getLeftYAxis()), m_robotClimber));
+            getOperatorController().getLeftYAxis(),
+            getDriverJoystick().getRawButtonPressed(XboxController.A_BUTTON)), m_robotClimber));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
@@ -82,6 +87,10 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+    
+    new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
+        .whenPressed(() -> m_hooks.setOpen(true))
+        .whenReleased(() -> m_hooks.setOpen(false));
   }
 
   /**

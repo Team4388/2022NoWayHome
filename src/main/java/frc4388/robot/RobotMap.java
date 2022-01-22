@@ -8,8 +8,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.ClimberConstants;
+import frc4388.robot.Constants.HooksConstants;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 
@@ -98,4 +100,8 @@ public class RobotMap {
   public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
   public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
   public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(ClimberConstants.GYRO_ID); // TODO
+
+  /* Hooks Subsystem */
+  public final Servo leftHook = new Servo(HooksConstants.LEFT_HOOK_ID);
+  public final Servo rightHook = new Servo(HooksConstants.RIGHT_HOOK_ID);
 }
