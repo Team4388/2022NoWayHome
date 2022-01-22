@@ -49,7 +49,7 @@ public class XboxController implements IHandController
   private static final double LEFT_AXIS_RIGHT_TOLERANCE = 0.9;
   private static final double LEFT_AXIS_LEFT_TOLERANCE = -0.9;
 
-  private static final double DEADZONE = 0.1;
+  private static final double DEADZONE = 0.2;
 
   private Joystick m_stick;
 
