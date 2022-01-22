@@ -55,54 +55,67 @@ public class Climber extends SubsystemBase {
    * IK resource: https://devforum.roblox.com/t/2-joint-2-limb-inverse-kinematics/252399 */
   public static double[] getJointAngles(double xTarget, double yTarget, double tiltAngle) {
     double [] angles = new double[2];
-
+  
     double mag = Math.hypot(xTarget, yTarget);
-    if(mag > ClimberConstants.MAX_ARM_LENGTH) {
+    if(mag >= ClimberConstants.MAX_ARM_LENGTH) {
       xTarget = (xTarget / mag) * ClimberConstants.MAX_ARM_LENGTH;
       yTarget = (yTarget / mag) * ClimberConstants.MAX_ARM_LENGTH;
       mag = ClimberConstants.MAX_ARM_LENGTH;
-    } else if(mag < ClimberConstants.MIN_ARM_LENGTH) {
+    } else if(mag < ClimberConstants.MIN_ARM_LENGTH && mag != 0) {
       xTarget = (xTarget / mag) * ClimberConstants.MIN_ARM_LENGTH;
       yTarget = (yTarget / mag) * ClimberConstants.MIN_ARM_LENGTH;
       mag = ClimberConstants.MIN_ARM_LENGTH;
+    } else if(mag < ClimberConstants.MIN_ARM_LENGTH) {
+      xTarget = ClimberConstants.MIN_ARM_LENGTH;
+      yTarget = 0.d;
+      mag = ClimberConstants.MIN_ARM_LENGTH;
     }
-
+  
     // The angle to the target point
-    double theta = Math.atan(yTarget / xTarget) + tiltAngle; // TODO rename variable
+    double theta;
+    if(xTarget == 0.d) {
+      theta = Math.PI/2.d; // TODO rename variable
+    } else {
+      theta = Math.atan(yTarget / xTarget);
+    }
+    theta += tiltAngle;
+    
     if(xTarget < 0.d)
-      theta += Math.PI;
+        theta += Math.PI;
+    
     
     // Correct target position for tilt
     xTarget = Math.cos(theta) * mag;
     yTarget = Math.sin(theta) * mag;
     
     // Law and Order: Cosines edition
-    double shoulderAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(mag, 2) - Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2)) /
+    double shoulderAngle;
+    if(mag == 0) {
+      shoulderAngle = 0;
+    } else {
+      shoulderAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(mag, 2) - Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2)) /
       (2.d * ClimberConstants.LOWER_ARM_LENGTH * mag));
-      //shoulderAngle = acos(LowerArmLength^2 + mag^2)
+    }
     shoulderAngle = theta - shoulderAngle;
     
     double elbowAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2) - Math.pow(mag, 2)) /
       (2.d * ClimberConstants.LOWER_ARM_LENGTH * ClimberConstants.UPPER_ARM_LENGTH));
-    elbowAngle = Math.PI - elbowAngle;
-
+    //elbowAngle = Math.PI - elbowAngle;
+  
     // If the climber is resting on the robot base, rotate the upper arm in the direction of the target
     if(shoulderAngle <= ClimberConstants.SHOULDER_RESTING_ANGLE) {
       shoulderAngle = ClimberConstants.SHOULDER_RESTING_ANGLE;
       double xDiff = xTarget - ClimberConstants.LOWER_ARM_LENGTH;
-
+  
       elbowAngle = Math.atan(-yTarget / xDiff);
       if(elbowAngle < ClimberConstants.ELBOW_RESTING_ANGLE)
         elbowAngle = ClimberConstants.ELBOW_RESTING_ANGLE;
-
-
-      elbowAngle = Math.PI - elbowAngle;
-
+  
       // Deal with negative wraparound
       if(xDiff >= 0.d)
         elbowAngle += Math.PI;
     }
-
+  
     angles[0] = shoulderAngle;
     angles[1] = elbowAngle;
     return angles;
