@@ -48,10 +48,6 @@ public class SwerveDrive extends SubsystemBase {
   Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
   Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
   
-  SwerveModule m_frontLeft = new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
-  SwerveModule m_frontRight = new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
-  SwerveModule m_backLeft = new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
-  SwerveModule m_backRight = new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
 
   // setSwerveGains();
       
@@ -62,14 +58,7 @@ public class SwerveDrive extends SubsystemBase {
 
   /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
   below are robot specific, and should be tuned. */
-  private final SwerveDrivePoseEstimator m_poseEstimator =
-      new SwerveDrivePoseEstimator(
-          m_gyro.getRotation2d(),
-          new Pose2d(),
-          m_kinematics,
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(Units.degreesToRadians(0.01)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+  private final SwerveDrivePoseEstimator m_poseEstimator;
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
@@ -94,12 +83,21 @@ public class SwerveDrive extends SubsystemBase {
       m_rightBackEncoder = rightBackEncoder; 
       m_gyro = gyro;
 
+
       modules = new SwerveModule[] {
-          m_frontLeft, // Front Left
-          m_frontRight, // Front Right
-          m_backLeft, // Back Left
-          m_backRight  // Back Right
+        new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
+        new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
+        new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
+        new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
       };
+    m_poseEstimator =
+      new SwerveDrivePoseEstimator(
+          m_gyro.getRotation2d(),
+          new Pose2d(),
+          m_kinematics,
+          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+          VecBuilder.fill(Units.degreesToRadians(0.01)),
+          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
       m_gyro.reset(); 
   }
 //https://github.com/ZachOrr/MK3-Swerve-Example
@@ -183,10 +181,10 @@ public class SwerveDrive extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     m_poseEstimator.update( m_gyro.getRotation2d(), 
-                            m_frontLeft.getState(), 
-                            m_frontRight.getState(), 
-                            m_backLeft.getState(), 
-                            m_backRight.getState());
+                            modules[0].getState(), 
+                            modules[1].getState(), 
+                            modules[2].getState(), 
+                            modules[3].getState());
   
       // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
       // a real robot, this must be calculated based either on latency or timestamps.
