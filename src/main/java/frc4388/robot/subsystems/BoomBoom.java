@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.ShooterTables;
 import frc4388.utility.Gains;
-import frc4388.utility.Trims;
 import frc4388.utility.controller.IHandController;
 
 public class BoomBoom extends SubsystemBase {
@@ -127,7 +126,7 @@ public void setShooterGains() {
     //Controls a motor with the output of the BangBang controller
     //Controls a motor with the output of the BangBang conroller and a feedforward
     //Shrinks the feedforward slightly to avoid over speeding the shooter
-    motor.set(controller.calculate(encoder.getRate(), setpoint) + 0.9 * feedforward.calculate(setpoint)); */
+    m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel)); */
   
   
   }

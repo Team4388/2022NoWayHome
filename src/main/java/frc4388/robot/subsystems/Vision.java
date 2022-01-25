@@ -6,9 +6,10 @@ package frc4388.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj2.command.commandBase;
-import frc4388.robot.constants.VisionConstants;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc4388.robot.Constants.VisionConstants;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Hood;
@@ -35,14 +36,11 @@ public static double fireAngle;
 public double m_hoodTrim;
 public double m_turretTrim;
 
-LimeLight m_limeLight;
-
-public TrackTarget(ShooterAim aimSubsystem, LimeLight limeLight) {
-  m_turret = turretSubsystem;
-  m_boomBoom = m_turret.m_turretSubsystem;
+public Vision(Turret aimSubsystem, BoomBoom boomBoom) {
+  m_turret = aimSubsystem;
+  m_boomBoom = boomBoom;
   m_hood = m_boomBoom.m_hoodSubsystem;
-  m_limeLight = limeLight;
-  addRequirements(m_turret);
+  //addRequirements(m_turret);
   limeOff();
   changePipeline(0);
   NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0);
@@ -50,9 +48,9 @@ public TrackTarget(ShooterAim aimSubsystem, LimeLight limeLight) {
 }
 
 public void track(){
-  target = getV()
-  xAngle = getX()
-  yAngle = getY()
+  target = getV();
+  xAngle = getX();
+  yAngle = getY();
 
   //find distance
   distance = (VisionConstants.TARGET_HEIGHT) / Math.tan((VisionConstants.LIME_ANGLE + yAngle) * (Math.PI / 180));
@@ -68,10 +66,10 @@ public void track(){
       turnAmount = 0.1;
     }
     else if (turnAmount < 0 && turnAmount > -0.1){
-        turnAmount = -0.1
+        turnAmount = -0.1;
     }
   }
-  m_turret.runShooterWithInput(-turnAmount);
+  m_turret.turnWithJoystick(-turnAmount);
 
   SmartDashboard.putNumber("Disance to Target", realDistance);
 

@@ -106,14 +106,19 @@ public final class Constants {
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID =; //"//
   
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(x,y,z,a,b);//x,y,z,a,b are not actual values, fix later
+    /* Hood Constants */
+    public static final int SHOOTER_ANGLE_ADJUST_ID = 10;
+    public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; //TODO: Find
+    public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; //TODO: Find
 
-
-    public static final class VisionConstants {
-      public static final double TURN_P_VALUE = "unknown" // needs to be figured out after testing
-      public static final double X_ANGLE_ERROR = "alsoUnknown" //""//
-      public static final double TURN_P_VALUE = "alsoAlsoUnknown" //""//
-      public static final double GRAV = "alsoAlsoAlsoUnknown" //""//
-      public static final double TARGET_HEIGHT = "alsoAlsoAlsoAlsoUnknown" //""//
+  }
+  public static final class VisionConstants {
+      public static final double TURN_P_VALUE = 0.8;
+      public static final double X_ANGLE_ERROR = 0.5;
+      public static final double GRAV = 385.83;
+      public static final double TARGET_HEIGHT = 67.5;
+      public static final double FOV = 29.8; //Field of view limelight
+      public static final double LIME_ANGLE = 24.7;
       
 
 
@@ -123,6 +128,4 @@ public final class Constants {
 
 
     }
-
-  }
 }
