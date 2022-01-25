@@ -82,13 +82,13 @@ public final class Constants {
     public static final int GYRO_ID = -1;
 
     // TODO Update this stuff too
-    public static final double UPPER_ARM_LENGTH = 50; // Units should be in cm
-    public static final double LOWER_ARM_LENGTH = 50;
+    public static final double UPPER_ARM_LENGTH = 26; // Units should be in cm
+    public static final double LOWER_ARM_LENGTH = 27;
 
-    public static final double MAX_ARM_LENGTH = 100;
-    public static final double MIN_ARM_LENGTH = 0;
+    public static final double MAX_ARM_LENGTH = 53;
+    public static final double MIN_ARM_LENGTH = 1;
     
-    public static final double MOVE_SPEED = .2; // cm per second
+    public static final double MOVE_SPEED = .1; // cm per second
 
     public static final double SHOULDER_RESTING_ANGLE = 0;
     public static final double ELBOW_RESTING_ANGLE = 0;
@@ -100,8 +100,8 @@ public final class Constants {
     public static final int ELBOW_SLOT_IDX = 0;
     public static final int ELBOW_PID_LOOP_IDX = 1;
 
-    public static final Gains SHOULDER_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
-    public static final Gains ELBOW_GAINS = new Gains(1.0, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOULDER_GAINS = new Gains(.4, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains ELBOW_GAINS = new Gains(.4, 0.0, 0.0, 0.0, 0, 1.0);
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
   }

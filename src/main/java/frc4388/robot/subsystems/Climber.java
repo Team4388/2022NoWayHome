@@ -23,6 +23,9 @@ public class Climber extends SubsystemBase {
   private WPI_TalonFX m_shoulder;
   private WPI_TalonFX m_elbow;
 
+  private double m_shoulderOffset;
+  private double m_elbowOffset;
+
   private WPI_PigeonIMU m_gyro;
   private boolean m_groundRelative;
 
@@ -38,6 +41,9 @@ public class Climber extends SubsystemBase {
     m_elbow.setNeutralMode(NeutralMode.Brake);
 
     setClimberGains();
+
+    m_shoulderOffset = m_shoulder.getSelectedSensorPosition();
+    m_elbowOffset = m_elbow.getSelectedSensorPosition();
 
     if(groundRelative)
       m_gyro = gyro;
@@ -101,24 +107,24 @@ public class Climber extends SubsystemBase {
     double elbowAngle = Math.acos((Math.pow(ClimberConstants.LOWER_ARM_LENGTH, 2) + Math.pow(ClimberConstants.UPPER_ARM_LENGTH, 2) - Math.pow(mag, 2)) /
       (2.d * ClimberConstants.LOWER_ARM_LENGTH * ClimberConstants.UPPER_ARM_LENGTH));
     //elbowAngle = Math.PI - elbowAngle;
-    System.out.println("sa1: " + shoulderAngle);
-    System.out.println("ea1: " + elbowAngle);
+    // System.out.println("sa1: " + shoulderAngle);
+    // System.out.println("ea1: " + elbowAngle);
   
     // If the climber is resting on the robot base, rotate the upper arm in the direction of the target
     if(shoulderAngle <= ClimberConstants.SHOULDER_RESTING_ANGLE) {
       shoulderAngle = ClimberConstants.SHOULDER_RESTING_ANGLE;
       double xDiff = xTarget - ClimberConstants.LOWER_ARM_LENGTH;
-      System.out.println("xDiff: " + xDiff);
+      // System.out.println("xDiff: " + xDiff);
   
       elbowAngle = Math.atan(-yTarget / xDiff);
-      System.out.println("ea2: " + elbowAngle);
+      // System.out.println("ea2: " + elbowAngle);
       if(elbowAngle < 0) {
         elbowAngle = Math.PI - Math.abs(elbowAngle);
       }
 
       if(elbowAngle < ClimberConstants.ELBOW_RESTING_ANGLE)
         elbowAngle = ClimberConstants.ELBOW_RESTING_ANGLE;
-      System.out.println("ea3: " + elbowAngle);
+      // System.out.println("ea3: " + elbowAngle);
   
       // Deal with negative wraparound
       // if(xDiff >= 0.d)
@@ -165,6 +171,9 @@ public class Climber extends SubsystemBase {
     double shoulderPosition = (shoulderAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
     double elbowPosition = (elbowAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
 
+    shoulderPosition += m_shoulderOffset;
+    elbowPosition += m_elbowOffset;
+
     m_shoulder.set(TalonFXControlMode.Position, shoulderPosition);
     m_elbow.set(TalonFXControlMode.Position, elbowPosition);
   }
@@ -177,23 +186,23 @@ public class Climber extends SubsystemBase {
 
     double tiltAngle = m_groundRelative ? getRobotTilt() : 0.d;
 
-    double[] testAngles = getJointAngles(0, 0, 0);
-    System.out.println("origin: " + testAngles[0] + ", " + testAngles[1]);
+    // double[] testAngles = getJointAngles(0, 0, 0);
+    // System.out.println("origin: " + testAngles[0] + ", " + testAngles[1]);
     
-    double[] testAngles2 = getJointAngles(5000, 5000, 0);
-    System.out.println("extended: " + testAngles2[0] + ", " + testAngles2[1]);
+    // double[] testAngles2 = getJointAngles(5000, 5000, 0);
+    // System.out.println("extended: " + testAngles2[0] + ", " + testAngles2[1]);
     
-    double[] testAngles3 = getJointAngles(0, 75, 0);
-    System.out.println("just y: " + testAngles3[0] + ", " + testAngles3[1]);
+    // double[] testAngles3 = getJointAngles(0, 75, 0);
+    // System.out.println("just y: " + testAngles3[0] + ", " + testAngles3[1]);
     
-    double[] testAngles4 = getJointAngles(75, 0, 0);
-    System.out.println("just x: " + testAngles4[0] + ", " + testAngles4[1]);
+    // double[] testAngles4 = getJointAngles(75, 0, 0);
+    // System.out.println("just x: " + testAngles4[0] + ", " + testAngles4[1]);
     
-    double[] testAngles5 = getJointAngles(-75, 0, 0);
-    System.out.println("just x: " + testAngles5[0] + ", " + testAngles5[1]);
+    // double[] testAngles5 = getJointAngles(-75, 0, 0);
+    // System.out.println("just x: " + testAngles5[0] + ", " + testAngles5[1]);
 
-    double[] testAngles6 = getJointAngles(60, 25, 0);
-    System.out.println("just xy: " + testAngles6[0] + ", " + testAngles6[1]);
+    // double[] testAngles6 = getJointAngles(60, 25, 0);
+    // System.out.println("just xy: " + testAngles6[0] + ", " + testAngles6[1]);
 
     double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
     setJointAngles(jointAngles);
