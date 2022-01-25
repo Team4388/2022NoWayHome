@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.RobotMap;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
+import frc4388.utility.RobotLogger;
 
 public class SwerveDrive extends SubsystemBase {
   // private WPI_TalonFX m_leftFrontSteerMotor;
@@ -142,6 +143,7 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
+    RobotLogger.getInstance().put("poseMeters", m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 

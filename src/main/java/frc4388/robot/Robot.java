@@ -4,11 +4,14 @@
 
 package frc4388.robot;
 
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc4388.utility.RobotLogger;
 import frc4388.utility.RobotTime;
 
 /**
@@ -64,6 +67,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_robotTime.endMatchTime();
+    RobotLogger.getInstance().setEnabled(false);
   }
 
   @Override
@@ -96,6 +100,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }
     m_robotTime.startMatchTime();
+    RobotLogger.getInstance().setEnabled(false);
   }
 
   /**
@@ -115,6 +120,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotTime.startMatchTime();
+    RobotLogger.getInstance().setEnabled(true);
   }
 
   /**
@@ -124,6 +130,16 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // m_robotContainer.getDriverController().updateInput();
     // m_robotContainer.getOperatorController().updateInput();
+  }
+
+  @Override
+  public void testInit() {
+    RobotLogger.getInstance().setEnabled(false);
+    try {
+      RobotLogger.getInstance().exportPath();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
