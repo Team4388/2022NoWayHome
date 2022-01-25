@@ -165,6 +165,9 @@ public class Climber extends SubsystemBase {
   }
 
   public void setJointAngles(double shoulderAngle, double elbowAngle) {
+    shoulderAngle = shoulderAngle < ClimberConstants.SHOULDER_RESTING_ANGLE ? ClimberConstants.SHOULDER_RESTING_ANGLE : shoulderAngle;
+    elbowAngle = elbowAngle < ClimberConstants.ELBOW_RESTING_ANGLE ? ClimberConstants.ELBOW_RESTING_ANGLE : elbowAngle;
+
     shoulderAngle = shoulderAngle > ClimberConstants.SHOULDER_MAX_ANGLE ? ClimberConstants.SHOULDER_MAX_ANGLE : shoulderAngle;
     elbowAngle = elbowAngle > ClimberConstants.ELBOW_MAX_ANGLE ? ClimberConstants.ELBOW_MAX_ANGLE : elbowAngle;
 
