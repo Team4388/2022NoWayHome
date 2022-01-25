@@ -46,12 +46,8 @@ public class RobotMap {
   public final CANCoder leftBackEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
   public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
   public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(SwerveDriveConstants.GYRO_ID);
-      
+
   void configureSwerveMotorControllers() {
-    leftFrontEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
-    rightFrontEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
-    leftBackEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
-    rightBackEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
 
     leftFrontSteerMotor.configFactoryDefault();
     leftFrontWheelMotor.configFactoryDefault();
