@@ -23,20 +23,27 @@ import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
 
 public class SwerveDrive extends SubsystemBase {
-  private WPI_TalonFX m_leftFrontSteerMotor;
-  private WPI_TalonFX m_leftFrontWheelMotor;
-  private WPI_TalonFX m_rightFrontSteerMotor;
-  private WPI_TalonFX m_rightFrontWheelMotor;
-  private WPI_TalonFX m_leftBackSteerMotor;
-  private WPI_TalonFX m_leftBackWheelMotor;
-  private WPI_TalonFX m_rightBackSteerMotor;
-  private WPI_TalonFX m_rightBackWheelMotor;
-  private CANCoder m_leftFrontEncoder; 
-  private CANCoder m_rightFrontEncoder;
-  private CANCoder m_leftBackEncoder;
-  private CANCoder m_rightBackEncoder;    
+  // private WPI_TalonFX m_leftFrontSteerMotor;
+  // private WPI_TalonFX m_leftFrontWheelMotor;
+  // private WPI_TalonFX m_rightFrontSteerMotor;
+  // private WPI_TalonFX m_rightFrontWheelMotor;
+  // private WPI_TalonFX m_leftBackSteerMotor;
+  // private WPI_TalonFX m_leftBackWheelMotor;
+  // private WPI_TalonFX m_rightBackSteerMotor;
+  // private WPI_TalonFX m_rightBackWheelMotor;
+  // private CANCoder m_leftFrontEncoder; 
+  // private CANCoder m_rightFrontEncoder;
+  // private CANCoder m_leftBackEncoder;
+  // private CANCoder m_rightBackEncoder;
+
+  private SwerveModule m_leftFront;
+  private SwerveModule m_leftBack;
+  private SwerveModule m_rightFront;
+  private SwerveModule m_rightBack;
+
   double halfWidth = SwerveDriveConstants.WIDTH / 2.d;
   double halfHeight = SwerveDriveConstants.HEIGHT / 2.d;
+
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
 
@@ -60,33 +67,34 @@ public class SwerveDrive extends SubsystemBase {
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
 
-  public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
-  WPI_TalonFX leftBackSteerMotor,WPI_TalonFX leftBackWheelMotor,WPI_TalonFX rightBackSteerMotor,WPI_TalonFX rightBackWheelMotor, CANCoder leftFrontEncoder,
-  CANCoder rightFrontEncoder,
-  CANCoder leftBackEncoder,
-  CANCoder rightBackEncoder, WPI_PigeonIMU gyro)
-  {
-      m_leftFrontSteerMotor = leftFrontSteerMotor;
-      m_leftFrontWheelMotor = leftFrontWheelMotor;
-      m_rightFrontSteerMotor = rightFrontSteerMotor;
-      m_rightFrontWheelMotor = rightFrontWheelMotor;
-      m_leftBackSteerMotor = leftBackSteerMotor;
-      m_leftBackWheelMotor = leftBackWheelMotor;
-      m_rightBackSteerMotor = rightBackSteerMotor;
-      m_rightBackWheelMotor = rightBackWheelMotor;
-      m_leftFrontEncoder = leftFrontEncoder; 
-      m_rightFrontEncoder = rightFrontEncoder;
-      m_leftBackEncoder = leftBackEncoder;
-      m_rightBackEncoder = rightBackEncoder; 
-      m_gyro = gyro;
+  public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack, WPI_PigeonIMU gyro) {
+      // m_leftFrontSteerMotor = leftFrontSteerMotor;
+      // m_leftFrontWheelMotor = leftFrontWheelMotor;
+      // m_rightFrontSteerMotor = rightFrontSteerMotor;
+      // m_rightFrontWheelMotor = rightFrontWheelMotor;
+      // m_leftBackSteerMotor = leftBackSteerMotor;
+      // m_leftBackWheelMotor = leftBackWheelMotor;
+      // m_rightBackSteerMotor = rightBackSteerMotor;
+      // m_rightBackWheelMotor = rightBackWheelMotor;
+      // m_leftFrontEncoder = leftFrontEncoder; 
+      // m_rightFrontEncoder = rightFrontEncoder;
+      // m_leftBackEncoder = leftBackEncoder;
+      // m_rightBackEncoder = rightBackEncoder; 
+    m_leftFront = leftFront;
+    m_leftBack = leftBack;
+    m_rightFront = rightFront;
+    m_rightBack = rightBack;
+    m_gyro = gyro;
 
+      // modules = new SwerveModule[] {
+      //   new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
+      //   new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
+      //   new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
+      //   new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
+      // };
 
-      modules = new SwerveModule[] {
-        new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
-        new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
-        new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
-        new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
-      };
+    modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
+
     m_poseEstimator =
       new SwerveDrivePoseEstimator(
           m_gyro.getRotation2d(),

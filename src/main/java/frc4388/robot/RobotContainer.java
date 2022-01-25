@@ -32,16 +32,7 @@ public class RobotContainer {
 
   /* Subsystems */
   private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-    m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
-    m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
-    m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
-    m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
-    m_robotMap.leftFrontEncoder,
-    m_robotMap.rightFrontEncoder,
-    m_robotMap.leftBackEncoder,
-    m_robotMap.rightBackEncoder,
-    m_robotMap.gyro
-  );
+    m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 

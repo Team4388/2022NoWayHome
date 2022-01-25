@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.subsystems.SwerveModule;
 
 /**
  * Defines and holds all I/O objects on the Roborio. This is useful for unit
@@ -46,6 +47,11 @@ public class RobotMap {
   public final CANCoder leftBackEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
   public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
   public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(SwerveDriveConstants.GYRO_ID);
+
+  public SwerveModule leftFront;
+  public SwerveModule leftBack;
+  public SwerveModule rightFront;
+  public SwerveModule rightBack;
 
   void configureSwerveMotorControllers() {
 
@@ -93,6 +99,11 @@ public class RobotMap {
     leftBackWheelMotor.setNeutralMode(NeutralMode.Coast);
     rightBackSteerMotor.setNeutralMode(NeutralMode.Brake);
     rightBackWheelMotor.setNeutralMode(NeutralMode.Coast);
+
+    leftFront = new SwerveModule(leftFrontWheelMotor, leftFrontSteerMotor, leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
+    leftBack = new SwerveModule(leftBackWheelMotor, leftBackSteerMotor, leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
+    rightFront = new SwerveModule(rightFrontWheelMotor, rightFrontSteerMotor, rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
+    rightBack = new SwerveModule(rightBackWheelMotor, rightBackSteerMotor, rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
 
     // config cancoder as remote encoder for swerve steer motors
     //leftFrontSteerMotor.configRemoteFeedbackFilter(leftFrontEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
