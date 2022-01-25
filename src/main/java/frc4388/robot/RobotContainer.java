@@ -89,8 +89,10 @@ public class RobotContainer {
     new JoystickButton(getDriverJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.RIGHT_BUMPER_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+    
+    new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
 
-
+      .whenPressed(() -> resetOdometry());
 
     /* Operator Buttons */
     // activates "Lit Mode"
@@ -119,6 +121,10 @@ public class RobotContainer {
 
   public Pose2d getOdometry() {
     return m_robotSwerveDrive.getOdometry();
+  }
+
+  public void resetOdometry() {
+    m_robotSwerveDrive.resetOdometry();
   }
   /**
    * Add your docs here.

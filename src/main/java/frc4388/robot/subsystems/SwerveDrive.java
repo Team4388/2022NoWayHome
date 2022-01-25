@@ -11,13 +11,14 @@ import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc4388.robot.RobotMap;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
 
@@ -133,11 +134,6 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
-    // System.out.println(m_gyro.getRotation2d());
-    // System.out.println(modules[0].getState());
-    // System.out.println(modules[1].getState());
-    // System.out.println(modules[2].getState());
-    // System.out.println(modules[3].getState());
     super.periodic();
   }
 
@@ -173,6 +169,13 @@ public class SwerveDrive extends SubsystemBase {
    */
   public Pose2d getOdometry() {
     return m_poseEstimator.getEstimatedPosition();
+  }
+
+  /**
+   * Resets the odometry of the robot to (x=0, y=0, theta=0).
+   */
+  public void resetOdometry() {
+    m_poseEstimator.resetPosition(new Pose2d(0, 0, new Rotation2d(0)), m_gyro.getRotation2d());
   }
 
   /** Updates the field relative position of the robot. */
