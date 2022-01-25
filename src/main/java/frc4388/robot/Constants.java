@@ -94,6 +94,8 @@ public final class Constants {
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 0;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 0; 
+    public static final int SHOOTER_ROTATE_ID = "unknown value" //figure out later
+    public static final int SHOOTER_TURRET_GAINS = "'" //""//
    
     /* Turret Constants */
     //ID
