@@ -165,11 +165,17 @@ public class Climber extends SubsystemBase {
   }
 
   public void setJointAngles(double shoulderAngle, double elbowAngle) {
+    shoulderAngle = shoulderAngle > ClimberConstants.SHOULDER_MAX_ANGLE ? ClimberConstants.SHOULDER_MAX_ANGLE : shoulderAngle;
+    elbowAngle = elbowAngle > ClimberConstants.ELBOW_MAX_ANGLE ? ClimberConstants.ELBOW_MAX_ANGLE : elbowAngle;
+
     // Convert radians to ticks
     System.out.println("angles: " + shoulderAngle + ", " + elbowAngle);
 
     double shoulderPosition = (shoulderAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
     double elbowPosition = (elbowAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
+
+    shoulderAngle *= ClimberConstants.GEAR_BOX_RATIO;
+    elbowAngle *= ClimberConstants.GEAR_BOX_RATIO;
 
     shoulderPosition += m_shoulderOffset;
     elbowPosition += m_elbowOffset;
