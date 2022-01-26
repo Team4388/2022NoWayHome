@@ -3,10 +3,12 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc4388.robot.subsystems;
+
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
@@ -23,11 +25,13 @@ public class Hood extends SubsystemBase {
   public CANSparkMax m_angleAdjustMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
   
   public static Gains m_angleGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
-
-  public CANPIDController m_angleAdjustPIDController = m_angleAdjustMotor.getPIDController();
   public CANEncoder m_angleEncoder = m_angleAdjustMotor.getEncoder();
 
+  public SparkMaxPIDController m_angleAdjustPIDController = m_angleAdjustMotor.getPIDController();
+
   public boolean m_isHoodReady = false;
+
+public double m_fireAngle;
   
   /** Creates a new Hood. */
   public Hood() {
@@ -56,6 +60,7 @@ public class Hood extends SubsystemBase {
 
     m_angleAdjustPIDController.setReference(targetAngle, ControlType.kPosition);
   }
+  
 
   public void runHood(double input) {
     m_angleAdjusterMotor.set(input);
