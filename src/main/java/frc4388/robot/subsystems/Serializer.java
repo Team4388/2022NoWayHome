@@ -32,17 +32,14 @@ public class Serializer extends SubsystemBase{
     setSerializerState(total);
   }
   public void setSerializerState(boolean state) {
-    System.out.println(state);
     setSerializerBeltState(state);
     setSerializerShooterBeltState(state);
     serializerState = state;
   }
 
   public void setSerializerBeltState(boolean state) {
-    System.out.println("oi");
     double serializerBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_BELT_SPEED : 0.d;
     m_serializerBelt.set(serializerBeltSpeed);
-    System.out.println("oi2");
   }
 
   public void setSerializerShooterBeltState(boolean state) {

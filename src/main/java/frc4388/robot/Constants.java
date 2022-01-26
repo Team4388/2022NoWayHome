@@ -81,6 +81,11 @@ public final class Constants {
     public static final int INTAKE_MOTOR = 3;
     public static final int EXTENDER_MOTOR = 6;
   }
+  public static final class StorageConstants {
+    public static final int STORAGE_CAN_ID = -1; //TODO
+    public static final int BEAM_SENSOR_SHOOTER = -1; //TODO
+    public static final int BEAM_SENSOR_INTAKE = -1; //TODO
+  }
   public static final class LEDConstants {
     public static final int LED_SPARK_ID = 0;
 
