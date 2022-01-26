@@ -69,9 +69,8 @@ public void track(){
         turnAmount = -0.1;
     }
   }
-  m_turret.turnWithJoystick(-turnAmount);
 
-  SmartDashboard.putNumber("Disance to Target", realDistance);
+  SmartDashboard.putNumber("Distance to Target", realDistance);
 
 
   //start CSV
