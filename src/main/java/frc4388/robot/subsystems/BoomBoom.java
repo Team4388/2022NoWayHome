@@ -4,6 +4,8 @@
 
 package frc4388.robot.subsystems;
 
+import java.util.Base64.Encoder;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -30,7 +32,7 @@ double input;
 public boolean m_isDrumReady = false;
 public double m_fireVel;
 
-public Trims shooterTrims;
+
 
 public Hood m_hoodSubsystem;
 public Turret m_turretSubsystem;
@@ -126,7 +128,7 @@ public void setShooterGains() {
     //Controls a motor with the output of the BangBang controller
     //Controls a motor with the output of the BangBang conroller and a feedforward
     //Shrinks the feedforward slightly to avoid over speeding the shooter
-    m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel)); */
+    m_shooterFalconLeft.set(controller.calculate(Encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel);
   
   
   }

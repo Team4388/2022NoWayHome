@@ -9,6 +9,7 @@ import java.lang.ModuleLayer.Controller;
 import javax.naming.ldap.Control;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase.MotorType;
@@ -18,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.Gains;
 
-public class Turret<CANSparkMax, CANDigitalInput> extends SubsystemBase {
+public class Turret<CANSparkMax, CANDigitalInput,> extends SubsystemBase {
   private static final String turretMotor = null;
   /** Creates a new Turret. */
   public BoomBoom m_boomBoomSubsystem;
@@ -38,9 +39,9 @@ public class Turret<CANSparkMax, CANDigitalInput> extends SubsystemBase {
   
   
   //Variables
-  public <m_boomBoomRotateMotor> Turret() {
+  public Turret() {
 
-    Object IdleMode;
+    
     m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
     boolean enableLimitSwitch = true;
     m_turretGyro = getGyroInterface();
