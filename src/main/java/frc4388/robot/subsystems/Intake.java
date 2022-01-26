@@ -17,29 +17,27 @@ public class Intake extends SubsystemBase {
 
   private WPI_TalonFX m_intakeMotor;
   private CANSparkMax m_extenderMotor;
-  private SparkMaxLimitSwitch m_inLimit;
-  private SparkMaxLimitSwitch m_outLimit;
+  // private SparkMaxLimitSwitch m_inLimit;
+  // private SparkMaxLimitSwitch m_outLimit;
 
   public boolean toggle;
 
   /** Creates a new Intake. */
-  public Intake(WPI_TalonFX intakeMotor, Spark extenderMotor) {
+  public Intake(WPI_TalonFX intakeMotor, CANSparkMax extenderMotor) {
     m_intakeMotor = intakeMotor;
-    //m_extenderMotor = extenderMotor; 
+    m_extenderMotor = extenderMotor; 
 
     
-    // m_intakeMotor.restoreFactoryDefaults();
-    // m_extenderMotor.restoreFactoryDefaults();
+    m_extenderMotor.restoreFactoryDefaults();
 
     m_intakeMotor.setNeutralMode(NeutralMode.Brake);
-    m_extenderMotor.setIdleMode(IdleMode.kBrake);
     m_intakeMotor.setInverted(false);
     m_extenderMotor.setInverted(true);
     
-    m_inLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_outLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_inLimit.enableLimitSwitch(true);
-    m_outLimit.enableLimitSwitch(true);
+    // m_inLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_outLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_inLimit.enableLimitSwitch(true);
+    // m_outLimit.enableLimitSwitch(true);
   }
 
   @Override
@@ -52,7 +50,8 @@ public class Intake extends SubsystemBase {
   }
 
   public void runExtender(boolean extended) {
-    //m_extenderMotor.set(extended ? 1 : -1);
+    double extenderMotorSpeed = extended ? 0.25d : 0.d;
+    m_extenderMotor.set(extenderMotorSpeed);
   }
 
   public void toggleExtender() {

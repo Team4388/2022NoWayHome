@@ -29,7 +29,7 @@ public class RobotContainer {
   /* RobotMap */
   private final RobotMap m_robotMap = new RobotMap();
 
-  /* Subsystems */
+  /* Subsystems 
   private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
     m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
     m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
@@ -40,7 +40,7 @@ public class RobotContainer {
     m_robotMap.leftBackEncoder,
     m_robotMap.rightBackEncoder
   );
-
+  */
   private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor);
   private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt);
 
@@ -58,9 +58,9 @@ public class RobotContainer {
 
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
-    m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
-            getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+    // m_robotSwerveDrive.setDefaultCommand(
+    //     new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
+    //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
@@ -88,13 +88,13 @@ public class RobotContainer {
         .whenReleased(() -> m_robotIntake.runExtender(false));
 
     // activates "Lit Mode"
-    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
-        .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
-        .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+    // new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+    //     .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
+    //     .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
     
     new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
-        .whenPressed(() -> m_robotSerializer.setSerializerStateWithBeam(true, m_robotSerializer.getBeam()))
-        .whenReleased(() -> m_robotSerializer.setSerializerStateWithBeam(false, m_robotSerializer.getBeam()));
+        .whenPressed(() -> m_robotSerializer.setSerializerState(true))
+        .whenReleased(() -> m_robotSerializer.setSerializerState(false));
   }
 
   /**

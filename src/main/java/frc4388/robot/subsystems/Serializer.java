@@ -4,37 +4,45 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants;
 import edu.wpi.first.wpilibj.DigitalInput;
+import com.revrobotics.CANSparkMax;
 
 public class Serializer extends SubsystemBase{
-  private Spark m_serializerBelt;
-  private Spark m_serializerShooterBelt;
+  private CANSparkMax m_serializerBelt;
+  private CANSparkMax m_serializerShooterBelt;
   private DigitalInput m_serializerBeam;
   private boolean serializerState;
 
-  public Serializer(Spark serializerBelt, Spark serializerShooterBelt) {
+  public Serializer(CANSparkMax serializerBelt, CANSparkMax serializerShooterBelt) {
     m_serializerBelt = serializerBelt;
     m_serializerShooterBelt = serializerShooterBelt;
-    m_serializerBeam = new DigitalInput(Constants.SerializerConstants.SERIALIZER_BELT_BEAM);
+    //m_serializerBeam = new DigitalInput(Constants.SerializerConstants.SERIALIZER_BELT_BEAM);
 
     serializerState = false;
     setSerializerState(serializerState);
+    m_serializerBelt.set(0);
+    m_serializerShooterBelt.set(0);
+    
   }
   public boolean getBeam() {
-    return m_serializerBeam.get();
+    System.out.println("oi");
+    return false;
   }
   public void setSerializerStateWithBeam(boolean ctrlbutter, boolean beambroken) {
     boolean total = ctrlbutter || beambroken;
     setSerializerState(total);
   }
   public void setSerializerState(boolean state) {
+    System.out.println(state);
     setSerializerBeltState(state);
     setSerializerShooterBeltState(state);
     serializerState = state;
   }
 
   public void setSerializerBeltState(boolean state) {
+    System.out.println("oi");
     double serializerBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_BELT_SPEED : 0.d;
     m_serializerBelt.set(serializerBeltSpeed);
+    System.out.println("oi2");
   }
 
   public void setSerializerShooterBeltState(boolean state) {
