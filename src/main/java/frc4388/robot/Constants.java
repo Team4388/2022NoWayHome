@@ -101,7 +101,7 @@ public final class Constants {
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0; //""//
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0; //""//
       
-    }
+    
    
     /* Turret Constants */
     //ID
@@ -113,7 +113,7 @@ public final class Constants {
     public static final int SHOOTER_FALCON_BALLER_ID = 0; //unknown value, fix later//
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; //"//
   
-    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0,0,0,0,0);//x,y,z,a,b are not actual values, fix later
+    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0,0,0,0,0,0);//x,y,z,a,b are not actual values, fix later
     /* Hood Constants */
     public static final int SHOOTER_ANGLE_ADJUST_ID = 10;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; //TODO: Find

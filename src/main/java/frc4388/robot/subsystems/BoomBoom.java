@@ -41,7 +41,7 @@ public Turret m_turretSubsystem;
 public BoomBoom(){
 //Testing purposes resetting gyros
 //resetGryoAngleADj();
-shooterTrims = new Trims(0,0);
+
 }
   /** Creates a new BoomBoom. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
