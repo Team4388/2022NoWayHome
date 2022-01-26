@@ -19,7 +19,11 @@ public class Storage extends SubsystemBase {
   public Storage() {
 
   }
-
+  public void manageStorage() {
+    if (m_beamShooter.get()) {
+      runStorage(1.d);
+    } else { runStorage(0.d); }
+  }
   public void runStorage(double input) {
     m_storageMotor.set(input);
   }
@@ -31,7 +35,7 @@ public class Storage extends SubsystemBase {
   public boolean getBeamIntake(){
     return m_beamIntake.get();
   }
-  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
