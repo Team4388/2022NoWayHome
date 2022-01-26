@@ -8,7 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.SmartDashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
@@ -121,7 +121,7 @@ public void setShooterGains() {
   public void runDrumShooterVelocityPID(double targetVel) {
     m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); //Init
     m_shooterFalconRight.follow(m_shooterFalconLeft);
-    * // New BoomBoom controller stuff 
+    // New BoomBoom controller stuff 
     BangBangController controller = new BangBangController();
     //Controls a motor with the output of the BangBang controller
     //Controls a motor with the output of the BangBang conroller and a feedforward

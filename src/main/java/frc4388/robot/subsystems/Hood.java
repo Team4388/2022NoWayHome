@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc4388.robot.subsystems;
-import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -19,7 +18,7 @@ import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.Gains;
 
 public class Hood extends SubsystemBase {
-  public Shooter m_shooterSubsystem;
+  public BoomBoom m_shooterSubsystem;
   
   public CANSparkMax m_angleAdjustMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
   
