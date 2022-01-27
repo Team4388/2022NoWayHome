@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.VisionConstants;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Turret;
@@ -35,7 +36,7 @@ public static double fireAngle;
 
 public double m_hoodTrim;
 public double m_turretTrim;
-
+public double m_fireAngle;
 public Vision(Turret aimSubsystem, BoomBoom boomBoom) {
   m_turret = aimSubsystem;
   m_boomBoom = boomBoom;

@@ -3,11 +3,12 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc4388.robot.subsystems;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
+
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -20,23 +21,28 @@ import frc4388.utility.Gains;
 public class Hood extends SubsystemBase {
   public BoomBoom m_shooterSubsystem;
   
-  public CANSparkMax m_angleAdjustMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
-  
-  public static Gains m_angleGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
+  public CANSparkMax m_angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
+  public SparkMaxLimitSwitch m_hoodUpLimitSwitch;
+  public SparkMaxLimitSwitch m_hoodDownLimitSwitch;
+  public static Gains m_angleAdjusterGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
+  public RelativeEncoder m_angleEncoder = m_angleAdjusterMotor.getEncoder();
 
-  public CANPIDController m_angleAdjustPIDController = m_angleAdjustMotor.getPIDController();
-  public CANEncoder m_angleEncoder = m_angleAdjustMotor.getEncoder();
-
-  public boolean m_isHoodReady = false;
+  public SparkMaxPIDController m_angleAdjusterPIDController = m_angleAdjusterMotor.getPIDController();
   
+  
+  //public boolean m_isHoodReady = false;
+
+public double m_fireAngle;
+  
+
   /** Creates a new Hood. */
   public Hood() {
-    m_angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
+     m_angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
 
-    m_hoodUpLimit = m_angleAdjusterMotor.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-    m_hoodDownLimit = m_angleAdjusterMotor.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
-    m_hoodUpLimit.enableLimitSwitch(true);
-    m_hoodDownLimit.enableLimitSwitch(true);
+    m_hoodUpLimitSwitch = m_angleAdjusterMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_hoodDownLimitSwitch = m_angleAdjusterMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_hoodUpLimitSwitch.enableLimitSwitch(true);
+    m_hoodDownLimitSwitch.enableLimitSwitch(true);
   }
     
 
@@ -47,15 +53,16 @@ public class Hood extends SubsystemBase {
   public void runAngleAdjustPID(double targetAngle) 
   {
     //Set PID Coefficients
-    m_angleAdjustPIDController.setP(m_angleAdjusterGains.m_kP);
-    m_angleAdjustPIDController.setI(m_angleAdjusterGains.m_kI);
+    m_angleAdjusterPIDController.setP(m_angleAdjusterGains.m_kP);
+    m_angleAdjusterPIDController.setI(m_angleAdjusterGains.m_kI);
     m_angleAdjusterPIDController.setD(m_angleAdjusterGains.m_kD);
-    m_angleAdjusterPIDController.setIZone(m_angleAdjustGains.m_IZone);
-    m_angleAdjusterPIDController.setFF(m_angleAdjustGains.m_kF);
+    m_angleAdjusterPIDController.setIZone(m_angleAdjusterGains.m_kIzone);
+    m_angleAdjusterPIDController.setFF(m_angleAdjusterGains.m_kF);
     m_angleAdjusterPIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_angleAdjusterGains.m_kPeakOutput);
 
-    m_angleAdjustPIDController.setReference(targetAngle, ControlType.kPosition);
+    m_angleAdjusterPIDController.setReference(targetAngle, ControlType.kPosition);
   }
+  
 
   public void runHood(double input) {
     m_angleAdjusterMotor.set(input);

@@ -32,8 +32,6 @@ double input;
 public boolean m_isDrumReady = false;
 public double m_fireVel;
 
-
-
 public Hood m_hoodSubsystem;
 public Turret m_turretSubsystem;
 
@@ -43,7 +41,7 @@ public Turret m_turretSubsystem;
 public BoomBoom(){
 //Testing purposes resetting gyros
 //resetGryoAngleADj();
-
+//shooterTrims = new Trims(0,0);
 }
   /** Creates a new BoomBoom. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
@@ -128,7 +126,7 @@ public void setShooterGains() {
     //Controls a motor with the output of the BangBang controller
     //Controls a motor with the output of the BangBang conroller and a feedforward
     //Shrinks the feedforward slightly to avoid over speeding the shooter
-    m_shooterFalconLeft.set(controller.calculate(Encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel);
+    m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
   
   
   }
