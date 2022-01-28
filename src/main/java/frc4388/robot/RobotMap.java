@@ -4,10 +4,15 @@
 
 package frc4388.robot;
 
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.ClimberConstants;
@@ -102,6 +107,9 @@ public class RobotMap {
   public final WPI_PigeonIMU gyro = null;//new WPI_PigeonIMU(ClimberConstants.GYRO_ID); // TODO
 
   /* Hooks Subsystem */
-  //public final Servo leftHook = new Servo(HooksConstants.LEFT_HOOK_ID);
-  //public final Servo rightHook = new Servo(HooksConstants.RIGHT_HOOK_ID);
+  public final CANSparkMax leftHook = new CANSparkMax(HooksConstants.LEFT_HOOK_ID, MotorType.kBrushless);
+  public final CANSparkMax rightHook = new CANSparkMax(HooksConstants.RIGHT_HOOK_ID, MotorType.kBrushless);
+
+  public final DigitalInput leftHookLimit = new DigitalInput(HooksConstants.LEFT_LIMIT_ID);
+  public final DigitalInput rightHookLimit = new DigitalInput(HooksConstants.RIGHT_LIMIT_ID);
 }

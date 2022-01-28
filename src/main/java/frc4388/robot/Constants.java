@@ -114,9 +114,13 @@ public final class Constants {
   public static final class HooksConstants {
     public static final int LEFT_HOOK_ID = -1;
     public static final int RIGHT_HOOK_ID = -1;
+    public static final int LEFT_LIMIT_ID = -1;
+    public static final int RIGHT_LIMIT_ID = -1;
 
     public static final double OPEN_POSITION = 0;
     public static final double CLOSE_POSITION = 0;
+
+    public static final double CALIBRATION_SPEED = 0;
   }
   /**
    * The OIConstants class contains the ID for the XBox controllers
