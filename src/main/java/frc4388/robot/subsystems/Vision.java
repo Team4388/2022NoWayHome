@@ -57,35 +57,35 @@ public void track(){
   distance = (VisionConstants.TARGET_HEIGHT) / Math.tan((VisionConstants.LIME_ANGLE + yAngle) * (Math.PI / 180));
   realDistance = (1.09 * distance) - 12.8;
 
-  if (target == 1.0) { //checks if target is in view
-    //aims left and right
-    turnAmount = ((xAngle / VisionConstants.FOV) * VisionConstants.TURN_P_VALUE);
-    if (Math.abs(xAngle) < VisionConstants.X_ANGLE_ERROR) {
-      turnAmount = 0;
-    } 
-    else if (turnAmount > 0 && turnAmount < 0.1){
-      turnAmount = 0.1;
-    }
-    else if (turnAmount < 0 && turnAmount > -0.1){
-        turnAmount = -0.1;
-    }
-  }
+  // if (target == 1.0) { //checks if target is in view
+  //   //aims left and right
+  //   turnAmount = ((xAngle / VisionConstants.FOV) * VisionConstants.TURN_P_VALUE);
+  //   if (Math.abs(xAngle) < VisionConstants.X_ANGLE_ERROR) {
+  //     turnAmount = 0;
+  //   } 
+  //   else if (turnAmount > 0 && turnAmount < 0.1){
+  //     turnAmount = 0.1;
+  //   }
+  //   else if (turnAmount < 0 && turnAmount > -0.1){
+  //       turnAmount = -0.1;
+  //   }
+  // }
 
   SmartDashboard.putNumber("Distance to Target", realDistance);
 
 
-  //start CSV
+  // //start CSV
 
-  fireVel = m_boomBoom.m_shooterTable.getVelocity(realDistance);
-  fireAngle = m_boomBoom.m_shooterTable.getHood(realDistance);
-  //fire angle unknown so far
-  //end of CSV
+  // fireVel = m_boomBoom.m_shooterTable.getVelocity(realDistance);
+  // fireAngle = m_boomBoom.m_shooterTable.getHood(realDistance);
+  // //fire angle unknown so far
+  // //end of CSV
 
-  m_boomBoom.m_fireVel = fireVel;
-  m_hood.m_fireAngle = fireAngle;
-  m_turret.m_targetDistance = distance;
+  // m_boomBoom.m_fireVel = fireVel;
+  // m_hood.m_fireAngle = fireAngle;
+  // m_turret.m_targetDistance = distance;
 
-  checkFinished();
+  // checkFinished();
 }
 
 public void checkFinished(){
