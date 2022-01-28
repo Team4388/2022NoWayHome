@@ -47,7 +47,7 @@ public class RobotContainer {
   private final BoomBoom m_robotBoomBoom = new BoomBoom();
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret();
-  private final Vision m_robotVison = new Vision();
+  private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -70,10 +70,14 @@ public class RobotContainer {
 
 
     //Turret default command
+
+    m_robotTurret.setDefaultCommand(
+      new RunCommand(() -> m_robotTurret.runShooterWithInput(getOperatorController().getLeftXAxis()), m_robotTurret)
+    );
     
 
     m_robotTurret.setDefaultCommand(
-        new RunCommand(() -> m_robotTurret.aimToCenter()));{}
+        new RunCommand(() -> m_robotTurret.aimToCenter()));
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by instantiating a {@link GenericHID} or one of its subclasses
