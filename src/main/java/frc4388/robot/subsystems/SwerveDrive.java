@@ -17,6 +17,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.RobotMap;
 import frc4388.robot.Constants.SwerveDriveConstants;
@@ -140,6 +141,18 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     //System.err.println(m_gyro.getFusedHeading() +"    aaa");
     updateOdometry();
+    SmartDashboard.putNumber("Pigeon Absolute Compass Heading", m_gyro.getAbsoluteCompassHeading());
+    SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading());
+    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
+    SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
+    SmartDashboard.putNumber("Pigeon Compass Heading", m_gyro.getCompassHeading());
+
+    // m_gyro.getAbsoluteCompassHeading();
+    // m_gyro.getYaw();
+    // m_gyro.getRotation2d();
+    // m_gyro.getAngle();
+    // m_gyro.getCompassHeading();
+    // m_gyro.getFusedHeading();
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
     super.periodic();
