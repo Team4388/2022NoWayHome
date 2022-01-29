@@ -13,11 +13,14 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.ShooterTables;
 import frc4388.utility.Gains;
 import frc4388.utility.controller.IHandController;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.*;
 
 public class BoomBoom extends SubsystemBase {
 public WPI_TalonFX m_shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_BALLER_ID);
@@ -37,6 +40,12 @@ public double m_fireVel;
 public Hood m_hoodSubsystem;
 public Turret m_turretSubsystem;
 
+
+
+SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(69, 42, 0); //get real values later
+
+
+
 /*
 * Creates new BoomBoom subsystem, has drum shooter and angle adjuster
 */
@@ -44,6 +53,9 @@ public BoomBoom(){
 //Testing purposes resetting gyros
 //resetGryoAngleADj();
 //shooterTrims = new Trims(0,0);
+feedforward.calculate(15, 20); // feedforward.calculate(velocity, acceleration);
+
+
 }
   /** Creates a new BoomBoom. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
@@ -61,6 +73,7 @@ public BoomBoom(){
       m_shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
       m_shooterFalconLeft.configClosedLoopPeriod(0, closedLoopTimeMs, ShooterConstants.SHOOTER_TIMEOUT_MS);
       m_shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
+      
       
       //RIGHT FALCON
       m_shooterFalconRight.configFactoryDefault();
