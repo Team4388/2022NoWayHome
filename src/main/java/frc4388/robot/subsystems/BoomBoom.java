@@ -6,12 +6,14 @@ package frc4388.robot.subsystems;
 
 import java.io.Console;
 import java.util.Base64.Encoder;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.ShooterTables;
@@ -41,6 +43,42 @@ public Turret m_turretSubsystem;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(69, 42, 0); //get real values later
+
+
+
 /*
 * Creates new BoomBoom subsystem, has drum shooter and angle adjuster
 */
@@ -48,11 +86,15 @@ public BoomBoom(){
 //Testing purposes resetting gyros
 //resetGryoAngleADj();
 //shooterTrims = new Trims(0,0);
+feedforward.calculate(15, 20); // feedforward.calculate(velocity, acceleration);
+
+
 }
   /** Creates a new BoomBoom. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
   m_shooterFalconLeft = shooterFalconLeft;
   m_shooterFalconRight = shooterFalconRight;
+  
     int closedLoopTimeMs = 1;
       //LEFT FALCON
       m_shooterFalconLeft.configFactoryDefault();
@@ -65,6 +107,7 @@ public BoomBoom(){
       m_shooterFalconLeft.configClosedLoopPeriod(0, closedLoopTimeMs, ShooterConstants.SHOOTER_TIMEOUT_MS);
       m_shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
 
+      
       
       //RIGHT FALCON
       m_shooterFalconRight.configFactoryDefault();
@@ -131,12 +174,9 @@ public void setShooterGains() {
     //Controls a motor with the output of the BangBang controller
     //Controls a motor with the output of the BangBang conroller and a feedforward
     //Shrinks the feedforward slightly to avoid over speeding the shooter
-    m_shooterFalconLeft.set(controller.calculate(Encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
-  
+    
     // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
     m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
-    System.err.println(targetVel);
-    m_shooterFalconLeft.set(controller.calculate(m_shooterFalconLeft.getSelectedSensorVelocity(), targetVel) + 0.9 * feedforward.calculate(targetVel));
     
   
   }
