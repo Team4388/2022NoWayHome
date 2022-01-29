@@ -17,6 +17,7 @@ import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.ShooterTables;
 import frc4388.utility.Gains;
 import frc4388.utility.controller.IHandController;
+import com.revrobotics.RelativeEncoder;
 
 public class BoomBoom extends SubsystemBase {
 public WPI_TalonFX m_shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_BALLER_ID);
@@ -63,6 +64,7 @@ public BoomBoom(){
       m_shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
       m_shooterFalconLeft.configClosedLoopPeriod(0, closedLoopTimeMs, ShooterConstants.SHOOTER_TIMEOUT_MS);
       m_shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
+
       
       //RIGHT FALCON
       m_shooterFalconRight.configFactoryDefault();
@@ -134,5 +136,8 @@ public void setShooterGains() {
     // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
     m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
     System.err.println(targetVel);
+    m_shooterFalconLeft.set(controller.calculate(m_shooterFalconLeft.getSelectedSensorVelocity(), targetVel) + 0.9 * feedforward.calculate(targetVel));
+    
+  
   }
 }
