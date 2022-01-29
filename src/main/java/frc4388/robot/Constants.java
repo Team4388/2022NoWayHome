@@ -94,9 +94,9 @@ public final class Constants {
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 0;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 0; 
-    public static final int SHOOTER_ROTATE_ID = 31; //"unknown value" //figure out later
+    public static final int SHOOTER_ROTATE_ID = 0; //"unknown value" //figure out later
     public static final int TURRET_RIGHT_SOFT_LIMIT = 0; //""//
-    public static final double TURRET_SPEED_MULTIPLIER = 0.1d; //""//
+    public static final int TURRET_SPEED_MULTIPLIER = 0; //""//
     public static final int DEGREES_PER_ROT = 0; //""//
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0; //""//
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0; //""//
@@ -105,7 +105,7 @@ public final class Constants {
    
     /* Turret Constants */
     //ID
-    public static final int TURRET_MOTOR_CAN_ID = 30;
+    public static final int TURRET_MOTOR_CAN_ID = 0;
     public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
