@@ -4,8 +4,7 @@
 
 package frc4388.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.VecBuilder;
@@ -19,23 +18,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc4388.robot.RobotMap;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
 
 public class SwerveDrive extends SubsystemBase {
-  // private WPI_TalonFX m_leftFrontSteerMotor;
-  // private WPI_TalonFX m_leftFrontWheelMotor;
-  // private WPI_TalonFX m_rightFrontSteerMotor;
-  // private WPI_TalonFX m_rightFrontWheelMotor;
-  // private WPI_TalonFX m_leftBackSteerMotor;
-  // private WPI_TalonFX m_leftBackWheelMotor;
-  // private WPI_TalonFX m_rightBackSteerMotor;
-  // private WPI_TalonFX m_rightBackWheelMotor;
-  // private CANCoder m_leftFrontEncoder; 
-  // private CANCoder m_rightFrontEncoder;
-  // private CANCoder m_leftBackEncoder;
-  // private CANCoder m_rightBackEncoder;
 
   private SwerveModule m_leftFront;
   private SwerveModule m_leftBack;
@@ -47,14 +33,10 @@ public class SwerveDrive extends SubsystemBase {
 
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
-
   Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(halfWidth));
   Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(-halfWidth));
   Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
   Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
-  
-
-  // setSwerveGains();
       
   private SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
@@ -141,20 +123,14 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     //System.err.println(m_gyro.getFusedHeading() +"    aaa");
     updateOdometry();
-    SmartDashboard.putNumber("Pigeon Absolute Compass Heading", m_gyro.getAbsoluteCompassHeading());
     SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading());
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
-    SmartDashboard.putNumber("Pigeon Compass Heading", m_gyro.getCompassHeading());
 
-    // m_gyro.getAbsoluteCompassHeading();
-    // m_gyro.getYaw();
-    // m_gyro.getRotation2d();
-    // m_gyro.getAngle();
-    // m_gyro.getCompassHeading();
-    // m_gyro.getFusedHeading();
-    // m_gyro.setFusedHeadingToCompass();
-    // m_gyro.setYawToCompass();
+    // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+
     super.periodic();
   }
 
