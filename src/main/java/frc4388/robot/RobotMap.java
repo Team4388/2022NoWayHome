@@ -109,7 +109,4 @@ public class RobotMap {
   /* Hooks Subsystem */
   public final CANSparkMax leftHook = new CANSparkMax(HooksConstants.LEFT_HOOK_ID, MotorType.kBrushless);
   public final CANSparkMax rightHook = new CANSparkMax(HooksConstants.RIGHT_HOOK_ID, MotorType.kBrushless);
-
-  public final DigitalInput leftHookLimit = new DigitalInput(HooksConstants.LEFT_LIMIT_ID);
-  public final DigitalInput rightHookLimit = new DigitalInput(HooksConstants.RIGHT_LIMIT_ID);
 }

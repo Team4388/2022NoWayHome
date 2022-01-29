@@ -45,7 +45,7 @@ public class RobotContainer {
 
   private final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
 
-  private final Hooks m_hooks = new Hooks(m_robotMap.leftHook, m_robotMap.rightHook, m_robotMap.leftHookLimit, m_robotMap.rightHookLimit);
+  private final Hooks m_hooks = new Hooks(m_robotMap.leftHook, m_robotMap.rightHook);
 
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
