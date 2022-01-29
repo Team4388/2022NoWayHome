@@ -4,8 +4,10 @@
 
 package frc4388.robot.subsystems;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -38,14 +40,15 @@ public class SwerveDrive extends SubsystemBase {
   Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
   Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
       
-  private SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+  public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
   public SwerveModule[] modules;
   public WPI_PigeonIMU m_gyro;
+  protected FusionStatus fstatus = new FusionStatus();
 
   /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
   below are robot specific, and should be tuned. */
-  private SwerveDrivePoseEstimator m_poseEstimator;
+  public SwerveDrivePoseEstimator m_poseEstimator;
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
@@ -111,11 +114,15 @@ public class SwerveDrive extends SubsystemBase {
               fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
-       SwerveDriveKinematics.desaturateWheelSpeeds(states, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
-       for (int i = 0; i < states.length; i++) {
-          SwerveModule module = modules[i];
-          SwerveModuleState state = states[i];
-          module.setDesiredState(state, ignoreAngles);
+      setModuleStates(states);
+  }
+
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
+    for (int i = 0; i < desiredStates.length; i++) {
+      SwerveModule module = modules[i];
+      SwerveModuleState state = desiredStates[i];
+      module.setDesiredState(state, ignoreAngles);
     }
   }
   
@@ -123,9 +130,11 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     //System.err.println(m_gyro.getFusedHeading() +"    aaa");
     updateOdometry();
-    SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading());
+    SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
+    SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
+    SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
 
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
@@ -171,8 +180,8 @@ public class SwerveDrive extends SubsystemBase {
   /**
    * Resets the odometry of the robot to (x=0, y=0, theta=0).
    */
-  public void resetOdometry() {
-    m_poseEstimator.resetPosition(new Pose2d(0, 0, new Rotation2d(0)), m_gyro.getRotation2d());
+  public void resetOdometry(Pose2d pose) {
+    m_poseEstimator.resetPosition(pose, m_gyro.getRotation2d());
   }
 
   /** Updates the field relative position of the robot. */

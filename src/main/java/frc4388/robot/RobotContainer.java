@@ -5,11 +5,24 @@
 package frc4388.robot;
 
 
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc4388.robot.Constants.*;
@@ -83,7 +96,7 @@ public class RobotContainer {
     
     new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
 
-      .whenPressed(() -> resetOdometry());
+      .whenPressed(() -> zeroOdometry(new Pose2d(0, 0, new Rotation2d(0))));
 
     /* Operator Buttons */
     // activates "Lit Mode"
@@ -99,8 +112,41 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // no auto
-    return new InstantCommand();
+    // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wiki
+
+    TrajectoryConfig config = new TrajectoryConfig(1.0, 1.0);
+
+    // PATH PLANNER TRAJECTORY IMPLEMENTATION
+    
+    // PathPlannerTrajectory testFirstPath = PathPlanner.loadPath("First Test Path", 1.0, 1.0); 
+    // PPSwerveControllerCommand command = new PPSwerveControllerCommand(
+    //   testFirstPath, 
+    //   pose, 
+    //   SwerveDrive.m_kinematics, 
+    //   new PIDController(0.5, 0, 0), 
+    //   new PIDController(0.5, 0, 0), 
+    //   new ProfiledPIDController(0.5, 0, 0, new TrapezoidProfile.Constraints(1.0, 1.0)), 
+    //   outputModuleStates, 
+    //   m_robotSwerveDrive
+    // );
+
+    // WPILIB TRAJECTORY IMPLEMENTATION
+    Trajectory testFirstPath = PathPlanner.loadPath("First Test Path", 1.0, 1.0);
+    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+      testFirstPath,
+      m_robotSwerveDrive::getOdometry,
+      m_robotSwerveDrive.m_kinematics, 
+      new PIDController(0.5, 1.0, 1.0), 
+      new PIDController(0.5, 1.0, 1.0), 
+      new ProfiledPIDController(0.5, 1.0, 1.0, new TrapezoidProfile.Constraints(1.0, 1.0)), 
+      m_robotSwerveDrive::setModuleStates, 
+      m_robotSwerveDrive
+    );
+
+    m_robotSwerveDrive.resetOdometry(testFirstPath.getInitialPose());
+    return swerveControllerCommand.andThen(() -> m_robotSwerveDrive.driveWithInput(new double[] {0, 0}, 0, true));
+
+    //return new InstantCommand();
   }
 
   /**
@@ -114,8 +160,8 @@ public class RobotContainer {
     return m_robotSwerveDrive.getOdometry();
   }
 
-  public void resetOdometry() {
-    m_robotSwerveDrive.resetOdometry();
+  public void zeroOdometry(Pose2d pose) {
+    m_robotSwerveDrive.resetOdometry(pose);
   }
   /**
    * Add your docs here.
