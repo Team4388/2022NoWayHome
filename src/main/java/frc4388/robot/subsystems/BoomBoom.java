@@ -19,7 +19,6 @@ import frc4388.utility.ShooterTables;
 import frc4388.utility.Gains;
 import frc4388.utility.controller.IHandController;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.*;
 
 public class BoomBoom extends SubsystemBase {
 public WPI_TalonFX m_shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_BALLER_ID);
@@ -71,6 +70,7 @@ feedforward.calculate(15, 20); // feedforward.calculate(velocity, acceleration);
       m_shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
       m_shooterFalconLeft.configClosedLoopPeriod(0, closedLoopTimeMs, ShooterConstants.SHOOTER_TIMEOUT_MS);
       m_shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
+
       
       
       //RIGHT FALCON
@@ -139,8 +139,8 @@ public void setShooterGains() {
     //Controls a motor with the output of the BangBang controller
     //Controls a motor with the output of the BangBang conroller and a feedforward
     //Shrinks the feedforward slightly to avoid over speeding the shooter
-    m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
-  
+    m_shooterFalconLeft.set(controller.calculate(m_shooterFalconLeft.getSelectedSensorVelocity(), targetVel) + 0.9 * feedforward.calculate(targetVel));
+    
   
   }
 }
