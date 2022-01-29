@@ -17,8 +17,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -30,6 +34,7 @@ import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
+import frc4388.utility.controller.DeadbandedRawXboxController;
 import frc4388.utility.controller.DeadbandedXboxController;
 
 /**
@@ -62,10 +67,9 @@ public class RobotContainer {
     // drives the swerve drive with a two-axis input from the driver controller
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
-          clampJoystickAxes(
               getDriverController().getLeftX(),
-              getDriverController().getLeftY()), 
-          -getDriverController().getRightX(), 
+              getDriverController().getLeftY(),
+              -getDriverController().getRightX(), 
           true),
            m_robotSwerveDrive));
 
@@ -83,7 +87,7 @@ public class RobotContainer {
     /* Driver Buttons */
     new JoystickButton(getDriverController(), XboxController.Button.kY.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.Y_BUTTON)
-      .whenPressed(() -> m_robotSwerveDrive.m_gyro.reset());
+      .whenPressed(m_robotSwerveDrive.m_gyro::reset);
 
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
@@ -145,7 +149,7 @@ public class RobotContainer {
     );
 
     m_robotSwerveDrive.resetOdometry(testFirstPath.getInitialPose());
-    return swerveControllerCommand.andThen(() -> m_robotSwerveDrive.driveWithInput(new double[] {0, 0}, 0, true));
+    return swerveControllerCommand.andThen(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, true));
 
     //return new InstantCommand();
   }
@@ -169,14 +173,5 @@ public class RobotContainer {
    */
   public XboxController getOperatorController() {
     return m_operatorXbox;
-  }
-
-  public static double[] clampJoystickAxes(double x, double y) {
-    double square_mag = x * x + y * y;
-    if (square_mag > 1.d) {
-      double mag = Math.sqrt(square_mag);
-      return new double[] { x / mag, y / mag };
-    }
-    return new double[] { x, y };
   }
 }

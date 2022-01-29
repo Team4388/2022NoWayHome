@@ -1,13 +1,15 @@
 {
   "counts per rotation": 2048.0,
-  "encoder type": "CANCoder",
+  "encoder type": "Built-in",
   "encoding": false,
   "gearing denominator": 1.0,
-  "gearing numerator": 1.0,
+  "gearing numerator": 5.12,
   "gyro": "Pigeon",
-  "gyro ctor": "1",
-  "is drivetrain": true,
+  "gyro ctor": "14",
+  "is drivetrain": false,
   "motor controllers": [
+    "TalonFX",
+    "TalonFX",
     "TalonFX",
     "TalonFX"
   ],
@@ -19,22 +21,30 @@
   ],
   "primary motor ports": [
     3,
-    7
+    5,
+    7,
+    9
   ],
   "primary motors inverted": [
+    false,
+    false,
     false,
     false
   ],
   "secondary encoder inverted": false,
   "secondary encoder ports": [
     2,
-    11
+    13
   ],
   "secondary motor ports": [
     5,
-    9
+    9,
+    5,
+    7
   ],
   "secondary motors inverted": [
+    false,
+    false,
     false,
     false
   ],

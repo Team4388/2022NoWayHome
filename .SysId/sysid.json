@@ -1,6 +1,7 @@
 {
   "SysId": {
-    "Analysis Type": "Drivetrain",
+    "Analysis Type": "General Mechanism",
+    "AnalyzerJSONLocation": "C:\\Users\\Ridgebotics\\Documents\\GitHub\\2022NoWayHome\\sysid\\sysid_data20220128-205132.json",
     "NetworkTables Settings": {
       "serverTeam": "4388"
     },

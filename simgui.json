@@ -25,6 +25,7 @@
       "/LiveWindow/SwerveDrive": "Subsystem",
       "/LiveWindow/SwerveModule": "Subsystem",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Driver Controller": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
