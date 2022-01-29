@@ -7,6 +7,7 @@ package frc4388.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -16,8 +17,7 @@ import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
-import frc4388.utility.controller.IHandController;
-import frc4388.utility.controller.XboxController;
+import frc4388.utility.controller.DeadbandedXboxController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -37,8 +37,8 @@ public class RobotContainer {
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   /* Controllers */
-  private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
-  private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
+  private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
+  private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -49,10 +49,10 @@ public class RobotContainer {
     // drives the swerve drive with a two-axis input from the driver controller
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
-          XboxController.ClampJoystickAxis(
-              getDriverController().getLeftXAxis(),
-              getDriverController().getLeftYAxis()), 
-          -getDriverController().getRightXAxis(), 
+          clampJoystickAxes(
+              getDriverController().getLeftX(),
+              getDriverController().getLeftY()), 
+          -getDriverController().getRightX(), 
           true),
            m_robotSwerveDrive));
 
@@ -68,26 +68,26 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    new JoystickButton(getDriverJoystick(), XboxController.Y_BUTTON)
+    new JoystickButton(getDriverController(), XboxController.Button.kY.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.Y_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.m_gyro.reset());
 
-    new JoystickButton(getDriverJoystick(), XboxController.LEFT_BUMPER_BUTTON)
+    new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
 
 
-    new JoystickButton(getDriverJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
+    new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.RIGHT_BUMPER_BUTTON)
       .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
     
-    new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
+    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
 
-      .whenPressed(() -> resetOdometry());
+      .whenPressed(this::resetOdometry);
 
     /* Operator Buttons */
     // activates "Lit Mode"
-    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
@@ -106,7 +106,7 @@ public class RobotContainer {
   /**
    * Add your docs here.
    */
-  public IHandController getDriverController() {
+  public XboxController getDriverController() {
     return m_driverXbox;
   }
 
@@ -120,21 +120,16 @@ public class RobotContainer {
   /**
    * Add your docs here.
    */
-  public IHandController getOperatorController() {
+  public XboxController getOperatorController() {
     return m_operatorXbox;
   }
 
-  /**
-   * Add your docs here.
-   */
-  public Joystick getOperatorJoystick() {
-    return m_operatorXbox.getJoyStick();
-  }
-
-  /**
-   * Add your docs here.
-   */
-  public Joystick getDriverJoystick() {
-    return m_driverXbox.getJoyStick();
+  public static double[] clampJoystickAxes(double x, double y) {
+    double square_mag = x * x + y * y;
+    if (square_mag > 1.d) {
+      double mag = Math.sqrt(square_mag);
+      return new double[] { x / mag, y / mag };
+    }
+    return new double[] { x, y };
   }
 }

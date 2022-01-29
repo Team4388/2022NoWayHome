@@ -4,6 +4,7 @@
 
 package frc4388.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -115,6 +116,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotTime.startMatchTime();
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   /**

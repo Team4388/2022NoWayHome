@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.SwerveDriveConstants;
@@ -49,6 +50,8 @@ public class SwerveDrive extends SubsystemBase {
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
+
+  private final Field2d m_field = new Field2d();
 
   public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack, WPI_PigeonIMU gyro) {
       // m_leftFrontSteerMotor = leftFrontSteerMotor;
@@ -86,7 +89,8 @@ public class SwerveDrive extends SubsystemBase {
           VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
           VecBuilder.fill(Units.degreesToRadians(0.01)),
           VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-      m_gyro.reset(); 
+    m_gyro.reset(); 
+    SmartDashboard.putData("Field", m_field);
   }
 //https://github.com/ZachOrr/MK3-Swerve-Example
  /**
@@ -131,6 +135,7 @@ public class SwerveDrive extends SubsystemBase {
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 
