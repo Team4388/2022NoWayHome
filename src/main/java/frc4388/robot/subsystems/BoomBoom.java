@@ -40,7 +40,6 @@ public Turret m_turretSubsystem;
 
 
 
-
 /*
 * Creates new BoomBoom subsystem, has drum shooter and angle adjuster
 */
@@ -134,7 +133,7 @@ public void setShooterGains() {
     m_shooterFalconLeft.set(controller.calculate(Encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
   
     // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
-    m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
+    m_shooterFalconLeft.set(controller.calculate(m_shooterFalconLeft.get(), targetVel));
     System.err.println(targetVel);
     m_shooterFalconLeft.set(controller.calculate(m_shooterFalconLeft.getSelectedSensorVelocity(), targetVel) + 0.9 * feedforward.calculate(targetVel));
     
