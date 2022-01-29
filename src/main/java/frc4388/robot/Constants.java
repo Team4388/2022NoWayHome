@@ -100,7 +100,7 @@ public final class Constants {
     public static final int DEGREES_PER_ROT = 0; //""//
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0; //""//
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0; //""//
-      
+    public static final double ENCODER_TICKS_PER_REV = 2048; //""//
     
    
     /* Turret Constants */
