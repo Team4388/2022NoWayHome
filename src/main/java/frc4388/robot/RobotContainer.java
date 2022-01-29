@@ -92,8 +92,12 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+        // activates "BoomBoom"
+        new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
+            .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
+            .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
+    /* Driver Buttons */
   }
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

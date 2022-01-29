@@ -39,42 +39,6 @@ public double m_fireVel;
 public Hood m_hoodSubsystem;
 public Turret m_turretSubsystem;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(69, 42, 0); //get real values later
 
 
@@ -151,9 +115,6 @@ try {
     m_turretSubsystem = subsystem1;
   }
 
-  public double addFireVel(){
-    return m_fireVel;
-  }
 public void runDrumShooter(double speed) {
     m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed);
     m_shooterFalconRight.follow(m_shooterFalconLeft);
@@ -177,7 +138,5 @@ public void setShooterGains() {
     
     // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
     m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
-    
-  
   }
 }
