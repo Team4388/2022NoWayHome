@@ -15,7 +15,7 @@ public class Serializer extends SubsystemBase{
   public Serializer(CANSparkMax serializerBelt, CANSparkMax serializerShooterBelt) {
     m_serializerBelt = serializerBelt;
     m_serializerShooterBelt = serializerShooterBelt;
-    //m_serializerBeam = new DigitalInput(Constants.SerializerConstants.SERIALIZER_BELT_BEAM);
+    m_serializerBeam = new DigitalInput(Constants.SerializerConstants.SERIALIZER_BELT_BEAM);
 
     serializerState = false;
     setSerializerState(serializerState);
@@ -24,8 +24,7 @@ public class Serializer extends SubsystemBase{
     
   }
   public boolean getBeam() {
-    System.out.println("oi");
-    return false;
+    return m_serializerBeam.get();
   }
   public void setSerializerStateWithBeam(boolean ctrlbutter, boolean beambroken) {
     boolean total = ctrlbutter || beambroken;

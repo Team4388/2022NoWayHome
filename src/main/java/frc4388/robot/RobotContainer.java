@@ -88,13 +88,13 @@ public class RobotContainer {
         .whenReleased(() -> m_robotIntake.runExtender(false));
 
     // activates "Lit Mode"
-    // new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
-    //     .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
-    //     .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+        .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
+        .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
     
     new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
-        .whenPressed(() -> m_robotSerializer.setSerializerState(true))
-        .whenReleased(() -> m_robotSerializer.setSerializerState(false));
+        .whenPressed(() -> m_robotSerializer.setSerializerStateWithBeam(true, m_robotSerializer.getBeam()))
+        .whenReleased(() -> m_robotSerializer.setSerializerStateWithBeam(false, m_robotSerializer.getBeam()));
   }
 
   /**
