@@ -67,11 +67,11 @@ public class Turret extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Turret Angle Raw", getboomBoomRotatePosition());
+    // SmartDashboard.putNumber("Turret Angle Raw", getboomBoomRotatePosition());
 
-    SmartDashboard.putData("Turret Angle", (Sendable) m_turretGyro);
+    // SmartDashboard.putData("Turret Angle", (Sendable) m_turretGyro);
 
-    SmartDashboard.putBoolean("Turret Aimed", m_isAimReady);
+    // SmartDashboard.putBoolean("Turret Aimed", m_isAimReady);
     // This method will be called once per scheduler run
   }
 

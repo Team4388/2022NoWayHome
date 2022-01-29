@@ -4,6 +4,7 @@
 
 package frc4388.robot.subsystems;
 
+import java.io.Console;
 import java.util.Base64.Encoder;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -27,6 +28,7 @@ public ShooterTables m_shooterTable;
 public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
 public static BoomBoom m_boomBoom;
 public static IHandController m_driverController; //not sure if driverController in 2022 = m_controller in 2020
+BangBangController m_controller = new BangBangController();
 
 double velP;
 double input;
@@ -135,7 +137,6 @@ public void setShooterGains() {
     m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); //Init
     m_shooterFalconRight.follow(m_shooterFalconLeft);
     // New BoomBoom controller stuff 
-    BangBangController controller = new BangBangController();
     //Controls a motor with the output of the BangBang controller
     //Controls a motor with the output of the BangBang conroller and a feedforward
     //Shrinks the feedforward slightly to avoid over speeding the shooter
