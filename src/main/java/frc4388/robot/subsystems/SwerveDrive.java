@@ -5,6 +5,7 @@
 package frc4388.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
@@ -19,8 +20,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
 
@@ -104,21 +108,30 @@ public class SwerveDrive extends SubsystemBase {
  * @param rot Angular rate of the robot.
  * @param fieldRelative Whether the provided x and y speeds are relative to the field.
  */
-  public void driveWithInput(double[] speeds, double rot, boolean fieldRelative)
+  public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative)
   {
-      if (speeds[0] == 0 && speeds[1] == 0 && rot == 0) ignoreAngles = true;
-      else ignoreAngles = false;
-      speeds[0] *= speeds[0] * speeds[0];
-      speeds[1] *= speeds[1] * speeds[1];
+    // Mechanism2d controllerMechanism = new Mechanism2d(2, 2);
+    // controllerMechanism.getRoot("Left Axes", speedX, speedY);
+    // double[] speedsClamped = clampJoystickAxes(speedX, speedY);
+    // double speedXClamped = speedsClamped[0];
+    // double speedYClamped = speedsClamped[1];
+    // controllerMechanism.getRoot("Left Axes (Clamped)", speedXClamped, speedYClamped);
+    // SmartDashboard.putData("Driver Controller", controllerMechanism);
+    // SmartDashboard.putNumberArray("Left Axes -> Left Axes (Clamped)", new double[] {speedX, speedY, speedXClamped, speedYClamped});
+    if (speedX == 0 && speedY == 0 && rot == 0) ignoreAngles = true;
+    else ignoreAngles = false;
+    Translation2d speed = new Translation2d(speedX, speedY);
+    double mag = speed.getNorm();
+    speed = speed.times(mag * speedAdjust);
 
-      double xSpeedMetersPerSecond = -speeds[0] * speedAdjust;
-      double ySpeedMetersPerSecond = speeds[1] * speedAdjust;
-      SwerveModuleState[] states =
-          m_kinematics.toSwerveModuleStates(
-              fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-                : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
-      setModuleStates(states);
+    double xSpeedMetersPerSecond = -speed.getX();
+    double ySpeedMetersPerSecond = speed.getY();
+    SwerveModuleState[] states =
+        m_kinematics.toSwerveModuleStates(
+            fieldRelative
+              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
+    setModuleStates(states);
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
