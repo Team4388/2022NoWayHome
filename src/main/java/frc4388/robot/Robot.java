@@ -4,9 +4,11 @@
 
 package frc4388.robot;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -20,6 +22,7 @@ import frc4388.utility.RobotTime;
  * project.
  */
 public class Robot extends TimedRobot {
+  private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
   Command m_autonomousCommand;
   
   private RobotTime m_robotTime = RobotTime.getInstance();
@@ -31,6 +34,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    if (org.fusesource.jansi.Ansi.isEnabled()) {
+      LOGGER.log(Level.ALL, "Logging Test 1/7");
+      LOGGER.log(Level.WARNING, "Logging Test 2/7");
+      LOGGER.log(Level.INFO, "Logging Test 3/7");
+      LOGGER.log(Level.CONFIG, "Logging Test 4/7");
+      LOGGER.log(Level.FINE, "Logging Test 5/7");
+      LOGGER.log(Level.FINER, "Logging Test 6/7");
+      LOGGER.log(Level.FINEST, "Logging Test 7/7");
+    }
+    LOGGER.fine("robotInit()");
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -64,6 +77,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
   }
 
@@ -79,6 +93,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    LOGGER.fine("autonomousInit()");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     /*String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
@@ -108,6 +123,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    LOGGER.fine("teleopInit()");
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove

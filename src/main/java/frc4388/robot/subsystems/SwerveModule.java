@@ -27,13 +27,14 @@ public class SwerveModule extends SubsystemBase {
 
   private static double kEncoderTicksPerRotation = 4096;
   private SwerveModuleState state;
-
+  private double canCoderFeedbackCoefficient;
 
   /** Creates a new SwerveModule. */
   public SwerveModule(WPI_TalonFX driveMotor, WPI_TalonFX angleMotor, CANCoder canCoder, double offset) {
     this.driveMotor = driveMotor;
     this.angleMotor = angleMotor;
     this.canCoder = canCoder;
+    canCoderFeedbackCoefficient = canCoder.configGetFeedbackCoefficient();
 
     TalonFXConfiguration angleTalonFXConfiguration = new TalonFXConfiguration();
 
@@ -82,7 +83,7 @@ public class SwerveModule extends SubsystemBase {
     // Find the new absolute position of the module based on the difference in rotation
     double deltaTicks = (rotationDelta.getDegrees() / 360.) * kEncoderTicksPerRotation;
     // Convert the CANCoder from it's position reading back to ticks
-    double currentTicks = canCoder.getPosition() / canCoder.configGetFeedbackCoefficient();
+    double currentTicks = canCoder.getPosition() / canCoderFeedbackCoefficient;
     double desiredTicks = currentTicks + deltaTicks;
     if (!ignoreAngle){
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
