@@ -69,7 +69,8 @@ public class RobotContainer {
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
               getDriverController().getLeftX(),
               getDriverController().getLeftY(),
-              -getDriverController().getRightX(), 
+              getDriverController().getRightX(),
+              getDriverController().getRightY(),
           true),
            m_robotSwerveDrive));
 

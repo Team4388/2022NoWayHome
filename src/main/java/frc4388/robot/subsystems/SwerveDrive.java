@@ -110,14 +110,6 @@ public class SwerveDrive extends SubsystemBase {
  */
   public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative)
   {
-    // Mechanism2d controllerMechanism = new Mechanism2d(2, 2);
-    // controllerMechanism.getRoot("Left Axes", speedX, speedY);
-    // double[] speedsClamped = clampJoystickAxes(speedX, speedY);
-    // double speedXClamped = speedsClamped[0];
-    // double speedYClamped = speedsClamped[1];
-    // controllerMechanism.getRoot("Left Axes (Clamped)", speedXClamped, speedYClamped);
-    // SmartDashboard.putData("Driver Controller", controllerMechanism);
-    // SmartDashboard.putNumberArray("Left Axes -> Left Axes (Clamped)", new double[] {speedX, speedY, speedXClamped, speedYClamped});
     if (speedX == 0 && speedY == 0 && rot == 0) ignoreAngles = true;
     else ignoreAngles = false;
     Translation2d speed = new Translation2d(speedX, speedY);
@@ -131,6 +123,24 @@ public class SwerveDrive extends SubsystemBase {
             fieldRelative
               ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
               : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
+    setModuleStates(states);
+  }
+  private Rotation2d rotTarget = new Rotation2d();
+  public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
+  {
+    ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
+    Translation2d speed = new Translation2d(leftX, leftY);
+    speed = speed.times(speed.getNorm() * speedAdjust);
+    if (rightX > OIConstants.AXIS_DEADBAND || rightY > OIConstants.AXIS_DEADBAND)
+      rotTarget = new Rotation2d(rightX, -rightY);
+    double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
+    double xSpeedMetersPerSecond = -speed.getX();
+    double ySpeedMetersPerSecond = speed.getY();
+    SwerveModuleState[] states =
+        m_kinematics.toSwerveModuleStates(
+            fieldRelative
+              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED));
     setModuleStates(states);
   }
 
