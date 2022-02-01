@@ -1,6 +1,6 @@
 package frc4388.utility.controller;
 
-import static frc4388.robot.Constants.OIConstants.AXIS_DEADBAND;
+import static frc4388.robot.Constants.OIConstants.LEFT_AXIS_DEADBAND;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,7 +15,7 @@ public class DeadbandedXboxController extends XboxController {
     Translation2d translation2d = new Translation2d(x, y);
     double magnitude = translation2d.getNorm();
     if (magnitude >= 1) return translation2d.div(magnitude);
-    if (magnitude < AXIS_DEADBAND) return new Translation2d(0,0);
+    if (magnitude < LEFT_AXIS_DEADBAND) return new Translation2d(0,0);
     return translation2d;
   }
 }

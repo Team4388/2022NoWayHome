@@ -102,6 +102,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int XBOX_DRIVER_ID = 0;
     public static final int XBOX_OPERATOR_ID = 1;
-    public static final double AXIS_DEADBAND = 0.1;
+    public static final double LEFT_AXIS_DEADBAND = 0.1;
+    public static final double RIGHT_AXIS_DEADBAND = 0.6;
   }
 }
