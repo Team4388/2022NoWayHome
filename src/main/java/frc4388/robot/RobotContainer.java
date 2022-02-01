@@ -127,10 +127,10 @@ public class RobotContainer {
       testFirstPath, 
       m_robotSwerveDrive::getOdometry,
       m_robotSwerveDrive.m_kinematics, 
-      new PIDController(0.0, 0.0, 0.0), 
-      new PIDController(0.0, 0.0, 0.0), 
-      new ProfiledPIDController(0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(Math.PI, Math.PI)), 
-      m_robotSwerveDrive::setModuleStates, 
+      new PIDController(0.0, 0.0, 0.0),
+      new PIDController(0.0, 0.0, 0.0),
+      new ProfiledPIDController(1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(Math.PI, Math.PI)),
+      m_robotSwerveDrive::setModuleStates,
       m_robotSwerveDrive
     );
 
