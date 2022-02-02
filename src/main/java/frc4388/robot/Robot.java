@@ -35,13 +35,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     if (org.fusesource.jansi.Ansi.isEnabled()) {
-      LOGGER.log(Level.ALL, "Logging Test 1/7");
-      LOGGER.log(Level.WARNING, "Logging Test 2/7");
-      LOGGER.log(Level.INFO, "Logging Test 3/7");
-      LOGGER.log(Level.CONFIG, "Logging Test 4/7");
-      LOGGER.log(Level.FINE, "Logging Test 5/7");
-      LOGGER.log(Level.FINER, "Logging Test 6/7");
-      LOGGER.log(Level.FINEST, "Logging Test 7/7");
+      LOGGER.log(Level.ALL, "Logging Test 1/8");
+      LOGGER.log(Level.SEVERE, "Logging Test 2/8");
+      LOGGER.log(Level.WARNING, "Logging Test 3/8");
+      LOGGER.log(Level.INFO, "Logging Test 4/8");
+      LOGGER.log(Level.CONFIG, "Logging Test 5/8");
+      LOGGER.log(Level.FINE, "Logging Test 6/8");
+      LOGGER.log(Level.FINER, "Logging Test 7/8");
+      LOGGER.log(Level.FINEST, "Logging Test 8/8");
     }
     LOGGER.fine("robotInit()");
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our

@@ -126,8 +126,8 @@ public class SwerveDrive extends SubsystemBase {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
     Translation2d speed = new Translation2d(leftX, leftY);
     speed = speed.times(speed.getNorm() * speedAdjust);
-    if (rightX > OIConstants.AXIS_DEADBAND || rightY > OIConstants.AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightX, -rightY);
+    if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
+      rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0, 1));
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
