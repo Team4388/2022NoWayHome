@@ -222,6 +222,13 @@ public class SwerveDrive extends SubsystemBase {
       //     Timer.getFPGATimestamp() - 0.1);
     }
 
+  public void stopModules() {
+    modules[0].stop();
+    modules[1].stop();
+    modules[2].stop();
+    modules[3].stop();
+  }
+
   public void highSpeed(boolean shift){
     if (shift){
       speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST;

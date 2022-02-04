@@ -5,16 +5,24 @@
 package frc4388.robot;
 
 
+import java.util.List;
+
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -122,20 +130,47 @@ public class RobotContainer {
     // );
 
     // WPILIB TRAJECTORY IMPLEMENTATION
-    Trajectory testFirstPath = PathPlanner.loadPath("Move Forward", 1.0, 1.0);
+    TrajectoryConfig config = new TrajectoryConfig(1.0, 1.0)
+      .setKinematics(m_robotSwerveDrive.m_kinematics);
+    Trajectory exTraj = TrajectoryGenerator.generateTrajectory(
+      new Pose2d(0, 0, new Rotation2d(0)),
+      List.of(new Translation2d(0, 0)),
+      new Pose2d(1, 0, new Rotation2d(0)), 
+      config);
+
+    Trajectory testFirstPath = PathPlanner.loadPath("First Test Path", 1.0, 1.0);
+    Trajectory moveForward = PathPlanner.loadPath("Move Forward", 1.0, 1.0);
+    Trajectory rotate = PathPlanner.loadPath("Rotate", 1.0, 1.0);
+
+    Trajectory currentPath = rotate; //Change this to change auto
+
+    PIDController xController = new PIDController(1.5, 0.0, 0.0);
+    PIDController yController = new PIDController(1.5, 0.0, 0.0);
+    ProfiledPIDController thetaController = new ProfiledPIDController(
+      3.0, 0.0, 0.0, new TrapezoidProfile.Constraints(2 * Math.PI / 5, Math.PI / 4));
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-      testFirstPath, 
+      // testFirstPath,
+      // moveForward,
+      currentPath,
       m_robotSwerveDrive::getOdometry,
       m_robotSwerveDrive.m_kinematics, 
-      new PIDController(0.0, 0.0, 0.0),
-      new PIDController(0.0, 0.0, 0.0),
-      new ProfiledPIDController(1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(Math.PI, Math.PI)),
+      xController,
+      yController,
+      thetaController,
       m_robotSwerveDrive::setModuleStates,
       m_robotSwerveDrive
     );
-
-    m_robotSwerveDrive.resetOdometry(testFirstPath.getInitialPose());
-    return swerveControllerCommand.andThen(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.0, true));
+    // m_robotSwerveDrive.m_gyro.reset();
+    // m_robotSwerveDrive.resetOdometry(testFirstPath.getInitialPose());
+    
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(currentPath.getInitialPose())),
+      swerveControllerCommand,
+      new InstantCommand(() -> m_robotSwerveDrive.stopModules())
+    );
+    //return swerveControllerCommand.andThen(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.0, true));
 
     //return new InstantCommand();
   }

@@ -104,4 +104,9 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK * SwerveDriveConstants.METERS_PER_INCH * 10, getAngle());
   }
 
+  public void stop() {
+    driveMotor.set(0);
+    angleMotor.set(0);
+  }
+
 }
