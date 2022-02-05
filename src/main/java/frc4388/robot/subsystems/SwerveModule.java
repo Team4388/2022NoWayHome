@@ -15,7 +15,6 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
@@ -28,13 +27,14 @@ public class SwerveModule extends SubsystemBase {
 
   private static double kEncoderTicksPerRotation = 4096;
   private SwerveModuleState state;
-
+  private double canCoderFeedbackCoefficient;
 
   /** Creates a new SwerveModule. */
   public SwerveModule(WPI_TalonFX driveMotor, WPI_TalonFX angleMotor, CANCoder canCoder, double offset) {
     this.driveMotor = driveMotor;
     this.angleMotor = angleMotor;
     this.canCoder = canCoder;
+    canCoderFeedbackCoefficient = canCoder.configGetFeedbackCoefficient();
 
     TalonFXConfiguration angleTalonFXConfiguration = new TalonFXConfiguration();
 
@@ -83,7 +83,7 @@ public class SwerveModule extends SubsystemBase {
     // Find the new absolute position of the module based on the difference in rotation
     double deltaTicks = (rotationDelta.getDegrees() / 360.) * kEncoderTicksPerRotation;
     // Convert the CANCoder from it's position reading back to ticks
-    double currentTicks = canCoder.getPosition() / canCoder.configGetFeedbackCoefficient();
+    double currentTicks = canCoder.getPosition() / canCoderFeedbackCoefficient;
     double desiredTicks = currentTicks + deltaTicks;
     if (!ignoreAngle){
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
@@ -102,6 +102,11 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModuleState getState() {
     // return state;
     return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK * SwerveDriveConstants.METERS_PER_INCH * 10, getAngle());
+  }
+
+  public void stop() {
+    driveMotor.set(0);
+    angleMotor.set(0);
   }
 
 }
