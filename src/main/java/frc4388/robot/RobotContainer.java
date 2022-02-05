@@ -5,6 +5,10 @@
 package frc4388.robot;
 
 
+import java.lang.reflect.Array;
+import java.nio.file.FileSystem;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import com.pathplanner.lib.PathPlanner;
@@ -22,6 +26,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -111,12 +116,30 @@ public class RobotContainer {
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
   }
 
-  public void configAuto(boolean pathplanner) {
-    
-  }
+  public SequentialCommandGroup runAuto(String path, double maxVel, double maxAccel) {
+    PathPlannerTrajectory traj = PathPlanner.loadPath(path, maxVel, maxAccel);
 
-  public void configAuto() {
-    configAuto(true);
+    PIDController xController = SwerveDriveConstants.X_CONTROLLER;
+    PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
+    ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    PPSwerveControllerCommand ppSCC = new PPSwerveControllerCommand(
+        traj,
+        m_robotSwerveDrive::getOdometry,
+        m_robotSwerveDrive.m_kinematics,
+        xController,
+        yController,
+        thetaController,
+        m_robotSwerveDrive::setModuleStates,
+        m_robotSwerveDrive);
+    
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()),
+      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(traj.getInitialPose())),
+      ppSCC,
+      new InstantCommand(() -> m_robotSwerveDrive.stopModules())
+    );
   }
 
   /**
@@ -125,68 +148,37 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wiki
+    // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wik
 
-    TrajectoryConfig config = new TrajectoryConfig(1.0, 1.0)
-      .setKinematics(m_robotSwerveDrive.m_kinematics);
-    Trajectory exTraj = TrajectoryGenerator.generateTrajectory(
-      new Pose2d(0, 0, new Rotation2d(0)),
-      List.of(new Translation2d(0, 0)),
-      new Pose2d(1, 0, new Rotation2d(0)), 
-      config);
+    // PathPlannerTrajectory ppfirstTestPath = PathPlanner.loadPath("First Test Path", 4.0, 4.0);
+    // PathPlannerTrajectory ppMoveForward = PathPlanner.loadPath("Move Forward", 1.0, 1.0);
+    // PathPlannerTrajectory ppRotate = PathPlanner.loadPath("Rotate", 1.0, 1.0);
 
-    Trajectory firstTestPath = PathPlanner.loadPath("First Test Path", 1.0, 1.0);
-    Trajectory moveForward = PathPlanner.loadPath("Move Forward", 1.0, 1.0);
-    Trajectory rotate = PathPlanner.loadPath("Rotate", 1.0, 1.0);
+    // PathPlannerTrajectory ppCurrent = PathPlanner.loadPath("First Test Path", 1.0, 1.0); // change this to change auto
 
-    Trajectory currentPath = moveForward; // change this to change auto
+    // PIDController xController = SwerveDriveConstants.X_CONTROLLER;
+    // PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
+    // ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
+    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    PIDController xController = new PIDController(10.0, 0.0, 0.0);
-    PIDController yController = new PIDController(1.3, 0.0, 0.0);
-    ProfiledPIDController thetaController = new ProfiledPIDController(
-      10.0, 0.0, 0.0, new TrapezoidProfile.Constraints(2 * Math.PI, Math.PI));
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-      currentPath,
-      m_robotSwerveDrive::getOdometry,
-      m_robotSwerveDrive.m_kinematics, 
-      xController,
-      yController,
-      thetaController,
-      m_robotSwerveDrive::setModuleStates,
-      m_robotSwerveDrive
-    );
-
-    PathPlannerTrajectory ppfirstTestPath = PathPlanner.loadPath("First Test Path", 4.0, 4.0);
-    PathPlannerTrajectory ppMoveForward = PathPlanner.loadPath("Move Forward", 1.0, 1.0);
-    PathPlannerTrajectory ppRotate = PathPlanner.loadPath("Rotate", 1.0, 1.0);
-
-    PathPlannerTrajectory ppCurrentPath = ppfirstTestPath; // change this to change auto
-
-    PPSwerveControllerCommand ppSwerveControllerCommand = new PPSwerveControllerCommand(
-      ppCurrentPath,
-      m_robotSwerveDrive::getOdometry,
-      m_robotSwerveDrive.m_kinematics,
-      xController,
-      yController,
-      thetaController,
-      m_robotSwerveDrive::setModuleStates,
-      m_robotSwerveDrive
-    );
-    
-    // return new SequentialCommandGroup(
-    //   new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(currentPath.getInitialPose())),
-    //   swerveControllerCommand,
-    //   new InstantCommand(() -> m_robotSwerveDrive.stopModules())
+    // PPSwerveControllerCommand ppSwerveControllerCommand = new PPSwerveControllerCommand(
+    //   ppCurrent,
+    //   m_robotSwerveDrive::getOdometry,
+    //   m_robotSwerveDrive.m_kinematics,
+    //   xController,
+    //   yController,
+    //   thetaController,
+    //   m_robotSwerveDrive::setModuleStates,
+    //   m_robotSwerveDrive
     // );
 
-    return new SequentialCommandGroup(
-      new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()),
-      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(ppCurrentPath.getInitialPose())),
-      ppSwerveControllerCommand,
-      new InstantCommand(() -> m_robotSwerveDrive.stopModules())
-    );
+    // return new SequentialCommandGroup(
+    //   new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()),
+    //   new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(ppCurrent.getInitialPose())),
+    //   ppSwerveControllerCommand,
+    //   new InstantCommand(() -> m_robotSwerveDrive.stopModules())
+    // );
+    return runAuto("Move Forward", 5.0, 5.0);
   }
 
   /**

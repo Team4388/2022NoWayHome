@@ -4,9 +4,12 @@
 
 package frc4388.robot;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc4388.utility.Gains;
 import frc4388.utility.LEDPatterns;
 
@@ -60,6 +63,12 @@ public final class Constants {
     public static final int SWERVE_PID_LOOP_IDX = 1;
     public static final int SWERVE_TIMEOUT_MS = 30;
     public static final Gains SWERVE_GAINS = new Gains(1.0, 0.0, 1.0, 0.0, 0, 1.0);
+
+    // swerve auto constants
+    public static final PIDController X_CONTROLLER = new PIDController(0.0, 0.0, 0.0);
+    public static final PIDController Y_CONTROLLER = new PIDController(0.0, 0.0, 0.0);
+    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(
+      1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(2 * Math.PI, Math.PI));
 
     // swerve configuration
     public static final double NEUTRAL_DEADBAND = 0.04;

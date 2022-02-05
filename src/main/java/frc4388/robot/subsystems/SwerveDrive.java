@@ -208,8 +208,10 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /** Updates the field relative position of the robot. */
+
   public void updateOdometry() {
-    m_poseEstimator.update( m_gyro.getRotation2d(), 
+    Rotation2d offset = new Rotation2d(Math.PI/2);
+    m_poseEstimator.update( m_gyro.getRotation2d()/*.plus(offset)*/, 
                             modules[0].getState(), 
                             modules[1].getState(), 
                             modules[2].getState(), 
