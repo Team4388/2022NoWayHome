@@ -49,9 +49,9 @@ public class SwerveModule extends SubsystemBase {
     angleMotor.configAllSettings(angleTalonFXConfiguration);
 
     TalonFXConfiguration driveTalonFXConfiguration = new TalonFXConfiguration();
-    driveTalonFXConfiguration.slot0.kP = 1.0;
+    driveTalonFXConfiguration.slot0.kP = 0.15;
     driveTalonFXConfiguration.slot0.kI = 0.0;
-    driveTalonFXConfiguration.slot0.kD = 0.0;
+    driveTalonFXConfiguration.slot0.kD = 0.5;
     driveMotor.configAllSettings(driveTalonFXConfiguration);
 
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
@@ -89,8 +89,9 @@ public class SwerveModule extends SubsystemBase {
     }
 
 
-    // double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
-    driveMotor.set(TalonFXControlMode.Velocity, /*angleMotor.get() + */(Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
+    // driveMotor.set(TalonFXControlMode.Velocity, /*angleMotor.get() + */(Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    driveMotor.set(feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC);
   }
 
   /**
