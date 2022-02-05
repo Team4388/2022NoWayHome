@@ -28,7 +28,7 @@ public class Turret extends SubsystemBase {
   public BoomBoom m_boomBoomSubsystem;
   public SwerveDrive m_sDriveSubsystem;
 
-  public CANSparkMax m_boomBoomRotateMotor = new CANSparkMax(ShooterConstants.SHOOTER_ROTATE_ID, MotorType.kBrushless);
+  public CANSparkMax m_boomBoomRotateMotor;// = new CANSparkMax(ShooterConstants.SHOOTER_ROTATE_ID, MotorType.kBrushless);
   public static Gains m_shooterTGains = ShooterConstants.SHOOTER_TURRET_GAINS;
   SparkMaxLimitSwitch m_boomBoomRightLimit, m_boomBoomLeftLimit;
   public Gyro m_turretGyro;
@@ -37,14 +37,16 @@ public class Turret extends SubsystemBase {
 
   public boolean m_isAimReady = false;
 
-  SparkMaxPIDController m_boomBoomRotatePIDController = m_boomBoomRotateMotor.getPIDController();
-  public RelativeEncoder m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
+  SparkMaxPIDController m_boomBoomRotatePIDController;// = m_boomBoomRotateMotor.getPIDController();
+  public RelativeEncoder m_boomBoomRotateEncoder;// = m_boomBoomRotateMotor.getEncoder();
   
   
   //Variables
   public Turret() {
 
-    
+    m_boomBoomRotateMotor = new CANSparkMax(30, MotorType.kBrushless);
+    m_boomBoomRotatePIDController = m_boomBoomRotateMotor.getPIDController();
+    m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
     m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
   
     m_turretGyro = getGyroInterface();

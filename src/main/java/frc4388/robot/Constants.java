@@ -31,18 +31,18 @@ public final class Constants {
     public static final double JOYSTICK_TO_METERS_PER_SECOND = 5;
     public static final double MAX_SPEED_FEET_PER_SEC = 16;
     public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20;
-    public static final int LEFT_FRONT_STEER_CAN_ID = 2;
-    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
-    public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
-    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5;
-    public static final int LEFT_BACK_STEER_CAN_ID = 6;
-    public static final int LEFT_BACK_WHEEL_CAN_ID = 7;
-    public static final int RIGHT_BACK_STEER_CAN_ID = 8;
-    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;
-    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;
-    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
-    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
-    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
+    // public static final int LEFT_FRONT_STEER_CAN_ID = 2;
+    // public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
+    // public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
+    // public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5;
+    // public static final int LEFT_BACK_STEER_CAN_ID = 6;
+    // public static final int LEFT_BACK_WHEEL_CAN_ID = 7;
+    // public static final int RIGHT_BACK_STEER_CAN_ID = 8;
+    // public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;
+    // public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;
+    // public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
+    // public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
+    // public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
     // ofsets are in degrees
     //ofsets are in degrees
         // public static final double LEFT_FRONT_ENCODER_OFFSET = 181.494141;    
@@ -115,7 +115,7 @@ public final class Constants {
   
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(0,0,0,0,0,0);//x,y,z,a,b are not actual values, fix later
     /* Hood Constants */
-    public static final int SHOOTER_ANGLE_ADJUST_ID = 10;
+    public static final int SHOOTER_ANGLE_ADJUST_ID = 32;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; //TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; //TODO: Find
 
