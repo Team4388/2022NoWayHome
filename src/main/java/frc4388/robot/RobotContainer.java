@@ -105,7 +105,7 @@ public class RobotContainer {
     
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
 
-      .whenPressed(() -> zeroOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+      .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
       //.whenPressed(this::resetOdometry);
 
     /* Operator Buttons */
@@ -192,7 +192,7 @@ public class RobotContainer {
     return m_robotSwerveDrive.getOdometry();
   }
 
-  public void zeroOdometry(Pose2d pose) {
+  public void resetOdometry(Pose2d pose) {
     m_robotSwerveDrive.resetOdometry(pose);
   }
   /**

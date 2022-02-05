@@ -30,8 +30,8 @@ public final class Constants {
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 4;
     public static final double WHEEL_SPEED = 0.1;
-    public static final double WIDTH = 15.27;
-    public static final double HEIGHT = 15.27;
+    public static final double WIDTH = 15.25;
+    public static final double HEIGHT = 15.25;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
     public static final double MAX_SPEED_FEET_PER_SEC = 20; // redundant constant?
@@ -80,7 +80,7 @@ public final class Constants {
     // wheel diameter: official = 4 in, measured = 3.8 in
     /* Ratio Calculation */
     public static final double MOTOR_REV_PER_WHEEL_REV = 5.12;
-    public static final double WHEEL_DIAMETER_INCHES = 3.8;
+    public static final double WHEEL_DIAMETER_INCHES = 4.0;
     public static final double TICKS_PER_MOTOR_REV = 2048;
     public static final double INCHES_PER_WHEEL_REV = WHEEL_DIAMETER_INCHES * Math.PI;
     public static final double INCHES_PER_METER = 39.370;
