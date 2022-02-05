@@ -48,12 +48,11 @@ public class SwerveModule extends SubsystemBase {
     angleTalonFXConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
     angleMotor.configAllSettings(angleTalonFXConfiguration);
 
-    /*TalonFXConfiguration driveTalonFXConfiguration = new TalonFXConfiguration();
-    driveTalonFXConfiguration.slot0.kP = kDriveP;
-    driveTalonFXConfiguration.slot0.kI = kDriveI;
-    driveTalonFXConfiguration.slot0.kD = kDriveD;
-    driveTalonFXConfiguration.slot0.kF = kDriveF;
-    driveMotor.configAllSettings(driveTalonFXConfiguration);*/
+    TalonFXConfiguration driveTalonFXConfiguration = new TalonFXConfiguration();
+    driveTalonFXConfiguration.slot0.kP = 1.0;
+    driveTalonFXConfiguration.slot0.kI = 0.0;
+    driveTalonFXConfiguration.slot0.kD = 0.0;
+    driveMotor.configAllSettings(driveTalonFXConfiguration);
 
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
     canCoderConfiguration.magnetOffsetDegrees = offset;
@@ -90,8 +89,8 @@ public class SwerveModule extends SubsystemBase {
     }
 
 
-    double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
-    driveMotor.set(/*angleMotor.get() + */feetPerSecond / SwerveDriveConstants.SPEED_FEET_PER_SECOND_AT_FULL_POWER);
+    // double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
+    driveMotor.set(TalonFXControlMode.Velocity, /*angleMotor.get() + */(Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
   }
 
   /**

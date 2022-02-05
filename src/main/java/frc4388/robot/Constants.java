@@ -65,8 +65,8 @@ public final class Constants {
     public static final Gains SWERVE_GAINS = new Gains(1.0, 0.0, 1.0, 0.0, 0, 1.0);
 
     // swerve auto constants
-    public static final PIDController X_CONTROLLER = new PIDController(0.0, 0.0, 0.0);
-    public static final PIDController Y_CONTROLLER = new PIDController(0.0, 0.0, 0.0);
+    public static final PIDController X_CONTROLLER = new PIDController(4.0, 0.0, 0.0);
+    public static final PIDController Y_CONTROLLER = new PIDController(4.0, 0.0, 0.0);
     public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(
       1.0, 0.0, 0.0, new TrapezoidProfile.Constraints(2 * Math.PI, Math.PI));
 

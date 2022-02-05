@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.plaf.nimbus.State;
+
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -123,6 +125,7 @@ public class RobotContainer {
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
     ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    //thetaController.reset(new TrapezoidProfile.State(m_robotSwerveDrive.getOdometry()));
 
     PPSwerveControllerCommand ppSCC = new PPSwerveControllerCommand(
         traj,
