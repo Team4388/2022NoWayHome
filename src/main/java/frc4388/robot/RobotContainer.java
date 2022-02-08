@@ -15,6 +15,7 @@ import javax.swing.plaf.nimbus.State;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -137,9 +138,12 @@ public class RobotContainer {
         m_robotSwerveDrive::setModuleStates,
         m_robotSwerveDrive);
     
+    PathPlannerState state = (PathPlannerState) traj.sample(0);
+
     return new SequentialCommandGroup(
       new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()),
-      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(traj.getInitialPose())),
+      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation))),
+      //new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(traj.getInitialPose())),
       ppSCC,
       new InstantCommand(() -> m_robotSwerveDrive.stopModules())
     );
@@ -181,8 +185,8 @@ public class RobotContainer {
     //   ppSwerveControllerCommand,
     //   new InstantCommand(() -> m_robotSwerveDrive.stopModules())
     // );
-    // return runAuto("Move Forward", 5.0, 5.0);
-    return runAuto("Five Ball", 1.0, 1.0);
+    // return runAuto("Move Forward", 1.0, 1.0);
+    return runAuto("Move Down", 1.0, 1.0);
   }
 
   /**
