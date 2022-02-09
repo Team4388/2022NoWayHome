@@ -54,6 +54,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
+  public Rotation2d rotTarget = new Rotation2d();;
 
   private final Field2d m_field = new Field2d();
 
@@ -125,7 +126,6 @@ public class SwerveDrive extends SubsystemBase {
               : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
     setModuleStates(states);
   }
-  private Rotation2d rotTarget = new Rotation2d();
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
   {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
@@ -217,8 +217,7 @@ public class SwerveDrive extends SubsystemBase {
   /** Updates the field relative position of the robot. */
 
   public void updateOdometry() {
-    Rotation2d offset = new Rotation2d(Math.PI/2);
-    m_poseEstimator.update( m_gyro.getRotation2d()/*.plus(offset)*/, 
+    m_poseEstimator.update( m_gyro.getRotation2d(), 
                             modules[0].getState(), 
                             modules[1].getState(), 
                             modules[2].getState(), 
@@ -236,6 +235,11 @@ public class SwerveDrive extends SubsystemBase {
       //         m_poseEstimator.getEstimatedPosition(),
       //     Timer.getFPGATimestamp() - 0.1);
     }
+
+  public void resetGyro(){
+    m_gyro.reset();
+    rotTarget = new Rotation2d(0);
+  }
 
   public void stopModules() {
     modules[0].stop();

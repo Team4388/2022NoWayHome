@@ -68,7 +68,7 @@ public final class Constants {
     public static final PIDController X_CONTROLLER = new PIDController(0.5, 0.0, 0.0);
     public static final PIDController Y_CONTROLLER = new PIDController(2.0, 0.0, 0.0);
     public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(
-                                        15.0, 0.1, 0.3, new TrapezoidProfile.Constraints(Math.PI, Math.PI));
+            15.0, 0.1, 0.3, new TrapezoidProfile.Constraints(Math.PI, Math.PI));
 
     // swerve configuration
     public static final double NEUTRAL_DEADBAND = 0.04;

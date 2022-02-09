@@ -95,7 +95,7 @@ public class RobotContainer {
     /* Driver Buttons */
     new JoystickButton(getDriverController(), XboxController.Button.kY.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.Y_BUTTON)
-      .whenPressed(m_robotSwerveDrive.m_gyro::reset);
+      .whenPressed(() -> m_robotSwerveDrive.resetGyro());
 
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
     // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
@@ -142,7 +142,7 @@ public class RobotContainer {
 
     return new SequentialCommandGroup(
       new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()),
-      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation))),
+      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation))),//.plus(new Rotation2d(Math.PI/2))))),
       //new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(traj.getInitialPose())),
       ppSCC,
       new InstantCommand(() -> m_robotSwerveDrive.stopModules())
@@ -186,7 +186,7 @@ public class RobotContainer {
     //   new InstantCommand(() -> m_robotSwerveDrive.stopModules())
     // );
     // return runAuto("Move Forward", 1.0, 1.0);
-    return runAuto("Move Down", 1.0, 1.0);
+    return runAuto("Test", 1.0, 1.0);
   }
 
   /**
