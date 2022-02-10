@@ -44,7 +44,7 @@ public class RobotContainer {
   // );
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  private final BoomBoom m_robotBoomBoom = new BoomBoom();
+  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret();
   private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
@@ -95,6 +95,8 @@ public class RobotContainer {
         new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
             .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
             .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
+
+  
     /* Driver Buttons */
   }
   /**

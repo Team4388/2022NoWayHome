@@ -88,12 +88,13 @@ public final class Constants {
 
   public static final class ShooterConstants {
     /* PID Constants Shooter */
-    public static final int SHOOTER_TIMEOUT_MS = 30;
+    public static final int CLOSED_LOOP_TIME_MS = 1;
+    public static final int SHOOTER_TIMEOUT_MS = 32;
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
-    public static final int SHOOTER_FALCON_LEFT_CAN_ID = 0;
-    public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 0; 
+    public static final int SHOOTER_FALCON_LEFT_CAN_ID = 23;
+    public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 24; 
     public static final int SHOOTER_ROTATE_ID = 31; //"unknown value" //figure out later
     public static final int TURRET_RIGHT_SOFT_LIMIT = 0; //""//
     public static final double TURRET_SPEED_MULTIPLIER = 0.1d; //""//
@@ -101,6 +102,7 @@ public final class Constants {
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0; //""//
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0; //""//
     public static final double ENCODER_TICKS_PER_REV = 2048; //""//
+    
     
    
     /* Turret Constants */

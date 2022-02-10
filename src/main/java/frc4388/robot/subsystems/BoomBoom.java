@@ -22,8 +22,8 @@ import frc4388.utility.controller.IHandController;
 import com.revrobotics.RelativeEncoder;
 
 public class BoomBoom extends SubsystemBase {
-public WPI_TalonFX m_shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_BALLER_ID);
-public WPI_TalonFX m_shooterFalconRight= new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_BALLER_FOLLOWER_ID);
+public WPI_TalonFX m_shooterFalconLeft;
+public WPI_TalonFX m_shooterFalconRight;
 public ShooterTables m_shooterTable;
 public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
 public static BoomBoom m_boomBoom;
@@ -59,30 +59,8 @@ feedforward.calculate(15, 20); // feedforward.calculate(velocity, acceleration);
   m_shooterFalconLeft = shooterFalconLeft;
   m_shooterFalconRight = shooterFalconRight;
   
-    int closedLoopTimeMs = 1;
-      //LEFT FALCON
-      m_shooterFalconLeft.configFactoryDefault();
-      m_shooterFalconLeft.setNeutralMode(NeutralMode.Coast);
-      m_shooterFalconLeft.setInverted(true);
-      m_shooterFalconLeft.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconLeft.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconLeft.configPeakOutputReverse(0, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconLeft.configClosedLoopPeriod(0, closedLoopTimeMs, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
-
+    
       
-      
-      //RIGHT FALCON
-      m_shooterFalconRight.configFactoryDefault();
-      m_shooterFalconRight.setNeutralMode(NeutralMode.Coast);
-      m_shooterFalconRight.setInverted(false);
-      m_shooterFalconRight.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconRight.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      //m_shooterFalconRight.configPeakOutputForward(0, ShooterConstants.SHOOTER_TIMEOUT_MS);(comment it in if necessary)
-      m_shooterFalconRight.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconRight.configClosedLoopPeriod(0, closedLoopTimeMs, ShooterConstants.SHOOTER_TIMEOUT_MS);
-      m_shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
       
       m_shooterTable = new ShooterTables();
   
@@ -117,7 +95,7 @@ try {
 
 public void runDrumShooter(double speed) {
     m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed);
-    m_shooterFalconRight.follow(m_shooterFalconLeft);
+    
   }    
 
 public void setShooterGains() {
