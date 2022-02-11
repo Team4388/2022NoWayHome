@@ -7,6 +7,7 @@ package frc4388.robot;
 
 import java.lang.reflect.Array;
 import java.nio.file.FileSystem;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -119,34 +120,82 @@ public class RobotContainer {
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
   }
 
-  public SequentialCommandGroup runAuto(String path, double maxVel, double maxAccel) {
-    PathPlannerTrajectory traj = PathPlanner.loadPath(path, maxVel, maxAccel);
+
+
+  public Command[] buildAuto(double maxVel, double maxAccel, ArrayList<Object> inputs) {
+
+    ArrayList<Command> commands = new ArrayList<Command>();
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
+
+    // ArrayList<PathPlannerTrajectory> trajectories = new ArrayList<PathPlannerTrajectory>();
+    // ArrayList<PPSwerveControllerCommand> trajCommands = new ArrayList<PPSwerveControllerCommand>();
+    // ArrayList<PathPlannerState> initStates = new ArrayList<PathPlannerState>();
+    // ArrayList<SequentialCommandGroup> fullCommand = new ArrayList<SequentialCommandGroup>();
 
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
     ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    //thetaController.reset(new TrapezoidProfile.State(m_robotSwerveDrive.getOdometry()));
 
-    PPSwerveControllerCommand ppSCC = new PPSwerveControllerCommand(
-        traj,
-        m_robotSwerveDrive::getOdometry,
-        m_robotSwerveDrive.m_kinematics,
-        xController,
-        yController,
-        thetaController,
-        m_robotSwerveDrive::setModuleStates,
-        m_robotSwerveDrive);
+    // parse input
+    for (int i=0; i<inputs.size(); i++) {
+
+      if (inputs.get(i) instanceof String) {
+
+        PathPlannerTrajectory traj = PathPlanner.loadPath(inputs.get(i).toString(), maxVel, maxAccel);
+        PathPlannerState initState = (PathPlannerState) traj.sample(0);
+
+        commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(initState.poseMeters.getTranslation(), initState.holonomicRotation))));
+        commands.add(new PPSwerveControllerCommand(
+                          traj,
+                          m_robotSwerveDrive::getOdometry,
+                          m_robotSwerveDrive.m_kinematics,
+                          xController,
+                          yController,
+                          thetaController,
+                          m_robotSwerveDrive::setModuleStates,
+                          m_robotSwerveDrive));
+      }
+      if (inputs.get(i) instanceof Command) {
+
+        commands.add((Command) inputs.get(i));
+      }
+    }
+
+    // fullCommand.add(new SequentialCommandGroup(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset())));
+
+    // for (int i = 0; i < len; i++) {
+    //   String path = paths[i];
+
+    //   trajectories.add(PathPlanner.loadPath(path, maxVel, maxAccel));
+      
+    //   trajCommands.add(new PPSwerveControllerCommand(
+    //                       trajectories.get(i),
+    //                       m_robotSwerveDrive::getOdometry,
+    //                       m_robotSwerveDrive.m_kinematics,
+    //                       xController,
+    //                       yController,
+    //                       thetaController,
+    //                       m_robotSwerveDrive::setModuleStates,
+    //                       m_robotSwerveDrive));
+      
+    //   initStates.add((PathPlannerState) trajectories.get(i).sample(0));
+    // }
+
+    // for (int i=1; i < (1 + len); i++) {
+
+    //   PathPlannerState initState = initStates.get(i - 1);
+    //   fullCommand.add(new SequentialCommandGroup(new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(initState.poseMeters.getTranslation(), initState.holonomicRotation))), trajCommands.get(i - 1)));
+    // }
+
+    // fullCommand.add(new SequentialCommandGroup(new InstantCommand(() -> m_robotSwerveDrive.stopModules())));
+    // SequentialCommandGroup[] ret = new SequentialCommandGroup[fullCommand.size()];
+    // ret = fullCommand.toArray(ret);
     
-    PathPlannerState state = (PathPlannerState) traj.sample(0);
-
-    return new SequentialCommandGroup(
-      new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()),
-      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(state.poseMeters.getTranslation(), state.holonomicRotation))),//.plus(new Rotation2d(Math.PI/2))))),
-      //new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(traj.getInitialPose())),
-      ppSCC,
-      new InstantCommand(() -> m_robotSwerveDrive.stopModules())
-    );
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.stopModules()));
+    Command[] ret = new Command[commands.size()];
+    ret = commands.toArray(ret);
+    return ret;
   }
 
   /**
@@ -155,38 +204,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wik
+    // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wiki
 
-    // PathPlannerTrajectory ppfirstTestPath = PathPlanner.loadPath("First Test Path", 4.0, 4.0);
-    // PathPlannerTrajectory ppMoveForward = PathPlanner.loadPath("Move Forward", 1.0, 1.0);
-    // PathPlannerTrajectory ppRotate = PathPlanner.loadPath("Rotate", 1.0, 1.0);
-
-    // PathPlannerTrajectory ppCurrent = PathPlanner.loadPath("First Test Path", 1.0, 1.0); // change this to change auto
-
-    // PIDController xController = SwerveDriveConstants.X_CONTROLLER;
-    // PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
-    // ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
-    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    // PPSwerveControllerCommand ppSwerveControllerCommand = new PPSwerveControllerCommand(
-    //   ppCurrent,
-    //   m_robotSwerveDrive::getOdometry,
-    //   m_robotSwerveDrive.m_kinematics,
-    //   xController,
-    //   yController,
-    //   thetaController,
-    //   m_robotSwerveDrive::setModuleStates,
-    //   m_robotSwerveDrive
-    // );
-
-    // return new SequentialCommandGroup(
-    //   new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()),
-    //   new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(ppCurrent.getInitialPose())),
-    //   ppSwerveControllerCommand,
-    //   new InstantCommand(() -> m_robotSwerveDrive.stopModules())
-    // );
-    // return runAuto("Move Forward", 1.0, 1.0);
-    return runAuto("Test", 1.0, 1.0);
+    Command[] trajCommands = buildAuto(0.5, 0.5, new ArrayList<Object>(Arrays.asList("Move Forward", "Move Down")));
+    return new SequentialCommandGroup(trajCommands);
   }
 
   /**
