@@ -157,17 +157,17 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
     // System.err.println(m_gyro.getFusedHeading() +"    aaa");
     updateOdometry();
-    SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
-    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
-    SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
-    SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
-    SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
+    // SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
+    // SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
+    // SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
+    // SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
+    // SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
 
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
-    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 
