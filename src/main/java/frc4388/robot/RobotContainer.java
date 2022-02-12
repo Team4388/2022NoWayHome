@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.plaf.nimbus.State;
 
@@ -127,7 +128,17 @@ public class RobotContainer {
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
   }
 
-  public Command[] buildAuto(double maxVel, double maxAccel, Object... inputs) {
+  /**
+   * Generate autonomous
+   * @param maxVel max velocity for the path (null to override default value of 5.0 m/s)
+   * @param maxAccel max acceleration for the path (null to override default value of 5.0 m/s/s)
+   * @param inputs strings (paths) or commands you want to run (in order)
+   * @return array of commands
+   */
+  public Command[] buildAuto(Double maxVel, Double maxAccel, Object... inputs) {
+
+    maxVel = Objects.requireNonNullElse(maxVel, SwerveDriveConstants.MAX_VEL);
+    maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.MAX_ACC);
 
     ArrayList<Command> commands = new ArrayList<Command>();
     commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
@@ -174,10 +185,14 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wiki
-
-    Command[] trajCommands = buildAuto(0.5, 0.5, "Move Forward", "Move Down");
-    SequentialCommandGroup ret = new SequentialCommandGroup(trajCommands);
-    return (new ParallelCommandGroup(buildAuto(0.1, 0.1, ret, new InstantCommand(() -> m_testMotor.set(TalonFXControlMode.PercentOutput, 0.2)))));
+    return new ParallelCommandGroup(
+            buildAuto(
+              null,
+              null,
+              new SequentialCommandGroup(buildAuto(0.5, 0.5, "Move Forward", "Move Down")), 
+              new InstantCommand(() -> m_testMotor.set(TalonFXControlMode.PercentOutput, 0.2))
+            )
+          );
   }
 
   /**
