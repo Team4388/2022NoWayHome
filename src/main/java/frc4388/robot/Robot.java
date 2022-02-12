@@ -10,10 +10,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.RobotLogger;
 import frc4388.utility.RobotTime;
 
@@ -37,7 +39,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    if (org.fusesource.jansi.Ansi.isEnabled()) {
+    // if (org.fusesource.jansi.Ansi.isEnabled()) {
       LOGGER.log(Level.ALL, "Logging Test 1/8");
       LOGGER.log(Level.SEVERE, "Logging Test 2/8");
       LOGGER.log(Level.WARNING, "Logging Test 3/8");
@@ -46,7 +48,10 @@ public class Robot extends TimedRobot {
       LOGGER.log(Level.FINE, "Logging Test 6/8");
       LOGGER.log(Level.FINER, "Logging Test 7/8");
       LOGGER.log(Level.FINEST, "Logging Test 8/8");
-    }
+    // }
+
+    var path = PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move Forward.path").toFile());
+    LOGGER.finest(path::toString);
     LOGGER.fine("robotInit()");
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -84,6 +89,22 @@ public class Robot extends TimedRobot {
     LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
     RobotLogger.getInstance().setEnabled(false);
+    if (isTest()) {
+      try {
+        String p = RobotLogger.getInstance().exportPath();
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        LOGGER.log(Level.WARNING, "Recorded path to {0} in the deploy directory on the RoboRIO", p);
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   @Override
@@ -99,7 +120,12 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     LOGGER.fine("autonomousInit()");
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    try {
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
     /*String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
     switch (autoSelected) {
@@ -154,11 +180,6 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
     RobotLogger.getInstance().setEnabled(false);
-    try {
-      RobotLogger.getInstance().exportPath();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   /**

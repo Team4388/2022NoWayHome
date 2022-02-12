@@ -122,6 +122,7 @@ public class SwerveDrive extends SubsystemBase {
     setModuleStates(states);
   }
   private Rotation2d rotTarget = new Rotation2d();
+  private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
   {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
@@ -132,11 +133,12 @@ public class SwerveDrive extends SubsystemBase {
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
+    chassisSpeeds = fieldRelative
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+      : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED);
     SwerveModuleState[] states =
         m_kinematics.toSwerveModuleStates(
-            fieldRelative
-              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED));
+            chassisSpeeds);
     setModuleStates(states);
   }
 
@@ -155,7 +157,21 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
-    RobotLogger.getInstance().put("poseMeters", m_poseEstimator.getEstimatedPosition());
+    {
+
+
+
+
+      // double velocityMetersPerSecond = new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond).getNorm();
+      double velocityMetersPerSecond = chassisSpeeds.vxMetersPerSecond;
+      Pose2d poseMeters = m_poseEstimator.getEstimatedPosition();
+      double curvatureRadPerMeter = 0;
+      RobotLogger.getInstance().put(velocityMetersPerSecond, poseMeters, curvatureRadPerMeter, 0, new Rotation2d(), new Rotation2d(), new Rotation2d());
+
+
+
+      
+    }
     SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
