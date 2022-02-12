@@ -4,33 +4,34 @@
 
 package frc4388.robot;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.ArrayList;
 
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.OIConstants;
+import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
-import frc4388.utility.PathPlannerTrajectoryUtil;
 import frc4388.utility.controller.DeadbandedXboxController;
 
 /**
@@ -47,6 +48,8 @@ public class RobotContainer {
   /* Subsystems */
   private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
       m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
+
+  private final TalonFX m_testMotor = new TalonFX(23);
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
@@ -72,6 +75,8 @@ public class RobotContainer {
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+
+    m_testMotor.set(TalonFXControlMode.PercentOutput, 0);
   }
 
   /**
@@ -97,9 +102,7 @@ public class RobotContainer {
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-
-        .whenPressed(() -> zeroOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-    // .whenPressed(this::resetOdometry);
+      .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
 
     /* Operator Buttons */
     // activates "Lit Mode"
@@ -107,6 +110,46 @@ public class RobotContainer {
         // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+  }
+
+  public Command[] buildAuto(double maxVel, double maxAccel, Object... inputs) {
+
+    ArrayList<Command> commands = new ArrayList<Command>();
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
+
+    PIDController xController = SwerveDriveConstants.X_CONTROLLER;
+    PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
+    ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    // parse input
+    for (int i=0; i<inputs.length; i++) {
+
+      if (inputs[i] instanceof String) {
+        PathPlannerTrajectory traj = PathPlanner.loadPath(inputs[i].toString(), maxVel, maxAccel);
+        PathPlannerState initState = (PathPlannerState) traj.sample(0);
+
+        commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(initState.poseMeters.getTranslation(), initState.holonomicRotation))));
+        commands.add(new PPSwerveControllerCommand(
+                          traj,
+                          m_robotSwerveDrive::getOdometry,
+                          m_robotSwerveDrive.m_kinematics,
+                          xController,
+                          yController,
+                          thetaController,
+                          m_robotSwerveDrive::setModuleStates,
+                          m_robotSwerveDrive));
+      }
+
+      if (inputs[i] instanceof Command) {
+        commands.add((Command) inputs[i]);
+      }
+    }
+    
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.stopModules()));
+    Command[] ret = new Command[commands.size()];
+    ret = commands.toArray(ret);
+    return ret;
   }
 
   /**
@@ -118,34 +161,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() throws IOException {
     // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wiki
 
-    try (
-        PIDController xController = new PIDController(10.0, 0.0, 0.0);
-        PIDController yController = new PIDController(1.3, 0.0, 0.0)) {
-      ProfiledPIDController thetaController = new ProfiledPIDController(
-          10.0, 0.0, 0.0, new TrapezoidProfile.Constraints(2 * Math.PI, Math.PI));
-      thetaController.enableContinuousInput(-Math.PI, Math.PI);
-      PathPlannerTrajectory ppRecorded = PathPlannerTrajectoryUtil
-          .fromPathweaverJson(Arrays.stream(Filesystem.getDeployDirectory().listFiles())
-              .max(Comparator.comparingLong(File::lastModified)).orElseThrow().toPath(), 1.0, 1.0);
-
-      PathPlannerTrajectory ppCurrentPath = ppRecorded; // change this to change auto
-
-      PPSwerveControllerCommand ppSwerveControllerCommand = new PPSwerveControllerCommand(
-          ppCurrentPath,
-          m_robotSwerveDrive::getOdometry,
-          m_robotSwerveDrive.m_kinematics,
-          xController,
-          yController,
-          thetaController,
-          m_robotSwerveDrive::setModuleStates,
-          m_robotSwerveDrive);
-
-      return new SequentialCommandGroup(
-          new InstantCommand(m_robotSwerveDrive.m_gyro::reset),
-          new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(ppCurrentPath.getInitialPose())),
-          ppSwerveControllerCommand,
-          new InstantCommand(m_robotSwerveDrive::stopModules));
-    }
+    Command[] trajCommands = buildAuto(0.5, 0.5, "Move Forward", "Move Down");
+    SequentialCommandGroup ret = new SequentialCommandGroup(trajCommands);
+    return (new ParallelCommandGroup(buildAuto(0.1, 0.1, ret, new InstantCommand(() -> m_testMotor.set(TalonFXControlMode.PercentOutput, 0.2)))));
   }
 
   /**
@@ -159,7 +177,7 @@ public class RobotContainer {
     return m_robotSwerveDrive.getOdometry();
   }
 
-  public void zeroOdometry(Pose2d pose) {
+  public void resetOdometry(Pose2d pose) {
     m_robotSwerveDrive.resetOdometry(pose);
   }
 

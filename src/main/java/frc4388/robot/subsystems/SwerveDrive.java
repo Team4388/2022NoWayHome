@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -50,9 +51,12 @@ public class SwerveDrive extends SubsystemBase {
   /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
   below are robot specific, and should be tuned. */
   public SwerveDrivePoseEstimator m_poseEstimator;
+  public SwerveDriveOdometry m_odometry;
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
+  public Rotation2d rotTarget = new Rotation2d();;
+  private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
   private final Field2d m_field = new Field2d();
 
@@ -89,9 +93,12 @@ public class SwerveDrive extends SubsystemBase {
           m_gyro.getRotation2d(),
           new Pose2d(),
           m_kinematics,
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(Units.degreesToRadians(0.01)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+          VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),
+          VecBuilder.fill(Units.degreesToRadians(1)),
+          VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)));
+
+    m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
+
     m_gyro.reset(); 
     SmartDashboard.putData("Field", m_field);
   }
@@ -121,8 +128,7 @@ public class SwerveDrive extends SubsystemBase {
               : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
     setModuleStates(states);
   }
-  private Rotation2d rotTarget = new Rotation2d();
-  private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
+
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
   {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
@@ -153,7 +159,7 @@ public class SwerveDrive extends SubsystemBase {
   
   @Override
   public void periodic() {
-    //System.err.println(m_gyro.getFusedHeading() +"    aaa");
+    // System.err.println(m_gyro.getFusedHeading() +"    aaa");
     updateOdometry();
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
@@ -182,7 +188,7 @@ public class SwerveDrive extends SubsystemBase {
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
-    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 
@@ -217,6 +223,7 @@ public class SwerveDrive extends SubsystemBase {
    * @return Robot's current pose.
    */
   public Pose2d getOdometry() {
+    // return m_odometry.getPoseMeters();
     return m_poseEstimator.getEstimatedPosition();
   }
 
@@ -224,16 +231,24 @@ public class SwerveDrive extends SubsystemBase {
    * Resets the odometry of the robot to (x=0, y=0, theta=0).
    */
   public void resetOdometry(Pose2d pose) {
+    // m_odometry.resetPosition(pose, m_gyro.getRotation2d());
     m_poseEstimator.resetPosition(pose, m_gyro.getRotation2d());
   }
 
   /** Updates the field relative position of the robot. */
+
   public void updateOdometry() {
     m_poseEstimator.update( m_gyro.getRotation2d(), 
                             modules[0].getState(), 
                             modules[1].getState(), 
                             modules[2].getState(), 
                             modules[3].getState());
+    
+    // m_odometry.update( m_gyro.getRotation2d(), 
+    //                    modules[0].getState(),
+    //                    modules[1].getState(),
+    //                    modules[2].getState(),
+    //                    modules[3].getState());
   
       // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
       // a real robot, this must be calculated based either on latency or timestamps.
@@ -241,6 +256,11 @@ public class SwerveDrive extends SubsystemBase {
       //         m_poseEstimator.getEstimatedPosition(),
       //     Timer.getFPGATimestamp() - 0.1);
     }
+
+  public void resetGyro(){
+    m_gyro.reset();
+    rotTarget = new Rotation2d(0);
+  }
 
   public void stopModules() {
     modules[0].stop();
