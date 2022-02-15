@@ -1,24 +1,16 @@
 package frc4388.utility;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc4388.utility.PathPlannerUtil.Path.Waypoint;
 
 public final class RobotLogger {
-  private static final int SAMPLE_BASE = 15_000; // ms of sampling
-  private static final int SAMPLE_RATE = 20; // ms between samples
-
   private static RobotLogger instance = null;
 
   public static RobotLogger getInstance() {
@@ -30,49 +22,30 @@ public final class RobotLogger {
   }
 
   private RobotLogger() {
-    data = new ArrayList<>();
+    sendableChooser.setDefaultOption("Disable", false);
+    sendableChooser.addOption("Enable", true);
+    SmartDashboard.putData("Recording", sendableChooser);
   }
 
-  private final List<PathPlannerTrajectory.PathPlannerState> data;
-  private boolean enabled = false;
-
-  public void setEnabled(boolean value) {
-    enabled = value;
-  }
+  private final List<Waypoint> data = new ArrayList<>();
+  private final SendableChooser<Boolean> sendableChooser = new SendableChooser<>();
 
   double lastVelocityMetersPerSecond = 0;
-  public void put(
-    double velocityMetersPerSecond,
-    Pose2d poseMeters,
-    double curvatureRadPerMeter,
-    double positionMeters,
-    Rotation2d angularVelocity,
-    Rotation2d angularAcceleration,
-    Rotation2d holonomicRotation) {
-    if (enabled) {
-      double accelerationMetersPerSecondSq = lastVelocityMetersPerSecond == 0 ? velocityMetersPerSecond : 
-      (velocityMetersPerSecond - lastVelocityMetersPerSecond) / 2.0;
-      PathPlannerTrajectory.PathPlannerState pathPlannerState = new PathPlannerTrajectory.PathPlannerState();
-      pathPlannerState.timeSeconds = getTime();
-      pathPlannerState.velocityMetersPerSecond = velocityMetersPerSecond;
-      pathPlannerState.accelerationMetersPerSecondSq = accelerationMetersPerSecondSq;
-      pathPlannerState.poseMeters = poseMeters;
-      pathPlannerState.curvatureRadPerMeter = curvatureRadPerMeter;
-      pathPlannerState.positionMeters = positionMeters;
-      pathPlannerState.angularVelocity = angularVelocity;
-      pathPlannerState.angularAcceleration = angularAcceleration;
-      pathPlannerState.holonomicRotation = holonomicRotation;
-      data.add(pathPlannerState);
-      lastVelocityMetersPerSecond = velocityMetersPerSecond;
+  public void put(Double anchorPointX, Double anchorPointY, Double prevControlX, Double prevControlY, Double nextControlX, Double nextControlY, Double holonomicAngle, Boolean isReversal, Double velOverride, Boolean isLocked) {
+    if (Boolean.TRUE.equals(sendableChooser.getSelected())) {
+      Waypoint waypoint = new Waypoint(anchorPointX, anchorPointY, prevControlX, prevControlY, nextControlX, nextControlY, holonomicAngle, isReversal, velOverride, isLocked);
+      data.add(waypoint);
     }
   }
 
-  public String exportPath() throws IOException {
-    List<PathPlannerTrajectory.PathPlannerState> states = data;
-    String pathPath = "recording." + System.currentTimeMillis() + ".json";
-    Path outputPath = Filesystem.getDeployDirectory().toPath().resolve(pathPath);
-    outputPath.toFile().createNewFile();
-    PathPlannerTrajectoryUtil.toPathweaverJson(states, outputPath);
-    return pathPath;
+  @SuppressWarnings("unchecked")
+  public PathPlannerUtil.Path createPath(Double maxVelocity, Double maxAcceleration, Boolean isReversed) {
+    PathPlannerUtil.Path path = new PathPlannerUtil.Path();
+    path.waypoints = data.stream().map(Optional::ofNullable).toArray(Optional[]::new);
+    path.maxVelocity = Optional.ofNullable(maxVelocity);
+    path.maxAcceleration = Optional.ofNullable(maxAcceleration);
+    path.isReversed = Optional.ofNullable(isReversed);
+    data.clear();
+    return path;
   }
 }

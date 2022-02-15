@@ -24,6 +24,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
 import frc4388.utility.RobotLogger;
+import frc4388.utility.PathPlannerUtil.Path.Waypoint.Point;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -156,28 +157,26 @@ public class SwerveDrive extends SubsystemBase {
       module.setDesiredState(state, false);
     }
   }
-  
+
   @Override
   public void periodic() {
     // System.err.println(m_gyro.getFusedHeading() +"    aaa");
     updateOdometry();
     // m_gyro.setFusedHeadingToCompass();
     // m_gyro.setYawToCompass();
-    {
-
-
-
-
-      // double velocityMetersPerSecond = new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond).getNorm();
-      double velocityMetersPerSecond = chassisSpeeds.vxMetersPerSecond;
-      Pose2d poseMeters = m_poseEstimator.getEstimatedPosition();
-      double curvatureRadPerMeter = 0;
-      RobotLogger.getInstance().put(velocityMetersPerSecond, poseMeters, curvatureRadPerMeter, 0, new Rotation2d(), new Rotation2d(), new Rotation2d());
-
-
-
-      
-    }
+    Pose2d pos = m_poseEstimator.getEstimatedPosition();
+    RobotLogger.getInstance().put(
+      /* anchorPointX */ pos.getX(),
+      /* anchorPointY */ pos.getY(),
+      /* prevControlX */ pos.getX(),
+      /* prevControlY */ pos.getY(),
+      /* nextControlX */ pos.getX(),
+      /* nextControlY */ pos.getY(),
+      /* holonomicAngle */ m_gyro.getRotation2d().getDegrees(),
+      /* isReversal */ false,
+      /* velOverride */ null,
+      /* isLocked */ false
+    );
     SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());

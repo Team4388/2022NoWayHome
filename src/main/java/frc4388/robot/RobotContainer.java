@@ -4,8 +4,13 @@
 
 package frc4388.robot;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -18,11 +23,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -113,8 +119,7 @@ public class RobotContainer {
   }
 
   public Command[] buildAuto(double maxVel, double maxAccel, Object... inputs) {
-
-    ArrayList<Command> commands = new ArrayList<Command>();
+    ArrayList<Command> commands = new ArrayList<>();
     commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
 
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
@@ -123,30 +128,18 @@ public class RobotContainer {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     // parse input
-    for (int i=0; i<inputs.length; i++) {
-
+    for (int i = 0; i < inputs.length; i++) {
       if (inputs[i] instanceof String) {
         PathPlannerTrajectory traj = PathPlanner.loadPath(inputs[i].toString(), maxVel, maxAccel);
         PathPlannerState initState = (PathPlannerState) traj.sample(0);
 
         commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(initState.poseMeters.getTranslation(), initState.holonomicRotation))));
-        commands.add(new PPSwerveControllerCommand(
-                          traj,
-                          m_robotSwerveDrive::getOdometry,
-                          m_robotSwerveDrive.m_kinematics,
-                          xController,
-                          yController,
-                          thetaController,
-                          m_robotSwerveDrive::setModuleStates,
-                          m_robotSwerveDrive));
-      }
-
-      if (inputs[i] instanceof Command) {
+        commands.add(new PPSwerveControllerCommand(traj, m_robotSwerveDrive::getOdometry, m_robotSwerveDrive.m_kinematics, xController, yController, thetaController, m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive));
+      } else if (inputs[i] instanceof Command)
         commands.add((Command) inputs[i]);
-      }
     }
-    
-    commands.add(new InstantCommand(() -> m_robotSwerveDrive.stopModules()));
+
+    commands.add(new InstantCommand(m_robotSwerveDrive::stopModules));
     Command[] ret = new Command[commands.size()];
     ret = commands.toArray(ret);
     return ret;
@@ -161,9 +154,18 @@ public class RobotContainer {
   public Command getAutonomousCommand() throws IOException {
     // https://github.com/mjansen4857/pathplanner/wiki <-- Pathplanner Wiki
 
-    Command[] trajCommands = buildAuto(0.5, 0.5, "Move Forward", "Move Down");
-    SequentialCommandGroup ret = new SequentialCommandGroup(trajCommands);
-    return (new ParallelCommandGroup(buildAuto(0.1, 0.1, ret, new InstantCommand(() -> m_testMotor.set(TalonFXControlMode.PercentOutput, 0.2)))));
+    // Command[] trajCommands = buildAuto(0.5, 0.5, "Move Forward", "Move Down");
+    // SequentialCommandGroup ret = new SequentialCommandGroup(trajCommands);
+    // return (new ParallelCommandGroup(buildAuto(0.1, 0.1, ret, new InstantCommand(() -> m_testMotor.set(TalonFXControlMode.PercentOutput, 0.2)))));
+    Optional<File> recordedAuto = Arrays.stream(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile().listFiles()).filter(f -> f.getName().startsWith("recording")).max(Comparator.comparingLong(File::lastModified));
+    if (recordedAuto.isPresent()) {
+      String name = recordedAuto.orElseThrow().getName().replace(".path", "");
+      Logger.getLogger(this.getClass().getName()).fine(name);
+      return new SequentialCommandGroup(buildAuto(1.0, 1.0, name));
+    }
+    Logger.getLogger(this.getClass().getName()).severe("No recorded autos found.");
+    return new InstantCommand();
+    // return new PrintCommand("No recorded autos found.");
   }
 
   /**

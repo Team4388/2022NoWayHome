@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import com.diffplug.common.base.DurianPlugins;
 import com.diffplug.common.base.Errors;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc4388.utility.AnsiLogging;
 

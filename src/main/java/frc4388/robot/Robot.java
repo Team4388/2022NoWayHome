@@ -4,11 +4,13 @@
 
 package frc4388.robot;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.RobotLogger;
 import frc4388.utility.RobotTime;
+import frc4388.utility.PathPlannerUtil.Path;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -50,9 +53,11 @@ public class Robot extends TimedRobot {
       LOGGER.log(Level.FINEST, "Logging Test 8/8");
     // }
 
-    var path = PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move Forward.path").toFile());
-    LOGGER.finest(path::toString);
+    // var path = PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move Forward.path").toFile());
+    // LOGGER.finest(path::toString);
     LOGGER.fine("robotInit()");
+    LOGGER.fine("Sssssssssh.");
+    DriverStation.silenceJoystickConnectionWarning(true);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -88,19 +93,24 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
-    RobotLogger.getInstance().setEnabled(false);
     if (isTest()) {
       try {
-        String p = RobotLogger.getInstance().exportPath();
+        // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
+        Path path = RobotLogger.getInstance().createPath(0.1, 0.1, false);
+        String pathPath = "recording." + System.currentTimeMillis() + ".path";
+        File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve(pathPath).toFile();
+        outputFile.createNewFile();
+        path.write(outputFile);
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "Recorded path to {0} in the deploy directory on the RoboRIO", p);
+        LOGGER.log(Level.WARNING, "Recorded path to {0} in the deploy directory on the RoboRIO", pathPath);
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
         LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
+        // LOGGER.finest(path::toString);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -132,7 +142,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }
     m_robotTime.startMatchTime();
-    RobotLogger.getInstance().setEnabled(false);
   }
 
   /**
@@ -153,7 +162,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotTime.startMatchTime();
-    RobotLogger.getInstance().setEnabled(true);
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
@@ -168,7 +176,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    RobotLogger.getInstance().setEnabled(false);
   }
 
   /**
