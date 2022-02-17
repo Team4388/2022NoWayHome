@@ -19,6 +19,10 @@ import java.util.logging.Logger;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.Ansi.Color;
+
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.fusesource.jansi.AnsiConsole;
 
 public class AnsiLogging extends ConsoleHandler {
@@ -35,7 +39,7 @@ public class AnsiLogging extends ConsoleHandler {
       // Replaces standard output streams with org.fusesource.jansi.AnsiPrintStreams.
       AnsiConsole.systemInstall();
       // Replaces standard output stream with java.util.logging.Logger.
-      System.setOut(printStreamLogger(Logger.getGlobal(), Level.INFO));
+      System.setOut(printStreamLogger(Logger.getGlobal(), Level.ALL));
       // Replaces standard error output stream with java.util.logging.Logger.
       System.setErr(printStreamLogger(Logger.getGlobal(), Level.SEVERE));
     } catch (IOException exception) {
@@ -66,6 +70,7 @@ public class AnsiLogging extends ConsoleHandler {
         } else
           source = logRecord.getLoggerName();
         String message = formatMessage(logRecord);
+        boolean multiline = message.contains("\n");
         String throwable = "";
         if (logRecord.getThrown() != null) {
           StringWriter sw = new StringWriter();
@@ -74,6 +79,7 @@ public class AnsiLogging extends ConsoleHandler {
             logRecord.getThrown().printStackTrace(pw);
           }
           throwable = sw.toString();
+          multiline = true;
         }
         Ansi ansi;
         if (logRecord.getLevel() == Level.SEVERE) ansi = ansi().fgBright(Color.RED);
@@ -84,7 +90,7 @@ public class AnsiLogging extends ConsoleHandler {
         else if (logRecord.getLevel() == Level.FINER) ansi = ansi().fg(Color.MAGENTA);
         else if (logRecord.getLevel() == Level.FINEST) ansi = ansi().fgBright(Color.BLACK);
         else ansi = ansi().fg(Color.DEFAULT);
-        String format = ansi.bold().a(Attribute.UNDERLINE).a("%1$tb %1$td, %1$tY %1$tl:%1$tM:%1$tS %1$Tp %2$s %4$s:").boldOff().a(Attribute.UNDERLINE_OFF).a("%n%5$s%6$s").reset().a("%n").toString();
+        String format = ansi.bold().a(Attribute.UNDERLINE).a("%1$tb %1$td, %1$tY %1$tl:%1$tM:%1$tS %1$Tp %2$s %4$s:").boldOff().a(Attribute.UNDERLINE_OFF).a(multiline ? "%n%5$s%6$s" : " %5$s%6$s").reset().a("%n").toString();
         return String.format(format, zdt, source, logRecord.getLoggerName(), logRecord.getLevel().getLocalizedName(), message, throwable);
       }
     };

@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+      {
+          "label": "downloadDeployDirectory",
+          "type": "shell",
+          "command": "scp -pr lvuser@roboRIO-4388-FRC.local:/home/lvuser/deploy ./deploy"
+      }
+  ]
+}

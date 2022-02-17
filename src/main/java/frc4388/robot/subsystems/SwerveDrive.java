@@ -4,8 +4,8 @@
 
 package frc4388.robot.subsystems;
 
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -23,8 +23,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
-import frc4388.utility.RobotLogger;
-import frc4388.utility.PathPlannerUtil.Path.Waypoint.Point;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -57,7 +55,7 @@ public class SwerveDrive extends SubsystemBase {
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
   public Rotation2d rotTarget = new Rotation2d();;
-  private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
+  public ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
   private final Field2d m_field = new Field2d();
 
@@ -160,23 +158,7 @@ public class SwerveDrive extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // System.err.println(m_gyro.getFusedHeading() +"    aaa");
     updateOdometry();
-    // m_gyro.setFusedHeadingToCompass();
-    // m_gyro.setYawToCompass();
-    Pose2d pos = m_poseEstimator.getEstimatedPosition();
-    RobotLogger.getInstance().put(
-      /* anchorPointX */ pos.getX(),
-      /* anchorPointY */ pos.getY(),
-      /* prevControlX */ pos.getX(),
-      /* prevControlY */ pos.getY(),
-      /* nextControlX */ pos.getX(),
-      /* nextControlY */ pos.getY(),
-      /* holonomicAngle */ m_gyro.getRotation2d().getDegrees(),
-      /* isReversal */ false,
-      /* velOverride */ null,
-      /* isLocked */ false
-    );
     SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
@@ -186,8 +168,7 @@ public class SwerveDrive extends SubsystemBase {
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-
-    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 

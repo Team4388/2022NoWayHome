@@ -1,44 +1,27 @@
 {
-  "HALProvider": {
-    "Other Devices": {
-      "Talon FX[2]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX[3]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon FX[4]": {
-        "header": {
-          "open": true
-        }
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/LED": "Subsystem",
       "/LiveWindow/SwerveDrive": "Subsystem",
       "/LiveWindow/SwerveModule": "Subsystem",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/SmartDashboard/Driver Controller": "Mechanism2d",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Auto Chooser": "String Chooser",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/JVM Memory": "Command",
+      "/SmartDashboard/Recording": "Command",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/Usable Deploy Space": "Command"
     },
     "windows": {
-      "/SmartDashboard/Field": {
+      "/SmartDashboard/Scheduler": {
         "window": {
           "visible": true
         }
       }
-    }
-  },
-  "NetworkTables": {
-    "SmartDashboard": {
-      "open": true
     }
   }
 }

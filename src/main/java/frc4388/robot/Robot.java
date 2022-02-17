@@ -5,22 +5,23 @@
 package frc4388.robot;
 
 import java.io.File;
-import java.io.IOException;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.StreamSupport;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
+import com.diffplug.common.base.Errors;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc4388.utility.PathPlannerUtil;
-import frc4388.utility.RobotLogger;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
-import frc4388.utility.PathPlannerUtil.Path;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -61,6 +62,33 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    // addPeriodic(m_robotContainer::recordPeriodic, kDefaultPeriod);
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData("JVM Memory", new RunCommand(() -> {}) {
+      @Override public boolean runsWhenDisabled() { return true; }
+      @Override public String getName() {
+        if (isScheduled()) {
+          Runtime runtime = Runtime.getRuntime();
+          long totalMemory = runtime.totalMemory() / 1_000_000;
+          long freeMemory = runtime.freeMemory() / 1_000_000;
+          long maxMemory = runtime.maxMemory() / 1_000_000;
+          return totalMemory - freeMemory + " MB / " + totalMemory + " MB / " + maxMemory + " MB";
+        }
+        return "Not Running";
+      }
+    });
+    SmartDashboard.putData("Usable Deploy Space", new RunCommand(() -> {}) {
+      @Override public boolean runsWhenDisabled() { return true; }
+      @Override public String getName() {
+        if (isScheduled()) {
+          File deploy = Filesystem.getDeployDirectory();
+          long usedSpace = Errors.suppress().getWithDefault(() -> Files.walk(deploy.toPath()).map(Path::toFile).filter(File::isFile).mapToLong(File::length).sum(), 0l) / 1_000_000;
+          long usableSpace = deploy.getUsableSpace() / 1_000_000;
+          return usedSpace + " MB / " + usableSpace + " MB";
+        }
+        return "Not Running";
+      }
+    });
   }
 
   /**
@@ -94,26 +122,13 @@ public class Robot extends TimedRobot {
     LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
     if (isTest()) {
-      try {
-        // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
-        Path path = RobotLogger.getInstance().createPath(0.1, 0.1, false);
-        String pathPath = "recording." + System.currentTimeMillis() + ".path";
-        File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve(pathPath).toFile();
-        outputFile.createNewFile();
-        path.write(outputFile);
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "Recorded path to {0} in the deploy directory on the RoboRIO", pathPath);
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        LOGGER.log(Level.WARNING, "----------------------------------------------------------------------");
-        // LOGGER.finest(path::toString);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
+      File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("recording." + System.currentTimeMillis() + ".path").toFile();
+      if (Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
+        m_robotContainer.createPath(null, null, false).write(outputFile);
+        LOGGER.log(Level.SEVERE, "Recorded path to {0}.", outputFile.getPath());
+      } else
+        LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
     }
   }
 
@@ -130,12 +145,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     LOGGER.fine("autonomousInit()");
-    try {
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -176,6 +186,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /**
