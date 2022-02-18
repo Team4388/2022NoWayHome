@@ -66,6 +66,8 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // print odometry data to smart dashboard for debugging (if causing timeout errors, you can comment it)
     SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
     SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
     SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
@@ -84,9 +86,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
-    // SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
-    // SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
   }
 
   /**
@@ -114,6 +113,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     LOGGER.fine("teleopInit()");
+    m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -130,8 +130,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    // m_robotContainer.getDriverController().updateInput();
-    // m_robotContainer.getOperatorController().updateInput();
   }
 
   /**

@@ -44,7 +44,7 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
+  public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
     m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
 
   private final TalonFX m_testMotor = new TalonFX(23);
@@ -115,17 +115,19 @@ public class RobotContainer {
    * Generate autonomous
    * @param maxVel max velocity for the path (null to override default value of 5.0)
    * @param maxAccel max acceleration for the path (null to override default value of 5.0)
-   * @param inputs strings (paths) or commands you want to run (in order)
-   * @return array of commands
+   * @param inputs strings (path names) or commands you want to run (in order)
+   * @return array of commands, which can then be processed in a command group
    */
   public Command[] buildAuto(Double maxVel, Double maxAccel, Object... inputs) {
 
+    // default vel and acc
     maxVel = Objects.requireNonNullElse(maxVel, SwerveDriveConstants.MAX_VEL);
     maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.MAX_ACC);
 
     ArrayList<Command> commands = new ArrayList<Command>();
     commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
 
+    // pids controlling the path
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
     ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
@@ -134,7 +136,9 @@ public class RobotContainer {
     // parse input
     for (int i=0; i<inputs.length; i++) {
 
+      // if string, process as pathplanner trajectory
       if (inputs[i] instanceof String) {
+
         PathPlannerTrajectory traj = PathPlanner.loadPath(inputs[i].toString(), maxVel, maxAccel);
         PathPlannerState initState = (PathPlannerState) traj.sample(0);
 
@@ -150,6 +154,7 @@ public class RobotContainer {
                           m_robotSwerveDrive));
       }
 
+      // if command, just add it to the array
       if (inputs[i] instanceof Command) {
         commands.add((Command) inputs[i]);
       }
@@ -185,10 +190,18 @@ public class RobotContainer {
     return m_driverXbox;
   }
 
+  /**
+   * Get odometry.
+   * @return Odometry
+   */
   public Pose2d getOdometry() {
     return m_robotSwerveDrive.getOdometry();
   }
 
+  /**
+   * Set odometry to given pose.
+   * @param pose Pose to set odometry to.
+   */
   public void resetOdometry(Pose2d pose) {
     m_robotSwerveDrive.resetOdometry(pose);
   }

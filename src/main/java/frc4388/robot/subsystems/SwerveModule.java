@@ -62,7 +62,7 @@ public class SwerveModule extends SubsystemBase {
 
   private Rotation2d getAngle() {
     // Note: This assumes the CANCoders are setup with the default feedback coefficient
-    // and the sesnor value reports degrees.
+    // and the sensor value reports degrees.
     return Rotation2d.fromDegrees(canCoder.getAbsolutePosition());
   }
 
@@ -90,20 +90,26 @@ public class SwerveModule extends SubsystemBase {
 
 
     double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
-    // driveMotor.set(TalonFXControlMode.Velocity, /*angleMotor.get() + */(Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+
+    // Add this line to correct for the slight drive movement the angle motor makes when turning in place. 
+    // driveMotor.set(TalonFXControlMode.Velocity, angleMotor.get() + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    
     driveMotor.set(feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC);
   }
 
   /**
-   * Returns the current state of the module.
+   * Get current module state.
    *
-   * @return The current state of the module.
+   * @return The current state of the module in m/s.
    */
   public SwerveModuleState getState() {
     // return state;
     return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK * SwerveDriveConstants.METERS_PER_INCH * 10, getAngle());
   }
 
+  /**
+   * Stop the drive and steer motors of current module.
+   */
   public void stop() {
     driveMotor.set(0);
     angleMotor.set(0);
