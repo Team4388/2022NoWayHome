@@ -114,7 +114,7 @@ public void setShooterGains() {
     //Controls a motor with the output of the BangBang conroller and a feedforward
     //Shrinks the feedforward slightly to avoid over speeding the shooter
     
-    // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
+    //m_shooterFalconLeft.set(calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
     m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
   }
 }

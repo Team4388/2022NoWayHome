@@ -4,6 +4,9 @@
 
 package frc4388.robot;
 
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -12,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
+//import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
@@ -30,21 +34,22 @@ import frc4388.utility.controller.XboxController;
 public class RobotContainer {
   /* RobotMap */
   private final RobotMap m_robotMap = new RobotMap();
+  private final TalonFX m_testMotor = new TalonFX(2);
 
-  /* Subsystems */
-  // private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-  //   m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
-  //   m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
-  //   m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
-  //   m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
-  //   m_robotMap.leftFrontEncoder,
-  //   m_robotMap.rightFrontEncoder,
-  //   m_robotMap.leftBackEncoder,
-  //   m_robotMap.rightBackEncoder
-  // );
-
+  /* Subsystems 
+  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
+    m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
+    m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
+    m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
+    m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
+    m_robotMap.leftFrontEncoder,
+    m_robotMap.rightFrontEncoder,
+    m_robotMap.leftBackEncoder,
+    m_robotMap.rightBackEncoder
+  );
+  */
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  private final BoomBoom m_robotBoomBoom = new BoomBoom();
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret();
   private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
@@ -60,19 +65,20 @@ public class RobotContainer {
 
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
-    // m_robotSwerveDrive.setDefaultCommand(
-    //     new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
-    //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+    /*m_robotSwerveDrive.setDefaultCommand(
+        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
+            getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
     
 
-
+    */
     //Turret default command
 
     m_robotTurret.setDefaultCommand(
-      new RunCommand(() -> m_robotTurret.runShooterWithInput(getOperatorController().getLeftXAxis()), m_robotTurret));
+      new RunCommand(() -> m_robotTurret.runShooterWithInput(getOperatorController().getLeftXAxis()), m_robotTurret)
+      );
       // m_robotTurret.setDefaultCommand(
       //     new RunCommand(() -> m_robotTurret.aimToCenter()));
   }
@@ -88,6 +94,10 @@ public class RobotContainer {
 
     /* Operator Buttons */
     // activates "Lit Mode"
+
+    new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
+        .whileHeld(() -> m_testMotor.set(TalonFXControlMode.PercentOutput, 0.5));
+
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
@@ -95,9 +105,16 @@ public class RobotContainer {
         new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
             .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
             .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
-
-  
     /* Driver Buttons */
+    //activates intake
+    new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON);
+   // .whenPressed() -> m_robot
+   /*operator button*/
+   //activates hood
+    new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
+    .whenPressed(() -> m_robotHood.runHood(0.5d))
+    .whenReleased(() -> m_robotHood.runHood(0.d));
+    new JoystickButton(getOperatorJoystick()
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

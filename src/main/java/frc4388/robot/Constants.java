@@ -88,7 +88,10 @@ public final class Constants {
 
   public static final class ShooterConstants {
     /* PID Constants Shooter */
+<<<<<<< Updated upstream
     public static final int CLOSED_LOOP_TIME_MS = 1;
+=======
+>>>>>>> Stashed changes
     public static final int SHOOTER_TIMEOUT_MS = 32;
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
