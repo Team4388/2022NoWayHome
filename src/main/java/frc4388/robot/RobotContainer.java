@@ -4,6 +4,8 @@
 
 package frc4388.robot;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -72,7 +74,7 @@ public class RobotContainer {
     //Turret default command
 
     m_robotTurret.setDefaultCommand(
-      new RunCommand(() -> m_robotTurret.runShooterWithInput(getOperatorController().getLeftXAxis()), m_robotTurret));
+      new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftXAxis()), m_robotTurret));
       // m_robotTurret.setDefaultCommand(
       //     new RunCommand(() -> m_robotTurret.aimToCenter()));
   }
@@ -96,7 +98,7 @@ public class RobotContainer {
             .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
             .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
 
-  
+            
     /* Driver Buttons */
   }
   /**

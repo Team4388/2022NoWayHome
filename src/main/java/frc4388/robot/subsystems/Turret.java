@@ -42,14 +42,14 @@ public class Turret extends SubsystemBase {
   
   
   //Variables
-  public Turret() {
+  public Turret(CANSparkMax BoomBoomRotateMotor) { //Take in rotate motor as an argument
 
-    m_boomBoomRotateMotor = new CANSparkMax(30, MotorType.kBrushless);
+    m_boomBoomRotateMotor = BoomBoomRotateMotor;
     m_boomBoomRotatePIDController = m_boomBoomRotateMotor.getPIDController();
     m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
     m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
   
-    m_turretGyro = getGyroInterface();
+  
     m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit.enableLimitSwitch(true);
@@ -57,14 +57,11 @@ public class Turret extends SubsystemBase {
 
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_RIGHT_SOFT_LIMIT);
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_RIGHT_SOFT_LIMIT); //Set second soft limit
     m_boomBoomRotateMotor.setInverted(false);
     
   }
 
-  private Gyro getGyroInterface() {
-    return null;
-  }
 
   @Override
   public void periodic() {
@@ -81,16 +78,18 @@ public class Turret extends SubsystemBase {
     m_sDriveSubsystem = subsystem1;
   }
 
-  public void runShooterWithInput(double input) {
+  public void runTurretWithInput(double input) { //Rename to turret
     m_boomBoomRotateMotor.set(input*ShooterConstants.TURRET_SPEED_MULTIPLIER);
   }
 
-  public void runshooterRotatePID(double targetAngle) {
+  public void runshooterRotatePID(double targetAngle) { //Split into configure and run
   m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
   m_boomBoomRotatePIDController.setI(m_shooterTGains.m_kI);
   m_boomBoomRotatePIDController.setD(m_shooterTGains.m_kD);
   m_boomBoomRotatePIDController.setFF(m_shooterTGains.m_kF);
   m_boomBoomRotatePIDController.setIZone(m_shooterTGains.m_kIzone);
+
+
   m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.m_kPeakOutput);
 
   targetAngle = targetAngle/ShooterConstants.DEGREES_PER_ROT;
@@ -111,16 +110,5 @@ public class Turret extends SubsystemBase {
   public double getAnglePositionDegrees() {
     return (m_boomBoomRotateEncoder.getPosition() - ShooterConstants.TURRET_MOTOR_POS_AT_ZERO_ROT) * 360/ShooterConstants. TURRET_MOTOR_ROTS_PER_ROT;
   }
-  
 
-
-  //function turnWithJoystick(double input)
-  //   motor.set(input)
 }
-
-
-
-/** TODO
-* setPosition function
-* Limit switches
-**/

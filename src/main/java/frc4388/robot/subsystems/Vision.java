@@ -37,6 +37,8 @@ public static double fireAngle;
 public double m_hoodTrim;
 public double m_turretTrim;
 public double m_fireAngle;
+
+
 public Vision(Turret aimSubsystem, BoomBoom boomBoom) {
   m_turret = aimSubsystem;
   m_boomBoom = boomBoom;
