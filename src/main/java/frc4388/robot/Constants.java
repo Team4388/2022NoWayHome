@@ -53,10 +53,10 @@ public final class Constants {
     public static final int GYRO_ID = 14;
     
     // ofsets are in degrees
-    public static final double LEFT_FRONT_ENCODER_OFFSET = 180.0;
-    public static final double RIGHT_FRONT_ENCODER_OFFSET = 300.0;
-    public static final double LEFT_BACK_ENCODER_OFFSET = 360.0 - 128.0;
-    public static final double RIGHT_BACK_ENCODER_OFFSET = 0.0;
+    public static final double LEFT_FRONT_ENCODER_OFFSET = 181.45-3.30;//181.7578125;//180.0;//315.0 +45;//180.0;
+    public static final double RIGHT_FRONT_ENCODER_OFFSET = 360.-59.0625+0.18;//360.-59.0625;//315.0;//224.296875 + 90;//300.0;
+    public static final double LEFT_BACK_ENCODER_OFFSET = 360.-128.222;//308.408203125;//225.0;//45.87890625;//360.0 - 128.0;
+    public static final double RIGHT_BACK_ENCODER_OFFSET = 360.+2.15-3.637;//180-2.021484375;//0.0;//134.384765625 + 45;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;

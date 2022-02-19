@@ -91,14 +91,15 @@ public class RobotMap {
     rightBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
-    leftFrontSteerMotor.setNeutralMode(NeutralMode.Brake);
-    leftFrontWheelMotor.setNeutralMode(NeutralMode.Brake);//Coast
-    rightFrontSteerMotor.setNeutralMode(NeutralMode.Brake);
-    rightFrontWheelMotor.setNeutralMode(NeutralMode.Brake);//Coast
-    leftBackSteerMotor.setNeutralMode(NeutralMode.Brake);
-    leftBackWheelMotor.setNeutralMode(NeutralMode.Brake);//Coast
-    rightBackSteerMotor.setNeutralMode(NeutralMode.Brake);
-    rightBackWheelMotor.setNeutralMode(NeutralMode.Brake);//Coast
+    NeutralMode mode = NeutralMode.Brake;
+    leftFrontSteerMotor.setNeutralMode(mode);
+    leftFrontWheelMotor.setNeutralMode(mode);//Coast
+    rightFrontSteerMotor.setNeutralMode(mode);
+    rightFrontWheelMotor.setNeutralMode(mode);//Coast
+    leftBackSteerMotor.setNeutralMode(mode);
+    leftBackWheelMotor.setNeutralMode(mode);//Coast
+    rightBackSteerMotor.setNeutralMode(mode);
+    rightBackWheelMotor.setNeutralMode(mode);//Coast
 
     leftFront = new SwerveModule(leftFrontWheelMotor, leftFrontSteerMotor, leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
     leftBack = new SwerveModule(leftBackWheelMotor, leftBackSteerMotor, leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
