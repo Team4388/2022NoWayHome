@@ -7,6 +7,7 @@ package frc4388.robot.subsystems;
 
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -41,10 +42,11 @@ public class Turret extends SubsystemBase {
   public RelativeEncoder m_boomBoomRotateEncoder;// = m_boomBoomRotateMotor.getEncoder();
   
   
+  
   //Variables
-  public Turret(CANSparkMax BoomBoomRotateMotor) { //Take in rotate motor as an argument
+  public Turret(CANSparkMax boomBoomRotateMotor) { //Take in rotate motor as an argument
 
-    m_boomBoomRotateMotor = BoomBoomRotateMotor;
+    m_boomBoomRotateMotor = boomBoomRotateMotor;
     m_boomBoomRotatePIDController = m_boomBoomRotateMotor.getPIDController();
     m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
     m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
@@ -83,18 +85,18 @@ public class Turret extends SubsystemBase {
   }
 
   public void runshooterRotatePID(double targetAngle) { //Split into configure and run
-  m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
-  m_boomBoomRotatePIDController.setI(m_shooterTGains.m_kI);
-  m_boomBoomRotatePIDController.setD(m_shooterTGains.m_kD);
-  m_boomBoomRotatePIDController.setFF(m_shooterTGains.m_kF);
-  m_boomBoomRotatePIDController.setIZone(m_shooterTGains.m_kIzone);
+    m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
+    m_boomBoomRotatePIDController.setI(m_shooterTGains.m_kI);
+    m_boomBoomRotatePIDController.setD(m_shooterTGains.m_kD);
+    m_boomBoomRotatePIDController.setFF(m_shooterTGains.m_kF);
+    m_boomBoomRotatePIDController.setIZone(m_shooterTGains.m_kIzone);
 
 
-  m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.m_kPeakOutput);
+    m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.m_kPeakOutput);
 
-  targetAngle = targetAngle/ShooterConstants.DEGREES_PER_ROT;
+    targetAngle = targetAngle/ShooterConstants.DEGREES_PER_ROT;
 
-  m_boomBoomRotatePIDController.setReference(targetAngle,ControlType.kPosition);
+    m_boomBoomRotatePIDController.setReference(targetAngle,ControlType.kPosition);
   }
 
   public void resetGyroShooterRotate()
@@ -107,7 +109,7 @@ public class Turret extends SubsystemBase {
     return m_boomBoomRotateEncoder.getPosition();
   }
 
-  public double getAnglePositionDegrees() {
+  public double getBoomBoomAngleDegrees() {
     return (m_boomBoomRotateEncoder.getPosition() - ShooterConstants.TURRET_MOTOR_POS_AT_ZERO_ROT) * 360/ShooterConstants. TURRET_MOTOR_ROTS_PER_ROT;
   }
 
