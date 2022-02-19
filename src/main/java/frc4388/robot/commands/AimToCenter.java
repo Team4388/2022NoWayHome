@@ -31,17 +31,13 @@ public class AimToCenter extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_targetAngle = m_turret.getBoomBoomAngleDegrees() + m_drive.gyro.getAngle() + Math.atan(y/x);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    aimTurret(m_targetAngle);
-  }
-
-  public void aimTurret(double targetAngle) { //Split into configure and run
-    m_turret.runshooterRotatePID(targetAngle);
+    m_targetAngle = m_turret.getBoomBoomAngleDegrees() + m_drive.gyro.getAngle() + Math.atan(y/x);
+    m_turret.runshooterRotatePID(m_targetAngle);
   }
   
   // Called once the command ends or is interrupted.
