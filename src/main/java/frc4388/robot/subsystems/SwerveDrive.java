@@ -56,7 +56,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
-  public Rotation2d rotTarget = new Rotation2d();;
+  public Rotation2d rotTarget = new Rotation2d();
 
   private final Field2d m_field = new Field2d();
 
@@ -205,16 +205,25 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
+   * Gets the current gyro using regression formula.
+   * @return Rotation2d object holding current gyro in radians
+   */
+  public Rotation2d getRegGyro() {
+    double regCur = 0.6552670369 + m_gyro.getRotation2d().getDegrees() * 0.9926871527;
+    return new Rotation2d(regCur * Math.PI / 180);
+  }
+
+  /**
    * Resets the odometry of the robot to the given pose.
    */
   public void resetOdometry(Pose2d pose) {
     m_poseEstimator.resetPosition(pose, m_gyro.getRotation2d());
   }
 
-  /** Updates the field relative position of the robot. */
-
+  /** Updates the field relative position of the robot.  
+  */
   public void updateOdometry() {
-    m_poseEstimator.update( m_gyro.getRotation2d(), 
+    m_poseEstimator.update( getRegGyro(),
                             modules[0].getState(), 
                             modules[1].getState(), 
                             modules[2].getState(), 
