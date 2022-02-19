@@ -15,6 +15,7 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
@@ -49,9 +50,9 @@ public class SwerveModule extends SubsystemBase {
     angleMotor.configAllSettings(angleTalonFXConfiguration);
 
     TalonFXConfiguration driveTalonFXConfiguration = new TalonFXConfiguration();
-    driveTalonFXConfiguration.slot0.kP = 0.15;
+    driveTalonFXConfiguration.slot0.kP = 0.1;
     driveTalonFXConfiguration.slot0.kI = 0.0;
-    driveTalonFXConfiguration.slot0.kD = 0.5;
+    driveTalonFXConfiguration.slot0.kD = 0.0;
     driveMotor.configAllSettings(driveTalonFXConfiguration);
 
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
@@ -72,8 +73,7 @@ public class SwerveModule extends SubsystemBase {
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean ignoreAngle) {
     Rotation2d currentRotation = getAngle();
-    
-    //SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
+    // SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
     state = SwerveModuleState.optimize(desiredState, currentRotation);
 
     // Find the difference between our current rotational position + our new rotational position
@@ -84,17 +84,23 @@ public class SwerveModule extends SubsystemBase {
     // Convert the CANCoder from it's position reading back to ticks
     double currentTicks = canCoder.getPosition() / canCoderFeedbackCoefficient;
     double desiredTicks = currentTicks + deltaTicks;
+
     if (!ignoreAngle){
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
     }
 
 
     double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
+<<<<<<< Updated upstream
 
     // Add this line to correct for the slight drive movement the angle motor makes when turning in place. 
     // driveMotor.set(TalonFXControlMode.Velocity, angleMotor.get() + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
     
     driveMotor.set(feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC);
+=======
+    // driveMotor.set(TalonFXControlMode.Velocity, angleMotor.get() + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    driveMotor.set((feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC) + angleMotor.get());
+>>>>>>> Stashed changes
   }
 
   /**
@@ -113,6 +119,11 @@ public class SwerveModule extends SubsystemBase {
   public void stop() {
     driveMotor.set(0);
     angleMotor.set(0);
+  }
+  @Override
+  public void periodic(){
+    Rotation2d currentRotation = getAngle();
+    SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
   }
 
 }
