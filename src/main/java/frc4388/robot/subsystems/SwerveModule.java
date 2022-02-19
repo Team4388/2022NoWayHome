@@ -91,16 +91,13 @@ public class SwerveModule extends SubsystemBase {
 
 
     double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
-<<<<<<< Updated upstream
 
     // Add this line to correct for the slight drive movement the angle motor makes when turning in place. 
     // driveMotor.set(TalonFXControlMode.Velocity, angleMotor.get() + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
     
-    driveMotor.set(feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC);
-=======
+    // driveMotor.set(feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC);
     // driveMotor.set(TalonFXControlMode.Velocity, angleMotor.get() + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
     driveMotor.set((feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC) + angleMotor.get());
->>>>>>> Stashed changes
   }
 
   /**
