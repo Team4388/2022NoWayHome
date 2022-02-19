@@ -42,8 +42,6 @@ public class Turret extends SubsystemBase {
   SparkMaxPIDController m_boomBoomRotatePIDController;// = m_boomBoomRotateMotor.getPIDController();
   public RelativeEncoder m_boomBoomRotateEncoder;// = m_boomBoomRotateMotor.getEncoder();
   
-  
-  
   //Variables
   public Turret(CANSparkMax boomBoomRotateMotor) { //Take in rotate motor as an argument
 
@@ -62,17 +60,18 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_RIGHT_SOFT_LIMIT); //Set second soft limit
     m_boomBoomRotateMotor.setInverted(false);
-    
+
+    m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
+    m_boomBoomRotatePIDController.setI(m_shooterTGains.m_kI);
+    m_boomBoomRotatePIDController.setD(m_shooterTGains.m_kD);
+    m_boomBoomRotatePIDController.setFF(m_shooterTGains.m_kF);
+    m_boomBoomRotatePIDController.setIZone(m_shooterTGains.m_kIzone);
+    m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.m_kPeakOutput);
   }
 
 
   @Override
   public void periodic() {
-    // SmartDashboard.putNumber("Turret Angle Raw", getboomBoomRotatePosition());
-
-    // SmartDashboard.putData("Turret Angle", (Sendable) m_turretGyro);
-
-    // SmartDashboard.putBoolean("Turret Aimed", m_isAimReady);
     // This method will be called once per scheduler run
   }
 
@@ -81,20 +80,11 @@ public class Turret extends SubsystemBase {
     m_sDriveSubsystem = subsystem1;
   }
 
-  public void runTurretWithInput(double input) { //Rename to turret
+  public void runTurretWithInput(double input) {
     m_boomBoomRotateMotor.set(input*ShooterConstants.TURRET_SPEED_MULTIPLIER);
   }
 
-  public void runshooterRotatePID(double targetAngle) { //Split into configure and run
-    m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
-    m_boomBoomRotatePIDController.setI(m_shooterTGains.m_kI);
-    m_boomBoomRotatePIDController.setD(m_shooterTGains.m_kD);
-    m_boomBoomRotatePIDController.setFF(m_shooterTGains.m_kF);
-    m_boomBoomRotatePIDController.setIZone(m_shooterTGains.m_kIzone);
-
-
-    m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.m_kPeakOutput);
-
+  public void runshooterRotatePID(double targetAngle) {
     targetAngle = targetAngle/ShooterConstants.DEGREES_PER_ROT;
     m_boomBoomRotatePIDController.setReference(targetAngle,ControlType.kPosition);
   }

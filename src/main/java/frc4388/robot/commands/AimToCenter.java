@@ -36,7 +36,19 @@ public class AimToCenter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_targetAngle = m_turret.getBoomBoomAngleDegrees() + m_drive.gyro.getAngle() + Math.atan(y/x);
+    if (x > 0) {
+      m_targetAngle = 180 + Math.atan(y/x) - m_drive.gyro.getAngle();
+    } 
+    if (x < 0) {
+      m_targetAngle = 360 + Math.atan(y/x) - m_drive.gyro.getAngle();
+    } 
+    if (x == 0 && y > 0) {
+      m_targetAngle = 270 - m_drive.gyro.getAngle(); 
+    }
+    if (x == 0 && y < 0) {
+      m_targetAngle = 90 - m_drive.gyro.getAngle();
+    }
+    
     m_turret.runshooterRotatePID(m_targetAngle);
   }
   
