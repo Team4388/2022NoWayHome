@@ -114,7 +114,6 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
     .whenPressed(() -> m_robotHood.runHood(0.5d))
     .whenReleased(() -> m_robotHood.runHood(0.d));
-    new JoystickButton(getOperatorJoystick()
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
