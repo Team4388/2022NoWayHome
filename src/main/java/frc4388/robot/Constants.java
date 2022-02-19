@@ -53,6 +53,8 @@ public final class Constants {
     public static final int GYRO_ID = 14;
     
     // ofsets are in degrees
+
+                    //NATHAN if you truncate or round or simplify these i will cry
     public static final double LEFT_FRONT_ENCODER_OFFSET = 181.45-3.30;//181.7578125;//180.0;//315.0 +45;//180.0;
     public static final double RIGHT_FRONT_ENCODER_OFFSET = 360.-59.0625+0.18;//360.-59.0625;//315.0;//224.296875 + 90;//300.0;
     public static final double LEFT_BACK_ENCODER_OFFSET = 360.-128.222;//308.408203125;//225.0;//45.87890625;//360.0 - 128.0;
@@ -79,10 +81,11 @@ public final class Constants {
     public static final int REMOTE_0 = 0;
 
     // conversions
-    // gear ratio: 5.12 rev motor = 1 rev wheel
+    // gear ratio: 5.14 rev motor = 1 rev wheel
     // wheel diameter: official = 4 in, measured = 3.8 in
     /* Ratio Calculation */
-    public static final double MOTOR_REV_PER_WHEEL_REV = 5.12;
+    public static final double MOTOR_REV_PER_STEER_REV = 12.8;
+    public static final double MOTOR_REV_PER_WHEEL_REV = 5.142857;
     public static final double WHEEL_DIAMETER_INCHES = 4.0;
     public static final double TICKS_PER_MOTOR_REV = 2048;
     public static final double INCHES_PER_WHEEL_REV = WHEEL_DIAMETER_INCHES * Math.PI;

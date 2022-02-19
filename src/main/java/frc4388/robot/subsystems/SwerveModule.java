@@ -91,13 +91,16 @@ public class SwerveModule extends SubsystemBase {
 
 
     double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
-
-    // Add this line to correct for the slight drive movement the angle motor makes when turning in place. 
-    // driveMotor.set(TalonFXControlMode.Velocity, angleMotor.get() + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    double angleCorrection = angleMotor.getSelectedSensorVelocity() * 2.69;
     
     // driveMotor.set(feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC);
-    // driveMotor.set(TalonFXControlMode.Velocity, angleMotor.get() + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
-    driveMotor.set((feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC) + angleMotor.get());
+    driveMotor.set(TalonFXControlMode.Velocity, angleCorrection + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    //driveMotor.set((feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));// - angleMotor.get());
+    // driveMotor.set(TalonFXControlMode.Velocity, angleCorrection); // Ratio between axis = 1/1.75    Ratio of wheel is 5.14/1    ratio of steer is 12.8/1
+    System.out.println(angleCorrection);
+
+    // angleMotor.set(1.0);
+    // driveMotor.set(0.6375);
   }
 
   /**
@@ -120,7 +123,8 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic(){
     Rotation2d currentRotation = getAngle();
-    SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
+    SmartDashboard.putNumber("Angle Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
+    SmartDashboard.putNumber("Drive Motor " + driveMotor.getDeviceID(), ((driveMotor.getSelectedSensorPosition() / 2048) * 360) % 360);
   }
 
 }
