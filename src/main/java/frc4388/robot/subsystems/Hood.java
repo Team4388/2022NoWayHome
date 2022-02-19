@@ -4,6 +4,8 @@
 
 package frc4388.robot.subsystems;
 
+import javax.sql.rowset.WebRowSet;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -21,7 +23,7 @@ import frc4388.utility.Gains;
 public class Hood extends SubsystemBase {
   public BoomBoom m_shooterSubsystem;
   
-  // public CANSparkMax m_angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
+  //public CANSparkMax m_angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
   public SparkMaxLimitSwitch m_hoodUpLimitSwitch;
   public SparkMaxLimitSwitch m_hoodDownLimitSwitch;
   public static Gains m_angleAdjusterGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
