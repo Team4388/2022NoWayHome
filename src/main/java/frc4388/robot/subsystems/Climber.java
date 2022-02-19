@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants;
 import frc4388.robot.Constants.ClimberConstants;
@@ -28,6 +29,7 @@ public class Climber extends SubsystemBase {
 
   private WPI_PigeonIMU m_gyro;
   private boolean m_groundRelative;
+  private double m_robotAngle;
 
   private double[] m_position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
   
@@ -136,11 +138,20 @@ public class Climber extends SubsystemBase {
     angles[1] = elbowAngle;
     return angles;
   }
-
+/* Rotation Matrix
+ R = [cos(0) -sin(0) \n sin(0) cos(0)] 
+ Rv = [cos(0) -sin(0) \n sin(0) cos(0)] = [x \n y] = [xcos(0) - ysin(0), xsin(0) + ycos(0)]
+ Rotation Matrix resource: https://en.wikipedia.org/wiki/Rotation_matrix 
+ Rotation Matrix video: https://youtu.be/Ta8cKqltPfU 
+ */
   public double getRobotTilt() {
     double[] ypr = new double[3];
     m_gyro.getYawPitchRoll(ypr);
+    
+
     return Math.toRadians(ypr[1]); // Pitch
+    // multiply by pie and then divide by 180
+    
   }
 
   public void setClimberGains() {
@@ -216,4 +227,9 @@ public class Climber extends SubsystemBase {
     double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
     setJointAngles(jointAngles);
   }
+  public void setRobotAngle(double robotAngle) {
+    m_robotAngle = robotAngle;
+    m_robotAngle = 45;
+  }
+  
 }
