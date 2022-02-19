@@ -91,10 +91,16 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
-    
+    // revisit this later, not sure if we will still use this 
     new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
         .whenPressed(() -> m_robotSerializer.setSerializerStateWithBeam(true, m_robotSerializer.getBeam()))
         .whenReleased(() -> m_robotSerializer.setSerializerStateWithBeam(false, m_robotSerializer.getBeam()));
+        
+    new JoystickButton(getOperatorJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
+        .whenPressed(() -> m_robotIntake.runExtender(true)); 
+
+    new JoystickButton(getOperatorJoystick(), XboxController.LEFT_BUMPER_BUTTON)
+      .whenPressed(() -> m_robotIntake.runExtender(false));
   }
 
   /**
