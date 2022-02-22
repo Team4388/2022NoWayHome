@@ -85,8 +85,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    new JoystickButton(getDriverController(), XboxController.Button.kY.value)
-    // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.Y_BUTTON)
+    // "XboxController.Button.kBack" was undefiened yet, 7 works just fine
+    new JoystickButton(getDriverController(), 7)
       .whenPressed(() -> m_robotSwerveDrive.resetGyro());
 
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
