@@ -4,6 +4,7 @@
 
 package frc4388.robot;
 
+import com.revrobotics.CANSparkMax;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -49,9 +50,9 @@ public class RobotContainer {
   );
   */
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  private final BoomBoom m_robotBoomBoom = new BoomBoom();
+  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
-  private final Turret m_robotTurret = new Turret();
+  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
@@ -77,8 +78,7 @@ public class RobotContainer {
     //Turret default command
 
     m_robotTurret.setDefaultCommand(
-      new RunCommand(() -> m_robotTurret.runShooterWithInput(getOperatorController().getLeftXAxis()), m_robotTurret)
-      );
+      new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftXAxis()), m_robotTurret));
       // m_robotTurret.setDefaultCommand(
       //     new RunCommand(() -> m_robotTurret.aimToCenter()));
   }
@@ -114,6 +114,7 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
     .whenPressed(() -> m_robotHood.runHood(0.5d))
     .whenReleased(() -> m_robotHood.runHood(0.d));
+    // new JoystickButton(getOperatorJoystick());
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -83,16 +83,17 @@ public final class Constants {
     public static final int XBOX_OPERATOR_ID = 1;
   }
 
+  public static final class OdoAimConstants {
+    public static final double X_VECTOR_DISTANCE = 12.3;
+    // public static final Gains AIM_GAINS = new Gains(0, 0, 0, 0, 0, 0, 1);
 
 
-
+  }
   public static final class ShooterConstants {
     /* PID Constants Shooter */
-<<<<<<< Updated upstream
     public static final int CLOSED_LOOP_TIME_MS = 1;
-=======
->>>>>>> Stashed changes
-    public static final int SHOOTER_TIMEOUT_MS = 32;
+
+   public static final int SHOOTER_TIMEOUT_MS = 32;
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
