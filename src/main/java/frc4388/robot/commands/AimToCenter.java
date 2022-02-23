@@ -50,6 +50,14 @@ public class AimToCenter extends CommandBase {
     }
     
     m_turret.runshooterRotatePID(m_targetAngle);
+
+  }
+  public boolean noIsDeadzone(){
+    if ((-20 < m_targetAngle) && (m_targetAngle < 0)) {
+      return false;
+    } else {
+        return true;
+    }
   }
   
   // Called once the command ends or is interrupted.
