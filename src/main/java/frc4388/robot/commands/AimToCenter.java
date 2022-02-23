@@ -16,7 +16,6 @@ public class AimToCenter extends CommandBase {
   // use odometry to find x and y later
   double x = 0;
   double y = 0;
-  double z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
   double m_targetAngle;
   
   // public static Gains m_aimGains;
