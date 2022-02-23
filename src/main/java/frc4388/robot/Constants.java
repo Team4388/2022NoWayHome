@@ -109,6 +109,10 @@ public final class Constants {
     public static final Gains ELBOW_GAINS = new Gains(.4, 0.0, 0.0, 0.0, 0, 1.0);
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
+
+    /* TODO: Update Constants */
+    public static final double ROBOT_ANGLE_ID = 0;
+
   }
 
   public static final class HooksConstants {

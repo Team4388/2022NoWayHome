@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants;
@@ -30,6 +31,8 @@ public class Climber extends SubsystemBase {
   private WPI_PigeonIMU m_gyro;
   private boolean m_groundRelative;
   private double m_robotAngle;
+  private double m_robotPosition;
+
 
   private double[] m_position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
   
@@ -147,6 +150,29 @@ public class Climber extends SubsystemBase {
   public double getRobotTilt() {
     double[] ypr = new double[3];
     m_gyro.getYawPitchRoll(ypr);
+    double theta = 0;
+    
+    //  double sin;
+    //  double cos;
+    //  xsin = 0; //placeholder for sin, cos
+    //  ysin = 0;
+    //  xcos = 0;
+    //  ycos = 0;
+    double[][] rotMax = {
+      {Math.cos(theta) - Math.sin(theta), 0 },
+      {Math.sin(theta) + Math.cos(theta), 0},
+      {0, 0, 1}
+
+    };
+
+    if (m_robotPosition < 45){
+      
+      setRobotAngle(ClimberConstants.ROBOT_ANGLE_ID, m_robotAngle);
+    }
+    if( m_robotPosition > 45){
+      setRobotAngle(ClimberConstants.ROBOT_ANGLE_ID, m_robotAngle);
+    }
+    
     
 
     return Math.toRadians(ypr[1]); // Pitch
@@ -227,9 +253,12 @@ public class Climber extends SubsystemBase {
     double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
     setJointAngles(jointAngles);
   }
-  public void setRobotAngle(double robotAngle) {
+  
+  public void setRobotAngle(double robotAngle, double robotPosition) {
+    m_robotPosition = robotPosition;
     m_robotAngle = robotAngle;
     m_robotAngle = 45;
+    
   }
   
 }
