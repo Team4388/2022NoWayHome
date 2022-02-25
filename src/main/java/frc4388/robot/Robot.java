@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.StreamSupport;
+import java.util.stream.IntStream;
 
 import com.diffplug.common.base.Errors;
 
@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
 
@@ -31,7 +30,7 @@ import frc4388.utility.RobotTime;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(Robot.class.getSimpleName());
   Command m_autonomousCommand;
   
   private RobotTime m_robotTime = RobotTime.getInstance();
@@ -43,22 +42,21 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // if (org.fusesource.jansi.Ansi.isEnabled()) {
-      LOGGER.log(Level.ALL, "Logging Test 1/8");
-      LOGGER.log(Level.SEVERE, "Logging Test 2/8");
-      LOGGER.log(Level.WARNING, "Logging Test 3/8");
-      LOGGER.log(Level.INFO, "Logging Test 4/8");
-      LOGGER.log(Level.CONFIG, "Logging Test 5/8");
-      LOGGER.log(Level.FINE, "Logging Test 6/8");
-      LOGGER.log(Level.FINER, "Logging Test 7/8");
-      LOGGER.log(Level.FINEST, "Logging Test 8/8");
-    // }
+    LOGGER.log(Level.ALL, "Logging Test 1/8");
+    LOGGER.log(Level.SEVERE, "Logging Test 2/8");
+    LOGGER.log(Level.WARNING, "Logging Test 3/8");
+    LOGGER.log(Level.INFO, "Logging Test 4/8");
+    LOGGER.log(Level.CONFIG, "Logging Test 5/8");
+    LOGGER.log(Level.FINE, "Logging Test 6/8");
+    LOGGER.log(Level.FINER, "Logging Test 7/8");
+    LOGGER.log(Level.FINEST, "Logging Test 8/8");
+    Errors.log().run(() -> { throw new Throwable("Exception Test"); });
 
     // var path = PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move Forward.path").toFile());
     // LOGGER.finest(path::toString);
     LOGGER.fine("robotInit()");
-    LOGGER.fine("Sssssssssh.");
-    DriverStation.silenceJoystickConnectionWarning(true);
+    // LOGGER.fine("Sssssssssh.");
+    // DriverStation.silenceJoystickConnectionWarning(true);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -110,6 +108,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
     SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
     SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
+    IntStream.range(0, 9999).forEach(Math::cos);
   }
 
   /**

@@ -399,29 +399,46 @@ public class DriverStation {
       boolean printTrace,
       StackTraceElement[] stackTrace,
       int stackTraceFirst) {
-    String locString;
-    if (stackTrace.length >= stackTraceFirst + 1) {
-      locString = stackTrace[stackTraceFirst].toString();
-    } else {
-      locString = "";
-    }
-    StringBuilder traceString = new StringBuilder();
-    if (printTrace) {
-      boolean haveLoc = false;
-      for (int i = stackTraceFirst; i < stackTrace.length; i++) {
-        String loc = stackTrace[i].toString();
-        traceString.append("\tat ").append(loc).append('\n');
-        // get first user function
-        if (!haveLoc && !loc.startsWith("edu.wpi.first")) {
-          locString = loc;
-          haveLoc = true;
-        }
-      }
-    }
+    // String locString;
+    // if (stackTrace.length >= stackTraceFirst + 1) {
+    //   locString = stackTrace[stackTraceFirst].toString();
+    // } else {
+    //   locString = "";
+    // }
+    // StringBuilder traceString = new StringBuilder();
+    // if (printTrace) {
+    //   boolean haveLoc = false;
+    //   for (int i = stackTraceFirst; i < stackTrace.length; i++) {
+    //     String loc = stackTrace[i].toString();
+    //     traceString.append("\tat ").append(loc).append('\n');
+    //     // get first user function
+    //     if (!haveLoc && !loc.startsWith("edu.wpi.first")) {
+    //       locString = loc;
+    //       haveLoc = true;
+    //     }
+    //   }
+    // }
     // HAL.sendError(isError, code, false, error, locString, traceString.toString(), true);
     // for (StackTraceElement traceElement : stackTrace)
     //   System.err.println("\tat " + traceElement);
-    java.util.logging.Logger.getLogger(HAL.class.getName()).log(isError ? java.util.logging.Level.SEVERE : java.util.logging.Level.FINEST, "Warning at {0}: {1}", new Object[] {locString, error.split("\n")[0]});
+    java.util.logging.LogRecord logRecord = new java.util.logging.LogRecord(isError ? java.util.logging.Level.SEVERE : java.util.logging.Level.FINER, error.stripTrailing());
+    java.util.Optional.ofNullable(stackTrace).filter(s -> s.length >= stackTraceFirst + 1).map(s -> java.util.Arrays.copyOfRange(s, Math.min(Math.max(0, stackTraceFirst), s.length - 1), s.length - 1)).ifPresent(presentStackTrace -> {
+      logRecord.setSourceMethodName(presentStackTrace[0].getMethodName());
+      String throwableMessage;
+      if (presentStackTrace[0].toString().equals("edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:63)")) {
+        throwableMessage = "Epochs" + System.lineSeparator() + logRecord.getMessage();
+        presentStackTrace = new java.lang.StackTraceElement[0];
+        logRecord.setLevel(java.util.logging.Level.FINEST);
+        logRecord.setMessage("Execution times:");
+      } else if (printTrace) {
+        long lineCount = logRecord.getMessage().lines().count();
+        throwableMessage = (lineCount > 1 ? logRecord.getMessage().lines().findFirst().map(s -> s + " + " + lineCount + " more lines...").orElse("") : logRecord.getMessage()).stripLeading();
+      } else return;
+      java.lang.Throwable throwable = new java.lang.Throwable(throwableMessage);
+      throwable.setStackTrace(presentStackTrace);
+      logRecord.setThrown(throwable);
+    });
+    java.util.logging.Logger.getLogger(HAL.class.getSimpleName()).log(logRecord);
   }
 
   /**

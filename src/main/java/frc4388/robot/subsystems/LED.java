@@ -27,7 +27,7 @@ public class LED extends SubsystemBase {
     m_LEDController = LEDController;
     setPattern(LEDConstants.DEFAULT_PATTERN);
     updateLED();
-    Logger.getLogger(LED.class.getName()).finer("In the Beginning, there was Joe.\nAnd he said, 'Let there be LEDs.'\nAnd it was good.");
+    Logger.getLogger(LED.class.getSimpleName()).finer("In the Beginning, there was Joe.\nAnd he said, 'Let there be LEDs.'\nAnd it was good.");
   }
 
   @Override

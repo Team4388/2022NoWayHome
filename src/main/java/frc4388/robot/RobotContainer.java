@@ -75,7 +75,7 @@ import frc4388.utility.controller.DeadbandedXboxController;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private static final Logger LOGGER = Logger.getLogger(RobotContainer.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(RobotContainer.class.getSimpleName());
   /* RobotMap */
   private final RobotMap m_robotMap = new RobotMap();
 
@@ -237,7 +237,7 @@ public class RobotContainer {
               m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive),
           new InstantCommand(m_robotSwerveDrive::stopModules)).withName("Run Autonomous Path");
     } else {
-      Logger.getLogger(this.getClass().getName()).severe("No auto selected.");
+      LOGGER.severe("No auto selected.");
       return new RunCommand(() -> {
       }).withName("No Autonomous Path");
     }
