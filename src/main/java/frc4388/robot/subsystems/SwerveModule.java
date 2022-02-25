@@ -7,6 +7,7 @@ package frc4388.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -21,14 +22,21 @@ import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
 
 public class SwerveModule extends SubsystemBase {
-  private WPI_TalonFX driveMotor;
-  private WPI_TalonFX angleMotor;
+  public WPI_TalonFX angleMotor;
+  public WPI_TalonFX driveMotor;
   private CANCoder canCoder;
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
   private static double kEncoderTicksPerRotation = 4096;
   private SwerveModuleState state;
   private double canCoderFeedbackCoefficient;
+  
+  public long m_currentTime;
+  public long m_lastTime;
+  public double m_deltaTime;
+
+  public double m_currentPos;
+  public double m_lastPos;
 
   /** Creates a new SwerveModule. */
   public SwerveModule(WPI_TalonFX driveMotor, WPI_TalonFX angleMotor, CANCoder canCoder, double offset) {
@@ -49,17 +57,34 @@ public class SwerveModule extends SubsystemBase {
     angleTalonFXConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
     angleMotor.configAllSettings(angleTalonFXConfiguration);
 
-    TalonFXConfiguration driveTalonFXConfiguration = new TalonFXConfiguration();
-    driveTalonFXConfiguration.slot0.kP = 0.1;
-    driveTalonFXConfiguration.slot0.kI = 0.0;
-    driveTalonFXConfiguration.slot0.kD = 0.0;
-    driveMotor.configAllSettings(driveTalonFXConfiguration);
+    // TalonFXConfiguration driveTalonFXConfiguration = new TalonFXConfiguration();
+    // driveTalonFXConfiguration.slot0.kP = 0.05;
+    // driveTalonFXConfiguration.slot0.kI = 0.0;
+    // driveTalonFXConfiguration.slot0.kD = 0.0;
+    // driveTalonFXConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+    driveMotor.configFactoryDefault();
+    driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+    driveMotor.configNominalOutputForward(0, 30);
+    driveMotor.configNominalOutputReverse(0, 30);
+    driveMotor.configPeakOutputForward(1, 30);
+    driveMotor.configPeakOutputReverse(-1, 30);
+    driveMotor.configAllowableClosedloopError(0, 0, 30);
+    driveMotor.config_kP(0, 0.5, 30);
+    driveMotor.config_kI(0, 0, 30);
+    driveMotor.config_kD(0, 0, 30);
+    // maybe try a feedforward value?
+    
+    // driveMotor.configAllSettings(driveTalonFXConfiguration);
 
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
     canCoderConfiguration.magnetOffsetDegrees = offset;
     canCoder.configAllSettings(canCoderConfiguration);
-  }
 
+    m_currentTime = System.currentTimeMillis();
+    m_lastTime = System.currentTimeMillis();
+
+    m_lastPos = driveMotor.getSelectedSensorPosition();
+  }
 
   private Rotation2d getAngle() {
     // Note: This assumes the CANCoders are setup with the default feedback coefficient
@@ -89,18 +114,33 @@ public class SwerveModule extends SubsystemBase {
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
     }
 
-
-    double feetPerSecond = Units.metersToFeet(state.speedMetersPerSecond);
-    double angleCorrection = angleMotor.getSelectedSensorVelocity() * 2.69;
+    double ftPerSec = Units.metersToFeet(state.speedMetersPerSecond);
+    double normFtPerSec = ftPerSec / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC;
+    // double angleCorrection = angleMotor.getSelectedSensorVelocity() * 2.69;
     
-    // driveMotor.set(feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC);
-    driveMotor.set(TalonFXControlMode.Velocity, angleCorrection + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
-    //driveMotor.set((feetPerSecond / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));// - angleMotor.get());
+    // driveMotor.set(TalonFXControlMode.Velocity, angleCorrection + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    driveMotor.set(normFtPerSec);// - angleMotor.get());
     // driveMotor.set(TalonFXControlMode.Velocity, angleCorrection); // Ratio between axis = 1/1.75    Ratio of wheel is 5.14/1    ratio of steer is 12.8/1
-    System.out.println(angleCorrection);
 
-    // angleMotor.set(1.0);
-    // driveMotor.set(0.6375);
+    // m_currentTime = System.currentTimeMillis();
+    // m_deltaTime = (double) (m_currentTime - m_lastTime);
+    // m_deltaTime = m_deltaTime / 10.0;
+
+    // m_currentPos = driveMotor.getSelectedSensorPosition();
+
+    // double m_desiredCorrectionVel = 3.2 * angleMotor.getSelectedSensorVelocity();
+    // double m_desiredCorrectionPos = (m_deltaTime * m_desiredCorrectionVel) % 2048;
+    // double m_lastPos = (driveMotor.getSelectedSensorPosition() % 2048) - (m_deltaTime * driveMotor.getSelectedSensorVelocity());
+    // double m_actualDesiredPos = m_deltaTime * ((Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+    
+    // System.out.println("Current Pos: " + driveMotor.getSelectedSensorPosition());
+    // System.out.println("Desired Correction Pos: " + m_desiredCorrectionPos);
+    // System.out.println("Last Pos: " + m_lastPos);
+
+    // driveMotor.set(TalonFXControlMode.Position, 1500/*m_desiredCorrectionPos*/);
+
+    // m_lastTime = m_currentTime;
+    // m_lastPos = m_currentPos;
   }
 
   /**

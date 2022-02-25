@@ -153,6 +153,7 @@ public class SwerveDrive extends SubsystemBase {
       SwerveModuleState state = desiredStates[i];
       module.setDesiredState(state, false);
     }
+    // modules[0].setDesiredState(desiredStates[0], false);
   }
   
   @Override
@@ -160,7 +161,13 @@ public class SwerveDrive extends SubsystemBase {
 
     updateOdometry();
     // SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
-    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
+
+    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw()); 
+
+    // SmartDashboard.putNumber("Front Left", modules[0].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Front Right", modules[1].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Back Left", modules[2].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Back Right", modules[3].driveMotor.getSelectedSensorPosition());
     // SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
     // SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
     // SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
