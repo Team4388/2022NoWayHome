@@ -4,7 +4,6 @@
 
 package frc4388.robot.subsystems;
 
-
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANEncoder;
@@ -21,16 +20,14 @@ import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.Gains;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
-
-
-
 public class Turret extends SubsystemBase {
- 
+
   /** Creates a new Turret. */
   public BoomBoom m_boomBoomSubsystem;
   public SwerveDrive m_sDriveSubsystem;
 
-  public CANSparkMax m_boomBoomRotateMotor;// = new CANSparkMax(ShooterConstants.SHOOTER_ROTATE_ID, MotorType.kBrushless);
+  public CANSparkMax m_boomBoomRotateMotor;// = new CANSparkMax(ShooterConstants.SHOOTER_ROTATE_ID,
+                                           // MotorType.kBrushless);
   public static Gains m_shooterTGains = ShooterConstants.SHOOTER_TURRET_GAINS;
   SparkMaxLimitSwitch m_boomBoomRightLimit, m_boomBoomLeftLimit;
   public Gyro m_turretGyro;
@@ -41,16 +38,15 @@ public class Turret extends SubsystemBase {
 
   SparkMaxPIDController m_boomBoomRotatePIDController;// = m_boomBoomRotateMotor.getPIDController();
   public RelativeEncoder m_boomBoomRotateEncoder;// = m_boomBoomRotateMotor.getEncoder();
-  
-  //Variables
-  public Turret(CANSparkMax boomBoomRotateMotor) { //Take in rotate motor as an argument
+
+  // Variables
+  public Turret(CANSparkMax boomBoomRotateMotor) { // Take in rotate motor as an argument
 
     m_boomBoomRotateMotor = boomBoomRotateMotor;
     m_boomBoomRotatePIDController = m_boomBoomRotateMotor.getPIDController();
     m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
     m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
-  
-  
+
     m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit.enableLimitSwitch(true);
@@ -58,7 +54,10 @@ public class Turret extends SubsystemBase {
 
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_RIGHT_SOFT_LIMIT); //Set second soft limit
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_RIGHT_SOFT_LIMIT); // Set
+                                                                                                               // second
+                                                                                                               // soft
+                                                                                                               // limit
     m_boomBoomRotateMotor.setInverted(false);
 
     m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
@@ -69,38 +68,36 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.m_kPeakOutput);
   }
 
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 
-  public void passRequiredSubsystem( BoomBoom subsystem0, SwerveDrive subsystem1){
+  public void passRequiredSubsystem(BoomBoom subsystem0, SwerveDrive subsystem1) {
     m_boomBoomSubsystem = subsystem0;
     m_sDriveSubsystem = subsystem1;
   }
 
   public void runTurretWithInput(double input) {
-    m_boomBoomRotateMotor.set(input*ShooterConstants.TURRET_SPEED_MULTIPLIER);
+    m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER);
   }
 
   public void runshooterRotatePID(double targetAngle) {
-    targetAngle = targetAngle/ShooterConstants.DEGREES_PER_ROT;
-    m_boomBoomRotatePIDController.setReference(targetAngle,ControlType.kPosition);
+    targetAngle = targetAngle / ShooterConstants.DEGREES_PER_ROT;
+    m_boomBoomRotatePIDController.setReference(targetAngle, ControlType.kPosition);
   }
 
-  public void resetGyroShooterRotate()
-  {
+  public void resetGyroShooterRotate() {
     m_boomBoomRotateEncoder.setPosition(0);
   }
 
-  public double getboomBoomRotatePosition()
-  {
+  public double getboomBoomRotatePosition() {
     return m_boomBoomRotateEncoder.getPosition();
   }
 
   public double getBoomBoomAngleDegrees() {
-    return (m_boomBoomRotateEncoder.getPosition() - ShooterConstants.TURRET_MOTOR_POS_AT_ZERO_ROT) * 360/ShooterConstants. TURRET_MOTOR_ROTS_PER_ROT;
+    return (m_boomBoomRotateEncoder.getPosition() - ShooterConstants.TURRET_MOTOR_POS_AT_ZERO_ROT) * 360
+        / ShooterConstants.TURRET_MOTOR_ROTS_PER_ROT;
   }
 
 }

@@ -17,7 +17,7 @@ public class AimToCenter extends CommandBase {
   double x = 0;
   double y = 0;
   double m_targetAngle;
-  
+
   // public static Gains m_aimGains;
 
   public AimToCenter(Turret turret, SwerveDrive drive) {
@@ -36,32 +36,34 @@ public class AimToCenter extends CommandBase {
   @Override
   public void execute() {
     if (x > 0) {
-      m_targetAngle = 180 + Math.atan(y/x) - m_drive.gyro.getAngle();
-    } 
+      m_targetAngle = 180 + Math.atan(y / x) - m_drive.gyro.getAngle();
+    }
     if (x < 0) {
-      m_targetAngle = 360 + Math.atan(y/x) - m_drive.gyro.getAngle();
-    } 
+      m_targetAngle = 360 + Math.atan(y / x) - m_drive.gyro.getAngle();
+    }
     if (x == 0 && y > 0) {
-      m_targetAngle = 270 - m_drive.gyro.getAngle(); 
+      m_targetAngle = 270 - m_drive.gyro.getAngle();
     }
     if (x == 0 && y < 0) {
       m_targetAngle = 90 - m_drive.gyro.getAngle();
     }
-    
+
     m_turret.runshooterRotatePID(m_targetAngle);
 
   }
-  public boolean noIsDeadzone(){
+
+  public boolean isDeadzone() {
     if ((-20 < m_targetAngle) && (m_targetAngle < 0)) {
-      return false;
+      return true;
     } else {
-        return true;
+      return false;
     }
   }
-  
+
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+  }
 
   // Returns true when the command should end.
   @Override

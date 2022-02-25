@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
+import frc4388.robot.commands.AimToCenter;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 //import frc4388.robot.subsystems.Intake;
@@ -37,23 +38,25 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
   private final TalonFX m_testMotor = new TalonFX(2);
 
-  /* Subsystems 
-  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-    m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
-    m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
-    m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
-    m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
-    m_robotMap.leftFrontEncoder,
-    m_robotMap.rightFrontEncoder,
-    m_robotMap.leftBackEncoder,
-    m_robotMap.rightBackEncoder
-  );
-  */
+  /*
+   * Subsystems
+   * private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
+   * m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
+   * m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
+   * m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
+   * m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
+   * m_robotMap.leftFrontEncoder,
+   * m_robotMap.rightFrontEncoder,
+   * m_robotMap.leftBackEncoder,
+   * m_robotMap.rightBackEncoder
+   * );
+   */
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
+  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_)
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -78,7 +81,7 @@ public class RobotContainer {
     //Turret default command
 
     m_robotTurret.setDefaultCommand(
-      new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftXAxis()), m_robotTurret));
+      new AimToCenter(m_robotTurret, m_drive)
       // m_robotTurret.setDefaultCommand(
       //     new RunCommand(() -> m_robotTurret.aimToCenter()));
   }
@@ -101,21 +104,22 @@ public class RobotContainer {
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
-        // activates "BoomBoom"
-        new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
-            .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
-            .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
+    // activates "BoomBoom"
+    new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
+        .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
+        .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
     /* Driver Buttons */
-    //activates intake
+    // activates intake
     new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON);
-   // .whenPressed() -> m_robot
-   /*operator button*/
-   //activates hood
+    // .whenPressed() -> m_robot
+    /* operator button */
+    // activates hood
     new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
-    .whenPressed(() -> m_robotHood.runHood(0.5d))
-    .whenReleased(() -> m_robotHood.runHood(0.d));
+        .whenPressed(() -> m_robotHood.runHood(0.5d))
+        .whenReleased(() -> m_robotHood.runHood(0.d));
     // new JoystickButton(getOperatorJoystick());
   }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
