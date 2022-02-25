@@ -56,7 +56,18 @@ public class RobotContainer {
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
-  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_)
+  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive( m_robotMap.leftFrontSteerMotor, 
+                                                                  m_robotMap.leftFrontWheelMotor, 
+                                                                  m_robotMap.rightFrontSteerMotor, 
+                                                                  m_robotMap.rightFrontWheelMotor, 
+                                                                  m_robotMap.leftBackSteerMotor, 
+                                                                  m_robotMap.leftBackWheelMotor, 
+                                                                  m_robotMap.rightBackSteerMotor, 
+                                                                  m_robotMap.rightBackWheelMotor,
+                                                                  m_robotMap.leftFrontEncoder,
+                                                                  m_robotMap.rightFrontEncoder,
+                                                                  m_robotMap.leftBackEncoder,
+                                                                  m_robotMap.rightBackEncoder);
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new XboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -80,8 +91,7 @@ public class RobotContainer {
     */
     //Turret default command
 
-    m_robotTurret.setDefaultCommand(
-      new AimToCenter(m_robotTurret, m_drive)
+    m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive));
       // m_robotTurret.setDefaultCommand(
       //     new RunCommand(() -> m_robotTurret.aimToCenter()));
   }

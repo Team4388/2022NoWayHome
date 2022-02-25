@@ -4,6 +4,8 @@
 
 package frc4388.robot;
 
+import javax.swing.text.WrappedPlainView;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -35,7 +37,19 @@ public class RobotMap {
   }
 
   /* Swerve Subsystem */
-  public final WPI_TalonFX leftFrontSteerMotor;
+  public final WPI_TalonFX leftFrontSteerMotor = null;
+  public final WPI_TalonFX leftFrontWheelMotor = null;
+  public final WPI_TalonFX rightFrontSteerMotor = null;
+  public final WPI_TalonFX rightFrontWheelMotor = null;
+  public final WPI_TalonFX leftBackSteerMotor = null;
+  public final WPI_TalonFX leftBackWheelMotor = null;
+  public final WPI_TalonFX rightBackSteerMotor = null;
+  public final WPI_TalonFX rightBackWheelMotor = null;
+  public final CANCoder leftFrontEncoder = null;
+  public final CANCoder rightFrontEncoder = null;
+  public final CANCoder leftBackEncoder = null;
+  public final CANCoder rightBackEncoder = null;
+  
   // public final WPI_TalonFX leftFrontSteerMotor = new
   // WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
   // public final WPI_TalonFX leftFrontWheelMotor = new
