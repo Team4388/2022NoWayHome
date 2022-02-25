@@ -5,6 +5,7 @@
 package frc4388.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 
@@ -53,7 +54,7 @@ public class AimToCenter extends CommandBase {
   }
 
   public boolean isDeadzone() {
-    if ((-20 < m_targetAngle) && (m_targetAngle < 0)) { //Make both -20 and 0 Constants
+    if ((ShooterConstants.DEADZONE_LEFT < m_targetAngle) && (m_targetAngle < ShooterConstants.DEADZONE_RIGHT)) {
       return true;
     } else {
       return false;

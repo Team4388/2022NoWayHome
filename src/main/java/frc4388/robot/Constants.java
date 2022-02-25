@@ -83,12 +83,6 @@ public final class Constants {
     public static final int XBOX_OPERATOR_ID = 1;
   }
 
-  public static final class OdoAimConstants {
-    public static final double X_VECTOR_DISTANCE = 12.3;
-    // public static final Gains AIM_GAINS = new Gains(0, 0, 0, 0, 0, 0, 1);
-
-
-  }
   public static final class ShooterConstants {
     /* PID Constants Shooter */
     public static final int CLOSED_LOOP_TIME_MS = 1;
@@ -116,6 +110,9 @@ public final class Constants {
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
 
+    public static final double DEADZONE_LEFT = -20.0;
+    public static final double DEADZONE_RIGHT = 0.0;
+
     public static final int SHOOTER_FALCON_BALLER_ID = 0; //unknown value, fix later//
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; //"//
   
@@ -133,13 +130,5 @@ public final class Constants {
       public static final double TARGET_HEIGHT = 67.5;
       public static final double FOV = 29.8; //Field of view limelight
       public static final double LIME_ANGLE = 24.7;
-      
-
-
-
-
-
-
-
     }
 }
