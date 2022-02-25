@@ -38,13 +38,13 @@ public class AimToCenter extends CommandBase {
     if (x > 0) {
       m_targetAngle = 180 + Math.atan(y / x) - m_drive.gyro.getAngle();
     }
-    if (x < 0) {
+    else if (x < 0) {
       m_targetAngle = 360 + Math.atan(y / x) - m_drive.gyro.getAngle();
     }
-    if (x == 0 && y > 0) {
+    else if (x == 0 && y > 0) {
       m_targetAngle = 270 - m_drive.gyro.getAngle();
     }
-    if (x == 0 && y < 0) {
+    else if (x == 0 && y < 0) {
       m_targetAngle = 90 - m_drive.gyro.getAngle();
     }
 
@@ -53,7 +53,7 @@ public class AimToCenter extends CommandBase {
   }
 
   public boolean isDeadzone() {
-    if ((-20 < m_targetAngle) && (m_targetAngle < 0)) {
+    if ((-20 < m_targetAngle) && (m_targetAngle < 0)) { //Make both -20 and 0 Constants
       return true;
     } else {
       return false;
