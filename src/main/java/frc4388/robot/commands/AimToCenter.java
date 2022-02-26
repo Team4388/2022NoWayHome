@@ -49,9 +49,12 @@ public class AimToCenter extends CommandBase {
     //m_turret.runshooterRotatePID(m_targetAngle);
   }
 
+  /**
+   * Checks if in deadzone.
+   * @return True if deadzone.
+   */
   public static boolean isDeadzone(double angle) {
-    if ((ShooterConstants.DEADZONE_LEFT > angle) || (angle > ShooterConstants.DEADZONE_RIGHT)) return true;
-    else return false;
+    return ((ShooterConstants.DEADZONE_LEFT > angle) || (angle > ShooterConstants.DEADZONE_RIGHT));
   }
 
   // Called once the command ends or is interrupted.
