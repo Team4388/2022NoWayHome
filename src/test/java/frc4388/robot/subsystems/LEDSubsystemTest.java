@@ -17,23 +17,17 @@ import frc4388.utility.LEDPatterns;
  * Add your docs here.
  */
 public class LEDSubsystemTest {
+  // Arrange
+  Spark ledController = mock(Spark.class);
+  LED led = new LED(ledController);
   @Test
   public void testConstructor() {
-    // Arrange
-    Spark ledController = mock(Spark.class);
-
-    // Act
-    LED led = new LED(ledController);
-
     // Assert
     assertEquals(LEDConstants.DEFAULT_PATTERN.getValue(), led.getPattern().getValue(), 0.0001);
   }
 
   @Test
   public void testPatterns() {
-    // Arrange
-    Spark ledController = mock(Spark.class);
-    LED led = new LED(ledController);
 
     // Act
     led.setPattern(LEDPatterns.RAINBOW_RAINBOW);

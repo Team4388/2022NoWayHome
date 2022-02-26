@@ -31,28 +31,28 @@ public final class Constants {
     public static final double JOYSTICK_TO_METERS_PER_SECOND = 5;
     public static final double MAX_SPEED_FEET_PER_SEC = 16;
     public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20;
-    // public static final int LEFT_FRONT_STEER_CAN_ID = 2;
-    // public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
-    // public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
-    // public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5;
-    // public static final int LEFT_BACK_STEER_CAN_ID = 6;
-    // public static final int LEFT_BACK_WHEEL_CAN_ID = 7;
-    // public static final int RIGHT_BACK_STEER_CAN_ID = 8;
-    // public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;
-    // public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;
-    // public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
-    // public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
-    // public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
+    public static final int LEFT_FRONT_STEER_CAN_ID = 2;
+    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
+    public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
+    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5;
+    public static final int LEFT_BACK_STEER_CAN_ID = 6;
+    public static final int LEFT_BACK_WHEEL_CAN_ID = 7;
+    public static final int RIGHT_BACK_STEER_CAN_ID = 8;
+    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;
+    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;
+    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
+    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
+    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
     // ofsets are in degrees
     //ofsets are in degrees
-        // public static final double LEFT_FRONT_ENCODER_OFFSET = 181.494141;    
-        // public static final double RIGHT_FRONT_ENCODER_OFFSET = 360. - 59.238281;   
-        // public static final double LEFT_BACK_ENCODER_OFFSET = 360. - 128.144531;     
-        // public static final double RIGHT_BACK_ENCODER_OFFSET = 0.933594;
-        public static final double LEFT_FRONT_ENCODER_OFFSET = 180.0;
-        public static final double RIGHT_FRONT_ENCODER_OFFSET = 300.0;
-        public static final double LEFT_BACK_ENCODER_OFFSET = 360.0 - 128.0;
-        public static final double RIGHT_BACK_ENCODER_OFFSET = 0.0;
+        public static final double LEFT_FRONT_ENCODER_OFFSET = 181.494141;    
+        public static final double RIGHT_FRONT_ENCODER_OFFSET = 360. - 59.238281;   
+        public static final double LEFT_BACK_ENCODER_OFFSET = 360. - 128.144531;     
+        public static final double RIGHT_BACK_ENCODER_OFFSET = 0.933594;
+        // public static final double LEFT_FRONT_ENCODER_OFFSET = 180.0;
+        // public static final double RIGHT_FRONT_ENCODER_OFFSET = 300.0;
+        // public static final double LEFT_BACK_ENCODER_OFFSET = 360.0 - 128.0;
+        // public static final double RIGHT_BACK_ENCODER_OFFSET = 0.0;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;
@@ -110,8 +110,8 @@ public final class Constants {
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
 
-    public static final double DEADZONE_LEFT = -20.0;
-    public static final double DEADZONE_RIGHT = 0.0;
+    public static final double DEADZONE_LEFT = 0.0;
+    public static final double DEADZONE_RIGHT = 340.0;
 
     public static final int SHOOTER_FALCON_BALLER_ID = 0; //unknown value, fix later//
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; //"//

@@ -30,5 +30,13 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Vision": "Subsystem"
     }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Recording": {
+        "open": true
+      },
+      "open": true
+    }
   }
 }

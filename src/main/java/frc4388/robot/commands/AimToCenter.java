@@ -17,6 +17,7 @@ public class AimToCenter extends CommandBase {
   // use odometry to find x and y later
   double x = 0;
   double y = 0;
+  double angle = 0;
   double m_targetAngle;
 
   // public static Gains m_aimGains;
@@ -31,34 +32,26 @@ public class AimToCenter extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    x = 0;
+    y = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (x > 0) {
-      m_targetAngle = 180 + Math.atan(y / x) - m_drive.gyro.getAngle();
-    }
-    else if (x < 0) {
-      m_targetAngle = 360 + Math.atan(y / x) - m_drive.gyro.getAngle();
-    }
-    else if (x == 0 && y > 0) {
-      m_targetAngle = 270 - m_drive.gyro.getAngle();
-    }
-    else if (x == 0 && y < 0) {
-      m_targetAngle = 90 - m_drive.gyro.getAngle();
-    }
-
+    m_targetAngle = angleToCenter(x, y, m_drive.gyro.getAngle());
     m_turret.runshooterRotatePID(m_targetAngle);
-
   }
 
-  public boolean isDeadzone() {
-    if ((ShooterConstants.DEADZONE_LEFT < m_targetAngle) && (m_targetAngle < ShooterConstants.DEADZONE_RIGHT)) {
-      return true;
-    } else {
-      return false;
-    }
+  public static double angleToCenter(double x, double y, double gyro) {
+    double angle = ((Math.atan2(y, x) * (180./Math.PI) - gyro) + 180. + 360.) % 360.; // Finds the angle between the gyro of the robot and the target (positive x is gyro 0)
+    return(angle);
+    //m_turret.runshooterRotatePID(m_targetAngle);
+  }
+
+  public static boolean isDeadzone(double angle) {
+    if ((ShooterConstants.DEADZONE_LEFT > angle) || (angle > ShooterConstants.DEADZONE_RIGHT)) return true;
+    else return false;
   }
 
   // Called once the command ends or is interrupted.
