@@ -53,12 +53,12 @@ public class AimToCenter extends CommandBase {
 
   }
 
+  /**
+   * Checks if in deadzone.
+   * @return True if deadzone.
+   */
   public boolean isDeadzone() {
-    if ((ShooterConstants.DEADZONE_LEFT < m_targetAngle) && (m_targetAngle < ShooterConstants.DEADZONE_RIGHT)) {
-      return true;
-    } else {
-      return false;
-    }
+    return ((ShooterConstants.DEADZONE_LEFT < m_targetAngle) && (m_targetAngle < ShooterConstants.DEADZONE_RIGHT));
   }
 
   // Called once the command ends or is interrupted.
