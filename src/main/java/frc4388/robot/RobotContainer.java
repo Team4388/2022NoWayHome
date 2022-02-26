@@ -13,6 +13,7 @@ import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.Serializer;
+import frc4388.robot.subsystems.Storage;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.controller.IHandController;
@@ -42,8 +43,8 @@ public class RobotContainer {
   );
   */
   private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor);
-  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt);
-
+  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt, m_robotMap.serializerBeam);
+  private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   /* Controllers */
@@ -63,12 +64,15 @@ public class RobotContainer {
     //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
     m_robotIntake.setDefaultCommand(
-        new RunCommand(() -> m_robotIntake.runWithTriggers(
-          getDriverController().getLeftTriggerAxis(), getDriverController().getRightTriggerAxis()),m_robotIntake));
+      new RunCommand(() -> m_robotIntake.runWithTriggers(
+                                        getDriverController().getLeftTriggerAxis(),
+                                        getDriverController().getRightTriggerAxis()),
+                                        m_robotIntake));
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(
-        new RunCommand(m_robotLED::updateLED, m_robotLED));                      
-    // dri
+      new RunCommand(m_robotLED::updateLED, m_robotLED));                      
+    m_robotStorage.setDefaultCommand(
+      new RunCommand(m_robotStorage::manageStorage, m_robotStorage));
   }
 
   /**
