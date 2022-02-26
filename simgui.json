@@ -1,0 +1,26 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [5]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [6]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Intake": "Subsystem",
+      "/LiveWindow/LED": "Subsystem",
+      "/LiveWindow/Serializer": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
+    }
+  }
+}

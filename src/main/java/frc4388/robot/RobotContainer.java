@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
+import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.Serializer;
 import frc4388.robot.subsystems.SwerveDrive;
@@ -28,7 +29,7 @@ public class RobotContainer {
   /* RobotMap */
   private final RobotMap m_robotMap = new RobotMap();
 
-  /* Subsystems */
+  /* Subsystems 
   private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
     m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
     m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
@@ -39,7 +40,8 @@ public class RobotContainer {
     m_robotMap.leftBackEncoder,
     m_robotMap.rightBackEncoder
   );
-
+  */
+  private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor);
   private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt);
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
@@ -56,12 +58,17 @@ public class RobotContainer {
 
     /* Default Commands */
     // drives the swerve drive with a two-axis input from the driver controller
-    m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
-            getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
+    // m_robotSwerveDrive.setDefaultCommand(
+    //     new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
+    //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
+    m_robotIntake.setDefaultCommand(
+        new RunCommand(() -> m_robotIntake.runWithTriggers(
+          getDriverController().getLeftTriggerAxis(), getDriverController().getRightTriggerAxis()),m_robotIntake));
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+    m_robotLED.setDefaultCommand(
+        new RunCommand(m_robotLED::updateLED, m_robotLED));                      
+    // dri
   }
 
   /**
@@ -72,16 +79,28 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-
+    
     /* Operator Buttons */
+
+    // extends and retracts the extender 
+    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+        .whenPressed(() -> m_robotIntake.runExtender(true))
+        .whenReleased(() -> m_robotIntake.runExtender(false));
+
     // activates "Lit Mode"
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
-    
+    // revisit this later, not sure if we will still use this 
     new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
         .whenPressed(() -> m_robotSerializer.setSerializerStateWithBeam(true, m_robotSerializer.getBeam()))
         .whenReleased(() -> m_robotSerializer.setSerializerStateWithBeam(false, m_robotSerializer.getBeam()));
+        
+    new JoystickButton(getOperatorJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
+        .whenPressed(() -> m_robotIntake.runExtender(true)); 
+
+    new JoystickButton(getOperatorJoystick(), XboxController.LEFT_BUMPER_BUTTON)
+      .whenPressed(() -> m_robotIntake.runExtender(false));
   }
 
   /**
