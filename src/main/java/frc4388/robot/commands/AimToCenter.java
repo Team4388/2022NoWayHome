@@ -15,9 +15,8 @@ public class AimToCenter extends CommandBase {
   SwerveDrive m_drive;
 
   // use odometry to find x and y later
-  double x = 0;
-  double y = 0;
-  double angle = 0;
+  double x;
+  double y;
   double m_targetAngle;
 
   // public static Gains m_aimGains;
@@ -45,8 +44,7 @@ public class AimToCenter extends CommandBase {
 
   public static double angleToCenter(double x, double y, double gyro) {
     double angle = ((Math.atan2(y, x) * (180./Math.PI) - gyro) + 180. + 360.) % 360.; // Finds the angle between the gyro of the robot and the target (positive x is gyro 0)
-    return(angle);
-    //m_turret.runshooterRotatePID(m_targetAngle);
+    return angle;
   }
 
   /**

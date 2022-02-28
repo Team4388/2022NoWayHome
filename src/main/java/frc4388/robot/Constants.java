@@ -93,13 +93,13 @@ public final class Constants {
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 23;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 24; 
-    public static final int SHOOTER_ROTATE_ID = 31; //"unknown value" //figure out later
-    public static final int TURRET_RIGHT_SOFT_LIMIT = 0; //""//
-    public static final double TURRET_SPEED_MULTIPLIER = 0.1d; //""//
-    public static final int DEGREES_PER_ROT = 0; //""//
-    public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0; //""//
-    public static final int TURRET_MOTOR_ROTS_PER_ROT = 0; //""//
-    public static final double ENCODER_TICKS_PER_REV = 2048; //""//
+    public static final int SHOOTER_ROTATE_ID = 31; // TODO: find
+    public static final int TURRET_RIGHT_SOFT_LIMIT = 0;
+    public static final double TURRET_SPEED_MULTIPLIER = 0.1d;
+    public static final int DEGREES_PER_ROT = 0;
+    public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
+    public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
+    public static final double ENCODER_TICKS_PER_REV = 2048;
     
     
    
@@ -117,10 +117,10 @@ public final class Constants {
     public static final double DIG_DEADZONE_LEFT = 40.0;
     public static final double DIG_DEADZONE_RIGHT = 60.0;
 
-    public static final int SHOOTER_FALCON_BALLER_ID = 0; //unknown value, fix later//
+    public static final int SHOOTER_FALCON_BALLER_ID = 0; // TODO: find
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; //"//
   
-    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0,0,0,0,0,0);//x,y,z,a,b are not actual values, fix later
+    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0,0,0,0,0,0); // TODO: tune values
     /* Hood Constants */
     public static final int SHOOTER_ANGLE_ADJUST_ID = 32;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; //TODO: Find
