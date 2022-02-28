@@ -51,7 +51,7 @@ public class Intake extends SubsystemBase {
     m_intakeMotor.set(rightTrigger - leftTrigger);
   }
 
-  public void runExtender(boolean extended) {
+  public void runExtender(boolean extended) { //TODO: Do not bring intake in if there is a ball in the extender (check if intake being in brakes the beam brake?)
     double extenderMotorSpeed = extended ? 0.25d : 0.d;
     m_extenderMotor.set(extenderMotorSpeed);
   }
