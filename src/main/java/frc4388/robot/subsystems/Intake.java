@@ -51,14 +51,14 @@ public class Intake extends SubsystemBase {
     m_intakeMotor.set(rightTrigger - leftTrigger);
   }
 
-  public void runExtender(boolean extended) {
-    double extenderMotorSpeed = extended ? 0.25d : 0.d;
+  public void extendExtender(boolean extended) {
+    double extenderMotorSpeed = extended ? 0.25d : -0.25d;
     m_extenderMotor.set(extenderMotorSpeed);
   }
 
   public void toggleExtender() {
     toggle = !toggle;
-    runExtender(toggle);
+    extendExtender(toggle);
   }
   //Test
 }

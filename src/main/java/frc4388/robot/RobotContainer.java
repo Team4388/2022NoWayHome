@@ -84,8 +84,8 @@ public class RobotContainer {
 
     // extends and retracts the extender 
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
-        .whenPressed(() -> m_robotIntake.runExtender(true))
-        .whenReleased(() -> m_robotIntake.runExtender(false));
+        .whenPressed(() -> m_robotIntake.extendExtender(true))
+        .whenReleased(() -> m_robotIntake.extendExtender(false));
 
     // activates "Lit Mode"
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
@@ -96,11 +96,11 @@ public class RobotContainer {
         .whenPressed(() -> m_robotSerializer.setSerializerStateWithBeam(true, m_robotSerializer.getBeam()))
         .whenReleased(() -> m_robotSerializer.setSerializerStateWithBeam(false, m_robotSerializer.getBeam()));
         
-    new JoystickButton(getOperatorJoystick(), XboxController.RIGHT_BUMPER_BUTTON)
-        .whenPressed(() -> m_robotIntake.runExtender(true)); 
+    // new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
+        // .whenPressed(() -> m_robotIntake.extendExtender(true)); 
 
-    new JoystickButton(getOperatorJoystick(), XboxController.LEFT_BUMPER_BUTTON)
-      .whenPressed(() -> m_robotIntake.runExtender(false));
+    new JoystickButton(getOperatorJoystick(), XboxController.X_BUTTON)
+      .whenPressed(() -> m_robotIntake.toggleExtender());
   }
 
   /**
