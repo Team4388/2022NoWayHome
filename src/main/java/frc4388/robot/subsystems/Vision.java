@@ -8,12 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc4388.robot.Constants.ShooterConstants;
+
 import frc4388.robot.Constants.VisionConstants;
-import frc4388.robot.subsystems.BoomBoom;
-import frc4388.robot.subsystems.Turret;
-import frc4388.robot.subsystems.Hood;
 import frc4388.utility.controller.IHandController;
 
 public class Vision extends SubsystemBase {

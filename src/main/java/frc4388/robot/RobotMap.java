@@ -4,8 +4,6 @@
 
 package frc4388.robot;
 
-import javax.swing.text.WrappedPlainView;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
@@ -14,7 +12,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
