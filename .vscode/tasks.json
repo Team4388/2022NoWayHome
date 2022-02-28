@@ -14,6 +14,19 @@
         "clear": true
       },
       "problemMatcher": []
+    },
+    {
+      "label": "pathPlanner",
+      "type": "process",
+      "command": "open -n /Applications/PathPlanner.app",
+      "presentation": {
+        "echo": false,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      }
     }
   ]
 }
