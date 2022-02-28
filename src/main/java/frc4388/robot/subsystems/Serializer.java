@@ -12,7 +12,7 @@ public class Serializer extends SubsystemBase{
   private DigitalInput m_serializerBeam;
   private boolean serializerState;
 
-  public Serializer(CANSparkMax serializerBelt, CANSparkMax serializerShooterBelt, DigitalInput serializerBeam) {
+  public Serializer(CANSparkMax serializerBelt, CANSparkMax serializerShooterBelt, DigitalInput serializerBeam) { //TODO: Only one motor lol
     m_serializerBelt = serializerBelt;
     m_serializerShooterBelt = serializerShooterBelt;
     m_serializerBeam = serializerBeam;
@@ -26,7 +26,7 @@ public class Serializer extends SubsystemBase{
   public boolean getBeam() {
     return m_serializerBeam.get();
   }
-  public void setSerializerStateWithBeam(boolean ctrlbutter, boolean beambroken) {
+  public void setSerializerStateWithBeam(boolean ctrlbutter, boolean beambroken) { 
     boolean total = ctrlbutter || beambroken;
     setSerializerState(total);
   }
