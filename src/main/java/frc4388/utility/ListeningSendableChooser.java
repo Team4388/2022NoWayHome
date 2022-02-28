@@ -20,18 +20,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
- * The {@link SendableRunChooser} class is a useful tool for presenting a selection of options to the
+ * The {@link ListeningSendableChooser} class is a useful tool for presenting a selection of options to the
  * {@link SmartDashboard}.
  *
  * <p>For instance, you may wish to be able to select between multiple autonomous modes. You can do
  * this by putting every possible Command you want to run as an autonomous into a {@link
- * SendableRunChooser} and then put it into the {@link SmartDashboard} to have a list of options appear
- * on the laptop. Once autonomous starts, simply ask the {@link SendableRunChooser} what the selected
+ * ListeningSendableChooser} and then put it into the {@link SmartDashboard} to have a list of options appear
+ * on the laptop. Once autonomous starts, simply ask the {@link ListeningSendableChooser} what the selected
  * value is.
  *
  * @param <V> The type of the values to be stored
  */
-public class SendableRunChooser<V> implements NTSendable, AutoCloseable {
+public class ListeningSendableChooser<V> implements NTSendable, AutoCloseable {
   /** The key for the default value. */
   private static final String DEFAULT = "default";
   /** The key for the selected option. */
@@ -51,8 +51,8 @@ public class SendableRunChooser<V> implements NTSendable, AutoCloseable {
 
   private Consumer<String> m_consumer;
 
-  /** Instantiates a {@link SendableRunChooser}. */
-  public SendableRunChooser(Consumer<String> consumer) {
+  /** Instantiates a {@link ListeningSendableChooser}. */
+  public ListeningSendableChooser(Consumer<String> consumer) {
     m_consumer = consumer;
     m_instance = s_instances.getAndIncrement();
     SendableRegistry.add(this, "SendableChooser", m_instance);

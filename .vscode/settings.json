@@ -26,5 +26,8 @@
     },
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "java.dependency.packagePresentation": "hierarchical"
+  "java.dependency.packagePresentation": "hierarchical",
+  "files.associations": {
+    "*.path": "json"
+  }
 }

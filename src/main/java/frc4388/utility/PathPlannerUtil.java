@@ -20,7 +20,7 @@ public final class PathPlannerUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     static {
       objectMapper.registerModule(new Jdk8Module());
-      objectMapper.setSerializationInclusion(Include.NON_EMPTY);
+      objectMapper.setSerializationInclusion(Include.ALWAYS);
     }
 
     public static Path read(File src) {

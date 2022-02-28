@@ -108,7 +108,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
     SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
     SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
-    IntStream.range(0, 9999).forEach(Math::cos);
   }
 
   /**
