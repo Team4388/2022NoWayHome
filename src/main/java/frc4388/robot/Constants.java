@@ -110,8 +110,12 @@ public final class Constants {
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
 
-    public static final double DEADZONE_LEFT = 0.0;
-    public static final double DEADZONE_RIGHT = 340.0;
+    // deadzones
+    public static final double HARD_DEADZONE_LEFT = 0.0;
+    public static final double HARD_DEADZONE_RIGHT = 340.0;
+
+    public static final double DIG_DEADZONE_LEFT = 40.0;
+    public static final double DIG_DEADZONE_RIGHT = 60.0;
 
     public static final int SHOOTER_FALCON_BALLER_ID = 0; //unknown value, fix later//
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; //"//
