@@ -108,7 +108,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    // "XboxController.Button.kBack" was undefiened yet, 7 works just fine
+    // "XboxController.Button.kBack" was undefined yet, 7 works just fine
     new JoystickButton(getDriverController(), 7)
       .whenPressed(() -> m_robotSwerveDrive.resetGyro());
 
@@ -128,23 +128,17 @@ public class RobotContainer {
 
     /* Operator Buttons */
     // activates "Lit Mode"
-    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
     // activates "BoomBoom"
-    new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON)
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
         .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
         .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
-    /* Driver Buttons */
-    // activates intake
-    new JoystickButton(getOperatorJoystick(), XboxController.B_BUTTON);
-    // .whenPressed() -> m_robot
-    /* operator button */
     // activates hood
-    new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
         .whenPressed(() -> m_robotHood.runHood(0.5d))
         .whenReleased(() -> m_robotHood.runHood(0.d));
-    // new JoystickButton(getOperatorJoystick());
   }
 
   /**
