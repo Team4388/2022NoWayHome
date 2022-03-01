@@ -159,6 +159,6 @@ gradle-app.setting
 bin/
 
 # Simulation GUI and other tools window save file
-simgui-*.json
+simgui*.json
 
 src/main/deploy/config.json

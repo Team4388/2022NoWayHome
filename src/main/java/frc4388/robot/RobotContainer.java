@@ -275,8 +275,7 @@ public class RobotContainer {
 
   public PathPlannerUtil.Path createPath(Double maxVelocity, Double maxAcceleration, Boolean isReversed) {
     // pathPoints = Arrays.stream(PathPlannerUtil.Path.read(autoChooser.getSelected()).waypoints.get()).collect(Collectors.toList());
-    // Remove points whose angles to neighboring points are less than 10 degrees
-    // apart.
+    // Remove points whose angles to neighboring points are less than 10 degrees apart.
     int j = 0;
     for (int i = 1; i < pathPoints.size() - 1; i++) {
       var prev = pathPoints.get(j).anchorPoint.orElseThrow();
@@ -286,11 +285,10 @@ public class RobotContainer {
       var toNext = next.minus(current);
       var angleFromPrevious = new Rotation2d(fromPrevious.getX(), fromPrevious.getY());
       var angleToNext = new Rotation2d(toNext.getX(), toNext.getY());
-      j = i;
-      if (Math.abs(angleFromPrevious.minus(angleToNext).getDegrees()) < 20) {
+      if (Math.abs(angleFromPrevious.minus(angleToNext).getDegrees()) < 20)
         pathPoints.set(i, null);
-        j--;
-      }
+      else
+        j = i;
     }
     pathPoints.removeIf(Objects::isNull);
     // Make control points
