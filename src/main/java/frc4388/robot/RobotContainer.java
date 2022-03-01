@@ -4,6 +4,8 @@
 
 package frc4388.robot;
 
+import static frc4388.utility.AnsiLogging.RESOURCE_BUNDLE;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -11,6 +13,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
+import java.time.Clock;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -80,18 +86,14 @@ public class RobotContainer {
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
 
   private PathPlannerTrajectory loadedPathTrajectory = null;
-  private static final Function<CharSequence, String> pathExtensionRemover = ((Function<CharSequence, Matcher>) Pattern
-      .compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
-
   private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
+  private final List<Waypoint> pathPoints = new ArrayList<>();
 
-  private void loadPath(String pathName) {
-    LOGGER.warning("Loading path " + pathName);
-    loadedPathTrajectory = null;
-    loadedPathTrajectory = PathPlanner.loadPath(pathExtensionRemover.apply(Objects.requireNonNullElse(pathName, "")),
-        5.5, 50);
-    LOGGER.info("Done loading");
-  }
+  /* Autonomous */
+  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("'Recording' yyyy-MM-dd HH:mm:ss.SSS'.path'");
+  private static final Clock SYSTEM_CLOCK = Clock.system(ZoneId.systemDefault());
+  private static final Path PATHPLANNER_DIRECTORY = Filesystem.getDeployDirectory().toPath().resolve("pathplanner");
+  private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern.compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -111,49 +113,7 @@ public class RobotContainer {
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED).withName("LED update defaultCommand"));
-
-    try {
-      WatchKey watchKey = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").register(FileSystems.getDefault().newWatchService(), StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
-      // Save this and other commands as fields so they can be rescheduled.
-      new NotifierCommand(() -> {
-        List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-        if (!watchEvents.isEmpty()) {
-          List<WatchEvent<?>> pathWatchEvents = watchEvents.stream().filter(e -> e.kind().type().isAssignableFrom(Path.class)).collect(Collectors.toList());
-          for (WatchEvent<?> pathWatchEvent : pathWatchEvents) {
-            Path watchEventPath = (Path) pathWatchEvent.context();
-            File watchEventFile = watchEventPath.toFile();
-            String watchEventFileName = watchEventFile.getName();
-            if (watchEventFileName.endsWith(".path")) {
-              if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-                LOGGER.warning("PathPlanner file " + watchEventFileName + " created. Options added to SendableChooser.");
-                autoChooser.addOption(watchEventFile.getName(), watchEventFile);
-              } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-                LOGGER.warning("PathPlanner file " + watchEventFileName + " modified.");
-                if (watchEventFileName.equals(autoChooser.getSelected().getName())) {
-                  LOGGER.severe("PathPlanner file " + watchEventFileName + " already selected. Reloading path.");
-                  loadPath(watchEventFileName);
-                }
-              } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-                LOGGER.severe("PathPlanner file " + watchEventFileName + " deleted. Removing options from SendableChooser not yet implemented.");
-              }
-            }
-          }
-        }
-        if (!watchKey.reset())
-          LOGGER.severe("File watch key invalid.");
-      }, 0.5) {
-        @Override
-        public boolean runsWhenDisabled() {
-          return true;
-        }
-      }.withName("Path Watcher").schedule();
-    } catch (IOException exception) {
-      LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
-    }
-    Arrays.stream(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").toFile().listFiles())
-        .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
-        .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    autoInit();
     recordInit();
   }
 
@@ -170,13 +130,11 @@ public class RobotContainer {
         .whenPressed(m_robotSwerveDrive.m_gyro::reset);
 
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
-        // new XboxControllerRawButton(m_driverXbox,
-        // XboxControllerRaw.LEFT_BUMPER_BUTTON)
+        // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
 
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-        // new XboxControllerRawButton(m_driverXbox,
-        // XboxControllerRaw.RIGHT_BUMPER_BUTTON)
+        // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.RIGHT_BUMPER_BUTTON)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
@@ -233,7 +191,24 @@ public class RobotContainer {
     return m_operatorXbox;
   }
 
-  private final List<Waypoint> pathPoints = new ArrayList<>();
+  private void autoInit() {
+    try {
+      WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(), StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+      // TODO: Store this and other commands as fields so they can be rescheduled.
+      new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
+        @Override
+        public boolean runsWhenDisabled() {
+          return true;
+        }
+      }.withName("Path Watcher").schedule();
+    } catch (IOException exception) {
+      LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
+    }
+    Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles())
+        .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
+        .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
 
   public void recordInit() {
     SmartDashboard.putData("Recording",
@@ -250,12 +225,47 @@ public class RobotContainer {
         }.withName("Record Path (Cancel to Save)"));
   }
 
+  private void updateAutoChooser(WatchKey watchKey) {
+    List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+    if (!watchEvents.isEmpty()) {
+      List<WatchEvent<?>> pathWatchEvents = watchEvents.stream().filter(e -> e.kind().type().isAssignableFrom(Path.class)).collect(Collectors.toList());
+      for (WatchEvent<?> pathWatchEvent : pathWatchEvents) {
+        Path watchEventPath = (Path) pathWatchEvent.context();
+        File watchEventFile = watchEventPath.toFile();
+        String watchEventFileName = watchEventFile.getName();
+        if (watchEventFileName.endsWith(".path")) {
+          if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+            LOGGER.logrb(Level.WARNING, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryCreate", watchEventFileName);
+            autoChooser.addOption(watchEventFile.getName(), watchEventFile);
+          } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+            LOGGER.logrb(Level.WARNING, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryModify", watchEventFileName);
+            if (watchEventFileName.equals(autoChooser.getSelected().getName())) {
+              LOGGER.logrb(Level.SEVERE, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryModify.selected", watchEventFileName);
+              loadPath(watchEventFileName);
+            }
+          } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
+            LOGGER.logrb(Level.SEVERE, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryDelete", watchEventFileName);
+          }
+        }
+      }
+    }
+    if (!watchKey.reset())
+      LOGGER.severe("File watch key invalid.");
+  }
+
+  private void loadPath(String pathName) {
+    LOGGER.warning("Loading path " + pathName);
+    loadedPathTrajectory = null;
+    loadedPathTrajectory = PathPlanner.loadPath(PATH_EXTENSION_REMOVER.apply(Objects.requireNonNullElse(pathName, "")), SwerveDriveConstants.PATH_MAX_VELOCITY, SwerveDriveConstants.PATH_MAX_ACCELERATION);
+    LOGGER.info("Done loading");
+  }
+
   private void saveRecording() {
     // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
-    File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner")
-        .resolve("recording." + System.currentTimeMillis() + ".path").toFile();
+    File outputFile = PATHPLANNER_DIRECTORY.resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
     LOGGER.log(Level.WARNING, "Creating path {0}.", outputFile.getPath());
     if (Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
+      // TODO: Change to use measured maximum velocity and acceleration.
       createPath(null, null, false).write(outputFile);
       autoChooser.setDefaultOption(outputFile.getName(), outputFile);
       LOGGER.log(Level.INFO, "Recorded path to {0}.", outputFile.getPath());
@@ -266,15 +276,12 @@ public class RobotContainer {
   public void recordPeriodic() {
     Translation2d position = m_robotSwerveDrive.m_poseEstimator.getEstimatedPosition().getTranslation();
     Rotation2d rotation = m_robotSwerveDrive.m_gyro.getRotation2d();
-    Translation2d velocity = new Translation2d(m_robotSwerveDrive.chassisSpeeds.vxMetersPerSecond,
-        m_robotSwerveDrive.chassisSpeeds.vyMetersPerSecond);
-    Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false, velocity.getNorm(),
-        false);
+    Translation2d velocity = new Translation2d(m_robotSwerveDrive.chassisSpeeds.vxMetersPerSecond, m_robotSwerveDrive.chassisSpeeds.vyMetersPerSecond);
+    Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false, SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
     pathPoints.add(waypoint);
   }
 
   public PathPlannerUtil.Path createPath(Double maxVelocity, Double maxAcceleration, Boolean isReversed) {
-    // pathPoints = Arrays.stream(PathPlannerUtil.Path.read(autoChooser.getSelected()).waypoints.get()).collect(Collectors.toList());
     // Remove points whose angles to neighboring points are less than 10 degrees apart.
     int j = 0;
     for (int i = 1; i < pathPoints.size() - 1; i++) {
@@ -285,24 +292,20 @@ public class RobotContainer {
       var toNext = next.minus(current);
       var angleFromPrevious = new Rotation2d(fromPrevious.getX(), fromPrevious.getY());
       var angleToNext = new Rotation2d(toNext.getX(), toNext.getY());
-      if (Math.abs(angleFromPrevious.minus(angleToNext).getDegrees()) < 20)
+      if (Math.abs(angleFromPrevious.minus(angleToNext).getDegrees()) < SwerveDriveConstants.MIN_WAYPOINT_ANGLE || (next.getDistance(prev) < SwerveDriveConstants.MIN_WAYPOINT_DISTANCE && pathPoints.get(i).velOverride.map(v -> v < SwerveDriveConstants.MIN_WAYPOINT_VELOCITY).orElse(false)))
         pathPoints.set(i, null);
       else
         j = i;
     }
     pathPoints.removeIf(Objects::isNull);
     // Make control points
-    pathPoints.get(0).nextControl = Optional.of(makeControlPoints(null, pathPoints.get(0).anchorPoint.orElseThrow(),
-        pathPoints.get(1).anchorPoint.orElseThrow()).getSecond());
+    pathPoints.get(0).nextControl = Optional.of(makeControlPoints(null, pathPoints.get(0).anchorPoint.orElseThrow(), pathPoints.get(1).anchorPoint.orElseThrow()).getSecond());
     for (int i = 1; i < pathPoints.size() - 1; i++) {
-      var controls = makeControlPoints(pathPoints.get(i - 1).anchorPoint.orElseThrow(),
-          pathPoints.get(i).anchorPoint.orElseThrow(), pathPoints.get(i + 1).anchorPoint.orElseThrow());
+      var controls = makeControlPoints(pathPoints.get(i - 1).anchorPoint.orElseThrow(), pathPoints.get(i).anchorPoint.orElseThrow(), pathPoints.get(i + 1).anchorPoint.orElseThrow());
       pathPoints.get(i).prevControl = Optional.of(controls.getFirst());
       pathPoints.get(i).nextControl = Optional.of(controls.getSecond());
     }
-    pathPoints.get(pathPoints.size() - 1).prevControl = Optional
-        .of(makeControlPoints(pathPoints.get(pathPoints.size() - 2).anchorPoint.orElseThrow(),
-            pathPoints.get(pathPoints.size() - 1).anchorPoint.orElseThrow(), null).getFirst());
+    pathPoints.get(pathPoints.size() - 1).prevControl = Optional.of(makeControlPoints(pathPoints.get(pathPoints.size() - 2).anchorPoint.orElseThrow(), pathPoints.get(pathPoints.size() - 1).anchorPoint.orElseThrow(), null).getFirst());
     // Create the path
     PathPlannerUtil.Path path = new PathPlannerUtil.Path();
     path.waypoints = Optional.ofNullable(pathPoints.toArray(PathPlannerUtil.Path.Waypoint[]::new));
@@ -313,8 +316,7 @@ public class RobotContainer {
     return path;
   }
 
-  private static Pair<Translation2d, Translation2d> makeControlPoints(Translation2d prev, Translation2d current,
-      Translation2d next) {
+  private static Pair<Translation2d, Translation2d> makeControlPoints(Translation2d prev, Translation2d current, Translation2d next) {
     var line = Objects.requireNonNullElse(next, current).minus(Objects.requireNonNullElse(prev, current)).div(4);
     return Pair.of(current.minus(line), current.plus(line));
   }

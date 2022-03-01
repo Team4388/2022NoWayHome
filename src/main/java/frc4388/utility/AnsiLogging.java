@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ import org.fusesource.jansi.Ansi.Color;
 import org.fusesource.jansi.AnsiConsole;
 
 public class AnsiLogging extends ConsoleHandler {
+  public static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("frc4388.utility.Logging");
   public static void systemInstall() {
     try {
       // Configures java.util.logging.Logger to output additional colored information.
