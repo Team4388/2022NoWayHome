@@ -27,7 +27,8 @@ public class RobotMap {
 
   public RobotMap() {
     configureLEDMotorControllers();
-    // configureSwerveMotorControllers();
+    configureSwerveMotorControllers();
+    configureShooterMotorControllers();
   }
 
   /* LED Subsystem */
@@ -38,18 +39,6 @@ public class RobotMap {
   }
 
   /* Swerve Subsystem */
-  // public final WPI_TalonFX leftFrontSteerMotor = null;
-  // public final WPI_TalonFX leftFrontWheelMotor = null;
-  // public final WPI_TalonFX rightFrontSteerMotor = null;
-  // public final WPI_TalonFX rightFrontWheelMotor = null;
-  // public final WPI_TalonFX leftBackSteerMotor = null;
-  // public final WPI_TalonFX leftBackWheelMotor = null;
-  // public final WPI_TalonFX rightBackSteerMotor = null;
-  // public final WPI_TalonFX rightBackWheelMotor = null;
-  // public final CANCoder leftFrontEncoder = null;
-  // public final CANCoder rightFrontEncoder = null;
-  // public final CANCoder leftBackEncoder = null;
-  // public final CANCoder rightBackEncoder = null;
 
   public final WPI_TalonFX leftFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
   public final WPI_TalonFX leftFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_WHEEL_CAN_ID);
@@ -65,84 +54,60 @@ public class RobotMap {
   public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
 
   void configureSwerveMotorControllers() {
-  leftFrontEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
-  rightFrontEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
-  leftBackEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
-  rightBackEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
+    leftFrontEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
+    rightFrontEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
+    leftBackEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
+    rightBackEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
 
-  leftFrontSteerMotor.configFactoryDefault();
-  leftFrontWheelMotor.configFactoryDefault();
-  rightFrontSteerMotor.configFactoryDefault();
-  rightFrontWheelMotor.configFactoryDefault();
-  leftBackSteerMotor.configFactoryDefault();
-  leftBackWheelMotor.configFactoryDefault();
-  rightBackSteerMotor.configFactoryDefault();
-  rightBackWheelMotor.configFactoryDefault();
+    leftFrontSteerMotor.configFactoryDefault();
+    leftFrontWheelMotor.configFactoryDefault();
+    rightFrontSteerMotor.configFactoryDefault();
+    rightFrontWheelMotor.configFactoryDefault();
+    leftBackSteerMotor.configFactoryDefault();
+    leftBackWheelMotor.configFactoryDefault();
+    rightBackSteerMotor.configFactoryDefault();
+    rightBackWheelMotor.configFactoryDefault();
 
-  leftFrontSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftFrontWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightFrontSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightFrontWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftFrontSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftFrontWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightFrontSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightFrontWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
-  leftFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftBackSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftBackWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightBackSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightBackWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftBackSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftBackWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightBackSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightBackWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
-  leftFrontWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftFrontSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightFrontSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightFrontWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftFrontWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftFrontSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightFrontSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightFrontWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
-  // config cancoder as remote encoder for swerve steer motors
-  leftFrontSteerMotor.configRemoteFeedbackFilter(leftFrontEncoder.getDeviceID(),
-  RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  leftBackSteerMotor.configRemoteFeedbackFilter(leftBackEncoder.getDeviceID(),
-  RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightFrontSteerMotor.configRemoteFeedbackFilter(rightFrontEncoder.getDeviceID(),
-  RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(),
-  RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-  SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    // config cancoder as remote encoder for swerve steer motors
+    leftFrontSteerMotor.configRemoteFeedbackFilter(leftFrontEncoder.getDeviceID(),
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    leftBackSteerMotor.configRemoteFeedbackFilter(leftBackEncoder.getDeviceID(),
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightFrontSteerMotor.configRemoteFeedbackFilter(rightFrontEncoder.getDeviceID(),
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(),
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
   }
 
   // Shooter Config
@@ -153,7 +118,7 @@ public class RobotMap {
   public final CANSparkMax shooterTurret = new CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
 
   // Create motor CANSparkMax
-  void ConfigureShooterMotorControllers() {
+  void configureShooterMotorControllers() {
 
     // LEFT FALCON
     shooterFalconLeft.configFactoryDefault();
@@ -162,12 +127,9 @@ public class RobotMap {
     shooterFalconLeft.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configPeakOutputReverse(0, ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconLeft.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     // RIGHT FALCON
     shooterFalconRight.setInverted(false);
@@ -175,18 +137,14 @@ public class RobotMap {
     shooterFalconRight.configFactoryDefault();
     shooterFalconRight.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
-    // m_shooterFalconRight.configPeakOutputForward(0,
-    // ShooterConstants.SHOOTER_TIMEOUT_MS);(comment it in if necessary)
-    shooterFalconRight.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    // m_shooterFalconRight.configPeakOutputForward(0, ShooterConstants.SHOOTER_TIMEOUT_MS);(comment it in if necessary)
+    shooterFalconRight.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    
     /* Turret Subsytem */
-
-    shooterFalconRight.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 6, 9, 4.2));
-    shooterFalconLeft.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 12, 13, 0.4));
+    shooterFalconRight.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 6, 9, 4.2)); // TODO: dont pull numbers out of our ass anymore
+    shooterFalconLeft.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 12, 13, 0.4)); // TODO: dont pull numbers out of our ass anymore
 
   }
 
