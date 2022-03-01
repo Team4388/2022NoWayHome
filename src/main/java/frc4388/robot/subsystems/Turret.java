@@ -59,7 +59,7 @@ public class Turret extends SubsystemBase {
 
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_FORWARD_LIMIT);
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.TURRET_REVERSE_LIMIT);
-    setSoftLimits(true);
+    setTurretSoftLimits(true);
 
     m_boomBoomRotateMotor.setInverted(false);
 
@@ -80,7 +80,7 @@ public class Turret extends SubsystemBase {
    * Set status of turret motor soft limits.
    * @param set Boolean to set soft limits to.
    */
-  public void setSoftLimits(boolean set) {
+  public void setTurretSoftLimits(boolean set) {
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kForward, set);
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kReverse, set);
   }

@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,10 +39,14 @@ public double m_fireAngle;
   public Hood() {
      m_angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
 
-    m_hoodUpLimitSwitch = m_angleAdjusterMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_hoodUpLimitSwitch = m_angleAdjusterMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_hoodDownLimitSwitch = m_angleAdjusterMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_hoodUpLimitSwitch.enableLimitSwitch(true);
+    // m_hoodUpLimitSwitch.enableLimitSwitch(true);
     m_hoodDownLimitSwitch.enableLimitSwitch(true);
+
+    m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.HOOD_FORWARD_LIMIT);
+    m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.HOOD_REVERSE_LIMIT);
+    setHoodSoftLimits(true);
   }
     
 
@@ -49,6 +54,16 @@ public double m_fireAngle;
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+    /**
+   * Set status of hood motor soft limits.
+   * @param set Boolean to set soft limits to.
+   */
+  public void setHoodSoftLimits(boolean set) {
+    m_angleAdjusterMotor.enableSoftLimit(SoftLimitDirection.kForward, set);
+    m_angleAdjusterMotor.enableSoftLimit(SoftLimitDirection.kReverse, set);
+  }
+
   public void runAngleAdjustPID(double targetAngle) 
   {
     //Set PID Coefficients

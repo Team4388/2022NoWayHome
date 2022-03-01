@@ -108,6 +108,8 @@ public final class Constants {
     public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
+    public static final float TURRET_FORWARD_LIMIT = 0; // TODO: find
+    public static final float TURRET_REVERSE_LIMIT = 0; // TODO: find
 
     // deadzones
     public static final double HARD_DEADZONE_LEFT = 0.0;
@@ -120,13 +122,14 @@ public final class Constants {
     public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; //"//
   
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(0,0,0,0,0,0); // TODO: tune values
+
     /* Hood Constants */
     public static final int SHOOTER_ANGLE_ADJUST_ID = 32;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; //TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; //TODO: Find
+    public static final float HOOD_FORWARD_LIMIT = 0; //TODO: find
+    public static final float HOOD_REVERSE_LIMIT = 0; //TODO: find
 
-    public static final float TURRET_FORWARD_LIMIT = 0; // TODO: find
-    public static final float TURRET_REVERSE_LIMIT = 0; // TODO: find
 
   }
   public static final class VisionConstants {
