@@ -6,6 +6,10 @@ package frc4388.robot.subsystems;
 
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
+
+import java.util.concurrent.TimeoutException;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -16,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc4388.robot.Constants.ShooterConstants;
+import frc4388.robot.commands.Shoot;
 import frc4388.utility.Gains;
 
 public class Turret extends SubsystemBase {
@@ -52,12 +57,10 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
     SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
 
-    // m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
-    // m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    // m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_RIGHT_SOFT_LIMIT); // Set
-                                                                                                               // second
-                                                                                                               // soft
-                                                                                                               // limit
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_FORWARD_LIMIT);
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.TURRET_REVERSE_LIMIT);
+    setSoftLimits(true);
+
     m_boomBoomRotateMotor.setInverted(false);
 
     m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
@@ -71,6 +74,15 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  /**
+   * Set status of turret motor soft limits.
+   * @param set Boolean to set soft limits to.
+   */
+  public void setSoftLimits(boolean set) {
+    m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kForward, set);
+    m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kReverse, set);
   }
 
   public void passRequiredSubsystem(BoomBoom subsystem0, SwerveDrive subsystem1) {

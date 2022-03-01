@@ -94,7 +94,6 @@ public final class Constants {
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 23;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 24; 
     public static final int SHOOTER_ROTATE_ID = 31; // TODO: find
-    public static final int TURRET_RIGHT_SOFT_LIMIT = 0;
     public static final double TURRET_SPEED_MULTIPLIER = 0.1d;
     public static final int DEGREES_PER_ROT = 0;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
@@ -125,6 +124,9 @@ public final class Constants {
     public static final int SHOOTER_ANGLE_ADJUST_ID = 32;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; //TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; //TODO: Find
+
+    public static final float TURRET_FORWARD_LIMIT = 0; // TODO: find
+    public static final float TURRET_REVERSE_LIMIT = 0; // TODO: find
 
   }
   public static final class VisionConstants {
