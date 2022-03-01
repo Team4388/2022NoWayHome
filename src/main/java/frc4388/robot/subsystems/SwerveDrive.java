@@ -4,182 +4,250 @@
 
 package frc4388.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.CANCoder;
+import java.util.ArrayList;
 
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
-import frc4388.utility.RobotGyro;
 
 public class SwerveDrive extends SubsystemBase {
-  SwerveDriveKinematics m_kinematics;
-  private WPI_TalonFX m_leftFrontSteerMotor;
-  private WPI_TalonFX m_leftFrontWheelMotor;
-  private WPI_TalonFX m_rightFrontSteerMotor;
-  private WPI_TalonFX m_rightFrontWheelMotor;
-  private WPI_TalonFX m_leftBackSteerMotor;
-  private WPI_TalonFX m_leftBackWheelMotor;
-  private WPI_TalonFX m_rightBackSteerMotor;
-  private WPI_TalonFX m_rightBackWheelMotor;
-  private CANCoder m_leftFrontEncoder; 
-  private CANCoder m_rightFrontEncoder;
-  private CANCoder m_leftBackEncoder;
-  private CANCoder m_rightBackEncoder;    
+
+  private SwerveModule m_leftFront;
+  private SwerveModule m_leftBack;
+  private SwerveModule m_rightFront;
+  private SwerveModule m_rightBack;
+
   double halfWidth = SwerveDriveConstants.WIDTH / 2.d;
   double halfHeight = SwerveDriveConstants.HEIGHT / 2.d;
+
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
-
-  Translation2d m_frontLeftLocation = 
-      new Translation2d(
-          Units.inchesToMeters(halfHeight), 
-          Units.inchesToMeters(halfWidth));
-  Translation2d m_frontRightLocation =
-       new Translation2d(
-          Units.inchesToMeters(halfHeight), 
-          Units.inchesToMeters(-halfWidth));
-  Translation2d m_backLeftLocation = 
-      new Translation2d(
-          Units.inchesToMeters(-halfHeight), 
-          Units.inchesToMeters(halfWidth));
-  Translation2d m_backRightLocation = 
-      new Translation2d(
-          Units.inchesToMeters(-halfHeight), 
-          Units.inchesToMeters(-halfWidth));
-      //setSwerveGains();
+  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(halfWidth));
+  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(-halfWidth));
+  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
+  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
       
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+  public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+
   public SwerveModule[] modules;
-  public RobotGyro gyro; //TODO Add Gyro Lol
+  public WPI_PigeonIMU m_gyro;
+  protected FusionStatus fstatus = new FusionStatus();
 
+  /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
+  below are robot specific, and should be tuned. */
+  public SwerveDrivePoseEstimator m_poseEstimator;
+  public SwerveDriveOdometry m_odometry;
 
-  public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
-  WPI_TalonFX leftBackSteerMotor,WPI_TalonFX leftBackWheelMotor,WPI_TalonFX rightBackSteerMotor,WPI_TalonFX rightBackWheelMotor, CANCoder leftFrontEncoder,
-  CANCoder rightFrontEncoder,
-  CANCoder leftBackEncoder,
-  CANCoder rightBackEncoder)
-  {
-      m_leftFrontSteerMotor = leftFrontSteerMotor;
-      m_leftFrontWheelMotor = leftFrontWheelMotor;
-      m_rightFrontSteerMotor = rightFrontSteerMotor;
-      m_rightFrontWheelMotor = rightFrontWheelMotor;
-      m_leftBackSteerMotor = leftBackSteerMotor;
-      m_leftBackWheelMotor = leftBackWheelMotor;
-      m_rightBackSteerMotor = rightBackSteerMotor;
-      m_rightBackWheelMotor = rightBackWheelMotor;
-      m_leftFrontEncoder = leftFrontEncoder; 
-      m_rightFrontEncoder = rightFrontEncoder;
-      m_leftBackEncoder = leftBackEncoder;
-      m_rightBackEncoder = rightBackEncoder; 
+  public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
+  public boolean ignoreAngles;
+  public Rotation2d rotTarget = new Rotation2d();
 
-      modules = new SwerveModule[] {
-          new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
-          new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
-          new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
-          new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
-      };
-      //gyro.reset(); 
+  private final Field2d m_field = new Field2d();
+
+  public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack, WPI_PigeonIMU gyro) {
+
+    m_leftFront = leftFront;
+    m_leftBack = leftBack;
+    m_rightFront = rightFront;
+    m_rightBack = rightBack;
+    m_gyro = gyro;
+
+    modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
+
+    m_poseEstimator =
+      new SwerveDrivePoseEstimator(
+          m_gyro.getRotation2d(),
+          new Pose2d(),
+          m_kinematics,
+          VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),
+          VecBuilder.fill(Units.degreesToRadians(1)),
+          VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)));
+
+    m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
+
+    m_gyro.reset(); 
+    SmartDashboard.putData("Field", m_field);
   }
 //https://github.com/ZachOrr/MK3-Swerve-Example
  /**
  * Method to drive the robot using joystick info.
  *
- * @param xSpeed Speed of the robot in the x direction (forward).
- * @param ySpeed Speed of the robot in the y direction (sideways).
+ * @param speeds[0] Speed of the robot in the x direction (forward).
+ * @param speeds[1] Speed of the robot in the y direction (sideways).
  * @param rot Angular rate of the robot.
  * @param fieldRelative Whether the provided x and y speeds are relative to the field.
  */
-  public void driveWithInput(double xSpeed, double ySpeed, double rot, boolean fieldRelative)
+  public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative)
   {
-      /*var speeds = new ChassisSpeeds(strafeX, strafeY, rotate * SwerveDriveConstants.ROTATION_SPEED //in rad/s );
-      driveFromSpeeds(speeds);*/
-      double xSpeedMetersPerSecond = xSpeed * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
-      double ySpeedMetersPerSecond = ySpeed * SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND;
-      SwerveModuleState[] states =
-          kinematics.toSwerveModuleStates(
-              fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, gyro.getRotation2d())
-                : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3));
-       SwerveDriveKinematics.desaturateWheelSpeeds(states, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
-       for (int i = 0; i < states.length; i++) {
-          SwerveModule module = modules[i];
-          SwerveModuleState state = states[i];
-          module.setDesiredState(state);
-  }
-  }
-  //Converts a ChassisSpeed to SwerveModuleStates (targets)
-  public void driveFromSpeeds(ChassisSpeeds speeds)
-  {
-      //https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html 
-      // Convert to module states
-      SwerveModuleState[] moduleStates = m_kinematics.toSwerveModuleStates(speeds);
+    if (speedX == 0 && speedY == 0 && rot == 0) ignoreAngles = true;
+    else ignoreAngles = false;
+    Translation2d speed = new Translation2d(speedX, speedY);
+    double mag = speed.getNorm();
+    speed = speed.times(mag * speedAdjust);
 
-      // Front left module state
-      SwerveModuleState leftFront = SwerveModuleState.optimize(moduleStates[0], Rotation2d.fromDegrees(m_leftFrontEncoder.getPosition()));
-      // Front right module state
-      SwerveModuleState rightFront = SwerveModuleState.optimize(moduleStates[1], Rotation2d.fromDegrees(m_rightFrontEncoder.getPosition()));
-      // Back left module state
-      SwerveModuleState leftBack = SwerveModuleState.optimize(moduleStates[2], Rotation2d.fromDegrees(m_leftBackEncoder.getPosition()));
-      // Back right module state
-      SwerveModuleState rightBack = SwerveModuleState.optimize(moduleStates[3], Rotation2d.fromDegrees(m_rightBackEncoder.getPosition()));
-      
-      //Set the motors
-      setSwerveMotors(leftFront, leftBack, rightFront, rightBack);
+    double xSpeedMetersPerSecond = -speed.getX();
+    double ySpeedMetersPerSecond = speed.getY();
+    SwerveModuleState[] states =
+        m_kinematics.toSwerveModuleStates(
+            fieldRelative
+              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
+    setModuleStates(states);
+  }
+  public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
+  {
+    ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
+    Translation2d speed = new Translation2d(leftX, leftY);
+    speed = speed.times(speed.getNorm() * speedAdjust);
+    if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
+      rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0, 1));
+    double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
+    double xSpeedMetersPerSecond = -speed.getX();
+    double ySpeedMetersPerSecond = speed.getY();
+    SwerveModuleState[] states =
+        m_kinematics.toSwerveModuleStates(
+            fieldRelative
+              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED));
+    setModuleStates(states);
   }
 
-  //Sets steering motors to PID values
-  public void setSwerveMotors(SwerveModuleState leftFront, SwerveModuleState leftBack, SwerveModuleState rightFront, SwerveModuleState rightBack)
-  {
-      /*//Set the Wheel motor speeds
-      m_leftFrontWheelMotor.set(m_leftFrontSteerMotor.get() + leftFront.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      m_rightFrontWheelMotor.set(m_rightFrontSteerMotor.get() + rightFront.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      m_leftBackWheelMotor.set(m_leftBackSteerMotor.get() + leftBack.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      m_rightBackWheelMotor.set(m_rightBackSteerMotor.get() + rightBack.speedMetersPerSecond * SwerveDriveConstants.WHEEL_SPEED);
-      //PID
-      m_leftFrontSteerMotor.set(TalonFXControlMode.Position, leftFront.angle.getDegrees() * 12000);
-      m_rightFrontSteerMotor.set(TalonFXControlMode.Position, rightFront.angle.getDegrees() * 12000);
-      m_leftBackSteerMotor.set(TalonFXControlMode.Position, leftBack.angle.getDegrees() * 12000);
-      m_rightBackSteerMotor.set(TalonFXControlMode.Position, rightBack.angle.getDegrees());
-      System.out.println("Target: " + leftFront.angle.getDegrees());*/
-  }    
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
+    for (int i = 0; i < desiredStates.length; i++) {
+      SwerveModule module = modules[i];
+      SwerveModuleState state = desiredStates[i];
+      module.setDesiredState(state, false);
+    }
+    // modules[0].setDesiredState(desiredStates[0], false);
+  }
   
-  /*public void setSwerveGains(){
-      m_leftFrontSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_leftFrontSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftFrontSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftFrontSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftFrontSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_rightFrontSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightFrontSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_leftBackSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_leftBackSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.selectProfileSlot(SwerveDriveConstants.SWERVE_SLOT_IDX, SwerveDriveConstants.SWERVE_PID_LOOP_IDX);
-      m_rightBackSteerMotor.config_kF(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kF, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.config_kP(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kP, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.config_kI(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kI, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      m_rightBackSteerMotor.config_kD(SwerveDriveConstants.SWERVE_SLOT_IDX, m_swerveGains.m_kD, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-      
-  }*/
+  @Override
+  public void periodic() {
 
+    updateOdometry();
+    // SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
 
+    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw()); 
 
-  // public void driveFieldRelative(double awayFromStation, double towardLeftBoundary, double rotate)
-  // {
-  //     var speeds = ChassisSpeeds.fromFieldRelativeSpeeds(awayFromStation, towardLeftBoundary, 
-  //         rotate * SwerveDriveConstants.RotationSpeed, /*get odometry angle*/)
-  // }
+    // SmartDashboard.putNumber("Front Left", modules[0].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Front Right", modules[1].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Back Left", modules[2].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Back Right", modules[3].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
+    // SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
+    // SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
+
+    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    super.periodic();
+  }
+
+  /**
+   * Gets the distance between two given poses.
+   * @param p1 The first pose.
+   * @param p2 The second pose.
+   * @return Absolute distance between p1 and p2.
+   */
+  public double distBtwPoses(Pose2d p1, Pose2d p2) {
+    return Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
+  }
+
+  /**
+   * Returns a scalar from your distance to the hub to your target distance.
+   * 
+   * @param target_dist The target distance.
+   * @return A scalar that multiplies your distance from the hub to get your target distance.
+   */
+  public Pose2d poseGivenDist(double target_dist) {
+    Pose2d p1 = m_poseEstimator.getEstimatedPosition();
+    Pose2d p2 = SwerveDriveConstants.HUB_POSE;
+
+    double scalar = target_dist/distBtwPoses(p1, p2);
+    Pose2d new_pose = new Pose2d(p1.getX() * scalar, p1.getY() * scalar, p1.getRotation());
+
+    return new_pose;
+  }
+
+  /**
+   * Gets the current pose of the robot.
+   * @return Robot's current pose.
+   */
+  public Pose2d getOdometry() {
+    // return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
+  }
+
+  /**
+   * Gets the current gyro using regression formula.
+   * @return Rotation2d object holding current gyro in radians
+   */
+  public Rotation2d getRegGyro() {
+    double regCur = 0.6552670369 + m_gyro.getRotation2d().getDegrees() * 0.9926871527;
+    return new Rotation2d(regCur * Math.PI / 180);
+  }
+
+  /**
+   * Resets the odometry of the robot to the given pose.
+   */
+  public void resetOdometry(Pose2d pose) {
+    m_poseEstimator.resetPosition(pose, m_gyro.getRotation2d());
+  }
+
+  /** Updates the field relative position of the robot.  
+  */
+  public void updateOdometry() {
+    m_poseEstimator.update( getRegGyro(),
+                            modules[0].getState(), 
+                            modules[1].getState(), 
+                            modules[2].getState(), 
+                            modules[3].getState());
+  
+      // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
+      // a real robot, this must be calculated based either on latency or timestamps.
+      // m_poseEstimator.addVisionMeasurement(
+      //         m_poseEstimator.getEstimatedPosition(),
+      //     Timer.getFPGATimestamp() - 0.1);
+    }
+
+  public void resetGyro(){
+    m_gyro.reset();
+    rotTarget = new Rotation2d(0);
+  }
+
+  /**
+   * Stop all four swerve modules.
+   */
+  public void stopModules() {
+    modules[0].stop();
+    modules[1].stop();
+    modules[2].stop();
+    modules[3].stop();
+  }
+
+  public void highSpeed(boolean shift){
+    if (shift){
+      speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST;
+    }
+    else{
+      speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
+    }
+  }
 }

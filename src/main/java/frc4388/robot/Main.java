@@ -4,7 +4,9 @@
 
 package frc4388.robot;
 
+
 import edu.wpi.first.wpilibj.RobotBase;
+import frc4388.utility.AnsiLogging;
 
 /**
  * Do NOT add any static variables to this class, or any initialization at all.
@@ -21,6 +23,9 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
+    AnsiLogging.systemInstall();
     RobotBase.startRobot(Robot::new);
   }
 }
+
+// hi ryan -aarav

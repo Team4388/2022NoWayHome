@@ -4,7 +4,12 @@
 
 package frc4388.robot;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc4388.utility.RobotTime;
@@ -17,6 +22,7 @@ import frc4388.utility.RobotTime;
  * project.
  */
 public class Robot extends TimedRobot {
+  private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
   Command m_autonomousCommand;
   
   private RobotTime m_robotTime = RobotTime.getInstance();
@@ -28,6 +34,17 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    if (org.fusesource.jansi.Ansi.isEnabled()) {
+      LOGGER.log(Level.ALL, "Logging Test 1/8");
+      LOGGER.log(Level.SEVERE, "Logging Test 2/8");
+      LOGGER.log(Level.WARNING, "Logging Test 3/8");
+      LOGGER.log(Level.INFO, "Logging Test 4/8");
+      LOGGER.log(Level.CONFIG, "Logging Test 5/8");
+      LOGGER.log(Level.FINE, "Logging Test 6/8");
+      LOGGER.log(Level.FINER, "Logging Test 7/8");
+      LOGGER.log(Level.FINEST, "Logging Test 8/8");
+    }
+    LOGGER.fine("robotInit()");
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -49,6 +66,11 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // print odometry data to smart dashboard for debugging (if causing timeout errors, you can comment it)
+    SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
+    SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
+    SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
   }
 
   /**
@@ -58,6 +80,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
   }
 
@@ -70,18 +93,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    LOGGER.fine("autonomousInit()");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    /*String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
-    switch (autoSelected) {
-      case "My Auto":
-        autonomousCommand = new MyAutoCommand();
-        break;
-      case "Default Auto":
-      default:
-        autonomousCommand = new ExampleCommand();
-        break;
-    }*/
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -99,6 +112,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    LOGGER.fine("teleopInit()");
+    m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -107,6 +122,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotTime.startMatchTime();
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   /**
@@ -114,7 +130,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
   }
 
   /**

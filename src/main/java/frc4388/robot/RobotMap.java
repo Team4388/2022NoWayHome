@@ -10,6 +10,8 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.subsystems.SwerveModule;
 
 /**
  * Defines and holds all I/O objects on the Roborio. This is useful for unit
@@ -53,11 +56,14 @@ public class RobotMap {
   public final CANCoder leftBackEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
   public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
 
+  public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(SwerveDriveConstants.GYRO_ID);
+
+  public SwerveModule leftFront;
+  public SwerveModule leftBack;
+  public SwerveModule rightFront;
+  public SwerveModule rightBack;
+
   void configureSwerveMotorControllers() {
-    leftFrontEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
-    rightFrontEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
-    leftBackEncoder.configMagnetOffset(SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
-    rightBackEncoder.configMagnetOffset(SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
 
     leftFrontSteerMotor.configFactoryDefault();
     leftFrontWheelMotor.configFactoryDefault();
@@ -94,6 +100,21 @@ public class RobotMap {
     leftBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+
+    NeutralMode mode = NeutralMode.Coast;
+    leftFrontSteerMotor.setNeutralMode(mode);
+    leftFrontWheelMotor.setNeutralMode(mode);//Coast
+    rightFrontSteerMotor.setNeutralMode(mode);
+    rightFrontWheelMotor.setNeutralMode(mode);//Coast
+    leftBackSteerMotor.setNeutralMode(mode);
+    leftBackWheelMotor.setNeutralMode(mode);//Coast
+    rightBackSteerMotor.setNeutralMode(mode);
+    rightBackWheelMotor.setNeutralMode(mode);//Coast
+
+    leftFront = new SwerveModule(leftFrontWheelMotor, leftFrontSteerMotor, leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
+    leftBack = new SwerveModule(leftBackWheelMotor, leftBackSteerMotor, leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
+    rightFront = new SwerveModule(rightFrontWheelMotor, rightFrontSteerMotor, rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
+    rightBack = new SwerveModule(rightBackWheelMotor, rightBackSteerMotor, rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
 
     // config cancoder as remote encoder for swerve steer motors
     leftFrontSteerMotor.configRemoteFeedbackFilter(leftFrontEncoder.getDeviceID(),
