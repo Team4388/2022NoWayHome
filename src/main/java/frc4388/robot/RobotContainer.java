@@ -4,8 +4,6 @@
 
 package frc4388.robot;
 
-import static frc4388.utility.AnsiLogging.RESOURCE_BUNDLE;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -235,16 +233,16 @@ public class RobotContainer {
         String watchEventFileName = watchEventFile.getName();
         if (watchEventFileName.endsWith(".path")) {
           if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-            LOGGER.logrb(Level.WARNING, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryCreate", watchEventFileName);
+            LOGGER.log(Level.WARNING, "PathPlanner file {0} created. Options added to SendableChooser.", watchEventFileName);
             autoChooser.addOption(watchEventFile.getName(), watchEventFile);
           } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-            LOGGER.logrb(Level.WARNING, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryModify", watchEventFileName);
+            LOGGER.log(Level.WARNING, "PathPlanner file {0} modified.", watchEventFileName);
             if (watchEventFileName.equals(autoChooser.getSelected().getName())) {
-              LOGGER.logrb(Level.SEVERE, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryModify.selected", watchEventFileName);
+              LOGGER.log(Level.SEVERE, "PathPlanner file {0} already selected. Reloading path.", watchEventFileName);
               loadPath(watchEventFileName);
             }
           } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-            LOGGER.logrb(Level.SEVERE, RESOURCE_BUNDLE, "RobotContainer.updateAutoChooser.entryDelete", watchEventFileName);
+            LOGGER.log(Level.SEVERE, "PathPlanner file {0} deleted. Removing options from SendableChooser not yet implemented.", watchEventFileName);
           }
         }
       }
