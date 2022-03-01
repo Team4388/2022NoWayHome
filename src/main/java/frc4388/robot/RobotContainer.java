@@ -34,21 +34,7 @@ import frc4388.utility.controller.XboxController;
 public class RobotContainer {
   /* RobotMap */
   private final RobotMap m_robotMap = new RobotMap();
-  private final TalonFX m_testMotor = new TalonFX(2);
 
-  /*
-   * Subsystems
-   * private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-   * m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
-   * m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
-   * m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
-   * m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
-   * m_robotMap.leftFrontEncoder,
-   * m_robotMap.rightFrontEncoder,
-   * m_robotMap.leftBackEncoder,
-   * m_robotMap.rightBackEncoder
-   * );
-   */
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
@@ -105,9 +91,6 @@ public class RobotContainer {
 
     /* Operator Buttons */
     // activates "Lit Mode"
-
-    new JoystickButton(getDriverJoystick(), XboxController.A_BUTTON)
-        .whileHeld(() -> m_testMotor.set(TalonFXControlMode.PercentOutput, 0.5));
 
     new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
