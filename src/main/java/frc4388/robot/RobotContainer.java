@@ -233,7 +233,7 @@ public class RobotContainer {
     return m_operatorXbox;
   }
 
-  private /* final */ List<Waypoint> pathPoints = new ArrayList<>();
+  private final List<Waypoint> pathPoints = new ArrayList<>();
 
   public void recordInit() {
     SmartDashboard.putData("Recording",
@@ -274,8 +274,7 @@ public class RobotContainer {
   }
 
   public PathPlannerUtil.Path createPath(Double maxVelocity, Double maxAcceleration, Boolean isReversed) {
-    pathPoints = Arrays.stream(PathPlannerUtil.Path.read(autoChooser.getSelected()).waypoints.get())
-        .collect(Collectors.toList());
+    // pathPoints = Arrays.stream(PathPlannerUtil.Path.read(autoChooser.getSelected()).waypoints.get()).collect(Collectors.toList());
     // Remove points whose angles to neighboring points are less than 10 degrees
     // apart.
     int j = 0;

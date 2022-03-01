@@ -17,8 +17,10 @@
     },
     {
       "label": "pathPlanner",
-      "type": "process",
-      "command": "open -n /Applications/PathPlanner.app",
+      "type": "shell",
+      "osx": {
+        "command": "open -n /Applications/PathPlanner.app"
+      },
       "presentation": {
         "echo": false,
         "reveal": "silent",
