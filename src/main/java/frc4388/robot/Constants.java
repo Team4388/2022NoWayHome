@@ -4,12 +4,15 @@
 
 package frc4388.robot;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+
 import frc4388.utility.Gains;
 import frc4388.utility.LEDPatterns;
 
@@ -52,9 +55,8 @@ public final class Constants {
     public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
     public static final int GYRO_ID = 14;
     
-    // ofsets are in degrees
-
-                    //NATHAN if you truncate or round or simplify these i will cry
+    // offsets are in degrees
+    // NATHAN if you truncate or round or simplify these i will cry
     public static final double LEFT_FRONT_ENCODER_OFFSET = 181.45-3.30;//181.7578125;//180.0;//315.0 +45;//180.0;
     public static final double RIGHT_FRONT_ENCODER_OFFSET = 360.-59.0625+0.18;//360.-59.0625;//315.0;//224.296875 + 90;//300.0;
     public static final double LEFT_BACK_ENCODER_OFFSET = 360.-128.222;//308.408203125;//225.0;//45.87890625;//360.0 - 128.0;
@@ -120,4 +122,62 @@ public final class Constants {
     public static final double LEFT_AXIS_DEADBAND = 0.1;
     public static final double RIGHT_AXIS_DEADBAND = 0.6;
   }
+
+  public static final class ShooterConstants {
+    /* PID Constants Shooter */
+    public static final int CLOSED_LOOP_TIME_MS = 1;
+
+   public static final int SHOOTER_TIMEOUT_MS = 32;
+    public static final int SHOOTER_SLOT_IDX = 0;
+    public static final int SHOOTER_PID_LOOP_IDX = 1;
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
+    public static final int SHOOTER_FALCON_LEFT_CAN_ID = 23;
+    public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 24; 
+    public static final int SHOOTER_ROTATE_ID = 31; // TODO: find
+    public static final double TURRET_SPEED_MULTIPLIER = 0.1d;
+    public static final int DEGREES_PER_ROT = 0;
+    public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
+    public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
+    public static final double ENCODER_TICKS_PER_REV = 2048;
+    
+    
+   
+    /* Turret Constants */
+    //ID
+    public static final int TURRET_MOTOR_CAN_ID = 30;
+    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
+    public static final double SHOOTER_TURRET_MIN = -1.0;
+    public static final float TURRET_FORWARD_LIMIT = 0; // TODO: find
+    public static final float TURRET_REVERSE_LIMIT = 0; // TODO: find
+
+    // deadzones
+    public static final double HARD_DEADZONE_LEFT = 0.0;
+    public static final double HARD_DEADZONE_RIGHT = 340.0;
+
+    public static final double DIG_DEADZONE_LEFT = 40.0;
+    public static final double DIG_DEADZONE_RIGHT = 60.0;
+
+    public static final int SHOOTER_FALCON_BALLER_ID = 0; // TODO: find
+    public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; //"//
+  
+    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0,0,0,0,0,0); // TODO: tune values
+
+    /* Hood Constants */
+    public static final int SHOOTER_ANGLE_ADJUST_ID = 32;
+    public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; //TODO: Find
+    public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; //TODO: Find
+    public static final float HOOD_FORWARD_LIMIT = 0; //TODO: find
+    public static final float HOOD_REVERSE_LIMIT = 0; //TODO: find
+
+
+  }
+  public static final class VisionConstants {
+      public static final double TURN_P_VALUE = 0.8;
+      public static final double X_ANGLE_ERROR = 0.5;
+      public static final double GRAV = 385.83;
+      public static final double TARGET_HEIGHT = 67.5;
+      public static final double FOV = 29.8; //Field of view limelight
+      public static final double LIME_ANGLE = 24.7;
+    }
 }

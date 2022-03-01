@@ -17,6 +17,9 @@ import frc4388.utility.LEDPatterns;
  * Add your docs here.
  */
 public class LEDSubsystemTest {
+  // Arrange
+  Spark ledController = mock(Spark.class);
+  LED led = new LED(ledController);
   @Test
   public void testConstructor() {
     // Arrange

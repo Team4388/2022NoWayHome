@@ -1,16 +1,19 @@
 {
   "HALProvider": {
     "Other Devices": {
+      "SPARK MAX [10]": {
       "Talon FX[2]": {
         "header": {
           "open": true
         }
       },
+      "SPARK MAX [30]": {
       "Talon FX[3]": {
         "header": {
           "open": true
         }
       },
+      "SPARK MAX [31]": {
       "Talon FX[4]": {
         "header": {
           "open": true
@@ -21,10 +24,14 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/BoomBoom": "Subsystem",
+      "/LiveWindow/Hood": "Subsystem",
       "/LiveWindow/LED": "Subsystem",
       "/LiveWindow/SwerveDrive": "Subsystem",
       "/LiveWindow/SwerveModule": "Subsystem",
+      "/LiveWindow/Turret": "Subsystem",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Vision": "Subsystem"
       "/SmartDashboard/Driver Controller": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d"
     },
@@ -38,6 +45,9 @@
   },
   "NetworkTables": {
     "SmartDashboard": {
+      "Recording": {
+        "open": true
+      },
       "open": true
     }
   }
