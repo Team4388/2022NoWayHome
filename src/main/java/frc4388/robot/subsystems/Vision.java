@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
 import frc4388.robot.Constants.VisionConstants;
-import frc4388.utility.controller.IHandController;
 
 public class Vision extends SubsystemBase {
 //setup
@@ -19,7 +18,6 @@ public class Vision extends SubsystemBase {
   Hood m_hood;
 
 NetworkTableEntry xEntry;
-IHandController m_driverController;
 //Aiming
 double turnAmount = 0;
 double xAngle = 0;

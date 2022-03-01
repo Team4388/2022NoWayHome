@@ -56,8 +56,11 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-    m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
+  public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, 
+                                                                m_robotMap.leftBack, 
+                                                                m_robotMap.rightFront, 
+                                                                m_robotMap.rightBack, 
+                                                                m_robotMap.gyro);
 
   private final TalonFX m_testMotor = new TalonFX(23);
 
@@ -66,18 +69,6 @@ public class RobotContainer {
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
-  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive( m_robotMap.leftFrontSteerMotor, 
-                                                                  m_robotMap.leftFrontWheelMotor, 
-                                                                  m_robotMap.rightFrontSteerMotor, 
-                                                                  m_robotMap.rightFrontWheelMotor, 
-                                                                  m_robotMap.leftBackSteerMotor, 
-                                                                  m_robotMap.leftBackWheelMotor, 
-                                                                  m_robotMap.rightBackSteerMotor, 
-                                                                  m_robotMap.rightBackWheelMotor,
-                                                                  m_robotMap.leftFrontEncoder,
-                                                                  m_robotMap.rightFrontEncoder,
-                                                                  m_robotMap.leftBackEncoder,
-                                                                  m_robotMap.rightBackEncoder);
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);

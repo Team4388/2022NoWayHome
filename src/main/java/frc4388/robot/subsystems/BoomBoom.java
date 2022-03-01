@@ -22,15 +22,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.CSV;
 import frc4388.utility.Gains;
-import frc4388.utility.controller.IHandController;
 
 public class BoomBoom extends SubsystemBase {
 public WPI_TalonFX m_shooterFalconLeft;
 public WPI_TalonFX m_shooterFalconRight;
 public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
 public static BoomBoom m_boomBoom;
-public static IHandController m_driverController; //not sure if driverController in 2022 = m_controller in 2020
-// BangBangController m_controller = new BangBangController();
 
 double velP;
 double input;
