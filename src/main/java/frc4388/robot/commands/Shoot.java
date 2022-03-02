@@ -84,8 +84,17 @@ public class Shoot extends CommandBase {
     m_targetVel = m_boomBoom.getVelocity(m_distance);
     m_targetHood = m_boomBoom.getHood(m_distance);
     m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
-    m_driveTargetAngle = m_targetAngle + m_turret.getBoomBoomAngleDegrees();
+    m_driveTargetAngle = m_swerve.getRegGyro().getDegrees();
 
+    
+
+    if (AimToCenter.isHardwareDeadzone(m_targetAngle)) {
+      m_targetAngle = m_targetAngle + 20;
+    }
+
+    if (AimToCenter.isDigitalDeadzone(m_targetAngle)) {
+      m_swerve.driveWithInput(0, 0, Math.cos(m_driveTargetAngle + 20), Math.sin(m_driveTargetAngle + 20), true);
+    }
     // // normal (i think) PID stuff
     // dummyConfiguration.primaryPID.selectedFeedbackSensor = TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
     // dummyConfiguration.remoteFilter0.remoteSensorDeviceID = dummy.getDeviceID();
