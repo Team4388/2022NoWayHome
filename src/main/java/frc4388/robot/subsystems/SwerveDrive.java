@@ -130,6 +130,10 @@ public class SwerveDrive extends SubsystemBase {
     setModuleStates(states);
   }
 
+  /**
+   * Set each module of the swerve drive to the corresponding desired state.
+   * @param desiredStates Array of module states to set.
+   */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
     for (int i = 0; i < desiredStates.length; i++) {
@@ -146,15 +150,7 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
     // SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
 
-    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw()); 
-
-    // SmartDashboard.putNumber("Front Left", modules[0].driveMotor.getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Front Right", modules[1].driveMotor.getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Back Left", modules[2].driveMotor.getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Back Right", modules[3].driveMotor.getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
-    // SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
-    // SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
+    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
 
     // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
@@ -226,7 +222,10 @@ public class SwerveDrive extends SubsystemBase {
       //         m_poseEstimator.getEstimatedPosition(),
       //     Timer.getFPGATimestamp() - 0.1);
     }
-
+  
+  /**
+   * Resets pigeon.
+   */
   public void resetGyro(){
     m_gyro.reset();
     rotTarget = new Rotation2d(0);
@@ -242,6 +241,10 @@ public class SwerveDrive extends SubsystemBase {
     modules[3].stop();
   }
 
+  /**
+   * Switches speed modes.
+   * @param shift True if fast mode, false if slow mode.
+   */
   public void highSpeed(boolean shift){
     if (shift){
       speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST;

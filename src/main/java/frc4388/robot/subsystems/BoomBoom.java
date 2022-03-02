@@ -46,14 +46,14 @@ public static class ShooterTableEntry {
 
 private ShooterTableEntry[] m_shooterTable;
 
-/*
-* Creates new BoomBoom subsystem, has drum shooter and angle adjuster
-*/
-  /** Creates a new BoomBoom. */
+/**
+ * Creates a new BoomBoom subsystem, which has the drum shooter.
+ * @param shooterFalconLeft The left drum motor.
+ * @param shooterFalconRight The right drum motor.
+ */
 public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
   m_shooterFalconLeft = shooterFalconLeft;
   m_shooterFalconRight = shooterFalconRight;
-
 
   try {
     CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
@@ -80,6 +80,8 @@ public Double getVelocity(final Double distance) {
 public Double getHood(final Double distance) {
   return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
 }
+
+// TODO: @nathanrsxtn pls java doc your shooter tables code
 
 private static <E> Number linearInterpolate(final E[] table, final Number lookupValue, final Function<E, Number> lookupGetter, final Function<E, Number> targetGetter) {
   final Map.Entry<Integer, E> closestEntry = lookup(table, lookupValue.doubleValue(), lookupGetter, false).orElse(Map.entry(table.length - 1, table[table.length - 1]));
