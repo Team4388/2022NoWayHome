@@ -26,7 +26,7 @@ import org.fusesource.jansi.AnsiConsole;
 public class AnsiLogging extends ConsoleHandler {
   public static void systemInstall() {
     try {
-      // Configures java.util.logging.Logger to output additional colored information.
+      // Configure java.util.logging.Logger to output additional colored information.
       LogManager.getLogManager().updateConfiguration(key -> (o, n) -> {
         switch (key) {
           case ".level":
@@ -37,11 +37,11 @@ public class AnsiLogging extends ConsoleHandler {
             return n;
         }
       });
-      // Replaces standard output streams with org.fusesource.jansi.AnsiPrintStreams.
+      // Replace standard output streams with org.fusesource.jansi.AnsiPrintStreams.
       AnsiConsole.systemInstall();
-      // Replaces standard output stream with java.util.logging.Logger.
+      // Replace standard output stream with java.util.logging.Logger.
       System.setOut(printStreamLogger(Logger.getGlobal(), Level.INFO));
-      // Replaces standard error output stream with java.util.logging.Logger.
+      // Replace standard error output stream with java.util.logging.Logger.
       System.setErr(printStreamLogger(Logger.getGlobal(), Level.SEVERE));
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
@@ -62,19 +62,20 @@ public class AnsiLogging extends ConsoleHandler {
 
     private static final Formatter formatter = new Formatter() {
       private final ZoneId zoneId = ZoneId.systemDefault();
+      // Specify and prepare formats for messages
       private final Map<Integer, String> levelColors = Map.of(
         Level.OFF.intValue(), "", 
-        Level.SEVERE.intValue(), makeSignatureFormatString(ansi().fgBright(Color.RED)), 
-        Level.WARNING.intValue(), makeSignatureFormatString(ansi().fgBright(Color.YELLOW)), 
-        Level.INFO.intValue(), makeSignatureFormatString(ansi().fg(Color.GREEN)), 
-        Level.CONFIG.intValue(), makeSignatureFormatString(ansi().fgBright(Color.BLUE)), 
-        Level.FINE.intValue(), makeSignatureFormatString(ansi().fg(Color.CYAN)), 
-        Level.FINER.intValue(), makeSignatureFormatString(ansi().fg(Color.MAGENTA)), 
-        Level.FINEST.intValue(), makeSignatureFormatString(ansi().fgBright(Color.BLACK)), 
-        Level.ALL.intValue(), makeSignatureFormatString(ansi().fg(Color.DEFAULT))
+        Level.SEVERE.intValue(), makeMessageFormatString(ansi().fgBright(Color.RED)), 
+        Level.WARNING.intValue(), makeMessageFormatString(ansi().fgBright(Color.YELLOW)), 
+        Level.INFO.intValue(), makeMessageFormatString(ansi().fg(Color.GREEN)), 
+        Level.CONFIG.intValue(), makeMessageFormatString(ansi().fgBright(Color.BLUE)), 
+        Level.FINE.intValue(), makeMessageFormatString(ansi().fg(Color.CYAN)), 
+        Level.FINER.intValue(), makeMessageFormatString(ansi().fg(Color.MAGENTA)), 
+        Level.FINEST.intValue(), makeMessageFormatString(ansi().fgBright(Color.BLACK)), 
+        Level.ALL.intValue(), makeMessageFormatString(ansi().fg(Color.DEFAULT))
       );
 
-      private String makeSignatureFormatString(Ansi base) {
+      private String makeMessageFormatString(Ansi base) {
         return base.bold().a(Attribute.UNDERLINE).a("[%1$tb %1$td %1$tk:%1$tM:%1$tS.%1$tL] %2$s %3$s:").boldOff().a(Attribute.UNDERLINE_OFF).a("%4$s%5$s").a(Attribute.INTENSITY_FAINT).a("%6$s").reset().a("%n").toString();
       }
 
