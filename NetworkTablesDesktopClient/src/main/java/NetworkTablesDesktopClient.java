@@ -11,7 +11,6 @@ public class NetworkTablesDesktopClient {
   public static void main(String[] args) {
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
     instance.getTable("Recording").addEntryListener((table, key, entry, value, flags) -> {
-      // File file = new File(key);
       Path path = Path.of("..", "src", "main", "deploy", "pathplanner", key);
       File file = path.toFile();
       try {
