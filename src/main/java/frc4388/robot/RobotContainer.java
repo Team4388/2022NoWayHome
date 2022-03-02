@@ -53,8 +53,13 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.subsystems.BoomBoom;
+import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
+import frc4388.robot.subsystems.Turret;
+import frc4388.robot.subsystems.Vision;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.ListeningSendableChooser;
 import frc4388.utility.PathPlannerUtil;
@@ -74,11 +79,13 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-      m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
+  public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
 
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
-
+  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  private final Hood m_robotHood = new Hood();
+  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -99,7 +106,14 @@ public class RobotContainer {
   public RobotContainer() {
     configureButtonBindings();
     /* Default Commands */
-    // drives the swerve drive with a two-axis input from the driver controller
+    
+    // continually sends updates to the Blinkin LED controller to keep the lights on
+    // m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+
+    //Turret default command
+
+    m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive));
+
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
             getDriverController().getLeftX(),
@@ -123,9 +137,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    new JoystickButton(getDriverController(), XboxController.Button.kY.value)
-        // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.Y_BUTTON)
-        .whenPressed(m_robotSwerveDrive.m_gyro::reset);
+    // "XboxController.Button.kBack" was undefined yet, 7 works just fine
+    new JoystickButton(getDriverController(), 7)
+      .whenPressed(m_robotSwerveDrive::resetGyro);
 
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
         // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
@@ -141,9 +155,16 @@ public class RobotContainer {
     /* Operator Buttons */
     // activates "Lit Mode"
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+    // activates "BoomBoom"
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
+        .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
+    // activates hood
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(() -> m_robotHood.runHood(0.5d))
+        .whenReleased(() -> m_robotHood.runHood(0.d));
   }
 
   /**
@@ -177,10 +198,18 @@ public class RobotContainer {
     return m_driverXbox;
   }
 
+  /**
+   * Get odometry.
+   * @return Odometry
+   */
   public Pose2d getOdometry() {
     return m_robotSwerveDrive.getOdometry();
   }
 
+  /**
+   * Set odometry to given pose.
+   * @param pose Pose to set odometry to.
+   */
   public void resetOdometry(Pose2d pose) {
     m_robotSwerveDrive.resetOdometry(pose);
   }

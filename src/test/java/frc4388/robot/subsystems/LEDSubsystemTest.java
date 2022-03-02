@@ -6,6 +6,7 @@ package frc4388.robot.subsystems;
 
 import static org.junit.Assert.assertEquals;
 // import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
@@ -17,6 +18,9 @@ import frc4388.utility.LEDPatterns;
  * Add your docs here.
  */
 public class LEDSubsystemTest {
+  // Arrange
+  Spark ledController = mock(Spark.class);
+  LED led = new LED(ledController);
   @Test
   public void testConstructor() {
     // Arrange

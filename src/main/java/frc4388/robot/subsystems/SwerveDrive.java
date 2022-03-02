@@ -54,36 +54,18 @@ public class SwerveDrive extends SubsystemBase {
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
-  public Rotation2d rotTarget = new Rotation2d();;
+  public Rotation2d rotTarget = new Rotation2d();
   public ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
   private final Field2d m_field = new Field2d();
 
   public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack, WPI_PigeonIMU gyro) {
-      // m_leftFrontSteerMotor = leftFrontSteerMotor;
-      // m_leftFrontWheelMotor = leftFrontWheelMotor;
-      // m_rightFrontSteerMotor = rightFrontSteerMotor;
-      // m_rightFrontWheelMotor = rightFrontWheelMotor;
-      // m_leftBackSteerMotor = leftBackSteerMotor;
-      // m_leftBackWheelMotor = leftBackWheelMotor;
-      // m_rightBackSteerMotor = rightBackSteerMotor;
-      // m_rightBackWheelMotor = rightBackWheelMotor;
-      // m_leftFrontEncoder = leftFrontEncoder; 
-      // m_rightFrontEncoder = rightFrontEncoder;
-      // m_leftBackEncoder = leftBackEncoder;
-      // m_rightBackEncoder = rightBackEncoder; 
+
     m_leftFront = leftFront;
     m_leftBack = leftBack;
     m_rightFront = rightFront;
     m_rightBack = rightBack;
     m_gyro = gyro;
-
-      // modules = new SwerveModule[] {
-      //   new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
-      //   new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
-      //   new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
-      //   new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
-      // };
 
     modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
 
@@ -154,21 +136,26 @@ public class SwerveDrive extends SubsystemBase {
       SwerveModuleState state = desiredStates[i];
       module.setDesiredState(state, false);
     }
+    // modules[0].setDesiredState(desiredStates[0], false);
   }
 
   @Override
   public void periodic() {
-    updateOdometry();
-    SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
-    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
-    SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
-    SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
-    SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
 
-    // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    // m_gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 1, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    updateOdometry();
+    // SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
+
+    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw()); 
+
+    // SmartDashboard.putNumber("Front Left", modules[0].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Front Right", modules[1].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Back Left", modules[2].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Back Right", modules[3].driveMotor.getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Pigeon Get Angle", m_gyro.getAngle());
+    // SmartDashboard.putNumber("Pigeon Rotation 2D", m_gyro.getRotation2d().getDegrees());
+    // SmartDashboard.putStringArray("Fusion Status", new String[] {"Is Fusing: "+fstatus.bIsFusing, "Is Valid: "+fstatus.bIsValid, "Heading: "+fstatus.heading});
+
+    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 
@@ -208,27 +195,29 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Resets the odometry of the robot to (x=0, y=0, theta=0).
+   * Gets the current gyro using regression formula.
+   * @return Rotation2d object holding current gyro in radians
+   */
+  public Rotation2d getRegGyro() {
+    double regCur = 0.6552670369 + m_gyro.getRotation2d().getDegrees() * 0.9926871527;
+    return new Rotation2d(regCur * Math.PI / 180);
+  }
+
+  /**
+   * Resets the odometry of the robot to the given pose.
    */
   public void resetOdometry(Pose2d pose) {
-    // m_odometry.resetPosition(pose, m_gyro.getRotation2d());
     m_poseEstimator.resetPosition(pose, m_gyro.getRotation2d());
   }
 
-  /** Updates the field relative position of the robot. */
-
+  /** Updates the field relative position of the robot.  
+  */
   public void updateOdometry() {
-    m_poseEstimator.update( m_gyro.getRotation2d(), 
+    m_poseEstimator.update( getRegGyro(),
                             modules[0].getState(), 
                             modules[1].getState(), 
                             modules[2].getState(), 
                             modules[3].getState());
-    
-    // m_odometry.update( m_gyro.getRotation2d(), 
-    //                    modules[0].getState(),
-    //                    modules[1].getState(),
-    //                    modules[2].getState(),
-    //                    modules[3].getState());
   
       // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
       // a real robot, this must be calculated based either on latency or timestamps.
@@ -242,6 +231,9 @@ public class SwerveDrive extends SubsystemBase {
     rotTarget = new Rotation2d(0);
   }
 
+  /**
+   * Stop all four swerve modules.
+   */
   public void stopModules() {
     modules[0].stop();
     modules[1].stop();
