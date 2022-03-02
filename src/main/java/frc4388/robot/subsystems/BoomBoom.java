@@ -67,7 +67,7 @@ public class BoomBoom extends SubsystemBase {
         }
 
       };
-      m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "Robot Data - Distances.csv").toPath());
+      m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
       new Thread(() -> LOGGER.fine(CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
     } catch (final IOException e) {
       e.printStackTrace();

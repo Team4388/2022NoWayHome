@@ -6,6 +6,8 @@ package frc4388.robot;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.StringWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -40,8 +42,12 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -90,11 +96,13 @@ public class RobotContainer {
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
 
+  /* Autonomous */
   private PathPlannerTrajectory loadedPathTrajectory = null;
   private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
   private final List<Waypoint> pathPoints = new ArrayList<>();
+  private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
+  private final NetworkTable recordingNetworkTable = networkTableInstance.getTable("Recording");
 
-  /* Autonomous */
   private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("'Recording' yyyy-MM-dd HH:mm:ss.SSS'.path'");
   private static final Clock SYSTEM_CLOCK = Clock.system(ZoneId.systemDefault());
   private static final Path PATHPLANNER_DIRECTORY = Filesystem.getDeployDirectory().toPath().resolve("pathplanner");
@@ -291,9 +299,14 @@ public class RobotContainer {
     // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
     File outputFile = PATHPLANNER_DIRECTORY.resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
     LOGGER.log(Level.WARNING, "Creating path {0}.", outputFile.getPath());
-    if (Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
+    if (!pathPoints.isEmpty() && Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
       // TODO: Change to use measured maximum velocity and acceleration.
-      createPath(null, null, false).write(outputFile);
+      var path = createPath(null, null, false);
+      if (RobotBase.isReal())
+        path.write(outputFile);
+      StringWriter writer = new StringWriter();
+      path.write(writer);
+      recordingNetworkTable.getEntry(outputFile.getName()).setString(writer.toString());
       autoChooser.setDefaultOption(outputFile.getName(), outputFile);
       LOGGER.log(Level.INFO, "Recorded path to {0}.", outputFile.getPath());
     } else

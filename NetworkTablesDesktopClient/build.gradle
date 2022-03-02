@@ -1,0 +1,24 @@
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    maven { url "https://frcmaven.wpi.edu/artifactory/release/" }
+}
+
+dependencies {
+    // Add ntcore-java
+    implementation "edu.wpi.first.ntcore:ntcore-java:2022.2.1"
+
+    // Add wpiutil-java
+    implementation "edu.wpi.first.wpiutil:wpiutil-java:2022.2.1"
+
+    // Add ntcore-jni for runtime. We are adding all supported platforms
+    // so that our application will work on all supported platforms.
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2022.2.1:windowsx86"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2022.2.1:windowsx86-64"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2022.2.1:linuxx86-64"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2022.2.1:linuxraspbian"
+    implementation "edu.wpi.first.ntcore:ntcore-jni:2022.2.1:osxx86-64"
+}

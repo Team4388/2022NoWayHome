@@ -1,6 +1,8 @@
 package frc4388.utility;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Optional;
 
 import com.diffplug.common.base.Errors;
@@ -29,6 +31,10 @@ public final class PathPlannerUtil {
 
     public void write(File resultFile) {
       Errors.log().run(() -> objectMapper.writeValue(resultFile, this));
+    }
+
+    public void write(Writer writer) {
+      Errors.log().run(() -> objectMapper.writeValue(writer, this));
     }
 
     public static final class Waypoint {
