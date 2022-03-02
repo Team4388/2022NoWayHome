@@ -74,8 +74,8 @@ public class Shoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_odoX = 0; //TODO: get this value using odometry
-    m_odoY = 0; //TODO: get this value using odometry
+    m_odoX = m_swerve.getOdometry().getX();
+    m_odoY = m_swerve.getOdometry().getY();
     m_distance = Math.sqrt(Math.pow(m_odoX, 2) + Math.pow(m_odoY, 2));
 
     m_gyroAngle = m_swerve.getRegGyro().getDegrees();
@@ -148,6 +148,7 @@ public class Shoot extends CommandBase {
     // custom pid
     runPID();
     m_swerve.driveWithInput(0, 0, output, true);
+    // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
     
     m_hood.runAngleAdjustPID(m_targetHood);
     m_boomBoom.runDrumShooterVelocityPID(m_targetVel);
