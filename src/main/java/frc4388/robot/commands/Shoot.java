@@ -35,7 +35,7 @@ public class Shoot extends CommandBase {
   public double error;
   public double prevError;
   public double kP, kI, kD;
-  public double integral, derivative;
+  public double proportional, integral, derivative;
   public double time;
   public double output;
   public double tolerance = 5.0;
@@ -58,6 +58,7 @@ public class Shoot extends CommandBase {
     kI = 0.0;
     kD = 0.0;
 
+    proportional = 0;
     integral = 0;
     derivative = 0;
     time = 0.02;
@@ -76,6 +77,8 @@ public class Shoot extends CommandBase {
     m_odoX = 0; //TODO: get this value using odometry
     m_odoY = 0; //TODO: get this value using odometry
     m_distance = Math.sqrt(Math.pow(m_odoX, 2) + Math.pow(m_odoY, 2));
+
+    m_gyroAngle = m_swerve.getRegGyro().getDegrees();
 
     // get targets (shooter tables)
     m_targetVel = m_boomBoom.getVelocity(m_distance);
@@ -117,9 +120,11 @@ public class Shoot extends CommandBase {
   public void runPID() {
     prevError = error;
     updateError();
+    
+    proportional = error;
     integral = integral + error * time;
     derivative = (error - prevError) / time;
-    output = kP * error + kI * integral + kD * derivative;
+    output = kP * proportional + kI * integral + kD * derivative;
   }
   
   // Called every time the scheduler runs while the command is scheduled.
