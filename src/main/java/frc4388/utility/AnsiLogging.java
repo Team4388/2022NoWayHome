@@ -95,7 +95,7 @@ public class AnsiLogging extends ConsoleHandler {
         String message = formatMessage(logRecord);
         String throwable = Optional.ofNullable(logRecord.getThrown()).map(this::makeStackTraceString).orElse("");
         String format = levelColors.getOrDefault(logRecord.getLevel().intValue(), levelColors.get(Level.ALL.intValue()));
-        return String.format(format, time, source, logRecord.getLevel().getLocalizedName(), message.lines().count() > 1 ? System.lineSeparator() : " ", message, throwable);
+        return String.format(format, time, source, logRecord.getLevel().getLocalizedName(), message.lines().count() > 1 ? System.lineSeparator() : " ", message.contains("\033") ? "\033[0m"  + message : message, throwable);
       }
     };
   }

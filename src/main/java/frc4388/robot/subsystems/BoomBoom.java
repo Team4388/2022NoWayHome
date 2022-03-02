@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -24,6 +25,7 @@ import frc4388.utility.CSV;
 import frc4388.utility.Gains;
 
 public class BoomBoom extends SubsystemBase {
+  private static final Logger LOGGER = Logger.getLogger(BoomBoom.class.getSimpleName());
   public WPI_TalonFX m_shooterFalconLeft;
   public WPI_TalonFX m_shooterFalconRight;
   public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
@@ -66,7 +68,7 @@ public class BoomBoom extends SubsystemBase {
 
       };
       m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "Robot Data - Distances.csv").toPath());
-      new Thread(() -> System.out.println(CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
+      new Thread(() -> LOGGER.fine(CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
     } catch (final IOException e) {
       e.printStackTrace();
       // throw new RuntimeException(e);
