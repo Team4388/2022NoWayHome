@@ -86,15 +86,16 @@ public class Shoot extends CommandBase {
     m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
     m_driveTargetAngle = m_swerve.getRegGyro().getDegrees();
 
-    
-
+    // deadzone processing
     if (AimToCenter.isHardwareDeadzone(m_targetAngle)) {
       m_targetAngle = m_targetAngle + 20;
     }
 
     if (AimToCenter.isDigitalDeadzone(m_targetAngle)) {
+      // this should rotate the entire swerve drive by 20 degrees, so shoot can now proceed like normal. idk if this will work
       m_swerve.driveWithInput(0, 0, Math.cos(m_driveTargetAngle + 20), Math.sin(m_driveTargetAngle + 20), true);
     }
+
     // // normal (i think) PID stuff
     // dummyConfiguration.primaryPID.selectedFeedbackSensor = TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
     // dummyConfiguration.remoteFilter0.remoteSensorDeviceID = dummy.getDeviceID();
@@ -147,7 +148,8 @@ public class Shoot extends CommandBase {
 
     // custom pid
     runPID();
-    m_swerve.driveWithInput(0, 0, output, true);
+    m_swerve.driveWithInput(0, 0, output, true); // i have no idea if this is how you rotate the
+                                                 // entire swerve drive or its the commented line below
     // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
     
     m_hood.runAngleAdjustPID(m_targetHood);
