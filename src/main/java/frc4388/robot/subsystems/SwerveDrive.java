@@ -147,14 +147,26 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
 
     updateOdometry();
-    // SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
+    updateSmartDash();
 
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
 
-    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 
+  private void updateSmartDash() {
+    // odometry
+    SmartDashboard.putNumber("Odometry: X", getOdometry().getX());
+    SmartDashboard.putNumber("Odometry: Y", getOdometry().getY());
+    SmartDashboard.putNumber("Odometry: θ", getOdometry().getRotation().getDegrees());
+
+    // chassis speeds
+    // TODO: find the actual max velocity in m/s of the robot in fast mode to have accurate chassis speeds 
+    SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
+  }
   /**
    * Gets the distance between two given poses.
    * @param p1 The first pose.

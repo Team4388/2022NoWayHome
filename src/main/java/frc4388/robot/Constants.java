@@ -135,7 +135,7 @@ public final class Constants {
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 23;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 24; 
-    public static final int SHOOTER_ROTATE_ID = 31; // TODO: find
+    public static final int SHOOTER_ROTATE_ID = 31; // TODO: find this value
     public static final double TURRET_SPEED_MULTIPLIER = 0.1d;
     public static final int DEGREES_PER_ROT = 0;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
