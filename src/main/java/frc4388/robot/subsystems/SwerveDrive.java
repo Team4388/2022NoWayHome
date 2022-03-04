@@ -62,33 +62,33 @@ public class SwerveDrive extends SubsystemBase {
   public RobotGyro gyro; //TODO Add Gyro Lol
 
 
-  public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
-  WPI_TalonFX leftBackSteerMotor,WPI_TalonFX leftBackWheelMotor,WPI_TalonFX rightBackSteerMotor,WPI_TalonFX rightBackWheelMotor, CANCoder leftFrontEncoder,
-  CANCoder rightFrontEncoder,
-  CANCoder leftBackEncoder,
-  CANCoder rightBackEncoder)
-  {
-      m_leftFrontSteerMotor = leftFrontSteerMotor;
-      m_leftFrontWheelMotor = leftFrontWheelMotor;
-      m_rightFrontSteerMotor = rightFrontSteerMotor;
-      m_rightFrontWheelMotor = rightFrontWheelMotor;
-      m_leftBackSteerMotor = leftBackSteerMotor;
-      m_leftBackWheelMotor = leftBackWheelMotor;
-      m_rightBackSteerMotor = rightBackSteerMotor;
-      m_rightBackWheelMotor = rightBackWheelMotor;
-      m_leftFrontEncoder = leftFrontEncoder; 
-      m_rightFrontEncoder = rightFrontEncoder;
-      m_leftBackEncoder = leftBackEncoder;
-      m_rightBackEncoder = rightBackEncoder; 
+//   public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
+//   WPI_TalonFX leftBackSteerMotor,WPI_TalonFX leftBackWheelMotor,WPI_TalonFX rightBackSteerMotor,WPI_TalonFX rightBackWheelMotor, CANCoder leftFrontEncoder,
+//   CANCoder rightFrontEncoder,
+//   CANCoder leftBackEncoder,
+//   CANCoder rightBackEncoder)
+//   {
+//       m_leftFrontSteerMotor = leftFrontSteerMotor;
+//       m_leftFrontWheelMotor = leftFrontWheelMotor;
+//       m_rightFrontSteerMotor = rightFrontSteerMotor;
+//       m_rightFrontWheelMotor = rightFrontWheelMotor;
+//       m_leftBackSteerMotor = leftBackSteerMotor;
+//       m_leftBackWheelMotor = leftBackWheelMotor;
+//       m_rightBackSteerMotor = rightBackSteerMotor;
+//       m_rightBackWheelMotor = rightBackWheelMotor;
+//       m_leftFrontEncoder = leftFrontEncoder; 
+//       m_rightFrontEncoder = rightFrontEncoder;
+//       m_leftBackEncoder = leftBackEncoder;
+//       m_rightBackEncoder = rightBackEncoder; 
 
-      modules = new SwerveModule[] {
-          new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
-          new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
-          new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
-          new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
-      };
-      //gyro.reset(); 
-  }
+//       modules = new SwerveModule[] {
+//           new SwerveModule(m_leftFrontWheelMotor, m_leftFrontSteerMotor, m_leftFrontEncoder, SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET), // Front Left
+//           new SwerveModule(m_rightFrontWheelMotor, m_rightFrontSteerMotor, m_rightFrontEncoder, SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET), // Front Right
+//           new SwerveModule(m_leftBackWheelMotor, m_leftBackSteerMotor, m_leftBackEncoder, SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET), // Back Left
+//           new SwerveModule(m_rightBackWheelMotor, m_rightBackSteerMotor, m_rightBackEncoder, SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET)  // Back Right
+//       };
+//       //gyro.reset(); 
+//   }
 //https://github.com/ZachOrr/MK3-Swerve-Example
  /**
  * Method to drive the robot using joystick info.
