@@ -59,6 +59,7 @@ public class SwerveDrive extends SubsystemBase {
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
   public Rotation2d rotTarget = new Rotation2d();
+  public ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
   private final Field2d m_field = new Field2d();
 
@@ -112,6 +113,24 @@ public class SwerveDrive extends SubsystemBase {
               : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
     setModuleStates(states);
   }
+  // public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
+  // {
+  //   ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
+  //   Translation2d speed = new Translation2d(leftX, leftY);
+  //   speed = speed.times(speed.getNorm() * speedAdjust);
+  //   if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
+  //     rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0, 1));
+  //   double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
+  //   double xSpeedMetersPerSecond = -speed.getX();
+  //   double ySpeedMetersPerSecond = speed.getY();
+  //   SwerveModuleState[] states =
+  //       m_kinematics.toSwerveModuleStates(
+  //           fieldRelative
+  //             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+  //             : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED));
+  //   setModuleStates(states);
+  // }
+
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
   {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
@@ -122,11 +141,12 @@ public class SwerveDrive extends SubsystemBase {
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
+    chassisSpeeds = fieldRelative
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+      : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED);
     SwerveModuleState[] states =
         m_kinematics.toSwerveModuleStates(
-            fieldRelative
-              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED));
+            chassisSpeeds);
     setModuleStates(states);
   }
 
@@ -148,14 +168,26 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
 
     updateOdometry();
-    // SmartDashboard.putNumber("Pigeon Fused Heading", m_gyro.getFusedHeading(fstatus));
+    updateSmartDash();
 
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
 
-    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 
+  private void updateSmartDash() {
+    // odometry
+    SmartDashboard.putNumber("Odometry: X", getOdometry().getX());
+    SmartDashboard.putNumber("Odometry: Y", getOdometry().getY());
+    SmartDashboard.putNumber("Odometry: θ", getOdometry().getRotation().getDegrees());
+
+    // chassis speeds
+    // TODO: find the actual max velocity in m/s of the robot in fast mode to have accurate chassis speeds 
+    SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
+  }
   /**
    * Gets the distance between two given poses.
    * @param p1 The first pose.
