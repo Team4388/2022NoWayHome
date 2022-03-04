@@ -7,6 +7,10 @@ import java.util.Scanner;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+/**
+ * Connects to the NetworkTables server and listens for changes to the "Recording" table. When a
+ * change is detected, it writes the value to a file.
+ */
 public class NetworkTablesDesktopClient {
   public static void main(String[] args) {
     NetworkTableInstance instance = NetworkTableInstance.getDefault();
@@ -22,8 +26,7 @@ public class NetworkTablesDesktopClient {
         exception.printStackTrace();
       }
     }, EntryListenerFlags.kNew);
-    // instance.startClientTeam(4388);
-    instance.startClient("localhost");
+    instance.startClientTeam(4388);
     instance.startDSClient();
     try (Scanner scanner = new Scanner(System.in)) {
       System.err.println("Press enter to stop...");
