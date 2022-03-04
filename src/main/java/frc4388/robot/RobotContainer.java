@@ -314,6 +314,7 @@ public class RobotContainer {
   public void recordPeriodic() {
     Translation2d position = m_robotSwerveDrive.m_poseEstimator.getEstimatedPosition().getTranslation();
     Rotation2d rotation = m_robotSwerveDrive.m_gyro.getRotation2d();
+    // FIXME: Chassis speeds are created from joystick inputs and do not reflect actual robot velocity.
     Translation2d velocity = new Translation2d(m_robotSwerveDrive.chassisSpeeds.vxMetersPerSecond, m_robotSwerveDrive.chassisSpeeds.vyMetersPerSecond);
     Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false, SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
     pathPoints.add(waypoint);
