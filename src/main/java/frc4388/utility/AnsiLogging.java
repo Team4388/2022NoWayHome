@@ -48,6 +48,9 @@ public class AnsiLogging extends ConsoleHandler {
     }
   }
 
+  /**
+   * This class is a ConsoleHandler that uses ANSI escape codes to colorize the output
+   */
   public static class AnsiColorConsoleHandler extends ConsoleHandler {
     @Override
     public void publish(LogRecord logRecord) {
@@ -91,26 +94,41 @@ public class AnsiLogging extends ConsoleHandler {
       @Override
       public String format(LogRecord logRecord) {
         ZonedDateTime time = ZonedDateTime.ofInstant(logRecord.getInstant(), zoneId);
+        // Get the logger name, source class name, and/or source method name.
         String source = Optional.ofNullable(logRecord.getLoggerName()).or(() -> Optional.ofNullable(logRecord.getSourceClassName())).map(s -> s + " ").orElse("") + Optional.ofNullable(logRecord.getSourceMethodName()).orElse("");
         String message = formatMessage(logRecord);
+        // Get the stack trace of the exception if it was thrown.
         String throwable = Optional.ofNullable(logRecord.getThrown()).map(this::makeStackTraceString).orElse("");
+        // Select the appropriate format string for the log level.
         String format = levelColors.getOrDefault(logRecord.getLevel().intValue(), levelColors.get(Level.ALL.intValue()));
-        return String.format(format, time, source, logRecord.getLevel().getLocalizedName(), message.lines().count() > 1 ? System.lineSeparator() : " ", message.contains("\033") ? "\033[0m"  + message : message, throwable);
+        // Format the log message.
+        return String.format(format, time, source, logRecord.getLevel().getLocalizedName(), message.lines().count() > 1 ? System.lineSeparator() : " ", message.contains("\033") ? "\033[0m" + message : message, throwable);
       }
     };
   }
 
+  /**
+   * Create a PrintStream that writes to the given logger at the given level
+   * 
+   * @param logger The logger to use.
+   * @param level The level of the log message.
+   * @return A new PrintStream object.
+   */
   private static PrintStream printStreamLogger(Logger logger, Level level) {
     return new PrintStream(new OutputStream() {
+      // This is a buffer that is used to store the characters that are written to the PrintStream.
       private final StringBuilder stringBuilder = new StringBuilder();
 
+      /**
+       * If the character is a newline, flush the buffer to the logger, otherwise add the character to the
+       * buffer.
+       */
       @Override
       public void write(int i) throws IOException {
         if (i == '\n') {
           logger.log(level, stringBuilder::toString);
           stringBuilder.setLength(0);
-        } else
-          stringBuilder.appendCodePoint(i);
+        } else stringBuilder.appendCodePoint(i);
       }
     });
   }

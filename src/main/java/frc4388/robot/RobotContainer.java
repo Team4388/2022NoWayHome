@@ -101,9 +101,10 @@ public class RobotContainer {
   private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
   private final NetworkTable recordingNetworkTable = networkTableInstance.getTable("Recording");
 
-  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("'Recording' yyyy-MM-dd HH:mm:ss.SSS'.path'");
+  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("'Recording' yyyy-MM-dd HH-mm-ss.SSS'.path'");
   private static final Clock SYSTEM_CLOCK = Clock.system(ZoneId.systemDefault());
   private static final Path PATHPLANNER_DIRECTORY = Filesystem.getDeployDirectory().toPath().resolve("pathplanner");
+  // Function that removes the ".path" from the end of a string.
   private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern.compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
 
   /**
@@ -224,15 +225,17 @@ public class RobotContainer {
     return m_operatorXbox;
   }
 
+  /**
+   * Creates a WatchKey for the path planner directory and registers it with the WatchService. 
+   * Then creates a NotifierCommand that will update the auto chooser with the latest path files. 
+   * Finally, adds the existing path files to the auto chooser
+   */
   private void autoInit() {
     try {
       WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(), StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
       // TODO: Store this and other commands as fields so they can be rescheduled.
       new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
-        @Override
-        public boolean runsWhenDisabled() {
-          return true;
-        }
+        @Override public boolean runsWhenDisabled() { return true; }
       }.withName("Path Watcher").schedule();
     } catch (IOException exception) {
       LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
@@ -243,6 +246,9 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
+  /**
+   * Creates a button on the SmartDashboard that will record the path of the robot.
+   */
   public void recordInit() {
     SmartDashboard.putData("Recording",
         new RunCommand(this::recordPeriodic) {
@@ -258,6 +264,12 @@ public class RobotContainer {
         }.withName("Record Path (Cancel to Save)"));
   }
 
+  /**
+   * Called when a file is created, modified, or deleted.
+   * Adds newly created .path files to the SendableChooser.
+   * Reloads the path if the currently selected file is modified.
+   * @param watchKey The WatchKey that is being observed.
+   */
   private void updateAutoChooser(WatchKey watchKey) {
     List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
     if (!watchEvents.isEmpty()) {

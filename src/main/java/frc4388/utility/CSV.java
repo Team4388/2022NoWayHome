@@ -27,6 +27,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * Reads and parses a CSV file and returns an array of records.
+ */
 public class CSV<R> {
   private static final Pattern SANITIZER = Pattern.compile("[^$\\w,]");
 
