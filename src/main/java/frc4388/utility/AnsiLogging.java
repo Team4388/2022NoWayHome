@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.Optional;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -24,68 +26,76 @@ import org.fusesource.jansi.AnsiConsole;
 public class AnsiLogging extends ConsoleHandler {
   public static void systemInstall() {
     try {
-      // Configures java.util.logging.Logger to output additional colored information.
+      // Configure java.util.logging.Logger to output additional colored information.
       LogManager.getLogManager().updateConfiguration(key -> (o, n) -> {
         switch (key) {
-          case ".level": return Level.ALL.getName();
-          case "handlers": return AnsiColorConsoleHandler.class.getName();
-          default: return n;
+          case ".level":
+            return Level.ALL.getName();
+          case "handlers":
+            return AnsiColorConsoleHandler.class.getName();
+          default:
+            return n;
         }
       });
-      // Replaces standard output streams with org.fusesource.jansi.AnsiPrintStreams.
+      // Replace standard output streams with org.fusesource.jansi.AnsiPrintStreams.
       AnsiConsole.systemInstall();
-      // Replaces standard output stream with java.util.logging.Logger.
+      // Replace standard output stream with java.util.logging.Logger.
       System.setOut(printStreamLogger(Logger.getGlobal(), Level.INFO));
-      // Replaces standard error output stream with java.util.logging.Logger.
+      // Replace standard error output stream with java.util.logging.Logger.
       System.setErr(printStreamLogger(Logger.getGlobal(), Level.SEVERE));
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }
   }
-  
+
   public static class AnsiColorConsoleHandler extends ConsoleHandler {
     @Override
     public void publish(LogRecord logRecord) {
       AnsiConsole.err().print(getFormatter().format(logRecord));
       AnsiConsole.err().flush();
     }
+
     @Override
     public Formatter getFormatter() {
       return formatter;
     }
+
     private static final Formatter formatter = new Formatter() {
+      private final ZoneId zoneId = ZoneId.systemDefault();
+      // Specify and prepare formats for messages
+      private final Map<Integer, String> levelColors = Map.of(
+        Level.OFF.intValue(), "", 
+        Level.SEVERE.intValue(), makeMessageFormatString(ansi().fgBright(Color.RED)), 
+        Level.WARNING.intValue(), makeMessageFormatString(ansi().fgBright(Color.YELLOW)), 
+        Level.INFO.intValue(), makeMessageFormatString(ansi().fg(Color.GREEN)), 
+        Level.CONFIG.intValue(), makeMessageFormatString(ansi().fgBright(Color.BLUE)), 
+        Level.FINE.intValue(), makeMessageFormatString(ansi().fg(Color.CYAN)), 
+        Level.FINER.intValue(), makeMessageFormatString(ansi().fg(Color.MAGENTA)), 
+        Level.FINEST.intValue(), makeMessageFormatString(ansi().fgBright(Color.BLACK)), 
+        Level.ALL.intValue(), makeMessageFormatString(ansi().fg(Color.DEFAULT))
+      );
+
+      private String makeMessageFormatString(Ansi base) {
+        return base.bold().a(Attribute.UNDERLINE).a("[%1$tb %1$td %1$tk:%1$tM:%1$tS.%1$tL] %2$s %3$s:").boldOff().a(Attribute.UNDERLINE_OFF).a("%4$s%5$s").a(Attribute.INTENSITY_FAINT).a("%6$s").reset().a("%n").toString();
+      }
+
+      private String makeStackTraceString(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
+          printWriter.println();
+          throwable.printStackTrace(printWriter);
+        }
+        return stringWriter.toString();
+      }
+
       @Override
       public String format(LogRecord logRecord) {
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(logRecord.getInstant(), ZoneId.systemDefault());
-        String source;
-        if (logRecord.getSourceClassName() != null && !logRecord.getSourceClassName().startsWith(AnsiLogging.class.getName())) {
-          source = logRecord.getSourceClassName();
-          if (logRecord.getSourceMethodName() != null) {
-            source += " " + logRecord.getSourceMethodName();
-          }
-        } else
-          source = logRecord.getLoggerName();
+        ZonedDateTime time = ZonedDateTime.ofInstant(logRecord.getInstant(), zoneId);
+        String source = Optional.ofNullable(logRecord.getLoggerName()).or(() -> Optional.ofNullable(logRecord.getSourceClassName())).map(s -> s + " ").orElse("") + Optional.ofNullable(logRecord.getSourceMethodName()).orElse("");
         String message = formatMessage(logRecord);
-        String throwable = "";
-        if (logRecord.getThrown() != null) {
-          StringWriter sw = new StringWriter();
-          try (PrintWriter pw = new PrintWriter(sw)) {
-            pw.println();
-            logRecord.getThrown().printStackTrace(pw);
-          }
-          throwable = sw.toString();
-        }
-        Ansi ansi;
-        if (logRecord.getLevel() == Level.SEVERE) ansi = ansi().fgBright(Color.RED);
-        else if (logRecord.getLevel() == Level.WARNING) ansi = ansi().fgBright(Color.YELLOW);
-        else if (logRecord.getLevel() == Level.INFO) ansi = ansi().fg(Color.GREEN);
-        else if (logRecord.getLevel() == Level.CONFIG) ansi = ansi().fgBright(Color.BLUE);
-        else if (logRecord.getLevel() == Level.FINE) ansi = ansi().fg(Color.CYAN);
-        else if (logRecord.getLevel() == Level.FINER) ansi = ansi().fg(Color.MAGENTA);
-        else if (logRecord.getLevel() == Level.FINEST) ansi = ansi().fgBright(Color.BLACK);
-        else ansi = ansi().fg(Color.DEFAULT);
-        String format = ansi.bold().a(Attribute.UNDERLINE).a("%1$tb %1$td, %1$tY %1$tl:%1$tM:%1$tS %1$Tp %2$s %4$s:").boldOff().a(Attribute.UNDERLINE_OFF).a("%n%5$s%6$s").reset().a("%n").toString();
-        return String.format(format, zdt, source, logRecord.getLoggerName(), logRecord.getLevel().getLocalizedName(), message, throwable);
+        String throwable = Optional.ofNullable(logRecord.getThrown()).map(this::makeStackTraceString).orElse("");
+        String format = levelColors.getOrDefault(logRecord.getLevel().intValue(), levelColors.get(Level.ALL.intValue()));
+        return String.format(format, time, source, logRecord.getLevel().getLocalizedName(), message.lines().count() > 1 ? System.lineSeparator() : " ", message.contains("\033") ? "\033[0m"  + message : message, throwable);
       }
     };
   }
@@ -95,7 +105,7 @@ public class AnsiLogging extends ConsoleHandler {
       private final StringBuilder stringBuilder = new StringBuilder();
 
       @Override
-      public final void write(int i) throws IOException {
+      public void write(int i) throws IOException {
         if (i == '\n') {
           logger.log(level, stringBuilder::toString);
           stringBuilder.setLength(0);

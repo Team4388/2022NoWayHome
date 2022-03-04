@@ -71,11 +71,13 @@ public final class Constants {
     // swerve auto constants
     public static final PIDController X_CONTROLLER = new PIDController(0.5, 0.0, 0.0);
     public static final PIDController Y_CONTROLLER = new PIDController(2.0, 0.0, 0.0);
-    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(
-            15.0, 0.1, 0.3, new TrapezoidProfile.Constraints(Math.PI, Math.PI));
-    
-    public static final double MAX_VEL = 5.0;
-    public static final double MAX_ACC = 5.0;
+    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController (15.0, 0.1, 0.3, new TrapezoidProfile.Constraints(Math.PI, Math.PI));
+    public static final boolean PATH_RECORD_VELOCITY = true;
+    public static final double PATH_MAX_VELOCITY = 5.0;
+    public static final double PATH_MAX_ACCELERATION = 5.0;
+    public static final double MIN_WAYPOINT_ANGLE = 20;
+    public static final double MIN_WAYPOINT_DISTANCE = 0.1;
+    public static final double MIN_WAYPOINT_VELOCITY = 0.1;
 
     // swerve configuration
     public static final double NEUTRAL_DEADBAND = 0.04;
@@ -127,7 +129,7 @@ public final class Constants {
     /* PID Constants Shooter */
     public static final int CLOSED_LOOP_TIME_MS = 1;
 
-   public static final int SHOOTER_TIMEOUT_MS = 32;
+    public static final int SHOOTER_TIMEOUT_MS = 32;
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
     public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(true, 60, 40, 0.5);
@@ -173,11 +175,11 @@ public final class Constants {
 
   }
   public static final class VisionConstants {
-      public static final double TURN_P_VALUE = 0.8;
-      public static final double X_ANGLE_ERROR = 0.5;
-      public static final double GRAV = 385.83;
-      public static final double TARGET_HEIGHT = 67.5;
-      public static final double FOV = 29.8; //Field of view limelight
-      public static final double LIME_ANGLE = 24.7;
-    }
+    public static final double TURN_P_VALUE = 0.8;
+    public static final double X_ANGLE_ERROR = 0.5;
+    public static final double GRAV = 385.83;
+    public static final double TARGET_HEIGHT = 67.5;
+    public static final double FOV = 29.8; //Field of view limelight
+    public static final double LIME_ANGLE = 24.7;
+  }
 }

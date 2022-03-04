@@ -5,6 +5,12 @@
 package frc4388.robot;
 
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.diffplug.common.base.DurianPlugins;
+import com.diffplug.common.base.Errors;
+
 import edu.wpi.first.wpilibj.RobotBase;
 import frc4388.utility.AnsiLogging;
 
@@ -24,6 +30,7 @@ public final class Main {
    */
   public static void main(String... args) {
     AnsiLogging.systemInstall();
+    DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
     RobotBase.startRobot(Robot::new);
   }
 }

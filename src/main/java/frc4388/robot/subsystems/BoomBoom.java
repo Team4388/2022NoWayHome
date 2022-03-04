@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
@@ -24,82 +25,81 @@ import frc4388.utility.CSV;
 import frc4388.utility.Gains;
 
 public class BoomBoom extends SubsystemBase {
-public WPI_TalonFX m_shooterFalconLeft;
-public WPI_TalonFX m_shooterFalconRight;
-public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
-public static BoomBoom m_boomBoom;
+  private static final Logger LOGGER = Logger.getLogger(BoomBoom.class.getSimpleName());
+  public WPI_TalonFX m_shooterFalconLeft;
+  public WPI_TalonFX m_shooterFalconRight;
+  public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
+  public static BoomBoom m_boomBoom;
 
-double velP;
-double input;
+  double velP;
+  double input;
 
-public boolean m_isDrumReady = false;
-public double m_fireVel;
+  public boolean m_isDrumReady = false;
+  public double m_fireVel;
 
-public Hood m_hoodSubsystem;
-public Turret m_turretSubsystem;
+  public Hood m_hoodSubsystem;
+  public Turret m_turretSubsystem;
 
-// SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(69, 42, 0); //get real values later
+  // SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(69, 42, 0); //get real values
+  // later
 
-public static class ShooterTableEntry {
-  public Double distance, hoodExt, drumVelocity;
-}
-
-private ShooterTableEntry[] m_shooterTable;
-
-/**
- * Creates a new BoomBoom subsystem, which has the drum shooter.
- * @param shooterFalconLeft The left drum motor.
- * @param shooterFalconRight The right drum motor.
- */
-public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
-  m_shooterFalconLeft = shooterFalconLeft;
-  m_shooterFalconRight = shooterFalconRight;
-
-  try {
-    CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
-      private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
-
-      @Override
-      protected String headerSanitizer(final String header) {
-        return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
-      }
-
-    };
-    m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "Robot Data - Distances.csv").toPath());
-    new Thread(() -> System.out.println(CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start(); 
-  } catch (final IOException e) {
-    e.printStackTrace();
-    // throw new RuntimeException(e);
+  public static class ShooterTableEntry {
+    public Double distance, hoodExt, drumVelocity;
   }
-}
 
-public Double getVelocity(final Double distance) {
-  return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
-}
+  private ShooterTableEntry[] m_shooterTable;
 
-public Double getHood(final Double distance) {
-  return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
-}
+  /*
+  * Creates new BoomBoom subsystem, has drum shooter and angle adjuster
+  */
+  /** Creates a new BoomBoom. */
+  public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
+    m_shooterFalconLeft = shooterFalconLeft;
+    m_shooterFalconRight = shooterFalconRight;
 
-// TODO: @nathanrsxtn pls java doc your shooter tables code
+    try {
+      CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
+        private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
 
-private static <E> Number linearInterpolate(final E[] table, final Number lookupValue, final Function<E, Number> lookupGetter, final Function<E, Number> targetGetter) {
-  final Map.Entry<Integer, E> closestEntry = lookup(table, lookupValue.doubleValue(), lookupGetter, false).orElse(Map.entry(table.length - 1, table[table.length - 1]));
-  final E closestRecord = closestEntry.getValue();
-  final int closestRecordIndex = closestEntry.getKey();
-  final E neighborRecord = table[lookupValue.doubleValue() <= lookupGetter.apply(closestRecord).doubleValue() ? Math.max(closestRecordIndex == 0 ? 1 : 0, closestRecordIndex - 1) : Math.min(closestRecordIndex + 1, table.length - (closestRecordIndex == table.length - 1 ? 2 : 1))];
-  return lerp2(lookupValue, lookupGetter.apply(closestRecord), targetGetter.apply(closestRecord), lookupGetter.apply(neighborRecord), targetGetter.apply(neighborRecord));
-}
+        @Override
+        protected String headerSanitizer(final String header) {
+          return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
+        }
 
-private static <E> Optional<Map.Entry<Integer, E>> lookup(final E[] table, final Number value, final Function<E, Number> valueGetter, final boolean exactMatch) {
-  final Optional<Map.Entry<Integer, E>> match = IntStream.range(0, table.length).mapToObj(i -> Map.entry(i, table[i])).min(Comparator.comparingDouble(e -> Math.abs(valueGetter.apply(e.getValue()).doubleValue() - value.doubleValue())));
-  return !exactMatch || match.map(e -> valueGetter.apply(e.getValue()).equals(value)).orElse(false) ? match : Optional.empty();
-}
+      };
+      m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
+      new Thread(() -> LOGGER.fine(CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
+    } catch (final IOException e) {
+      e.printStackTrace();
+      // throw new RuntimeException(e);
+    }
+  }
 
-private static Number lerp2(final Number x, final Number x0, final Number y0, final Number x1, final Number y1) {
-  final Number f = (x.doubleValue() - x0.doubleValue()) / (x1.doubleValue() - x0.doubleValue());
-  return (1.0 - f.doubleValue()) * y0.doubleValue() + f.doubleValue() * y1.doubleValue();
-}
+  public Double getVelocity(final Double distance) {
+    return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
+  }
+
+  public Double getHood(final Double distance) {
+    return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
+  }
+
+  private static <E> Number linearInterpolate(final E[] table, final Number lookupValue, final Function<E, Number> lookupGetter, final Function<E, Number> targetGetter) {
+    final Map.Entry<Integer, E> closestEntry = lookup(table, lookupValue.doubleValue(), lookupGetter, false).orElse(Map.entry(table.length - 1, table[table.length - 1]));
+    final E closestRecord = closestEntry.getValue();
+    final int closestRecordIndex = closestEntry.getKey();
+    final E neighborRecord = table[lookupValue.doubleValue() <= lookupGetter.apply(closestRecord).doubleValue() ? Math.max(closestRecordIndex == 0 ? 1 : 0, closestRecordIndex - 1) : Math.min(closestRecordIndex + 1, table.length - (closestRecordIndex == table.length - 1 ? 2 : 1))];
+    return lerp2(lookupValue, lookupGetter.apply(closestRecord), targetGetter.apply(closestRecord), lookupGetter.apply(neighborRecord), targetGetter.apply(neighborRecord));
+  }
+
+  private static <E> Optional<Map.Entry<Integer, E>> lookup(final E[] table, final Number value, final Function<E, Number> valueGetter, final boolean exactMatch) {
+    final Optional<Map.Entry<Integer, E>> match = IntStream.range(0, table.length).mapToObj(i -> Map.entry(i, table[i])).min(Comparator.comparingDouble(e -> Math.abs(valueGetter.apply(e.getValue()).doubleValue() - value.doubleValue())));
+    return !exactMatch || match.map(e -> valueGetter.apply(e.getValue()).equals(value)).orElse(false) ? match : Optional.empty();
+  }
+
+  private static Number lerp2(final Number x, final Number x0, final Number y0, final Number x1, final Number y1) {
+    final Number f = (x.doubleValue() - x0.doubleValue()) / (x1.doubleValue() - x0.doubleValue());
+    return (1.0 - f.doubleValue()) * y0.doubleValue() + f.doubleValue() * y1.doubleValue();
+  }
 
   @Override
   public void periodic() {
@@ -111,33 +111,34 @@ private static Number lerp2(final Number x, final Number x0, final Number y0, fi
     m_hoodSubsystem = subsystem0;
     m_turretSubsystem = subsystem1;
   }
-/**
- * Runs the Drum motor at a given speed
- * @param speed percent output form -1.0 to 1.0
- */
-public void runDrumShooter(double speed) {
-    m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed);
-    
-  }    
 
-public void setShooterGains() {
-  m_shooterFalconLeft.selectProfileSlot(ShooterConstants.SHOOTER_SLOT_IDX, ShooterConstants.SHOOTER_PID_LOOP_IDX);
-  m_shooterFalconLeft.config_kF(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kF, ShooterConstants.SHOOTER_TIMEOUT_MS);
-  m_shooterFalconLeft.config_kP(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kP, ShooterConstants.SHOOTER_TIMEOUT_MS);
-  m_shooterFalconLeft.config_kI(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kI, ShooterConstants.SHOOTER_TIMEOUT_MS);
-  m_shooterFalconLeft.config_kD(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kD, ShooterConstants.SHOOTER_TIMEOUT_MS);
-}
+  /**
+   * Runs the Drum motor at a given speed
+   * @param speed percent output form -1.0 to 1.0
+   */
+  public void runDrumShooter(double speed) {
+    m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed);
+
+  }
+
+  public void setShooterGains() {
+    m_shooterFalconLeft.selectProfileSlot(ShooterConstants.SHOOTER_SLOT_IDX, ShooterConstants.SHOOTER_PID_LOOP_IDX);
+    m_shooterFalconLeft.config_kF(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kF, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    m_shooterFalconLeft.config_kP(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kP, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    m_shooterFalconLeft.config_kI(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kI, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    m_shooterFalconLeft.config_kD(ShooterConstants.SHOOTER_SLOT_IDX, m_drumShooterGains.m_kD, ShooterConstants.SHOOTER_TIMEOUT_MS);
+  }
 
   public void runDrumShooterVelocityPID(double targetVel) {
-    m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); //Init
+    m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); // Init
     m_shooterFalconRight.follow(m_shooterFalconLeft);
-    // New BoomBoom controller stuff 
-    //Controls a motor with the output of the BangBang controller
-    //Controls a motor with the output of the BangBang conroller and a feedforward
-    //Shrinks the feedforward slightly to avoid over speeding the shooter
-    
-    
-    // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 * feedforward.calculate(targetVel));
+    // New BoomBoom controller stuff
+    // Controls a motor with the output of the BangBang controller
+    // Controls a motor with the output of the BangBang conroller and a feedforward
+    // Shrinks the feedforward slightly to avoid over speeding the shooter
+
+    // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 *
+    // feedforward.calculate(targetVel));
     // m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
   }
 }

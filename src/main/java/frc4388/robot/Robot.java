@@ -4,14 +4,22 @@
 
 package frc4388.robot;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
+
+import com.diffplug.common.base.Errors;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
 
 /**
@@ -22,7 +30,7 @@ import frc4388.utility.RobotTime;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final Logger LOGGER = Logger.getLogger(Robot.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(Robot.class.getSimpleName());
   Command m_autonomousCommand;
   
   private RobotTime m_robotTime = RobotTime.getInstance();
@@ -34,20 +42,51 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    if (org.fusesource.jansi.Ansi.isEnabled()) {
-      LOGGER.log(Level.ALL, "Logging Test 1/8");
-      LOGGER.log(Level.SEVERE, "Logging Test 2/8");
-      LOGGER.log(Level.WARNING, "Logging Test 3/8");
-      LOGGER.log(Level.INFO, "Logging Test 4/8");
-      LOGGER.log(Level.CONFIG, "Logging Test 5/8");
-      LOGGER.log(Level.FINE, "Logging Test 6/8");
-      LOGGER.log(Level.FINER, "Logging Test 7/8");
-      LOGGER.log(Level.FINEST, "Logging Test 8/8");
-    }
+    LOGGER.log(Level.ALL, "Logging Test 1/8");
+    LOGGER.log(Level.SEVERE, "Logging Test 2/8");
+    LOGGER.log(Level.WARNING, "Logging Test 3/8");
+    LOGGER.log(Level.INFO, "Logging Test 4/8");
+    LOGGER.log(Level.CONFIG, "Logging Test 5/8");
+    LOGGER.log(Level.FINE, "Logging Test 6/8");
+    LOGGER.log(Level.FINER, "Logging Test 7/8");
+    LOGGER.log(Level.FINEST, "Logging Test 8/8");
+    Errors.log().run(() -> { throw new Throwable("Exception Test"); });
+
+    // var path = PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move Forward.path").toFile());
+    // LOGGER.finest(path::toString);
     LOGGER.fine("robotInit()");
+    // LOGGER.fine("Sssssssssh.");
+    // DriverStation.silenceJoystickConnectionWarning(true);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    // addPeriodic(m_robotContainer::recordPeriodic, kDefaultPeriod);
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData("JVM Memory", new RunCommand(() -> {}) {
+      @Override public boolean runsWhenDisabled() { return true; }
+      @Override public String getName() {
+        if (isScheduled()) {
+          Runtime runtime = Runtime.getRuntime();
+          long totalMemory = runtime.totalMemory() / 1_000_000;
+          long freeMemory = runtime.freeMemory() / 1_000_000;
+          long maxMemory = runtime.maxMemory() / 1_000_000;
+          return totalMemory - freeMemory + " MB / " + totalMemory + " MB / " + maxMemory + " MB";
+        }
+        return "Not Running";
+      }
+    });
+    SmartDashboard.putData("Usable Deploy Space", new RunCommand(() -> {}) {
+      @Override public boolean runsWhenDisabled() { return true; }
+      @Override public String getName() {
+        if (isScheduled()) {
+          File deploy = Filesystem.getDeployDirectory();
+          long usedSpace = Errors.suppress().getWithDefault(() -> Files.walk(deploy.toPath()).map(Path::toFile).filter(File::isFile).mapToLong(File::length).sum(), 0l) / 1_000_000;
+          long usableSpace = deploy.getUsableSpace() / 1_000_000;
+          return usedSpace + " MB / " + usableSpace + " MB";
+        }
+        return "Not Running";
+      }
+    });
   }
 
   /**
@@ -82,6 +121,15 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
+    if (isTest()) {
+      // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
+      File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("recording." + System.currentTimeMillis() + ".path").toFile();
+      if (Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
+        m_robotContainer.createPath(null, null, false).write(outputFile);
+        LOGGER.log(Level.SEVERE, "Recorded path to {0}.", outputFile.getPath());
+      } else
+        LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
+    }
   }
 
   @Override
@@ -130,6 +178,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+  }
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /**

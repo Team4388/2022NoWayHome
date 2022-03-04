@@ -4,10 +4,8 @@
 
 package frc4388.robot.subsystems;
 
-import java.util.ArrayList;
-
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -19,11 +17,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
@@ -59,6 +55,7 @@ public class SwerveDrive extends SubsystemBase {
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
   public Rotation2d rotTarget = new Rotation2d();
+  public ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
   private final Field2d m_field = new Field2d();
 
@@ -112,6 +109,7 @@ public class SwerveDrive extends SubsystemBase {
               : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
     setModuleStates(states);
   }
+
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
   {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
@@ -122,11 +120,12 @@ public class SwerveDrive extends SubsystemBase {
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
+    chassisSpeeds = fieldRelative
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+      : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED);
     SwerveModuleState[] states =
         m_kinematics.toSwerveModuleStates(
-            fieldRelative
-              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED));
+            chassisSpeeds);
     setModuleStates(states);
   }
 
@@ -143,7 +142,7 @@ public class SwerveDrive extends SubsystemBase {
     }
     // modules[0].setDesiredState(desiredStates[0], false);
   }
-  
+
   @Override
   public void periodic() {
 
