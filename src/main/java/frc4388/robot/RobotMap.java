@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.ClimberConstants;
-import frc4388.robot.Constants.HooksConstants;
+import frc4388.robot.Constants.ClawConstants;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 
@@ -27,18 +27,18 @@ import frc4388.robot.Constants.SwerveDriveConstants;
 public class RobotMap {
 
   public RobotMap() {
-    configureLEDMotorControllers();
-    configureSwerveMotorControllers();
+    //configureLEDMotorControllers();
+    //configureSwerveMotorControllers();
   }
 
   /* LED Subsystem */
-  public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
+  // public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
 
-  void configureLEDMotorControllers() {
+  /*void configureLEDMotorControllers() {
     
-  }
+  }*/
   
-  /* Swerve Subsystem */
+  /* Swerve Subsystem *//*
   public final WPI_TalonFX leftFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
   public final WPI_TalonFX leftFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_WHEEL_CAN_ID);
   public final WPI_TalonFX rightFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ID);
@@ -99,14 +99,14 @@ public class RobotMap {
     //leftBackSteerMotor.configRemoteFeedbackFilter(leftBackEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     //rightFrontSteerMotor.configRemoteFeedbackFilter(rightFrontEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     //rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  }
+  }/*
 
   /* Climb Subsystem */
-  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
+  /*public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
   public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
-  public final WPI_PigeonIMU gyro = null;//new WPI_PigeonIMU(ClimberConstants.GYRO_ID); // TODO
+  public final WPI_PigeonIMU gyro = null;//new WPI_PigeonIMU(ClimberConstants.GYRO_ID); // TODO*/
 
   /* Hooks Subsystem */
-  public final CANSparkMax leftHook = new CANSparkMax(HooksConstants.LEFT_HOOK_ID, MotorType.kBrushless);
-  public final CANSparkMax rightHook = new CANSparkMax(HooksConstants.RIGHT_HOOK_ID, MotorType.kBrushless);
+  public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);
+  public final CANSparkMax rightClaw = new CANSparkMax(ClawConstants.RIGHT_CLAW_ID, MotorType.kBrushless);
 }

@@ -32,6 +32,7 @@ public class Climber extends SubsystemBase {
   private boolean m_groundRelative;
   private double m_robotAngle;
   private double m_robotPosition;
+  
 
 
   private double[] m_position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
@@ -162,18 +163,11 @@ public class Climber extends SubsystemBase {
       {Math.cos(theta) - Math.sin(theta), 0 },
       {Math.sin(theta) + Math.cos(theta), 0},
       {0, 0, 1}
-
     };
 
-    if (m_robotPosition < 45){
-      
-      setRobotAngle(ClimberConstants.ROBOT_ANGLE_ID, m_robotAngle);
+    if (m_robotPosition < m_robotAngle ||  m_robotPosition > m_robotAngle){
+      setRobotAngle(ClimberConstants.ROBOT_ANGLE_ID, rotMax, m_robotPosition);
     }
-    if( m_robotPosition > 45){
-      setRobotAngle(ClimberConstants.ROBOT_ANGLE_ID, m_robotAngle);
-    }
-    
-    
 
     return Math.toRadians(ypr[1]); // Pitch
     // multiply by pie and then divide by 180
@@ -254,11 +248,10 @@ public class Climber extends SubsystemBase {
     setJointAngles(jointAngles);
   }
   
-  public void setRobotAngle(double robotAngle, double robotPosition) {
+  public void setRobotAngle(double robotAngle, double[][] rotMax, double robotPosition) {
     m_robotPosition = robotPosition;
     m_robotAngle = robotAngle;
-    m_robotAngle = 45;
-    
+    m_robotAngle = 45; //45 is placeholder
   }
   
 }

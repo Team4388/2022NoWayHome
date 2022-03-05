@@ -80,7 +80,7 @@ public final class Constants {
     public static final int SHOULDER_ID = 1;
     public static final int ELBOW_ID = 3;
     public static final int GYRO_ID = -1;
-
+  
     // TODO Update this stuff too
     public static final double UPPER_ARM_LENGTH = 26; // Units should be in cm
     public static final double LOWER_ARM_LENGTH = 27;
@@ -110,14 +110,15 @@ public final class Constants {
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
 
-    /* TODO: Update Constants */
+    // TODO: Update Constants
+    // Robot Angle
     public static final double ROBOT_ANGLE_ID = 0;
 
   }
 
-  public static final class HooksConstants {
-    public static final int LEFT_HOOK_ID = -1;
-    public static final int RIGHT_HOOK_ID = -1;
+  public static final class ClawConstants {
+    public static final int LEFT_CLAW_ID = 44;
+    public static final int RIGHT_CLAW_ID = 45;
 
     public static final double OPEN_POSITION = 0;
     public static final double CLOSE_POSITION = 0;

@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
+import frc4388.robot.subsystems.Claws;
 import frc4388.robot.subsystems.Climber;
-import frc4388.robot.subsystems.Hooks;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.LEDPatterns;
@@ -29,7 +29,7 @@ public class RobotContainer {
   /* RobotMap */
   private final RobotMap m_robotMap = new RobotMap();
 
-  /* Subsystems */
+  /* Subsystems *//*
   private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
     m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
     m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
@@ -39,13 +39,13 @@ public class RobotContainer {
     m_robotMap.rightFrontEncoder,
     m_robotMap.leftBackEncoder,
     m_robotMap.rightBackEncoder
-  );
+  );*/
 
-  private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  /*private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   private final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
-
-  private final Hooks m_hooks = new Hooks(m_robotMap.leftHook, m_robotMap.rightHook);
+  */
+  private final Claws m_claws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
 
   /* Controllers */
   private final XboxController m_driverXbox = new XboxController(OIConstants.XBOX_DRIVER_ID);
@@ -64,12 +64,12 @@ public class RobotContainer {
     //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
 
     // moves climber in xy space with two-axis input from the operator controller
-    m_robotClimber.setDefaultCommand(
+    /*m_robotClimber.setDefaultCommand(
         new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftXAxis(),
             getOperatorController().getLeftYAxis()), m_robotClimber));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+    m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));*/
   }
 
   /**
@@ -83,13 +83,16 @@ public class RobotContainer {
 
     /* Operator Buttons */
     // activates "Lit Mode"
-    new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
+    /*new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
-        .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+        .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));*/
     
     new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
-        .whenPressed(() -> m_hooks.setOpen(true))
-        .whenReleased(() -> m_hooks.setOpen(false));
+        .whenPressed(() -> m_claws.setSpeed(0.5))
+        .whenReleased(() -> m_claws.setSpeed(0.0));
+    new JoystickButton(getOperatorJoystick(), XboxController.X_BUTTON)
+        .whenPressed(() -> m_claws.setSpeed(-0.5))
+        .whenReleased(() -> m_claws.setSpeed(0.0));
   }
 
   /**
