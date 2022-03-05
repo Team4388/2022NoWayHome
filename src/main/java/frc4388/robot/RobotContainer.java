@@ -11,9 +11,11 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Claws;
+import frc4388.robot.commands.RunClaw;
 import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
+import frc4388.robot.subsystems.Claws.ClawType;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.controller.IHandController;
 import frc4388.utility.controller.XboxController;
@@ -86,13 +88,22 @@ public class RobotContainer {
     /*new JoystickButton(getOperatorJoystick(), XboxController.A_BUTTON)
         .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
         .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));*/
-    
+
+    // run claws
     new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
-        .whenPressed(() -> m_claws.setSpeed(0.5))
-        .whenReleased(() -> m_claws.setSpeed(0.0));
+      .whenPressed(new RunClaw(m_claws, ClawType.LEFT, true))
+      .whenPressed(new RunClaw(m_claws, ClawType.RIGHT, true));
+    
     new JoystickButton(getOperatorJoystick(), XboxController.X_BUTTON)
-        .whenPressed(() -> m_claws.setSpeed(-0.5))
-        .whenReleased(() -> m_claws.setSpeed(0.0));
+      .whenPressed(new RunClaw(m_claws, ClawType.LEFT, false))
+      .whenPressed(new RunClaw(m_claws, ClawType.RIGHT, false));
+
+    // new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
+    //     .whenPressed(() -> m_claws.setSpeed(0.5))
+    //     .whenReleased(() -> m_claws.setSpeed(0.0));
+    // new JoystickButton(getOperatorJoystick(), XboxController.X_BUTTON)
+    //     .whenPressed(() -> m_claws.setSpeed(-0.5))
+    //     .whenReleased(() -> m_claws.setSpeed(0.0));
   }
 
   /**

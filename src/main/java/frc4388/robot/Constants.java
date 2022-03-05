@@ -124,6 +124,8 @@ public final class Constants {
     public static final double CLOSE_POSITION = 0;
 
     public static final double CALIBRATION_SPEED = 0;
+
+    public static final double CURRENT_LIMIT = 0.0; // TODO: set actual current limit;
   }
   /**
    * The OIConstants class contains the ID for the XBox controllers
