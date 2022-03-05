@@ -64,6 +64,7 @@ import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Vision;
+import frc4388.robot.subsystems.VisionOdometry;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.ListeningSendableChooser;
 import frc4388.utility.PathPlannerUtil;
@@ -88,8 +89,10 @@ public class RobotContainer {
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
-  // private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   // private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
+
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -119,7 +122,7 @@ public class RobotContainer {
 
     //Turret default command
 
-    // m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive));
+    m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(

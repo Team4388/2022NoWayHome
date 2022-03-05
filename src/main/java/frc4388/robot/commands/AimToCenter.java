@@ -6,13 +6,16 @@ package frc4388.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ShooterConstants;
+import frc4388.robot.Constants.VisionConstants;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
+import frc4388.robot.subsystems.VisionOdometry;
 
 public class AimToCenter extends CommandBase {
   /** Creates a new AimWithOdometry. */
   Turret m_turret;
   SwerveDrive m_drive;
+  VisionOdometry m_visionOdometry;
 
   // use odometry to find x and y later
   double x;
@@ -21,11 +24,12 @@ public class AimToCenter extends CommandBase {
 
   // public static Gains m_aimGains;
 
-  public AimToCenter(Turret turret, SwerveDrive drive) {
+  public AimToCenter(Turret turret, SwerveDrive drive, VisionOdometry visionOdometry) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
     m_drive = drive;
-    addRequirements(m_turret, m_drive);
+    m_visionOdometry = visionOdometry;
+    addRequirements(m_turret, m_drive, m_visionOdometry);
   }
 
   // Called when the command is initially scheduled.
@@ -40,6 +44,9 @@ public class AimToCenter extends CommandBase {
   public void execute() {
     m_targetAngle = angleToCenter(x, y, m_drive.getRegGyro().getDegrees());
     m_turret.runshooterRotatePID(m_targetAngle);
+
+    // Check if limelight is within range
+    m_visionOdometry.setLEDs(Math.abs(m_turret.getBoomBoomAngleDegrees() - m_targetAngle) < VisionConstants.RANGE);
   }
 
   public static double angleToCenter(double x, double y, double gyro) {
