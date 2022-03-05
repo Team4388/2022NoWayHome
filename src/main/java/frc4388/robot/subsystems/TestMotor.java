@@ -17,7 +17,7 @@ public class TestMotor extends SubsystemBase {
     }
 
     public void testDesmos() {
-        DesmosServer.putDecimal("Position", m_testEncoder.getPosition());
-        m_testMotor.set(DesmosServer.readDouble("Speed"));
+        DesmosServer.putDouble("Position", m_testEncoder.getPosition());
+        // m_testMotor.set(DesmosServer.readDouble("Speed"));
     }
 }

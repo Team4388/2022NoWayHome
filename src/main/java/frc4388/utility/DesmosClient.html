@@ -7,11 +7,17 @@
     <body>
         <div id="calculator" style="width: 100wh; height: 100vh; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden;"></div>
         <script>
+            const EXPRESSION_TYPES = {
+                'expression': ['integer', 'double', 'point', 'array'],
+                'note': ['note'],
+                'table': ['table']
+            };
+
             let elt = document.getElementById('calculator');
             let calculator = Desmos.GraphingCalculator(elt);
             // calculator.setExpression({ id: 'graph1', latex: 'y=x^2' });
 
-            let variables = [{'name': 'bob', 'value': '27'}];
+            let variables = [{'name': 'bob', 'type': 'integer', 'value': '27'}];
 
             let url = prompt("Robot URL", "localhost");
             let port = 8000;
@@ -36,8 +42,22 @@
                 variables = JSON.parse(this.responseText);
 
                 for(let variable of variables) {
-                    variable['lname'] = latexName(variable['name']);
-                    calculator.setExpression({ id: variable['name'], latex: variable['lname'] + '=' + variable['value']});
+                    switch(variable['type']) {
+                        case 'expression':
+                            variable['lname'] = latexName(variable['name']);
+                            calculator.setExpression({ id: variable['name'], latex: variable['lname'] + '=' + variable['value']});
+                            break;
+                        case 'table':
+                            let cols = [];
+                            for(let col of variable['value'].split('\t')) {
+                                let latex = latexName(col[0]);
+                            }
+
+                            calculator.setExpression({ type: 'table', id: variable['name'], columns: cols});
+                            break;
+                        default:
+                            console.log('Invalid type : ' + variable['type']);
+                    }
                 }
                 
                 setTimeout(requestVariables, 0);
@@ -71,10 +91,14 @@
             }
 
             function regularValue(lvalue) {
-                let value = lvalue.replace('\\left(', '');
-                value = lvalue.replace('\\right)', '');
-                value = lvalue.replace('\\left[', '');
-                value = lvalue.replace('\\right]', '');
+                let value = lvalue.replace('\\left(', '')
+                                .replace('\\right)', '')
+                                .replace('\\left[', '')
+                                .replace('\\right]', '')
+                                .replace('(', '')
+                                .replace(')', '')
+                                .replace('[', '')
+                                .replace(']', '');
                 return value;
             }
 

@@ -18,8 +18,8 @@ import org.opencv.core.Point;
  * @author Daniel McGrath
  * */
 public class DesmosServer extends Thread {
-    private static HashMap<String, String> desmosVariables = new HashMap<>();
-    private static HashMap<String, String> readVariables = new HashMap<>();
+    private static HashMap<String, String[]> desmosVariables = new HashMap<>();
+    private static HashMap<String, String[]> readVariables = new HashMap<>();
 
     private static boolean running = false;
     
@@ -101,7 +101,6 @@ public class DesmosServer extends Thread {
         }
         
         readVariables(body);
-
         sendResponse(client);
     }
 
@@ -145,7 +144,8 @@ public class DesmosServer extends Thread {
 	        for(String key : desmosVariables.keySet()) {
 	            json += "\n\t{"
 	                + "\"name\":\"" + key + "\","
-	                + "\"value\":\"" + desmosVariables.get(key) + "\""
+                    + "\"type\":\"" + desmosVariables.get(key)[0] + "\","
+	                + "\"value\":\"" + desmosVariables.get(key)[1] + "\""
 	                + "},";
 	        }
 	
@@ -157,16 +157,26 @@ public class DesmosServer extends Thread {
         return json;
     }
     
+    /**
+     * Interpret client request and update variables
+     * 
+     * @param requestBody Client request
+     */
     public static void readVariables(String requestBody) {
     	for(String variable : requestBody.split("\n")) {
     		if(variable.equals(""))
     			break;
     		
     		String[] readVar = variable.split("\t");
-    		readVariables.put(readVar[0], readVar[1]);
+    		readVariables.put(readVar[0], new String[] {readVar[1], readVar[2]});
     	}
     }
 
+    /**
+     * Checks if the server is running
+     * 
+     * @return The server status
+     */
     public static boolean isRunning() {
         return running;
     }
@@ -174,44 +184,44 @@ public class DesmosServer extends Thread {
     // ---------------------------------------------------------------------
 
     public static void putInteger(String name, Integer value) {        
-        desmosVariables.put(name, value.toString());
+        desmosVariables.put(name, new String[] {"integer", value.toString()});
     }
 
-    public static void putDecimal(String name, Double value) {
-        desmosVariables.put(name, value.toString());
+    public static void putDouble(String name, Double value) {
+        desmosVariables.put(name, new String[] {"double", value.toString()});
     }
 
     public static void putPoint(String name, Point point) {
-        desmosVariables.put(name, "(" + point.x + "," + point.y + ")");
+        desmosVariables.put(name, new String[] {"point", "(" + point.x + "," + point.y + ")"});
     }
     
     public static void putArray(String name, double... arr) {
-    	desmosVariables.put(name, Arrays.toString(arr).replace(" ", ""));
+    	desmosVariables.put(name, new String[] {"array", Arrays.toString(arr).replace(" ", "")});
     }
 
     // ---------------------------------------------------------------------
 
     public static int readInteger(String name) {
-        if(!readVariables.containsKey(name))
+        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("integer"))
             return 0;
         
-        return Integer.parseInt(readVariables.get(name));
+        return Integer.parseInt(readVariables.get(name)[1]);
     }
 
     public static double readDouble(String name) {
-        if(!readVariables.containsKey(name))
+        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("double"))
             return 0;
         
-        return Double.parseDouble(readVariables.get(name));
+        return Double.parseDouble(readVariables.get(name)[1]);
     }
 
     public static Point readPoint(String name) {
         Point point = new Point();
 
-        if(!readVariables.containsKey(name))
+        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("point"))
             return point;
 
-        String pointStr = readVariables.get(name);
+        String pointStr = readVariables.get(name)[1];
         point.x = Double.parseDouble(pointStr.split(",")[0]);
         point.x = Double.parseDouble(pointStr.split(",")[1]);
 
@@ -219,10 +229,10 @@ public class DesmosServer extends Thread {
     }
     
     public static double[] readArray(String name) {
-        if(!readVariables.containsKey(name))
+        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("array"))
             return new double[0];
 
-    	String[] unparsed = readVariables.get(name).split(",");
+    	String[] unparsed = readVariables.get(name)[1].split(",");
     	double[] arr = new double[unparsed.length];
     	
     	for(int i = 0; i < arr.length; i++)
