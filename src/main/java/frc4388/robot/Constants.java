@@ -203,6 +203,7 @@ public final class Constants {
     public static final double V_FOV = 49.7;
     public static final double LIME_VIXELS = 960;
     public static final double LIME_HIXELS = 720;
+    public static final double TURRET_kP = 0.1;
 
     public static final double RANGE = 10;
 
