@@ -63,12 +63,12 @@ public class Turret extends SubsystemBase {
 
     m_boomBoomRotateMotor.setInverted(false);
 
-    m_boomBoomRotatePIDController.setP(m_shooterTGains.m_kP);
-    m_boomBoomRotatePIDController.setI(m_shooterTGains.m_kI);
-    m_boomBoomRotatePIDController.setD(m_shooterTGains.m_kD);
-    m_boomBoomRotatePIDController.setFF(m_shooterTGains.m_kF);
-    m_boomBoomRotatePIDController.setIZone(m_shooterTGains.m_kIzone);
-    m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.m_kPeakOutput);
+    m_boomBoomRotatePIDController.setP(m_shooterTGains.kP);
+    m_boomBoomRotatePIDController.setI(m_shooterTGains.kI);
+    m_boomBoomRotatePIDController.setD(m_shooterTGains.kD);
+    m_boomBoomRotatePIDController.setFF(m_shooterTGains.kF);
+    m_boomBoomRotatePIDController.setIZone(m_shooterTGains.kIzone);
+    m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.kPeakOutput);
   }
 
   @Override

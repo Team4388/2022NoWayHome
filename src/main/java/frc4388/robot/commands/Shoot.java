@@ -4,12 +4,17 @@
 
 package frc4388.robot.commands;
 
+import edu.wpi.first.hal.simulation.SimulatorJNI;
+import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
+import edu.wpi.first.wpilibj.simulation.SimHooks;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
+import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
+import frc4388.utility.DummySensor;
+import frc4388.utility.Gains;
 
 public class Shoot extends CommandBase {
 
@@ -34,17 +39,24 @@ public class Shoot extends CommandBase {
   // pid
   public double error;
   public double prevError;
+  public Gains shootGains = ShooterConstants.SHOOT_GAINS;
   public double kP, kI, kD;
   public double proportional, integral, derivative;
   public double time;
   public double output;
   public double tolerance = 5.0;
 
-  // // dummy motor
-  // public WPI_TalonFX dummy = new WPI_TalonFX(69 - 420);
-  // public TalonFXConfiguration dummyConfiguration = new TalonFXConfiguration();
+  // testing
+  public DummySensor dummy = new DummySensor(0);
 
-  /** Creates a new Shoot. */
+  /**
+   * Creates a new shoot command, allowing the robot to aim and be ready to fire a ball
+   * TODO: Velocity Correction
+   * @param sDrive Drive Train
+   * @param sShooter Shooter Drum
+   * @param sTurret Shooter Turret
+   * @param sHood Shooter Hood
+   */
   public Shoot(SwerveDrive sDrive, BoomBoom sShooter, Turret sTurret, Hood sHood) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_swerve = sDrive;
@@ -54,14 +66,16 @@ public class Shoot extends CommandBase {
     
     addRequirements(m_swerve, m_boomBoom, m_turret, m_hood);
 
-    kP = 0.1;
-    kI = 0.0;
-    kD = 0.0;
+    kP = shootGains.kP;
+    kI = shootGains.kI;
+    kD = shootGains.kD;
 
     proportional = 0;
     integral = 0;
     derivative = 0;
     time = 0.02;
+
+    DummySensor.resetAll();
   }
 
   /**
@@ -83,8 +97,13 @@ public class Shoot extends CommandBase {
     // get targets (shooter tables)
     m_targetVel = m_boomBoom.getVelocity(m_distance);
     m_targetHood = m_boomBoom.getHood(m_distance);
+
+    // target angle tests
+    m_gyroAngle = 0;
+    m_odoX = -1;
+    m_odoY = 1;
+
     m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
-    m_driveTargetAngle = m_swerve.getRegGyro().getDegrees();
 
     // deadzone processing
     if (AimToCenter.isHardwareDeadzone(m_targetAngle)) {
@@ -93,37 +112,14 @@ public class Shoot extends CommandBase {
 
     if (AimToCenter.isDigitalDeadzone(m_targetAngle)) {
       // this should rotate the entire swerve drive by 20 degrees, so shoot can now proceed like normal. idk if this will work
-      m_swerve.driveWithInput(0, 0, Math.cos(m_driveTargetAngle + 20), Math.sin(m_driveTargetAngle + 20), true);
+      m_swerve.driveWithInput(0, 0, Math.cos(m_gyroAngle + 20), Math.sin(m_gyroAngle + 20), true);
     }
-
-    // // normal (i think) PID stuff
-    // dummyConfiguration.primaryPID.selectedFeedbackSensor = TalonFXFeedbackDevice.IntegratedSensor.toFeedbackDevice();
-    // dummyConfiguration.remoteFilter0.remoteSensorDeviceID = dummy.getDeviceID();
-    // dummyConfiguration.remoteFilter0.remoteSensorSource = RemoteSensorSource.TalonFX_SelectedSensor;
-
-    // dummyConfiguration.slot0.kP = 0.1;
-    // dummyConfiguration.slot0.kI = 0;
-    // dummyConfiguration.slot0.kD = 0;
-    // dummyConfiguration.slot0.kF = 0;
-
-    // // weird PID stuff 
-    // dummyConfiguration.auxiliaryPID.selectedFeedbackSensor = TalonFXFeedbackDevice.SoftwareEmulatedSensor.toFeedbackDevice();
-    // dummyConfiguration.remoteFilter1.remoteSensorDeviceID = ShooterConstants.TURRET_MOTOR_CAN_ID;
-    // dummyConfiguration.remoteFilter1.remoteSensorSource = RemoteSensorSource.TalonFX_SelectedSensor;
-    // // dummyConfiguration.auxiliaryPID.selectedFeedbackCoefficient = 0;
-  
-    // dummyConfiguration.slot1.kP = 0.1;
-    // dummyConfiguration.slot1.kI = 0;
-    // dummyConfiguration.slot1.kD = 0;
-    // dummyConfiguration.slot1.kF = 0;
-
-    // dummy.configAllSettings(dummyConfiguration);
-
+    
     // initial error
     updateError();
+    System.out.println("Error: " + error);
     prevError = error;
   }
-
   /**
    * Run custom PID.
    */
@@ -140,17 +136,12 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // dummy.selectProfileSlot(0, 0);
-    // dummy.selectProfileSlot(1, 1);
-    // dummy.set(TalonFXControlMode.Position, m_driveTargetAngle, DemandType.AuxPID, m_targetAngle);
-    // m_swerve.driveWithInput(0, 0, m_driveTargetAngle, true);
-    // m_swerve.driveWithInput(0, 0, Math.cos(m_driveTargetAngle), Math.sin(m_driveTargetAngle), true); // only works for new DWI in swerve branch
 
     // custom pid
     runPID();
-    m_swerve.driveWithInput(0, 0, output, true); // i have no idea if this is how you rotate the
-                                                 // entire swerve drive or its the commented line below
-    // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
+    // m_swerve.driveWithInput(0, 0, output, true); // i have no idea if this is how you rotate the
+                                                 // entire swerve drive or its the line below
+    m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
     
     m_hood.runAngleAdjustPID(m_targetHood);
     m_boomBoom.runDrumShooterVelocityPID(m_targetVel);

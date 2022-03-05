@@ -30,7 +30,7 @@ public class SwerveModule extends SubsystemBase {
   private static double kEncoderTicksPerRotation = 4096;
   private SwerveModuleState state;
   private double canCoderFeedbackCoefficient;
-  
+
   public long m_currentTime;
   public long m_lastTime;
   public double m_deltaTime;
@@ -47,21 +47,22 @@ public class SwerveModule extends SubsystemBase {
 
     TalonFXConfiguration angleTalonFXConfiguration = new TalonFXConfiguration();
 
-    angleTalonFXConfiguration.slot0.kP = m_swerveGains.m_kP;
-    angleTalonFXConfiguration.slot0.kI = m_swerveGains.m_kI;
-    angleTalonFXConfiguration.slot0.kD = m_swerveGains.m_kD;
+    angleTalonFXConfiguration.slot0.kP = m_swerveGains.kP;
+    angleTalonFXConfiguration.slot0.kI = m_swerveGains.kI;
+    angleTalonFXConfiguration.slot0.kD = m_swerveGains.kD;
 
     // Use the CANCoder as the remote sensor for the primary TalonFX PID
     angleTalonFXConfiguration.remoteFilter0.remoteSensorDeviceID = canCoder.getDeviceID();
     angleTalonFXConfiguration.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder;
     angleTalonFXConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
     angleMotor.configAllSettings(angleTalonFXConfiguration);
-
+    // angleMotor.setInverted(true);
     // TalonFXConfiguration driveTalonFXConfiguration = new TalonFXConfiguration();
     // driveTalonFXConfiguration.slot0.kP = 0.05;
     // driveTalonFXConfiguration.slot0.kI = 0.0;
     // driveTalonFXConfiguration.slot0.kD = 0.0;
-    // driveTalonFXConfiguration.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+    // driveTalonFXConfiguration.primaryPID.selectedFeedbackSensor =
+    // FeedbackDevice.IntegratedSensor;
     driveMotor.configFactoryDefault();
     driveMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
     driveMotor.configNominalOutputForward(0, 30);
@@ -69,15 +70,17 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.configPeakOutputForward(1, 30);
     driveMotor.configPeakOutputReverse(-1, 30);
     driveMotor.configAllowableClosedloopError(0, 0, 30);
-    driveMotor.config_kP(0, 0.5, 30);
+    // driveMotor.setInverted(true);
+    driveMotor.config_kP(0, 0, 30);
     driveMotor.config_kI(0, 0, 30);
     driveMotor.config_kD(0, 0, 30);
     // maybe try a feedforward value?
-    
+
     // driveMotor.configAllSettings(driveTalonFXConfiguration);
 
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
     canCoderConfiguration.magnetOffsetDegrees = offset;
+    canCoderConfiguration.sensorDirection = true;
     canCoder.configAllSettings(canCoderConfiguration);
 
     m_currentTime = System.currentTimeMillis();
@@ -87,40 +90,50 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private Rotation2d getAngle() {
-    // Note: This assumes the CANCoders are setup with the default feedback coefficient
+    // Note: This assumes the CANCoders are setup with the default feedback
+    // coefficient
     // and the sensor value reports degrees.
     return Rotation2d.fromDegrees(canCoder.getAbsolutePosition());
   }
 
   /**
    * Set the speed + rotation of the swerve module from a SwerveModuleState object
-   * @param desiredState - A SwerveModuleState representing the desired new state of the module
+   * 
+   * @param desiredState - A SwerveModuleState representing the desired new state
+   *                     of the module
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean ignoreAngle) {
     Rotation2d currentRotation = getAngle();
-    // SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
+    // SmartDashboard.putNumber("Motor " + angleMotor.getDeviceID(),
+    // currentRotation.getDegrees());
     state = SwerveModuleState.optimize(desiredState, currentRotation);
 
-    // Find the difference between our current rotational position + our new rotational position
+    // Find the difference between our current rotational position + our new
+    // rotational position
     Rotation2d rotationDelta = state.angle.minus(currentRotation);
 
-    // Find the new absolute position of the module based on the difference in rotation
+    // Find the new absolute position of the module based on the difference in
+    // rotation
     double deltaTicks = (rotationDelta.getDegrees() / 360.) * kEncoderTicksPerRotation;
     // Convert the CANCoder from it's position reading back to ticks
     double currentTicks = canCoder.getPosition() / canCoderFeedbackCoefficient;
     double desiredTicks = currentTicks + deltaTicks;
 
-    if (!ignoreAngle){
+    if (!ignoreAngle) {
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
     }
 
+    // Please work
     double ftPerSec = Units.metersToFeet(state.speedMetersPerSecond);
     double normFtPerSec = ftPerSec / SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC;
     // double angleCorrection = angleMotor.getSelectedSensorVelocity() * 2.69;
-    
-    // driveMotor.set(TalonFXControlMode.Velocity, angleCorrection + (Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
+
+    // driveMotor.set(TalonFXControlMode.Velocity, angleCorrection +
+    // (Units.metersToInches(state.speedMetersPerSecond) *
+    // SwerveDriveConstants.TICKS_PER_INCH) / 10);
     driveMotor.set(normFtPerSec);// - angleMotor.get());
-    // driveMotor.set(TalonFXControlMode.Velocity, angleCorrection); // Ratio between axis = 1/1.75    Ratio of wheel is 5.14/1    ratio of steer is 12.8/1
+    // driveMotor.set(TalonFXControlMode.Velocity, angleCorrection); // Ratio
+    // between axis = 1/1.75 Ratio of wheel is 5.14/1 ratio of steer is 12.8/1
 
     // m_currentTime = System.currentTimeMillis();
     // m_deltaTime = (double) (m_currentTime - m_lastTime);
@@ -129,10 +142,14 @@ public class SwerveModule extends SubsystemBase {
     // m_currentPos = driveMotor.getSelectedSensorPosition();
 
     // double m_desiredCorrectionVel = 3.2 * angleMotor.getSelectedSensorVelocity();
-    // double m_desiredCorrectionPos = (m_deltaTime * m_desiredCorrectionVel) % 2048;
-    // double m_lastPos = (driveMotor.getSelectedSensorPosition() % 2048) - (m_deltaTime * driveMotor.getSelectedSensorVelocity());
-    // double m_actualDesiredPos = m_deltaTime * ((Units.metersToInches(state.speedMetersPerSecond) * SwerveDriveConstants.TICKS_PER_INCH) / 10);
-    
+    // double m_desiredCorrectionPos = (m_deltaTime * m_desiredCorrectionVel) %
+    // 2048;
+    // double m_lastPos = (driveMotor.getSelectedSensorPosition() % 2048) -
+    // (m_deltaTime * driveMotor.getSelectedSensorVelocity());
+    // double m_actualDesiredPos = m_deltaTime *
+    // ((Units.metersToInches(state.speedMetersPerSecond) *
+    // SwerveDriveConstants.TICKS_PER_INCH) / 10);
+
     // System.out.println("Current Pos: " + driveMotor.getSelectedSensorPosition());
     // System.out.println("Desired Correction Pos: " + m_desiredCorrectionPos);
     // System.out.println("Last Pos: " + m_lastPos);
@@ -150,7 +167,8 @@ public class SwerveModule extends SubsystemBase {
    */
   public SwerveModuleState getState() {
     // return state;
-    return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK * SwerveDriveConstants.METERS_PER_INCH * 10, getAngle());
+    return new SwerveModuleState(driveMotor.getSelectedSensorVelocity() * SwerveDriveConstants.INCHES_PER_TICK
+        * SwerveDriveConstants.METERS_PER_INCH * 10, getAngle());
   }
 
   /**
@@ -160,11 +178,18 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.set(0);
     angleMotor.set(0);
   }
+
   @Override
-  public void periodic(){
+  public void periodic() {
     Rotation2d currentRotation = getAngle();
     SmartDashboard.putNumber("Angle Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
-    SmartDashboard.putNumber("Drive Motor " + driveMotor.getDeviceID(), ((driveMotor.getSelectedSensorPosition() / 2048) * 360) % 360);
+    SmartDashboard.putNumber("Drive Motor " + driveMotor.getDeviceID(),
+        ((driveMotor.getSelectedSensorPosition() / 2048) * 360) % 360);
+  }
+
+  public void reset() {
+    canCoder.setPositionToAbsolute();
+    // canCoder.configSensorInitializationStrategy(initializationStrategy)
   }
 
 }
