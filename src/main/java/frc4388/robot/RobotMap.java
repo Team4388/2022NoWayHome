@@ -6,14 +6,10 @@ package frc4388.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import frc4388.robot.Constants.IntakeConstants;
 import frc4388.robot.Constants.LEDConstants;
-import frc4388.robot.Constants.SerializerConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 /**
  * Defines and holds all I/O objects on the Roborio. This is useful for unit
@@ -23,7 +19,7 @@ public class RobotMap {
 
   public RobotMap() {
     configureLEDMotorControllers();
-    //configureSwerveMotorControllers();
+    configureSwerveMotorControllers();
   }
 
   /* LED Subsystem */
@@ -33,7 +29,7 @@ public class RobotMap {
     
   }
   
-  /* Swerve Subsystem 
+  /* Swerve Subsystem */
   public final WPI_TalonFX leftFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
   public final WPI_TalonFX leftFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_WHEEL_CAN_ID);
   public final WPI_TalonFX rightFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ID);
@@ -96,12 +92,4 @@ public class RobotMap {
     //rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
   }
 
-  /* Serializer Subsystem */
-
-  public final CANSparkMax serializerBelt = new CANSparkMax(SerializerConstants.SERIALIZER_BELT, MotorType.kBrushless);
-  public final CANSparkMax serializerShooterBelt = new CANSparkMax(SerializerConstants.SERIALIZER_SHOOTER_BELT, MotorType.kBrushless);
-  
-  /* Intake Subsytem */
-  public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
-  public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
 }

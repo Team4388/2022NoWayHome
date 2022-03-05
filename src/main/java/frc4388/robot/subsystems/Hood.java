@@ -66,18 +66,26 @@ public double m_fireAngle;
   //   m_angleAdjusterPIDController.setReference(targetAngle, ControlType.kPosition);
   // }
   
-
+  /**
+   * Runs The Hood
+   * @param input The Speed Times 0.6
+   */
   public void runHood(double input) {
     input *= .6;
     m_angleAdjustMotor.set(input);
   }
 
 
-
+  /**
+   * Resets The Encoder
+   */
   public void resetGyroAngleAdj(){
     m_angleEncoder.setPosition(0);
   }
-
+  /**
+   * Gets The Encoders Position
+   * @return The Encoders Position
+   */
   public double getAnglePositionPID() {
     return m_angleEncoder.getPosition();
   }

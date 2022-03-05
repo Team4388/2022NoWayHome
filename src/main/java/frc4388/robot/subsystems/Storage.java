@@ -19,24 +19,42 @@ public class Storage extends SubsystemBase {
   public Storage() {
 
   }
+  /**
+   * If The Beam Is Broken, Run Storage
+   * If Else, Stop Running Storage
+   */
   public void manageStorage() {
     if (m_beamShooter.get()) {
       runStorage(1.d);
     } else { runStorage(0.d); }
   }
+  /**
+   * Runs The Storage at a Specifyed Speed
+   * @param input The Specifyed Speed
+   */
   public void runStorage(double input) {
     m_storageMotor.set(input);
   }
-
+  /**
+   * Gets The Beam State On The Shooter
+   * @return The State Of The Beam on the Shooter
+   */
   public boolean getBeamShooter(){
     return m_beamShooter.get();
   }
 
+  /**
+   * Gets The Beam State Of The Intake
+   * @return The Beam State Of The Intake
+   */
   public boolean getBeamIntake(){
     return m_beamIntake.get();
   }
 
   @Override
+  /**
+   * Every Robot Tick Manage The Storage
+   */
   public void periodic() {
     manageStorage();
   }
