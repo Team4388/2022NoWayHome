@@ -83,14 +83,19 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
+  public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack,
+      m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
 
-  private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  private final Hood m_robotHood = new Hood();
-  // private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-  // private final Vision m_robotVison = new Vision(m_robotTurret, m_robotBoomBoom);
-  /* Controllers */
+  /*
+   * private final LED m_robotLED = new LED(m_robotMap.LEDController);
+   * private final BoomBoom m_robotBoomBoom = new
+   * BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+   * private final Hood m_robotHood = new Hood();
+   * // private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+   * // private final Vision m_robotVison = new Vision(m_robotTurret,
+   * // m_robotBoomBoom);
+   * /* Controllers
+   */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
 
@@ -101,11 +106,13 @@ public class RobotContainer {
   private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
   private final NetworkTable recordingNetworkTable = networkTableInstance.getTable("Recording");
 
-  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("'Recording' yyyy-MM-dd HH-mm-ss.SSS'.path'");
+  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter
+      .ofPattern("'Recording' yyyy-MM-dd HH-mm-ss.SSS'.path'");
   private static final Clock SYSTEM_CLOCK = Clock.system(ZoneId.systemDefault());
   private static final Path PATHPLANNER_DIRECTORY = Filesystem.getDeployDirectory().toPath().resolve("pathplanner");
   // Function that removes the ".path" from the end of a string.
-  private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern.compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
+  private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern
+      .compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -113,13 +120,15 @@ public class RobotContainer {
   public RobotContainer() {
     configureButtonBindings();
     /* Default Commands */
-    
+
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    // m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
+    // m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED,
+    // m_robotLED));
 
-    //Turret default command
+    // Turret default command
 
-    // m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive));
+    // m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret,
+    // m_robotSwerveDrive));
 
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
@@ -131,9 +140,13 @@ public class RobotContainer {
             m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED).withName("LED update defaultCommand"));
-    autoInit();
-    recordInit();
+    /*
+     * m_robotLED
+     * .setDefaultCommand(new RunCommand(m_robotLED::updateLED,
+     * m_robotLED).withName("LED update defaultCommand"));
+     * autoInit();
+     * recordInit();
+     */
   }
 
   /**
@@ -146,32 +159,41 @@ public class RobotContainer {
     /* Driver Buttons */
     // "XboxController.Button.kBack" was undefined yet, 7 works just fine
     new JoystickButton(getDriverController(), 7)
-      .whenPressed(m_robotSwerveDrive::resetGyro);
+        .whenPressed(m_robotSwerveDrive::resetGyro);
 
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
-        // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.LEFT_BUMPER_BUTTON)
+        // new XboxControllerRawButton(m_driverXbox,
+        // XboxControllerRaw.LEFT_BUMPER_BUTTON)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
 
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-        // new XboxControllerRawButton(m_driverXbox, XboxControllerRaw.RIGHT_BUMPER_BUTTON)
+        // new XboxControllerRawButton(m_driverXbox,
+        // XboxControllerRaw.RIGHT_BUMPER_BUTTON)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
         .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+    new JoystickButton(getDriverController(), XboxController.Button.kX.value)
+        .whenPressed(() -> m_robotMap.leftFront.reset())
+        .whenPressed(() -> m_robotMap.rightFront.reset())
+        .whenPressed(() -> m_robotMap.leftBack.reset())
+        .whenPressed(() -> m_robotMap.rightBack.reset());
 
     /* Operator Buttons */
     // activates "Lit Mode"
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
-        .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
-    // activates "BoomBoom"
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
-        .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
-    // activates hood
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(() -> m_robotHood.runHood(0.5d))
-        .whenReleased(() -> m_robotHood.runHood(0.d));
+    /*
+     * new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+     * .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
+     * .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+     * // activates "BoomBoom"
+     * new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+     * .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
+     * .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
+     * // activates hood
+     * new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+     * .whenPressed(() -> m_robotHood.runHood(0.5d))
+     * .whenReleased(() -> m_robotHood.runHood(0.d));
+     */
   }
 
   /**
@@ -197,7 +219,8 @@ public class RobotContainer {
           new InstantCommand(m_robotSwerveDrive::stopModules)).withName("Run Autonomous Path");
     } else {
       LOGGER.severe("No auto selected.");
-      return new RunCommand(() -> {}).withName("No Autonomous Path");
+      return new RunCommand(() -> {
+      }).withName("No Autonomous Path");
     }
   }
 
@@ -207,6 +230,7 @@ public class RobotContainer {
 
   /**
    * Get odometry.
+   * 
    * @return Odometry
    */
   public Pose2d getOdometry() {
@@ -215,6 +239,7 @@ public class RobotContainer {
 
   /**
    * Set odometry to given pose.
+   * 
    * @param pose Pose to set odometry to.
    */
   public void resetOdometry(Pose2d pose) {
@@ -226,16 +251,23 @@ public class RobotContainer {
   }
 
   /**
-   * Creates a WatchKey for the path planner directory and registers it with the WatchService. 
-   * Then creates a NotifierCommand that will update the auto chooser with the latest path files. 
+   * Creates a WatchKey for the path planner directory and registers it with the
+   * WatchService.
+   * Then creates a NotifierCommand that will update the auto chooser with the
+   * latest path files.
    * Finally, adds the existing path files to the auto chooser
    */
   private void autoInit() {
     try {
-      WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(), StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_DELETE);
+      WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
+          StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
+          StandardWatchEventKinds.ENTRY_DELETE);
       // TODO: Store this and other commands as fields so they can be rescheduled.
       new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
-        @Override public boolean runsWhenDisabled() { return true; }
+        @Override
+        public boolean runsWhenDisabled() {
+          return true;
+        }
       }.withName("Path Watcher").schedule();
     } catch (IOException exception) {
       LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
@@ -247,7 +279,8 @@ public class RobotContainer {
   }
 
   /**
-   * Creates a button on the SmartDashboard that will record the path of the robot.
+   * Creates a button on the SmartDashboard that will record the path of the
+   * robot.
    */
   public void recordInit() {
     SmartDashboard.putData("Recording",
@@ -268,19 +301,22 @@ public class RobotContainer {
    * Called when a file is created, modified, or deleted.
    * Adds newly created .path files to the SendableChooser.
    * Reloads the path if the currently selected file is modified.
+   * 
    * @param watchKey The WatchKey that is being observed.
    */
   private void updateAutoChooser(WatchKey watchKey) {
     List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
     if (!watchEvents.isEmpty()) {
-      List<WatchEvent<?>> pathWatchEvents = watchEvents.stream().filter(e -> e.kind().type().isAssignableFrom(Path.class)).collect(Collectors.toList());
+      List<WatchEvent<?>> pathWatchEvents = watchEvents.stream()
+          .filter(e -> e.kind().type().isAssignableFrom(Path.class)).collect(Collectors.toList());
       for (WatchEvent<?> pathWatchEvent : pathWatchEvents) {
         Path watchEventPath = (Path) pathWatchEvent.context();
         File watchEventFile = watchEventPath.toFile();
         String watchEventFileName = watchEventFile.getName();
         if (watchEventFileName.endsWith(".path")) {
           if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-            LOGGER.log(Level.WARNING, "PathPlanner file {0} created. Options added to SendableChooser.", watchEventFileName);
+            LOGGER.log(Level.WARNING, "PathPlanner file {0} created. Options added to SendableChooser.",
+                watchEventFileName);
             autoChooser.addOption(watchEventFile.getName(), watchEventFile);
           } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
             LOGGER.log(Level.WARNING, "PathPlanner file {0} modified.", watchEventFileName);
@@ -289,7 +325,9 @@ public class RobotContainer {
               loadPath(watchEventFileName);
             }
           } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-            LOGGER.log(Level.SEVERE, "PathPlanner file {0} deleted. Removing options from SendableChooser not yet implemented.", watchEventFileName);
+            LOGGER.log(Level.SEVERE,
+                "PathPlanner file {0} deleted. Removing options from SendableChooser not yet implemented.",
+                watchEventFileName);
           }
         }
       }
@@ -301,13 +339,15 @@ public class RobotContainer {
   private void loadPath(String pathName) {
     LOGGER.warning("Loading path " + pathName);
     loadedPathTrajectory = null;
-    loadedPathTrajectory = PathPlanner.loadPath(PATH_EXTENSION_REMOVER.apply(Objects.requireNonNullElse(pathName, "")), SwerveDriveConstants.PATH_MAX_VELOCITY, SwerveDriveConstants.PATH_MAX_ACCELERATION);
+    loadedPathTrajectory = PathPlanner.loadPath(PATH_EXTENSION_REMOVER.apply(Objects.requireNonNullElse(pathName, "")),
+        SwerveDriveConstants.PATH_MAX_VELOCITY, SwerveDriveConstants.PATH_MAX_ACCELERATION);
     LOGGER.info("Done loading");
   }
 
   private void saveRecording() {
     // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
-    File outputFile = PATHPLANNER_DIRECTORY.resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
+    File outputFile = PATHPLANNER_DIRECTORY
+        .resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
     LOGGER.log(Level.WARNING, "Creating path {0}.", outputFile.getPath());
     if (!pathPoints.isEmpty() && Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
       // TODO: Change to use measured maximum velocity and acceleration.
@@ -326,14 +366,18 @@ public class RobotContainer {
   public void recordPeriodic() {
     Translation2d position = m_robotSwerveDrive.m_poseEstimator.getEstimatedPosition().getTranslation();
     Rotation2d rotation = m_robotSwerveDrive.m_gyro.getRotation2d();
-    // FIXME: Chassis speeds are created from joystick inputs and do not reflect actual robot velocity.
-    Translation2d velocity = new Translation2d(m_robotSwerveDrive.chassisSpeeds.vxMetersPerSecond, m_robotSwerveDrive.chassisSpeeds.vyMetersPerSecond);
-    Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false, SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
+    // FIXME: Chassis speeds are created from joystick inputs and do not reflect
+    // actual robot velocity.
+    Translation2d velocity = new Translation2d(m_robotSwerveDrive.chassisSpeeds.vxMetersPerSecond,
+        m_robotSwerveDrive.chassisSpeeds.vyMetersPerSecond);
+    Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false,
+        SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
     pathPoints.add(waypoint);
   }
 
   public PathPlannerUtil.Path createPath(Double maxVelocity, Double maxAcceleration, Boolean isReversed) {
-    // Remove points whose angles to neighboring points are less than 10 degrees apart.
+    // Remove points whose angles to neighboring points are less than 10 degrees
+    // apart.
     int j = 0;
     for (int i = 1; i < pathPoints.size() - 1; i++) {
       var prev = pathPoints.get(j).anchorPoint.orElseThrow();
@@ -343,20 +387,26 @@ public class RobotContainer {
       var toNext = next.minus(current);
       var angleFromPrevious = new Rotation2d(fromPrevious.getX(), fromPrevious.getY());
       var angleToNext = new Rotation2d(toNext.getX(), toNext.getY());
-      if (Math.abs(angleFromPrevious.minus(angleToNext).getDegrees()) < SwerveDriveConstants.MIN_WAYPOINT_ANGLE || (next.getDistance(prev) < SwerveDriveConstants.MIN_WAYPOINT_DISTANCE && pathPoints.get(i).velOverride.map(v -> v < SwerveDriveConstants.MIN_WAYPOINT_VELOCITY).orElse(false)))
+      if (Math.abs(angleFromPrevious.minus(angleToNext).getDegrees()) < SwerveDriveConstants.MIN_WAYPOINT_ANGLE
+          || (next.getDistance(prev) < SwerveDriveConstants.MIN_WAYPOINT_DISTANCE
+              && pathPoints.get(i).velOverride.map(v -> v < SwerveDriveConstants.MIN_WAYPOINT_VELOCITY).orElse(false)))
         pathPoints.set(i, null);
       else
         j = i;
     }
     pathPoints.removeIf(Objects::isNull);
     // Make control points
-    pathPoints.get(0).nextControl = Optional.of(makeControlPoints(null, pathPoints.get(0).anchorPoint.orElseThrow(), pathPoints.get(1).anchorPoint.orElseThrow()).getSecond());
+    pathPoints.get(0).nextControl = Optional.of(makeControlPoints(null, pathPoints.get(0).anchorPoint.orElseThrow(),
+        pathPoints.get(1).anchorPoint.orElseThrow()).getSecond());
     for (int i = 1; i < pathPoints.size() - 1; i++) {
-      var controls = makeControlPoints(pathPoints.get(i - 1).anchorPoint.orElseThrow(), pathPoints.get(i).anchorPoint.orElseThrow(), pathPoints.get(i + 1).anchorPoint.orElseThrow());
+      var controls = makeControlPoints(pathPoints.get(i - 1).anchorPoint.orElseThrow(),
+          pathPoints.get(i).anchorPoint.orElseThrow(), pathPoints.get(i + 1).anchorPoint.orElseThrow());
       pathPoints.get(i).prevControl = Optional.of(controls.getFirst());
       pathPoints.get(i).nextControl = Optional.of(controls.getSecond());
     }
-    pathPoints.get(pathPoints.size() - 1).prevControl = Optional.of(makeControlPoints(pathPoints.get(pathPoints.size() - 2).anchorPoint.orElseThrow(), pathPoints.get(pathPoints.size() - 1).anchorPoint.orElseThrow(), null).getFirst());
+    pathPoints.get(pathPoints.size() - 1).prevControl = Optional
+        .of(makeControlPoints(pathPoints.get(pathPoints.size() - 2).anchorPoint.orElseThrow(),
+            pathPoints.get(pathPoints.size() - 1).anchorPoint.orElseThrow(), null).getFirst());
     // Create the path
     PathPlannerUtil.Path path = new PathPlannerUtil.Path();
     path.waypoints = Optional.ofNullable(pathPoints.toArray(PathPlannerUtil.Path.Waypoint[]::new));
@@ -367,7 +417,8 @@ public class RobotContainer {
     return path;
   }
 
-  private static Pair<Translation2d, Translation2d> makeControlPoints(Translation2d prev, Translation2d current, Translation2d next) {
+  private static Pair<Translation2d, Translation2d> makeControlPoints(Translation2d prev, Translation2d current,
+      Translation2d next) {
     var line = Objects.requireNonNullElse(next, current).minus(Objects.requireNonNullElse(prev, current)).div(4);
     return Pair.of(current.minus(line), current.plus(line));
   }

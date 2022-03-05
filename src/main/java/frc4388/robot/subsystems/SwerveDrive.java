@@ -36,19 +36,27 @@ public class SwerveDrive extends SubsystemBase {
 
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
-  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(halfWidth));
-  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(-halfWidth));
-  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
-  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
-      
-  public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight),
+      Units.inchesToMeters(halfWidth));
+  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight),
+      Units.inchesToMeters(-halfWidth));
+  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
+      Units.inchesToMeters(halfWidth));
+  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
+      Units.inchesToMeters(-halfWidth));
+
+  public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation,
+      m_backLeftLocation, m_backRightLocation);
 
   public SwerveModule[] modules;
   public WPI_PigeonIMU m_gyro;
   protected FusionStatus fstatus = new FusionStatus();
 
-  /* Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings. The numbers used
-  below are robot specific, and should be tuned. */
+  /*
+   * Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings.
+   * The numbers used
+   * below are robot specific, and should be tuned.
+   */
   public SwerveDrivePoseEstimator m_poseEstimator;
   public SwerveDriveOdometry m_odometry;
 
@@ -59,7 +67,8 @@ public class SwerveDrive extends SubsystemBase {
 
   private final Field2d m_field = new Field2d();
 
-  public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack, WPI_PigeonIMU gyro) {
+  public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack,
+      WPI_PigeonIMU gyro) {
 
     m_leftFront = leftFront;
     m_leftBack = leftBack;
@@ -67,53 +76,55 @@ public class SwerveDrive extends SubsystemBase {
     m_rightBack = rightBack;
     m_gyro = gyro;
 
-    modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
+    modules = new SwerveModule[] { m_leftFront, m_rightFront, m_leftBack, m_rightBack };
 
-    m_poseEstimator =
-      new SwerveDrivePoseEstimator(
-          m_gyro.getRotation2d(),
-          new Pose2d(),
-          m_kinematics,
-          VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),
-          VecBuilder.fill(Units.degreesToRadians(1)),
-          VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)));
+    m_poseEstimator = new SwerveDrivePoseEstimator(
+        m_gyro.getRotation2d(),
+        new Pose2d(),
+        m_kinematics,
+        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),
+        VecBuilder.fill(Units.degreesToRadians(1)),
+        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)));
 
     m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
 
-    m_gyro.reset(); 
+    m_gyro.reset();
     SmartDashboard.putData("Field", m_field);
   }
-//https://github.com/ZachOrr/MK3-Swerve-Example
- /**
- * Method to drive the robot using joystick info.
- *
- * @param speeds[0] Speed of the robot in the x direction (forward).
- * @param speeds[1] Speed of the robot in the y direction (sideways).
- * @param rot Angular rate of the robot.
- * @param fieldRelative Whether the provided x and y speeds are relative to the field.
- */
-  public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative)
-  {
-    if (speedX == 0 && speedY == 0 && rot == 0) ignoreAngles = true;
-    else ignoreAngles = false;
-    Translation2d speed = new Translation2d(speedX, speedY);
+
+  // https://github.com/ZachOrr/MK3-Swerve-Example
+  /**
+   * Method to drive the robot using joystick info.
+   *
+   * @param speeds[0]     Speed of the robot in the x direction (forward).
+   * @param speeds[1]     Speed of the robot in the y direction (sideways).
+   * @param rot           Angular rate of the robot.
+   * @param fieldRelative Whether the provided x and y speeds are relative to the
+   *                      field.
+   */
+  public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative) {
+    if (speedX == 0 && speedY == 0 && rot == 0)
+      ignoreAngles = true;
+    else
+      ignoreAngles = false;
+    Translation2d speed = new Translation2d(-speedX, speedY);
     double mag = speed.getNorm();
     speed = speed.times(mag * speedAdjust);
 
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
-    SwerveModuleState[] states =
-        m_kinematics.toSwerveModuleStates(
-            fieldRelative
-              ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-              : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED));
+    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
+        fieldRelative
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
+                rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+            : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
+                rot * SwerveDriveConstants.ROTATION_SPEED));
     setModuleStates(states);
   }
 
-  public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative)
-  {
+  public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative) {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
-    Translation2d speed = new Translation2d(leftX, leftY);
+    Translation2d speed = new Translation2d(-leftX, leftY);
     speed = speed.times(speed.getNorm() * speedAdjust);
     if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
       rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0, 1));
@@ -121,20 +132,22 @@ public class SwerveDrive extends SubsystemBase {
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
-      ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-      : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED);
-    SwerveModuleState[] states =
-        m_kinematics.toSwerveModuleStates(
-            chassisSpeeds);
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
+            rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED);
+    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
+        chassisSpeeds);
     setModuleStates(states);
   }
 
   /**
    * Set each module of the swerve drive to the corresponding desired state.
+   * 
    * @param desiredStates Array of module states to set.
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates,
+        Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
     for (int i = 0; i < desiredStates.length; i++) {
       SwerveModule module = modules[i];
       SwerveModuleState state = desiredStates[i];
@@ -162,13 +175,16 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Odometry: θ", getOdometry().getRotation().getDegrees());
 
     // chassis speeds
-    // TODO: find the actual max velocity in m/s of the robot in fast mode to have accurate chassis speeds 
+    // TODO: find the actual max velocity in m/s of the robot in fast mode to have
+    // accurate chassis speeds
     SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
     SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
   }
+
   /**
    * Gets the distance between two given poses.
+   * 
    * @param p1 The first pose.
    * @param p2 The second pose.
    * @return Absolute distance between p1 and p2.
@@ -181,13 +197,14 @@ public class SwerveDrive extends SubsystemBase {
    * Returns a scalar from your distance to the hub to your target distance.
    * 
    * @param target_dist The target distance.
-   * @return A scalar that multiplies your distance from the hub to get your target distance.
+   * @return A scalar that multiplies your distance from the hub to get your
+   *         target distance.
    */
   public Pose2d poseGivenDist(double target_dist) {
     Pose2d p1 = m_poseEstimator.getEstimatedPosition();
     Pose2d p2 = SwerveDriveConstants.HUB_POSE;
 
-    double scalar = target_dist/distBtwPoses(p1, p2);
+    double scalar = target_dist / distBtwPoses(p1, p2);
     Pose2d new_pose = new Pose2d(p1.getX() * scalar, p1.getY() * scalar, p1.getRotation());
 
     return new_pose;
@@ -195,6 +212,7 @@ public class SwerveDrive extends SubsystemBase {
 
   /**
    * Gets the current pose of the robot.
+   * 
    * @return Robot's current pose.
    */
   public Pose2d getOdometry() {
@@ -204,6 +222,7 @@ public class SwerveDrive extends SubsystemBase {
 
   /**
    * Gets the current gyro using regression formula.
+   * 
    * @return Rotation2d object holding current gyro in radians
    */
   public Rotation2d getRegGyro() {
@@ -218,26 +237,28 @@ public class SwerveDrive extends SubsystemBase {
     m_poseEstimator.resetPosition(pose, m_gyro.getRotation2d());
   }
 
-  /** Updates the field relative position of the robot.  
-  */
+  /**
+   * Updates the field relative position of the robot.
+   */
   public void updateOdometry() {
-    m_poseEstimator.update( getRegGyro(),
-                            modules[0].getState(), 
-                            modules[1].getState(), 
-                            modules[2].getState(), 
-                            modules[3].getState());
-  
-      // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
-      // a real robot, this must be calculated based either on latency or timestamps.
-      // m_poseEstimator.addVisionMeasurement(
-      //         m_poseEstimator.getEstimatedPosition(),
-      //     Timer.getFPGATimestamp() - 0.1);
-    }
-  
+    m_poseEstimator.update(getRegGyro(),
+        modules[0].getState(),
+        modules[1].getState(),
+        modules[2].getState(),
+        modules[3].getState());
+
+    // Also apply vision measurements. We use 0.3 seconds in the past as an example
+    // -- on
+    // a real robot, this must be calculated based either on latency or timestamps.
+    // m_poseEstimator.addVisionMeasurement(
+    // m_poseEstimator.getEstimatedPosition(),
+    // Timer.getFPGATimestamp() - 0.1);
+  }
+
   /**
    * Resets pigeon.
    */
-  public void resetGyro(){
+  public void resetGyro() {
     m_gyro.reset();
     rotTarget = new Rotation2d(0);
   }
@@ -254,13 +275,13 @@ public class SwerveDrive extends SubsystemBase {
 
   /**
    * Switches speed modes.
+   * 
    * @param shift True if fast mode, false if slow mode.
    */
-  public void highSpeed(boolean shift){
-    if (shift){
+  public void highSpeed(boolean shift) {
+    if (shift) {
       speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST;
-    }
-    else{
+    } else {
       speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
     }
   }
