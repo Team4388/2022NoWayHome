@@ -120,8 +120,8 @@ public final class Constants {
   }
 
   public static final class SerializerConstants {
-    public static final double SERIALIZER_BELT_SPEED = 0.01d
-    public static final double SERIALIZER_SHOOTER_BELT_SPEED = 0.01d
+    public static final double SERIALIZER_BELT_SPEED = 0.01d;
+    public static final double SERIALIZER_SHOOTER_BELT_SPEED = 0.01d;
     
     // CAN IDs
     public static final int SERIALIZER_BELT = 16;
