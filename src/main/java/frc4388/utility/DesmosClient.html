@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://www.desmos.com/api/v1.6/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+        <title>Desmos Client</title>
+    </head>
+    <body>
+        <div id="calculator" style="width: 100wh; height: 100vh; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden;"></div>
+        <script>
+            let elt = document.getElementById('calculator');
+            let calculator = Desmos.GraphingCalculator(elt);
+            // calculator.setExpression({ id: 'graph1', latex: 'y=x^2' });
+
+            let variables = [{'name': 'bob', 'value': '27'}];
+
+            let url = prompt("Robot URL", "localhost");
+            let port = 8000;
+
+            function requestVariables() {
+                let http = new XMLHttpRequest();
+                http.addEventListener("load", setVariables);
+                http.addEventListener("error", handleError);
+                http.open("POST", `http://${url}:${port}`);
+
+                // debugger;
+                let json = serverStringify(getVariables());
+                http.send(json);
+            }
+
+            function handleError() {
+                console.log('Request failed');
+                setTimeout(requestVariables, 0);
+            }
+
+            function setVariables() {
+                variables = JSON.parse(this.responseText);
+
+                for(let variable of variables) {
+                    variable['lname'] = latexName(variable['name']);
+                    calculator.setExpression({ id: variable['name'], latex: variable['lname'] + '=' + variable['value']});
+                }
+                
+                setTimeout(requestVariables, 0);
+            }
+
+            function getVariables() {
+                let vars = [];
+                let expressions = calculator.getExpressions();
+
+                for(expression of expressions) {
+                    let lname = expression['latex'].split('=')[0];
+                    let lvalue = expression['latex'].split('=')[1];
+                    
+                    if(lname && lname != '' && lvalue && lvalue != '') {
+                        let name = regularName(lname);
+                        let value = regularValue(lvalue);
+
+                        vars.push({"name": name, "value": value});
+                    }
+                }
+
+                return vars;
+            }
+
+            function latexName(name) {
+                return name.substring(0, 1) + '_{' + name.substring(1, name.length) + '}';
+            }
+
+            function regularName(lname) {
+                return lname.substring(0, 1) + lname.substring(3, lname.length - 1);
+            }
+
+            function regularValue(lvalue) {
+                let value = lvalue.replace('\\left(', '');
+                value = lvalue.replace('\\right)', '');
+                value = lvalue.replace('\\left[', '');
+                value = lvalue.replace('\\right]', '');
+                return value;
+            }
+
+            function serverStringify(vars) {
+                let stringified = '';
+
+                for(let variable of vars) {
+                    stringified += variable['name'] + '\t' + variable['value'] + '\n';
+                }
+
+                return stringified;
+            }
+
+            setTimeout(requestVariables, 0);
+          </script>
+    </body>
+</html>
