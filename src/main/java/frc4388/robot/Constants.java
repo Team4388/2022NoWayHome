@@ -120,21 +120,21 @@ public final class Constants {
   }
 
   public static final class SerializerConstants {
-    public static final double SERIALIZER_BELT_SPEED = 1.d; // TODO (currently max power, DO NOT RUN)
-    public static final double SERIALIZER_SHOOTER_BELT_SPEED = 1.d; // TODO (currently max power, DO NOT RUN)
+    public static final double SERIALIZER_BELT_SPEED = 0.01d
+    public static final double SERIALIZER_SHOOTER_BELT_SPEED = 0.01d
     
     // CAN IDs
-    public static final int SERIALIZER_BELT = 2; // TODO
-    public static final int SERIALIZER_SHOOTER_BELT = 5; // TODO
-    public static final int SERIALIZER_BELT_BEAM = 3; // TODO
+    public static final int SERIALIZER_BELT = 16;
+    public static final int SERIALIZER_SHOOTER_BELT = -1; // TODO (What is this for? - evan)
+    public static final int SERIALIZER_BELT_BEAM = -1; // TODO
   }
   public static final class IntakeConstants {
     // CAN IDs
-    public static final int INTAKE_MOTOR = 3;
-    public static final int EXTENDER_MOTOR = 6;
+    public static final int INTAKE_MOTOR = 14;
+    public static final int EXTENDER_MOTOR = 15;
   }
   public static final class StorageConstants {
-    public static final int STORAGE_CAN_ID = -1; //TODO
+    public static final int STORAGE_CAN_ID = 17;
     public static final int BEAM_SENSOR_SHOOTER = -1; //TODO
     public static final int BEAM_SENSOR_INTAKE = -1; //TODO
   }
