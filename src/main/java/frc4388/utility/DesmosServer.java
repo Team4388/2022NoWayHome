@@ -213,10 +213,10 @@ public class DesmosServer extends Thread {
             tableStr += table[i] + ",";
             String values = Arrays.toString((double[]) table[i+1]).replace(" ", "");
             tableStr += values.substring(1, values.length() - 1);
-            tableStr += " ";
+            tableStr += ' ';
         }
 
-        tableStr = tableStr.substring(0, tableStr.length()-1); // remove tab at the end
+        tableStr = tableStr.substring(0, tableStr.length()-1); // remove space at the end
 
         desmosVariables.put(name, new String[] {"table", tableStr});
     }

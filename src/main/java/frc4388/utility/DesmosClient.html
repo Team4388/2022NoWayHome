@@ -42,25 +42,24 @@
                 variables = JSON.parse(this.responseText);
 
                 for(let variable of variables) {
-                    switch(variable['type']) {
-                        case 'expression':
-                            variable['lname'] = latexName(variable['name']);
-                            calculator.setExpression({ id: variable['name'], latex: variable['lname'] + '=' + variable['value']});
-                            break;
-                        case 'table':
-                            let cols = [];
-                            for(let col of variable['value'].split('\s')) {
-                                col = col.split(',');
-                                let latexStr = latexName(col[0]);
-                                let valuesArr = col.slice(1, col.length);
+                    console.log();
+                    if(EXPRESSION_TYPES['expression'].includes(variable['type'])) {
+                        variable['lname'] = latexName(variable['name']);
+                        calculator.setExpression({ id: variable['name'], latex: variable['lname'] + '=' + variable['value']});
+                    } else if(EXPRESSION_TYPES['table'].includes(variable['type'])) {
+                        let cols = [];
+                        for(let col of variable['value'].split('\s')) {
+                            col = col.split(',');
+                            let latexStr = latexName(col[0]);
+                            let valuesArr = col.slice(1, col.length);
 
-                                cols.push({ latex: latexStr, values: valuesArr });
-                            }
+                            cols.push({ latex: latexStr, values: valuesArr });
+                        }
 
-                            calculator.setExpression({ type: 'table', id: variable['name'], columns: cols});
-                            break;
-                        default:
-                            console.log('Invalid type : ' + variable['type']);
+                        calculator.setExpression({ type: 'table', id: variable['name'], columns: cols});
+                        break;
+                    } else {
+                        console.log('Invalid type : ' + variable['type']);
                     }
                 }
                 
@@ -72,18 +71,26 @@
                 let expressions = calculator.getExpressions();
 
                 for(expression of expressions) {
-                    let lname = expression['latex'].split('=')[0];
-                    let lvalue = expression['latex'].split('=')[1];
-                    
-                    if(lname && lname != '' && lvalue && lvalue != '') {
-                        let name = regularName(lname);
-                        let value = regularValue(lvalue);
-
-                        vars.push({"name": name, "value": value});
+                    if(expression['type'] === 'expression') {
+                        readVariable(expression['latex']);
+                    } else {
+                        console.log('Invalid type : ' + expression['type']);
                     }
                 }
 
                 return vars;
+            }
+
+            function readVariable(latex) {
+                let lname = expression['latex'].split('=')[0];
+                let lvalue = expression['latex'].split('=')[1];
+                
+                if(lname && lname != '' && lvalue && lvalue != '') {
+                    let name = regularName(lname);
+                    let value = regularValue(lvalue);
+
+                    vars.push({"name": name, "value": value});
+                }
             }
 
             function latexName(name) {
