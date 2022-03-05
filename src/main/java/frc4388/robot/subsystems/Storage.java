@@ -11,20 +11,22 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc4388.robot.Constants.StorageConstants;
 
 public class Storage extends SubsystemBase {
-  public CANSparkMax m_storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
-  private DigitalInput m_beamShooter = new DigitalInput(StorageConstants.BEAM_SENSOR_SHOOTER);
-  private DigitalInput m_beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
+  public CANSparkMax m_storageMotor;
+  private DigitalInput m_beamShooter;
+  private DigitalInput m_beamIntake;
 
   /** Creates a new Storage. */
-  public Storage() {
-
+  public Storage(CANSparkMax storageMotor, DigitalInput beamShooter, DigitalInput beamIntake) {
+    m_storageMotor = storageMotor;
+    m_beamShooter = beamShooter;
+    m_beamIntake = beamIntake;
   }
   /**
    * If The Beam Is Broken, Run Storage
    * If Else, Stop Running Storage
    */
   public void manageStorage() {
-    if (m_beamShooter.get()) {
+    if (isBeamIntakeBroken()) { //Maybe needs to be shooter
       runStorage(1.d);
     } else { runStorage(0.d); }
   }

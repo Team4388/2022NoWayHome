@@ -12,10 +12,10 @@ public class Serializer extends SubsystemBase{
   private DigitalInput m_serializerBeam;
   private boolean serializerState;
 
-  public Serializer(CANSparkMax serializerBelt, CANSparkMax serializerShooterBelt) {
+  public Serializer(CANSparkMax serializerBelt, CANSparkMax serializerShooterBelt, DigitalInput serializerBeam) { //TODO: Only one motor lol
     m_serializerBelt = serializerBelt;
     m_serializerShooterBelt = serializerShooterBelt;
-    m_serializerBeam = new DigitalInput(Constants.SerializerConstants.SERIALIZER_BELT_BEAM);
+    m_serializerBeam = serializerBeam;
 
     serializerState = false;
     setSerializerState(serializerState);
