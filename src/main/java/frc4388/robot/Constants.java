@@ -153,6 +153,9 @@ public final class Constants {
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
     public static final double ENCODER_TICKS_PER_REV = 2048;
 
+    // Shoot Command Constants
+    public static final Gains SHOOT_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 1.0);
+
     /* Turret Constants */
     // ID
     public static final int TURRET_MOTOR_CAN_ID = 30;

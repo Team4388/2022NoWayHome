@@ -161,61 +161,53 @@ public class RobotMap {
 
   // Shooter Config
   /* Boom Boom Subsystem */
-  /*
-   * public final WPI_TalonFX shooterFalconLeft = new
-   * WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
-   * public final WPI_TalonFX shooterFalconRight = new
-   * WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
-   * 
-   * // public final CANSparkMax shooterTurret = new
-   * CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
-   * 
-   * // Create motor CANSparkMax
-   * void configureShooterMotorControllers() {
-   * 
-   * // LEFT FALCON
-   * shooterFalconLeft.configFactoryDefault();
-   * shooterFalconLeft.setNeutralMode(NeutralMode.Coast);
-   * shooterFalconLeft.setInverted(true);
-   * shooterFalconLeft.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconLeft.configClosedloopRamp(0.75,
-   * ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconLeft.configPeakOutputReverse(0,
-   * ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconLeft.setSelectedSensorPosition(0,
-   * ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconLeft.configClosedLoopPeriod(0,
-   * ShooterConstants.CLOSED_LOOP_TIME_MS, ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.
-   * SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * 
-   * // RIGHT FALCON
-   * shooterFalconRight.setInverted(false);
-   * shooterFalconRight.setNeutralMode(NeutralMode.Coast);
-   * shooterFalconRight.configFactoryDefault();
-   * shooterFalconRight.configOpenloopRamp(1,
-   * ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconRight.configClosedloopRamp(0.75,
-   * ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * // m_shooterFalconRight.configPeakOutputForward(0,
-   * ShooterConstants.SHOOTER_TIMEOUT_MS);(comment it in if necessary)
-   * shooterFalconRight.setSelectedSensorPosition(0,
-   * ShooterConstants.SHOOTER_PID_LOOP_IDX, ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconRight.configClosedLoopPeriod(0,
-   * ShooterConstants.CLOSED_LOOP_TIME_MS, ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.
-   * SUPPLY_CURRENT_LIMIT_CONFIG, ShooterConstants.SHOOTER_TIMEOUT_MS);
-   * 
-   * /* Turret Subsytem
-   */
-  /*
-   * shooterFalconRight.configStatorCurrentLimit(new
-   * StatorCurrentLimitConfiguration(true, 6, 9, 4.2)); // TODO: dont pull numbers
-   * out of our ass anymore
-   * shooterFalconLeft.configSupplyCurrentLimit(new
-   * SupplyCurrentLimitConfiguration(true, 12, 13, 0.4)); // TODO: dont pull
-   * numbers out of our ass anymore
-   */
-  // }
+  public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
+  public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
 
-}
+  public final CANSparkMax shooterTurret = new CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
+
+  // Create motor CANSparkMax
+  void configureShooterMotorControllers() {
+
+    // LEFT FALCON
+    shooterFalconLeft.configFactoryDefault();
+    shooterFalconLeft.setNeutralMode(NeutralMode.Coast);
+    shooterFalconLeft.setInverted(true);
+    shooterFalconLeft.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configPeakOutputReverse(0, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+
+    // RIGHT FALCON
+    shooterFalconRight.setInverted(false);
+    shooterFalconRight.setNeutralMode(NeutralMode.Coast);
+    shooterFalconRight.configFactoryDefault();
+    shooterFalconRight.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconRight.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
+    // m_shooterFalconRight.configPeakOutputForward(0,
+    // ShooterConstants.SHOOTER_TIMEOUT_MS);(comment it in if necessary)
+    shooterFalconRight.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+
+    // /* Turret Subsytem */
+    // shooterFalconRight.configStatorCurrentLimit(new
+    // StatorCurrentLimitConfiguration(true, 6, 9, 4.2)); // TODO: dont pull numbers
+    // out of our ass anymore
+    // shooterFalconLeft.configSupplyCurrentLimit(new
+    // SupplyCurrentLimitConfiguration(true, 12, 13, 0.4)); // TODO: dont pull
+    // numbers out of our ass anymore
+
+  }
+
+  }
+
+       

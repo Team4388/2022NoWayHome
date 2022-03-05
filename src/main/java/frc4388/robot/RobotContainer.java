@@ -58,6 +58,7 @@ import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.Shoot;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.LED;
@@ -86,16 +87,12 @@ public class RobotContainer {
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack,
       m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
 
-  /*
-   * private final LED m_robotLED = new LED(m_robotMap.LEDController);
-   * private final BoomBoom m_robotBoomBoom = new
-   * BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-   * private final Hood m_robotHood = new Hood();
-   * // private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-   * // private final Vision m_robotVison = new Vision(m_robotTurret,
-   * // m_robotBoomBoom);
-   * /* Controllers
-   */
+  private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  private final Hood m_robotHood = new Hood();
+  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  private final Vision m_robotVision = new Vision(m_robotTurret, m_robotBoomBoom);
+  /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
 
@@ -182,17 +179,17 @@ public class RobotContainer {
     /* Operator Buttons */
     // activates "Lit Mode"
     /*
-     * new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+     * new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
      * .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
      * .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
+     * 
+     * new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+     * .whenPressed(new InstantCommand());
+     * 
      * // activates "BoomBoom"
-     * new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-     * .whenPressed(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0.1))
-     * .whenReleased(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0));
-     * // activates hood
-     * new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-     * .whenPressed(() -> m_robotHood.runHood(0.5d))
-     * .whenReleased(() -> m_robotHood.runHood(0.d));
+     * new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+     * .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret,
+     * m_robotHood));
      */
   }
 

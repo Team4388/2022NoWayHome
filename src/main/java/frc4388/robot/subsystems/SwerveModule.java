@@ -47,9 +47,9 @@ public class SwerveModule extends SubsystemBase {
 
     TalonFXConfiguration angleTalonFXConfiguration = new TalonFXConfiguration();
 
-    angleTalonFXConfiguration.slot0.kP = m_swerveGains.m_kP;
-    angleTalonFXConfiguration.slot0.kI = m_swerveGains.m_kI;
-    angleTalonFXConfiguration.slot0.kD = m_swerveGains.m_kD;
+    angleTalonFXConfiguration.slot0.kP = m_swerveGains.kP;
+    angleTalonFXConfiguration.slot0.kI = m_swerveGains.kI;
+    angleTalonFXConfiguration.slot0.kD = m_swerveGains.kD;
 
     // Use the CANCoder as the remote sensor for the primary TalonFX PID
     angleTalonFXConfiguration.remoteFilter0.remoteSensorDeviceID = canCoder.getDeviceID();

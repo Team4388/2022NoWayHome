@@ -6,14 +6,14 @@ package frc4388.utility;
 
 /** Add your docs here. */
 public class Gains {
-  public double m_kP;
-  public double m_kI;
-  public double m_kD;
-  public double m_kF;
-  public int m_kIzone;
-  public double m_kPeakOutput;
-  public double m_kmaxOutput;
-  public double m_kminOutput;
+  public double kP;
+  public double kI;
+  public double kD;
+  public double kF;
+  public int kIzone;
+  public double kPeakOutput;
+  public double kmaxOutput;
+  public double kminOutput;
 
   /**
    * Creates Gains object for PIDs
@@ -26,14 +26,14 @@ public class Gains {
    */
   public Gains(double kP, double kI, double kD, double kF, int kIzone, double kPeakOutput)
   {
-    m_kP = kP;
-    m_kI = kI;
-    m_kD = kD;
-    m_kF = kF;
-    m_kIzone = kIzone;
-    m_kPeakOutput = kPeakOutput;
-    m_kmaxOutput = m_kPeakOutput;
-    m_kminOutput = -m_kPeakOutput;
+    this.kP = kP;
+    this.kI = kI;
+    this.kD = kD;
+    this.kF = kF;
+    this.kIzone = kIzone;
+    this.kPeakOutput = kPeakOutput;
+    this.kmaxOutput = this.kPeakOutput;
+    this.kminOutput = -this.kPeakOutput;
   }
 
   /**
@@ -48,13 +48,13 @@ public class Gains {
    */
   public Gains(double kP, double kI, double kD, double kF, int kIzone, double kMinOutput, double kMaxOutput)
   {
-    m_kP = kP;
-    m_kI = kI;
-    m_kD = kD;
-    m_kF = kF;
-    m_kIzone = kIzone;
-    m_kminOutput = kMinOutput;
-    m_kmaxOutput = kMaxOutput;
-    m_kPeakOutput = (Math.abs(m_kminOutput) > Math.abs(m_kmaxOutput)) ? Math.abs(m_kminOutput) : Math.abs(m_kmaxOutput);
+    this.kP = kP;
+    this.kI = kI;
+    this.kD = kD;
+    this.kF = kF;
+    this.kIzone = kIzone;
+    this.kminOutput = kMinOutput;
+    this.kmaxOutput = kMaxOutput;
+    this.kPeakOutput = (Math.abs(this.kminOutput) > Math.abs(this.kmaxOutput)) ? Math.abs(this.kminOutput) : Math.abs(this.kmaxOutput);
   }
 }
