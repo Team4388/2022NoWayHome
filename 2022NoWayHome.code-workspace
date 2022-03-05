@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "NetworkTablesDesktopClient"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"java.server.launchMode": "Standard",
+		"java.dependency.packagePresentation": "hierarchical",
+		"files.associations": {
+			"*.path": "json"
+		}
+	}
+}

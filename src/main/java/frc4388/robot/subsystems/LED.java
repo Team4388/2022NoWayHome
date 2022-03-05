@@ -4,10 +4,10 @@
 
 package frc4388.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.logging.Logger;
 
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.utility.LEDPatterns;
 
@@ -27,12 +27,12 @@ public class LED extends SubsystemBase {
     m_LEDController = LEDController;
     setPattern(LEDConstants.DEFAULT_PATTERN);
     updateLED();
-    System.err.println("In the Beginning, there was Joe.\nAnd he said, 'Let there be LEDs.'\nAnd it was good.");
+    Logger.getLogger(LED.class.getSimpleName()).finer("In the Beginning, there was Joe.\nAnd he said, 'Let there be LEDs.'\nAnd it was good.");
   }
 
   @Override
   public void periodic(){
-    SmartDashboard.putNumber("LED", m_currentPattern.getValue());
+    //SmartDashboard.putNumber("LED", m_currentPattern.getValue());
   }
 
   /**

@@ -4,9 +4,22 @@
 
 package frc4388.robot;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
+
+import com.diffplug.common.base.Errors;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
 
 /**
@@ -17,8 +30,9 @@ import frc4388.utility.RobotTime;
  * project.
  */
 public class Robot extends TimedRobot {
+  private static final Logger LOGGER = Logger.getLogger(Robot.class.getSimpleName());
   Command m_autonomousCommand;
-  
+
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
 
@@ -28,9 +42,70 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    LOGGER.log(Level.ALL, "Logging Test 1/8");
+    LOGGER.log(Level.SEVERE, "Logging Test 2/8");
+    LOGGER.log(Level.WARNING, "Logging Test 3/8");
+    LOGGER.log(Level.INFO, "Logging Test 4/8");
+    LOGGER.log(Level.CONFIG, "Logging Test 5/8");
+    LOGGER.log(Level.FINE, "Logging Test 6/8");
+    LOGGER.log(Level.FINER, "Logging Test 7/8");
+    LOGGER.log(Level.FINEST, "Logging Test 8/8");
+    Errors.log().run(() -> {
+      throw new Throwable("Exception Test");
+    });
+
+    // var path =
+    // PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move
+    // Forward.path").toFile());
+    // LOGGER.finest(path::toString);
+    LOGGER.fine("robotInit()");
+    // LOGGER.fine("Sssssssssh.");
+    // DriverStation.silenceJoystickConnectionWarning(true);
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    // addPeriodic(m_robotContainer::recordPeriodic, kDefaultPeriod);
+    SmartDashboard.putData(CommandScheduler.getInstance());
+    SmartDashboard.putData("JVM Memory", new RunCommand(() -> {
+    }) {
+      @Override
+      public boolean runsWhenDisabled() {
+        return true;
+      }
+
+      @Override
+      public String getName() {
+        if (isScheduled()) {
+          Runtime runtime = Runtime.getRuntime();
+          long totalMemory = runtime.totalMemory() / 1_000_000;
+          long freeMemory = runtime.freeMemory() / 1_000_000;
+          long maxMemory = runtime.maxMemory() / 1_000_000;
+          return totalMemory - freeMemory + " MB / " + totalMemory + " MB / " + maxMemory + " MB";
+        }
+        return "Not Running";
+      }
+    });
+    SmartDashboard.putData("Usable Deploy Space", new RunCommand(() -> {
+    }) {
+      @Override
+      public boolean runsWhenDisabled() {
+        return true;
+      }
+
+      @Override
+      public String getName() {
+        if (isScheduled()) {
+          File deploy = Filesystem.getDeployDirectory();
+          long usedSpace = Errors.suppress().getWithDefault(
+              () -> Files.walk(deploy.toPath()).map(Path::toFile).filter(File::isFile).mapToLong(File::length).sum(),
+              0l) / 1_000_000;
+          long usableSpace = deploy.getUsableSpace() / 1_000_000;
+          return usedSpace + " MB / " + usableSpace + " MB";
+        }
+        return "Not Running";
+      }
+    });
   }
 
   /**
@@ -38,17 +113,27 @@ public class Robot extends TimedRobot {
    * this for items like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
+   * <p>
+   * This runs after the mode specific periodic functions, but before
    * LiveWindow and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled
+    // commands, running already-scheduled commands, removing finished or
+    // interrupted commands,
+    // and running subsystem periodic() methods. This must be called from the
+    // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // print odometry data to smart dashboard for debugging (if causing timeout
+    // errors, you can comment it)
+    SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
+    SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
+    SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
   }
 
   /**
@@ -58,7 +143,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
+    if (isTest()) {
+      // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
+      File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner")
+          .resolve("recording." + System.currentTimeMillis() + ".path").toFile();
+      if (Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
+        m_robotContainer.createPath(null, null, false).write(outputFile);
+        LOGGER.log(Level.SEVERE, "Recorded path to {0}.", outputFile.getPath());
+      } else
+        LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
+    }
   }
 
   @Override
@@ -66,22 +162,13 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
    */
   @Override
   public void autonomousInit() {
+    LOGGER.fine("autonomousInit()");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    /*String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
-    switch (autoSelected) {
-      case "My Auto":
-        autonomousCommand = new MyAutoCommand();
-        break;
-      case "Default Auto":
-      default:
-        autonomousCommand = new ExampleCommand();
-        break;
-    }*/
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -99,6 +186,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    LOGGER.fine("teleopInit()");
+    m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -107,6 +196,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotTime.startMatchTime();
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   /**
@@ -114,7 +204,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
+  }
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
   }
 
   /**
