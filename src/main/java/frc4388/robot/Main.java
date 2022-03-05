@@ -5,6 +5,7 @@
 package frc4388.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import frc4388.utility.DesmosServer;
 
 /**
  * Do NOT add any static variables to this class, or any initialization at all.

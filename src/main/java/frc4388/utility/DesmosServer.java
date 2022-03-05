@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.opencv.core.Point;
@@ -191,15 +192,24 @@ public class DesmosServer extends Thread {
     // ---------------------------------------------------------------------
 
     public static int readInteger(String name) {
+        if(!readVariables.containsKey(name))
+            return 0;
+        
         return Integer.parseInt(readVariables.get(name));
     }
 
     public static double readDouble(String name) {
+        if(!readVariables.containsKey(name))
+            return 0;
+        
         return Double.parseDouble(readVariables.get(name));
     }
 
     public static Point readPoint(String name) {
         Point point = new Point();
+
+        if(!readVariables.containsKey(name))
+            return point;
 
         String pointStr = readVariables.get(name);
         point.x = Double.parseDouble(pointStr.split(",")[0]);
@@ -209,6 +219,9 @@ public class DesmosServer extends Thread {
     }
     
     public static double[] readArray(String name) {
+        if(!readVariables.containsKey(name))
+            return new double[0];
+
     	String[] unparsed = readVariables.get(name).split(",");
     	double[] arr = new double[unparsed.length];
     	

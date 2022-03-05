@@ -7,6 +7,7 @@ package frc4388.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc4388.utility.DesmosServer;
 import frc4388.utility.RobotTime;
 
 /**
@@ -22,6 +23,8 @@ public class Robot extends TimedRobot {
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
 
+  private static DesmosServer desmosServer;
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -31,6 +34,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    
+    desmosServer = new DesmosServer(8000);
+    desmosServer.start();
+    DesmosServer.putInteger("Active", 1);
   }
 
   /**

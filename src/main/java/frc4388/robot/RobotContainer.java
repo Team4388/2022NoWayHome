@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
+import frc4388.robot.subsystems.TestMotor;
 import frc4388.utility.DesmosServer;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.controller.IHandController;
@@ -40,6 +41,7 @@ public class RobotContainer {
   //   m_robotMap.rightBackEncoder
   // );
 
+  private final TestMotor m_testMotor = new TestMotor(m_robotMap.testMotor);
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
   /* Controllers */
@@ -57,7 +59,8 @@ public class RobotContainer {
     // m_robotSwerveDrive.setDefaultCommand(
     //     new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
     //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
-
+    m_testMotor.setDefaultCommand(new RunCommand(() -> m_testMotor.testDesmos(), m_testMotor));
+    
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));
   }
