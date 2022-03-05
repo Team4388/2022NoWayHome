@@ -61,6 +61,7 @@ import frc4388.robot.commands.AimToCenter;
 import frc4388.robot.commands.Shoot;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
+import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.Serializer;
 import frc4388.robot.subsystems.Storage;
@@ -86,18 +87,9 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
 
   // Subsystems 
-  private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-    m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
-    m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
-    m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
-    m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
-    m_robotMap.leftFrontEncoder,
-    m_robotMap.rightFrontEncoder,
-    m_robotMap.leftBackEncoder,
-    m_robotMap.rightBackEncoder
-  );
+  public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor);
-  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, m_robotMap.serializerShooterBelt, m_robotMap.serializerBeam);
+  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
   private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);

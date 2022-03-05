@@ -10,17 +10,51 @@
         "header": {
           "open": true
         }
+      },
+      "Talon FX[9]/Integrated Sensor": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/BoomBoom": "Subsystem",
+      "/LiveWindow/Hood": "Subsystem",
       "/LiveWindow/Intake": "Subsystem",
       "/LiveWindow/LED": "Subsystem",
       "/LiveWindow/Serializer": "Subsystem",
+      "/LiveWindow/Storage": "Subsystem",
+      "/LiveWindow/SwerveDrive": "Subsystem",
+      "/LiveWindow/SwerveModule": "Subsystem",
+      "/LiveWindow/Turret": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[27]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[28]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[29]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
-      "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/Spark[0]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [14]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [23]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [24]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [2]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [3]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [4]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [5]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [6]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [7]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [8]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Talon FX [9]": "Motor Controller",
+      "/LiveWindow/Vision": "Subsystem",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/JVM Memory": "Command",
+      "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/Usable Deploy Space": "Command"
     }
   }
 }

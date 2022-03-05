@@ -8,19 +8,19 @@ import com.revrobotics.CANSparkMax;
 
 public class Serializer extends SubsystemBase{
   private CANSparkMax m_serializerBelt;
-  private CANSparkMax m_serializerShooterBelt;
+  // private CANSparkMax m_serializerShooterBelt;
   private DigitalInput m_serializerBeam;
   private boolean serializerState;
 
-  public Serializer(CANSparkMax serializerBelt, CANSparkMax serializerShooterBelt, DigitalInput serializerBeam) { //TODO: Only one motor lol
+  public Serializer(CANSparkMax serializerBelt, /*CANSparkMax serializerShooterBelt,*/ DigitalInput serializerBeam) { 
     m_serializerBelt = serializerBelt;
-    m_serializerShooterBelt = serializerShooterBelt;
+    // m_serializerShooterBelt = serializerShooterBelt;
     m_serializerBeam = serializerBeam;
 
     serializerState = false;
     setSerializerState(serializerState);
     m_serializerBelt.set(0);
-    m_serializerShooterBelt.set(0);
+    // m_serializerShooterBelt.set(0);
     
   }
   /**
@@ -45,7 +45,7 @@ public class Serializer extends SubsystemBase{
    */
   public void setSerializerState(boolean state) {
     setSerializerBeltState(state);
-    setSerializerShooterBeltState(state);
+    // setSerializerShooterBeltState(state);
     serializerState = state;
   }
   /**
@@ -56,14 +56,14 @@ public class Serializer extends SubsystemBase{
     double serializerBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_BELT_SPEED : 0.d;
     m_serializerBelt.set(serializerBeltSpeed);
   }
-  /**
-   * Sets the Shooter Belt State
-   * @param state Your State Of The Button
-   */
-  public void setSerializerShooterBeltState(boolean state) {
-    double serializerShooterBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_SHOOTER_BELT_SPEED : 0.d;
-    m_serializerShooterBelt.set(serializerShooterBeltSpeed);
-  }
+  // /**
+  //  * Sets the Shooter Belt State
+  //  * @param state Your State Of The Button
+  //  */
+  // public void setSerializerShooterBeltState(boolean state) {
+  //   double serializerShooterBeltSpeed = state ? Constants.SerializerConstants.SERIALIZER_SHOOTER_BELT_SPEED : 0.d;
+  //   m_serializerShooterBelt.set(serializerShooterBeltSpeed);
+  // }
   
   /**
    * Gets the Serializer State

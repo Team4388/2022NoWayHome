@@ -26,10 +26,11 @@ public class Storage extends SubsystemBase {
    * If Else, Stop Running Storage
    */
   public void manageStorage() {
-    if (isBeamIntakeBroken()) { //Maybe needs to be shooter
+    if (getBeamIntake()) { //Maybe needs to be shooter
       runStorage(1.d);
     } else { runStorage(0.d); }
   }
+  
   /**
    * Runs The Storage at a Specifyed Speed
    * @param input The Specifyed Speed
@@ -52,6 +53,7 @@ public class Storage extends SubsystemBase {
   public boolean getBeamIntake(){
     return m_beamIntake.get();
   }
+  
 
   @Override
   /**

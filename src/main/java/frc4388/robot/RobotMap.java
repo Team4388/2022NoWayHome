@@ -17,7 +17,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-
+import frc4388.robot.Constants.IntakeConstants;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.SerializerConstants;
@@ -211,12 +211,11 @@ public class RobotMap {
 
   }
 
-  }
 
        
   /* Serializer Subsystem */
   public final CANSparkMax serializerBelt = new CANSparkMax(SerializerConstants.SERIALIZER_BELT, MotorType.kBrushless);
-  public final CANSparkMax serializerShooterBelt = new CANSparkMax(SerializerConstants.SERIALIZER_SHOOTER_BELT, MotorType.kBrushless);
+//   public final CANSparkMax serializerShooterBelt = new CANSparkMax(SerializerConstants.SERIALIZER_SHOOTER_BELT, MotorType.kBrushless);
   public final DigitalInput serializerBeam = new DigitalInput(SerializerConstants.SERIALIZER_BELT_BEAM);
   
   /* Intake Subsytem */
