@@ -49,8 +49,12 @@
                             break;
                         case 'table':
                             let cols = [];
-                            for(let col of variable['value'].split('\t')) {
-                                let latex = latexName(col[0]);
+                            for(let col of variable['value'].split('\s')) {
+                                col = col.split(',');
+                                let latexStr = latexName(col[0]);
+                                let valuesArr = col.slice(1, col.length);
+
+                                cols.push({ latex: latexStr, values: valuesArr });
                             }
 
                             calculator.setExpression({ type: 'table', id: variable['name'], columns: cols});

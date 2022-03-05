@@ -199,6 +199,28 @@ public class DesmosServer extends Thread {
     	desmosVariables.put(name, new String[] {"array", Arrays.toString(arr).replace(" ", "")});
     }
 
+    public static void putTable(String name, Object... table) {
+        // Check parameters
+        for(int i = 0; i < table.length; i += 2)
+            if(!(table[i] instanceof String)) { return; }
+
+        for(int i = 1; i < table.length; i += 2)
+            if(!(table[i] instanceof double[])) { return; }
+        
+        String tableStr = "";
+
+        for(int i = 0; i < table.length; i += 2) {
+            tableStr += table[i] + ",";
+            String values = Arrays.toString((double[]) table[i+1]).replace(" ", "");
+            tableStr += values.substring(1, values.length() - 1);
+            tableStr += " ";
+        }
+
+        tableStr = tableStr.substring(0, tableStr.length()-1); // remove tab at the end
+
+        desmosVariables.put(name, new String[] {"table", tableStr});
+    }
+
     // ---------------------------------------------------------------------
 
     public static int readInteger(String name) {
