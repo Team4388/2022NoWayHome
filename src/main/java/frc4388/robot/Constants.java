@@ -66,10 +66,10 @@ public final class Constants {
     // public static final double RIGHT_BACK_ENCODER_OFFSET = 360. + 2.15 - 3.637;//
     // 180-2.021484375;//0.0;//134.384765625
 
-    public static final double RIGHT_FRONT_ENCODER_OFFSET = (4 * 360. - 152.05 - 180 - 90) % 360.;
-    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.58 + 180 - 90) % 360.;
-    public static final double LEFT_BACK_ENCODER_OFFSET = (4 * 360. - 189.50 - 90) % 360.;
-    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.31 - 180 - 90) % 360.;
+    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.6466 + 180 - 90) % 360.;
+    public static final double RIGHT_FRONT_ENCODER_OFFSET = (4 * 360. - 152.1265 - 180 - 90) % 360.;
+    public static final double LEFT_BACK_ENCODER_OFFSET = (4 * 360. - 189.4834 - 90) % 360.;
+    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.3156 - 180 - 90) % 360.;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;
