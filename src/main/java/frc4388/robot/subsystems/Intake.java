@@ -54,13 +54,13 @@ public class Intake extends SubsystemBase {
    * @param rightTrigger Right Trigger to Run +
    */
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
-    m_intakeMotor.set((rightTrigger - leftTrigger) * 0.25);
+    m_intakeMotor.set((rightTrigger - leftTrigger) * 0.3);
   }
   /**
-   * Runs The Extender
+   * Runs The Extender-
    * @param extended Wether the Extender Is Extended
    */
-  public void runExtender(boolean extended) { //TODO: Do not bring intake in if there is a ball in the extender (check if intake being in brakes the beam brake?)
+  public void runExtender(boolean extended) {
     if (!m_serializer.getBeam() && !extended) return;
     double extenderMotorSpeed = extended ? 0.25d : -0.25d;
     m_extenderMotor.set(extenderMotorSpeed);
