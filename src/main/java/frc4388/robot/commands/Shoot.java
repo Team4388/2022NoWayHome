@@ -40,16 +40,20 @@ public class Shoot extends CommandBase {
   // pid
   public double error;
   public double prevError;
-  public Gains shootGains = ShooterConstants.SHOOT_GAINS;
+  public Gains driveGains = ShooterConstants.SHOOT_DRIVE_GAINS;
+  public Gains turretGains = ShooterConstants.SHOOT_TURRET_GAINS;
   public double kP, kI, kD;
   public double proportional, integral, derivative;
   public double time;
   public double output;
+  public double normOutput;
   public double tolerance;
   public boolean isAimedInTolerance;
+  public int inverted;
 
   // testing
-  public DummySensor dummy = new DummySensor(0);
+  public DummySensor driveDummy;
+  public DummySensor turretDummy;
 
   /**
    * Creates a new shoot command, allowing the robot to aim and be ready to fire a ball
@@ -68,9 +72,9 @@ public class Shoot extends CommandBase {
     
     addRequirements(m_swerve, m_boomBoom, m_turret, m_hood);
 
-    kP = shootGains.kP;
-    kI = shootGains.kI;
-    kD = shootGains.kD;
+    kP = driveGains.kP;
+    kI = driveGains.kI;
+    kD = driveGains.kD;
 
     proportional = 0;
     integral = 0;
@@ -80,6 +84,9 @@ public class Shoot extends CommandBase {
     tolerance = 5.0;
     isAimedInTolerance = false;
 
+    driveDummy = new DummySensor(180);
+    turretDummy = new DummySensor(180);
+
     DummySensor.resetAll();
   }
 
@@ -87,28 +94,28 @@ public class Shoot extends CommandBase {
    * Updates error for custom PID.
    */
   public void updateError() {
-    error = (m_targetAngle - m_turret.getBoomBoomAngleDegrees() + 360) % 360;
+    m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, driveDummy.get());
+    // m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
+    error = (m_targetAngle - turretDummy.get() + 360) % 360;
+    // error = (m_targetAngle - m_turret.getBoomBoomAngleDegrees() + 360) % 360;
     isAimedInTolerance = (Math.abs(error) <= tolerance);
     SmartDashboard.putBoolean("isAimed?", isAimedInTolerance);
+    System.out.println("Target Angle: " + m_targetAngle);
+    System.out.println("Error: " + error);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_odoX = m_swerve.getOdometry().getX();
-    m_odoY = m_swerve.getOdometry().getY();
-    m_distance = Math.sqrt(Math.pow(m_odoX, 2) + Math.pow(m_odoY, 2));
+    m_odoX = 0;//m_swerve.getOdometry().getX();
+    m_odoY = -1;//m_swerve.getOdometry().getY();
+    m_distance = Math.hypot(m_odoX, m_odoY);//Math.sqrt(Math.pow(m_odoX, 2) + Math.pow(m_odoY, 2));
 
     m_gyroAngle = m_swerve.getRegGyro().getDegrees();
 
     // get targets (shooter tables)
     m_targetVel = m_boomBoom.getVelocity(m_distance);
     m_targetHood = m_boomBoom.getHood(m_distance);
-
-    // target angle tests
-    m_gyroAngle = 0;
-    m_odoX = -1;
-    m_odoY = 1;
 
     m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
 
@@ -131,6 +138,13 @@ public class Shoot extends CommandBase {
    * Run custom PID.
    */
   public void runPID() {
+    if (error > 180){
+      error = 360 - error;
+      inverted = -1;
+    }
+    else{
+      inverted = 1;
+    }
     prevError = error;
     updateError();
     
@@ -138,20 +152,27 @@ public class Shoot extends CommandBase {
     integral = integral + error * time;
     derivative = (error - prevError) / time;
     output = kP * proportional + kI * integral + kD * derivative;
+    normOutput = output/360 * inverted;
   }
   
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    System.out.println("Normalized Output: " + normOutput);
     // custom pid
     runPID();
-    // m_swerve.driveWithInput(0, 0, output, true); // i have no idea if this is how you rotate the
+    driveDummy.apply(normOutput);
+    System.out.println("Drive Dummy: " + driveDummy.get());
+    m_swerve.driveWithInput(0, 0, normOutput, true); // i have no idea if this is how you rotate the
                                                  // entire swerve drive or its the line below
-    m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
+    // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
     
     m_hood.runAngleAdjustPID(m_targetHood);
     m_boomBoom.runDrumShooterVelocityPID(m_targetVel);
+  
+    turretDummy.apply(normOutput);
+    System.out.println("Turret Dummy: " + turretDummy.get());
+    m_turret.m_boomBoomRotateMotor.set(normOutput);
   }
 
   // Called once the command ends or is interrupted.
@@ -161,6 +182,6 @@ public class Shoot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return isAimedInTolerance;
   }
 }

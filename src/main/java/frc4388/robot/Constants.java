@@ -172,7 +172,8 @@ public final class Constants {
     public static final double ENCODER_TICKS_PER_REV = 2048;
 
     // Shoot Command Constants
-    public static final Gains SHOOT_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOT_DRIVE_GAINS = new Gains(5.0, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOT_TURRET_GAINS = new Gains(2.0, 0.0, 0.0, 0.0, 0, 1.0);
 
     /* Turret Constants */
     // ID

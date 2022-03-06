@@ -163,7 +163,7 @@ public class RobotMap {
 
   // Shooter Config
   /* Boom Boom Subsystem */
-  /*public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
+  public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
   public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
 
   // turret subsystem
@@ -202,7 +202,7 @@ public class RobotMap {
     shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);*/
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     // /* Turret Subsytem */
     // shooterFalconRight.configStatorCurrentLimit(new
@@ -215,7 +215,7 @@ public class RobotMap {
     // hood subsystem
     // angleAdjusterMotor.restoreFactoryDefaults();
     // angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
-//   }
+  }
 
 
        

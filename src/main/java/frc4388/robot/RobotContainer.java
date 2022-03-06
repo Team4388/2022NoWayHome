@@ -95,10 +95,10 @@ public class RobotContainer {
   private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
   // private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
   // private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  // private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  // private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
-  // private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-  // private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
+  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
+  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -196,7 +196,6 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
         .whileHeld(new RunCommand(() -> m_robotSerializer.setSerializer(-0.25)))
         .whenReleased(new RunCommand(() -> m_robotSerializer.setSerializer(0.0)));
-  } 
 
     // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
     //     .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
@@ -210,25 +209,25 @@ public class RobotContainer {
     /* Operator Buttons */
 
       // X > Extend Intake
-    /*new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whenPressed(() -> m_robotIntake.runExtender(true));
       // Y > Retract Intake
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(() -> m_robotIntake.runExtender(false));*/
+        .whenPressed(() -> m_robotIntake.runExtender(false));
       // Right Bumper > Storage In
-    /*new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
-        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-      // Left Bumper > Storage Out (note: neccessary?)
-    new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
-        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
+    //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
+    //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
+    //   // Left Bumper > Storage Out (note: neccessary?)
+    // new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
+    //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
+    //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
       // A > Shoot with Odo
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));
       // B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));/*
+        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   }
 
   /**
