@@ -15,9 +15,6 @@ public class RunClaw extends CommandBase {
   public Claws.ClawType clawType;
   public boolean open;
 
-  // current limit
-  public double currentLimit;
-
   /**
    * Creates a new RunClaw, which runs a claw.
    * @param sClaws Claws subsystem.
@@ -29,8 +26,6 @@ public class RunClaw extends CommandBase {
     m_claws = sClaws;
     clawType = which;
     this.open = open;
-    
-    currentLimit = ClawConstants.CURRENT_LIMIT;
 
     addRequirements(m_claws);
   }
@@ -52,6 +47,6 @@ public class RunClaw extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_claws.checkSwitchAndCurrent(clawType, currentLimit);
+    return m_claws.checkSwitchAndCurrent(clawType);
   }
 }

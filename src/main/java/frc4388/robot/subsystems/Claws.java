@@ -105,7 +105,7 @@ public class Claws extends SubsystemBase {
    * @param limit The current limit.
    * @return Whether to interrupt the RunClaw command or not.
    */
-  public boolean checkSwitchAndCurrent(ClawType which, double limit) {
+  public boolean checkSwitchAndCurrent(ClawType which) {
 
     // if still calibrating, stop RunClaw
     /*if (((Double) m_leftOffset == null) || ((Double) m_rightOffset == null)) {
@@ -113,11 +113,11 @@ public class Claws extends SubsystemBase {
     }*/
     
     if (which == ClawType.LEFT) {
-      if (m_leftLimitSwitchF.isPressed() || m_leftLimitSwitchR.isPressed() || m_leftClaw.getOutputCurrent() >= limit) {
+      if (m_leftLimitSwitchF.isPressed() || m_leftLimitSwitchR.isPressed() || m_leftClaw.getOutputCurrent() >= ClawConstants.CURRENT_LIMIT) {
         return true;
       }
     } else if (which == ClawType.RIGHT) {
-      if (m_rightLimitSwitchF.isPressed() || m_rightLimitSwitchR.isPressed() || m_rightClaw.getOutputCurrent() >= limit) {
+      if (m_rightLimitSwitchF.isPressed() || m_rightLimitSwitchR.isPressed() || m_rightClaw.getOutputCurrent() >= ClawConstants.CURRENT_LIMIT) {
         return true;
       }
     }
