@@ -54,18 +54,19 @@ import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Claws;
 import frc4388.robot.commands.RunClaw;
 import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.Claws.ClawType;
-
 import frc4388.robot.commands.AimToCenter;
 import frc4388.robot.commands.Shoot;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
+import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
+import frc4388.robot.subsystems.Serializer;
+import frc4388.robot.subsystems.Storage;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Vision;
@@ -96,12 +97,16 @@ public class RobotContainer {
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack,
       m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
 
-  // private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
+  private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
+  private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
+  private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final Vision m_robotVision = new Vision(m_robotTurret, m_robotBoomBoom);
-
+  
+  
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -137,6 +142,7 @@ public class RobotContainer {
     // m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret,
     // m_robotSwerveDrive));
 
+    //Swerve Drive
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
             getDriverController().getLeftX(),
@@ -145,6 +151,20 @@ public class RobotContainer {
             getDriverController().getRightY(),
             true),
             m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
+    //Intake with Triggers
+    m_robotIntake.setDefaultCommand(
+        new RunCommand(() -> m_robotIntake.runWithTriggers(
+            getOperatorController().getLeftTriggerAxis(), 
+            getOperatorController().getRightTriggerAxis()),
+            m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
+    //Storage Management
+    m_robotStorage.setDefaultCommand(
+        new RunCommand(() -> m_robotStorage.manageStorage(), 
+        m_robotStorage).withName("Storage manageStorage defaultCommand"));
+    //Serializer Management
+    m_robotSerializer.setDefaultCommand(
+        new RunCommand(() -> m_robotSerializer.setSerializerStateWithBeam(), 
+        m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
 
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
@@ -162,9 +182,10 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    
     /* Driver Buttons */
     // "XboxController.Button.kBack" was undefined yet, 7 works just fine
-    new JoystickButton(getDriverController(), 7)
+    new JoystickButton(getDriverController(), XboxController.Button.kBack.value)
         .whenPressed(m_robotSwerveDrive::resetGyro);
 
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
@@ -179,7 +200,8 @@ public class RobotContainer {
 
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
         .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-    new JoystickButton(getDriverController(), XboxController.Button.kX.value)
+
+    new JoystickButton(getDriverController(), XboxController.Button.kX.value) //Temp
         .whenPressed(() -> m_robotMap.leftFront.reset())
         .whenPressed(() -> m_robotMap.rightFront.reset())
         .whenPressed(() -> m_robotMap.leftBack.reset())
@@ -196,18 +218,30 @@ public class RobotContainer {
       .whenPressed(new RunClaw(m_claws, ClawType.RIGHT, false));
 
     /*
-     * new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-     * .whenPressed(() -> m_robotLED.setPattern(LEDPatterns.LAVA_RAINBOW))
-     * .whenReleased(() -> m_robotLED.setPattern(LEDConstants.DEFAULT_PATTERN));
-     * 
-     * new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-     * .whenPressed(new InstantCommand());
-     * 
      * // activates "BoomBoom"
      * new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
      * .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret,
      * m_robotHood));
      */
+
+    //Extender
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+        .whenPressed(() -> m_robotIntake.runExtender(true));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+        .whenPressed(() -> m_robotIntake.runExtender(false));
+
+
+
+    //Storage
+    new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
+        .whenPressed(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED))
+        .whenReleased(() -> m_robotStorage.runStorage(0.0));
+
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
+        .whenPressed(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED))
+        .whenReleased(() -> m_robotStorage.runStorage(0.0));
   }
 
   /**

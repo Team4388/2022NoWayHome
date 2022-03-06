@@ -121,6 +121,25 @@ public final class Constants {
     public static final Pose2d HUB_POSE = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
   }
 
+  public static final class SerializerConstants {
+    public static final double SERIALIZER_BELT_SPEED = 0.1d;
+    
+    // CAN IDs
+    public static final int SERIALIZER_BELT = 16;
+    public static final int SERIALIZER_BELT_BEAM = 27; // TODO
+  }
+  
+  public static final class IntakeConstants {
+    // CAN IDs
+    public static final int INTAKE_MOTOR = 14;
+    public static final int EXTENDER_MOTOR = 15;
+  }
+  public static final class StorageConstants {
+    public static final int STORAGE_CAN_ID = 17;
+    public static final int BEAM_SENSOR_SHOOTER = 28; //TODO
+    public static final int BEAM_SENSOR_INTAKE = 29; //TODO
+    public static final double STORAGE_SPEED = 0.3;
+  }
   public static final class LEDConstants {
     public static final int LED_SPARK_ID = 0;
 
