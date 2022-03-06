@@ -100,7 +100,7 @@ public class RobotContainer {
   private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
   private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
   private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
-  private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  //private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
