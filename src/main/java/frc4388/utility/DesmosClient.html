@@ -42,28 +42,30 @@
                 variables = JSON.parse(this.responseText);
 
                 for(let variable of variables) {
-                    console.log();
                     if(EXPRESSION_TYPES['expression'].includes(variable['type'])) {
                         variable['lname'] = latexName(variable['name']);
                         calculator.setExpression({ id: variable['name'], latex: variable['lname'] + '=' + variable['value']});
                     } else if(EXPRESSION_TYPES['table'].includes(variable['type'])) {
-                        let cols = [];
-                        for(let col of variable['value'].split('\s')) {
-                            col = col.split(',');
-                            let latexStr = latexName(col[0]);
-                            let valuesArr = col.slice(1, col.length);
-
-                            cols.push({ latex: latexStr, values: valuesArr });
-                        }
-
+                        let cols = getColumns(variable['value'].split(' '));
                         calculator.setExpression({ type: 'table', id: variable['name'], columns: cols});
-                        break;
-                    } else {
-                        console.log('Invalid type : ' + variable['type']);
-                    }
+                    } else
+                        console.log('Invalid input type : ' + variable['type']);
                 }
                 
                 setTimeout(requestVariables, 0);
+            }
+
+            function getColumns(unparsedCols) {
+                let cols = [];
+                for(let col of unparsedCols) {
+                    col = col.split(',');
+                    let latexStr = latexName(col[0]);
+                    let valuesArr = col.slice(1, col.length);
+
+                    cols.push({ latex: latexStr, values: valuesArr });
+                }
+
+                return cols;
             }
 
             function getVariables() {
@@ -71,26 +73,28 @@
                 let expressions = calculator.getExpressions();
 
                 for(expression of expressions) {
-                    if(expression['type'] === 'expression') {
-                        readVariable(expression['latex']);
-                    } else {
-                        console.log('Invalid type : ' + expression['type']);
-                    }
+                    if(expression['type'] === 'expression')
+                        vars = readVariable(expression['latex']);
+                    else
+                        console.log('Invalid output type : ' + expression['type']);
                 }
 
                 return vars;
             }
 
             function readVariable(latex) {
-                let lname = expression['latex'].split('=')[0];
-                let lvalue = expression['latex'].split('=')[1];
+                let vars = [];
+                let lname = latex.split('=')[0];
+                let lvalue = latex.split('=')[1];
                 
                 if(lname && lname != '' && lvalue && lvalue != '') {
                     let name = regularName(lname);
                     let value = regularValue(lvalue);
 
-                    vars.push({"name": name, "value": value});
+                    vars.push({"name": name, "type": "expression", "value": value});
                 }
+
+                return vars;
             }
 
             function latexName(name) {
@@ -117,7 +121,9 @@
                 let stringified = '';
 
                 for(let variable of vars) {
-                    stringified += variable['name'] + '\t' + variable['value'] + '\n';
+                    stringified += variable['name'] + '\t'
+                                + variable['type'] + '\t'
+                                + variable['value'] + '\n';
                 }
 
                 return stringified;

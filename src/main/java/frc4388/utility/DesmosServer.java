@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.opencv.core.Point;
 
@@ -18,7 +20,7 @@ import org.opencv.core.Point;
  * @author Daniel McGrath
  * */
 public class DesmosServer extends Thread {
-    private static HashMap<String, String[]> desmosVariables = new HashMap<>();
+    private static HashMap<String, String[]> desmosQueue = new HashMap<>();
     private static HashMap<String, String[]> readVariables = new HashMap<>();
 
     private static boolean running = false;
@@ -42,7 +44,7 @@ public class DesmosServer extends Thread {
      * Creates DesmosServer running on port 5500
      * */
     public DesmosServer() {
-    	activePort = 5500;
+    	activePort = 8000;
     }
 
     @Override
@@ -77,7 +79,7 @@ public class DesmosServer extends Thread {
     /**
      * Handles client requests
      * 
-     * @param The client connection
+     * @param client The client connection
      * @throws IOException
      * */
     public void handleClient(Socket client) throws IOException {
@@ -114,7 +116,7 @@ public class DesmosServer extends Thread {
      *     {"list": "[2,4]"}
      * ]
      * 
-     * @param The client connection
+     * @param client The client connection
      * @throws IOException
      * */
     public void sendResponse(Socket client) throws IOException {
@@ -140,13 +142,17 @@ public class DesmosServer extends Thread {
     public static String getJSONOutput() {
         String json = "[";
 
-        if(!desmosVariables.isEmpty()) {
-	        for(String key : desmosVariables.keySet()) {
+        if(!desmosQueue.isEmpty()) {
+            Set<String> keySet = new HashSet<>(desmosQueue.keySet());
+
+	        for(String key : keySet) {
 	            json += "\n\t{"
 	                + "\"name\":\"" + key + "\","
-                    + "\"type\":\"" + desmosVariables.get(key)[0] + "\","
-	                + "\"value\":\"" + desmosVariables.get(key)[1] + "\""
+                    + "\"type\":\"" + desmosQueue.get(key)[0] + "\","
+	                + "\"value\":\"" + desmosQueue.get(key)[1] + "\""
 	                + "},";
+                
+                desmosQueue.remove(key);
 	        }
 	
 	        json = json.substring(0, json.length()-1); // remove comma at the end
@@ -184,32 +190,29 @@ public class DesmosServer extends Thread {
     // ---------------------------------------------------------------------
 
     public static void putInteger(String name, Integer value) {        
-        desmosVariables.put(name, new String[] {"integer", value.toString()});
+        desmosQueue.put(name, new String[] {"integer", value.toString()});
     }
 
     public static void putDouble(String name, Double value) {
-        desmosVariables.put(name, new String[] {"double", value.toString()});
+        desmosQueue.put(name, new String[] {"double", value.toString()});
     }
 
     public static void putPoint(String name, Point point) {
-        desmosVariables.put(name, new String[] {"point", "(" + point.x + "," + point.y + ")"});
+        desmosQueue.put(name, new String[] {"point", "(" + point.x + "," + point.y + ")"});
     }
     
     public static void putArray(String name, double... arr) {
-    	desmosVariables.put(name, new String[] {"array", Arrays.toString(arr).replace(" ", "")});
+    	desmosQueue.put(name, new String[] {"array", Arrays.toString(arr).replace(" ", "")});
     }
 
     public static void putTable(String name, Object... table) {
-        // Check parameters
-        for(int i = 0; i < table.length; i += 2)
-            if(!(table[i] instanceof String)) { return; }
-
-        for(int i = 1; i < table.length; i += 2)
-            if(!(table[i] instanceof double[])) { return; }
-        
         String tableStr = "";
 
         for(int i = 0; i < table.length; i += 2) {
+            // Check parameters
+            if(!(table[i] instanceof String)) { return; }
+            if(!(table[i+1] instanceof double[])) { return; }
+
             tableStr += table[i] + ",";
             String values = Arrays.toString((double[]) table[i+1]).replace(" ", "");
             tableStr += values.substring(1, values.length() - 1);
@@ -218,7 +221,7 @@ public class DesmosServer extends Thread {
 
         tableStr = tableStr.substring(0, tableStr.length()-1); // remove space at the end
 
-        desmosVariables.put(name, new String[] {"table", tableStr});
+        desmosQueue.put(name, new String[] {"table", tableStr});
     }
 
     // ---------------------------------------------------------------------
