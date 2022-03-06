@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-
+import edu.wpi.first.math.util.Units;
 import frc4388.utility.Gains;
 import frc4388.utility.LEDPatterns;
 
@@ -37,8 +37,8 @@ public final class Constants {
     public static final double HEIGHT = 15.25;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
-    public static final double MAX_SPEED_FEET_PER_SEC = 20; // redundant constant?
-    public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20; // redundant constant?
+    public static final double MAX_SPEED_FEET_PER_SEC = 20; // TODO: redundant constant?
+    public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20; // TODO: redundant constant?
 
     // IDs
     public static final int LEFT_FRONT_STEER_CAN_ID = 2;
@@ -181,7 +181,7 @@ public final class Constants {
     public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
-    public static final double TURRET_FORWARD_LIMIT = 130; // TODO: find
+    public static final double TURRET_FORWARD_LIMIT = 150; // TODO: find
     public static final double TURRET_REVERSE_LIMIT = 0; // TODO: find
 
     // deadzones
