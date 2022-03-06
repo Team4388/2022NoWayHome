@@ -126,16 +126,7 @@ public class RobotContainer {
     configureButtonBindings();
     /* Default Commands */
 
-    // continually sends updates to the Blinkin LED controller to keep the lights on
-    // m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED,
-    // m_robotLED));
-
-    // Turret default command
-
-    //m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
-    m_robotTurret.setDefaultCommand(new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret));
-
-    //Swerve Drive
+      // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
             getDriverController().getLeftX(),
@@ -144,20 +135,27 @@ public class RobotContainer {
             getDriverController().getRightY(),
             true),
             m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
-    //Intake with Triggers
+      // Intake with Triggers
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
             getOperatorController().getLeftTriggerAxis(), 
             getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
-    //Storage Management
+      // Storage Management
     m_robotStorage.setDefaultCommand(
         new RunCommand(() -> m_robotStorage.manageStorage(), 
         m_robotStorage).withName("Storage manageStorage defaultCommand"));
-    //Serializer Management
+      // Serializer Management
     m_robotSerializer.setDefaultCommand(
         new RunCommand(() -> m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
+      // Turret Manual
+    m_robotTurret.setDefaultCommand(
+        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
+        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+
+    // m_robotTurret.setDefaultCommand(
+    //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     /*
@@ -178,60 +176,46 @@ public class RobotContainer {
   private void configureButtonBindings() {
     
     /* Driver Buttons */
-    // "XboxController.Button.kBack" was undefined yet, 7 works just fine
-    new JoystickButton(getDriverController(), XboxController.Button.kBack.value)
-        .whenPressed(m_robotSwerveDrive::resetGyro);
-
+      // Start > Calibrate Odometry
+    new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
+        .whenPressed(m_robotSwerveDrive::resetGyro)
+        .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+      // Left Bumper > Shift Down
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
-        // new XboxControllerRawButton(m_driverXbox,
-        // XboxControllerRaw.LEFT_BUMPER_BUTTON)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
-
+      // Right Bumper > Shift Up
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-        // new XboxControllerRawButton(m_driverXbox,
-        // XboxControllerRaw.RIGHT_BUMPER_BUTTON)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-        .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+    // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
+    //     .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
 
-    new JoystickButton(getDriverController(), XboxController.Button.kX.value) //Temp
-        .whenPressed(() -> m_robotMap.leftFront.reset())
-        .whenPressed(() -> m_robotMap.rightFront.reset())
-        .whenPressed(() -> m_robotMap.leftBack.reset())
-        .whenPressed(() -> m_robotMap.rightBack.reset());
+    // new JoystickButton(getDriverController(), XboxController.Button.kX.value) //Temp
+    //     .whenPressed(() -> m_robotMap.leftFront.reset())
+    //     .whenPressed(() -> m_robotMap.rightFront.reset())
+    //     .whenPressed(() -> m_robotMap.leftBack.reset())
+    //     .whenPressed(() -> m_robotMap.rightBack.reset());
 
     /* Operator Buttons */
-    /*
-     * // activates "BoomBoom"
-     * new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-     * .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret,
-     * m_robotHood));
-     */
 
-    //Extender
+      // X > Extend Intake
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whenPressed(() -> m_robotIntake.runExtender(true));
-
+      // Y > Retract Intake
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(() -> m_robotIntake.runExtender(false));
-
-
-
-    //Storage
+      // Right Bumper > Storage In
     new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED))
         .whenReleased(() -> m_robotStorage.runStorage(0.0));
-
-
+      // Left Bumper > Storage Out (note: neccessary?)
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED))
         .whenReleased(() -> m_robotStorage.runStorage(0.0));
-
-    //Shooter
+      // A > Shoot with Odo
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));
-
+      // B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
         .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   }
