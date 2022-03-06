@@ -57,8 +57,21 @@
       "/LiveWindow/VisionOdometry": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/JVM Memory": "Command",
+      "/SmartDashboard/Odometry Chooser": "String Chooser",
       "/SmartDashboard/Scheduler": "Scheduler",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Usable Deploy Space": "Command"
+    }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Odometry Chooser": {
+        "open": true
+      },
+      "SendableChooser[0]": {
+        "open": true
+      },
+      "open": true
     }
   }
 }

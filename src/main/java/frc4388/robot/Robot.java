@@ -7,15 +7,21 @@ package frc4388.robot;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 import com.diffplug.common.base.Errors;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -35,6 +41,10 @@ public class Robot extends TimedRobot {
 
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
+
+  private SendableChooser<Pose2d> odoChooser = new SendableChooser<Pose2d>();
+  private HashMap<String, Pose2d> odoChoices = new HashMap<>();
+  private Pose2d selectedOdo;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -129,11 +139,34 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    // odo chooser stuff
+    addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 
+                  new Pose2d(1, 2, new Rotation2d(Math.PI/3)),
+                  new Pose2d(1, 3, new Rotation2d(Math.PI/4)));
+    updateOdoChooser();
+    SmartDashboard.putData("Odometry Chooser", odoChooser);
+
     // print odometry data to smart dashboard for debugging (if causing timeout
     // errors, you can comment it)
     SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
     SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
     SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
+  }
+
+  public void updateOdoChooser() {
+    Pose2d currentPose = m_robotContainer.getOdometry();
+    odoChooser.setDefaultOption("(" + currentPose.getX() + ", " + currentPose.getY() + ", " + currentPose.getRotation().getDegrees() + ")", currentPose);
+    
+    for (Map.Entry<String,Pose2d> entry : odoChoices.entrySet()) {
+      odoChooser.addOption(entry.getKey(), entry.getValue());
+    }
+  }
+
+  public void addOdoChoices(Pose2d... points) {
+    for (Pose2d point : points) {
+      String key = "(" + point.getX() + ", " + point.getY() + ", " + point.getRotation().getDegrees() + ")";
+      odoChoices.put(key, point);
+    }
   }
 
   /**
@@ -168,6 +201,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     LOGGER.fine("autonomousInit()");
+
+    selectedOdo = odoChooser.getSelected();
+    m_robotContainer.resetOdometry(selectedOdo);
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -188,6 +225,10 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     LOGGER.fine("teleopInit()");
     m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
+
+    selectedOdo = odoChooser.getSelected();
+    m_robotContainer.resetOdometry(selectedOdo);
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
