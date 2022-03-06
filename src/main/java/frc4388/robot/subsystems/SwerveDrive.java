@@ -17,12 +17,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
+import frc4388.utility.VisionObscuredException;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -241,20 +243,14 @@ public class SwerveDrive extends SubsystemBase {
    * Updates the field relative position of the robot.
    */
   public void updateOdometry() {
-    m_poseEstimator.update(getRegGyro(),
-        modules[0].getState(),
-        modules[1].getState(),
-        modules[2].getState(),
-        modules[3].getState());
-
-    // Also apply vision measurements. We use 0.3 seconds in the past as an example
-    // -- on
-    // a real robot, this must be calculated based either on latency or timestamps.
-    // m_poseEstimator.addVisionMeasurement(
-    // m_poseEstimator.getEstimatedPosition(),
-    // Timer.getFPGATimestamp() - 0.1);
+    m_poseEstimator.update( getRegGyro(),
+                            modules[0].getState(), 
+                            modules[1].getState(), 
+                            modules[2].getState(), 
+                            modules[3].getState());
   }
-
+  
+  
   /**
    * Resets pigeon.
    */

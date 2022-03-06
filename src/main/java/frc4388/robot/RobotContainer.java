@@ -61,6 +61,7 @@ import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.Claws.ClawType;
 import frc4388.robot.commands.AimToCenter;
 import frc4388.robot.commands.Shoot;
+import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.Intake;
@@ -70,6 +71,7 @@ import frc4388.robot.subsystems.Storage;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Vision;
+import frc4388.robot.subsystems.VisionOdometry;
 
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.ListeningSendableChooser;
@@ -102,9 +104,9 @@ public class RobotContainer {
   private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
   //private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  private final Hood m_robotHood = new Hood();
+  private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-  private final Vision m_robotVision = new Vision(m_robotTurret, m_robotBoomBoom);
+  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   
   
   /* Controllers */
@@ -139,8 +141,8 @@ public class RobotContainer {
             getOperatorController().getLeftY()), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
     
     // Turret default command
-    // m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret,
-    // m_robotSwerveDrive));
+    //m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
+    m_robotTurret.setDefaultCommand(new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret));
 
     //Swerve Drive
     m_robotSwerveDrive.setDefaultCommand(
@@ -242,6 +244,13 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED))
         .whenReleased(() -> m_robotStorage.runStorage(0.0));
+
+    //Shooter
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   }
 
   /**
