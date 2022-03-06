@@ -99,7 +99,6 @@ public class RobotContainer {
   private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
-  private final Vision m_robotVision = new Vision(m_robotTurret, m_robotBoomBoom);
   
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -134,7 +133,7 @@ public class RobotContainer {
     // Turret default command
 
     //m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
-    m_robotTurret.setDefaultCommand(new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX())));
+    m_robotTurret.setDefaultCommand(new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret));
 
     //Swerve Drive
     m_robotSwerveDrive.setDefaultCommand(
