@@ -96,7 +96,7 @@ public class RobotContainer {
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack,
       m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
 
-  private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  // private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   private final Hood m_robotHood = new Hood();
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
@@ -130,8 +130,8 @@ public class RobotContainer {
 
     // moves climber in xy space with two-axis input from the operator controller
     m_robotClimber.setDefaultCommand(
-        new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftXAxis(),
-            getOperatorController().getLeftYAxis()), m_robotClimber));
+        new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftX(),
+            getOperatorController().getLeftY()), m_robotClimber));
     
     // Turret default command
     // m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret,
