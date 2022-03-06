@@ -177,17 +177,17 @@ public class Climber extends SubsystemBase {
   public void setClimberGains() {
     // shoulder PIDs
     m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
-    m_shoulder.config_kF(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.m_kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kP(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.m_kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kI(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.m_kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kD(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.m_kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kF(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kP(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kI(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kD(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
 
     // elbow PIDs
     m_elbow.selectProfileSlot(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
-    m_elbow.config_kF(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.m_kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kP(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.m_kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kI(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.m_kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kD(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.m_kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kF(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kP(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kI(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kD(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
   }
 
   public void setJointAngles(double[] angles) {
