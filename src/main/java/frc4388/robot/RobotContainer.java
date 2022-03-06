@@ -177,9 +177,11 @@ public class RobotContainer {
     
     /* Driver Buttons */
       // Start > Calibrate Odometry
-    new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
-        .whenPressed(m_robotSwerveDrive::resetGyro)
+    new JoystickButton(getDriverController(), XboxController.Button.kBack.value)
         .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+        // Start > Calibrate Odometry
+    new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
+      .whenPressed(m_robotSwerveDrive::resetGyro);
       // Left Bumper > Shift Down
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
@@ -190,6 +192,7 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
         .whileHeld( new RunCommand(() -> m_robotSerializer.setSerializer(0.25)))
         .whenReleased(new RunCommand(() -> m_robotSerializer.setSerializer(0.0)));
+
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
         .whileHeld(new RunCommand(() -> m_robotSerializer.setSerializer(-0.25)))
         .whenReleased(new RunCommand(() -> m_robotSerializer.setSerializer(0.0)));
