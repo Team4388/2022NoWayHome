@@ -60,6 +60,7 @@ import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AimToCenter;
 import frc4388.robot.commands.Shoot;
+import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.Intake;
@@ -132,7 +133,8 @@ public class RobotContainer {
 
     // Turret default command
 
-    m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
+    //m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
+    m_robotTurret.setDefaultCommand(new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX())));
 
     //Swerve Drive
     m_robotSwerveDrive.setDefaultCommand(
@@ -226,6 +228,13 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED))
         .whenReleased(() -> m_robotStorage.runStorage(0.0));
+
+    //Shooter
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   }
 
   /**

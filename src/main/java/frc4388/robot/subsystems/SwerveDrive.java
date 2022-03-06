@@ -61,7 +61,6 @@ public class SwerveDrive extends SubsystemBase {
    */
   public SwerveDrivePoseEstimator m_poseEstimator;
   public SwerveDriveOdometry m_odometry;
-  public VisionOdometry m_visionOdometry;
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
@@ -249,16 +248,8 @@ public class SwerveDrive extends SubsystemBase {
                             modules[1].getState(), 
                             modules[2].getState(), 
                             modules[3].getState());
+  }
   
-      // Also apply vision measurements if the camera can get vision
-      try {
-        m_poseEstimator.addVisionMeasurement(
-                m_visionOdometry.getVisionOdometry(),
-                Timer.getFPGATimestamp() - m_visionOdometry.getLatency());
-      } catch (VisionObscuredException err) {
-        err.printStackTrace();
-      }
-    }
   
   /**
    * Resets pigeon.

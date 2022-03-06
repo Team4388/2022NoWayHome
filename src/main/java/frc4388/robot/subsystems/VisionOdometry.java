@@ -20,6 +20,7 @@ import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.VisionConstants;
@@ -124,7 +125,20 @@ public class VisionOdometry extends SubsystemBase {
   public double getLatency() {
     return latency;
   }
+  public boolean getLEDs() {
+    if (m_camera.getLEDMode() == VisionLEDMode.kOff) return false;
+    return true;
+  }
 
+  public void updateOdometryWithVision(){
+    try {
+      m_drive.m_poseEstimator.addVisionMeasurement(
+              getVisionOdometry(),
+              Timer.getFPGATimestamp() - getLatency());
+    } catch (VisionObscuredException err) {
+      err.printStackTrace();
+    } 
+  }
   /** Reverse 3d projects target points from screen coordinates to 3d space
    * <p>
    * Uses the known height of the target to project points
