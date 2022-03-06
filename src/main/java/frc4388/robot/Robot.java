@@ -153,10 +153,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
   }
 
-  public void updateOdoChooser() {
-    Pose2d currentPose = m_robotContainer.getOdometry();
-    odoChooser.setDefaultOption("(" + currentPose.getX() + ", " + currentPose.getY() + ", " + currentPose.getRotation().getDegrees() + ")", currentPose);
-    
+  public void updateOdoChooser() {    
     for (Map.Entry<String,Pose2d> entry : odoChoices.entrySet()) {
       odoChooser.addOption(entry.getKey(), entry.getValue());
     }
@@ -164,7 +161,7 @@ public class Robot extends TimedRobot {
 
   public void addOdoChoices(Pose2d... points) {
     for (Pose2d point : points) {
-      String key = "(" + point.getX() + ", " + point.getY() + ", " + point.getRotation().getDegrees() + ")";
+      String key = "(" + point.getX() + ", " + point.getY() + ", " + point.getRotation().getDegrees() + "°)";
       odoChoices.put(key, point);
     }
   }
@@ -203,6 +200,9 @@ public class Robot extends TimedRobot {
     LOGGER.fine("autonomousInit()");
 
     selectedOdo = odoChooser.getSelected();
+    if (selectedOdo == null) {
+      selectedOdo = m_robotContainer.getOdometry();
+    }
     m_robotContainer.resetOdometry(selectedOdo);
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -227,6 +227,9 @@ public class Robot extends TimedRobot {
     m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
 
     selectedOdo = odoChooser.getSelected();
+    if (selectedOdo == null) {
+      selectedOdo = m_robotContainer.getOdometry();
+    }
     m_robotContainer.resetOdometry(selectedOdo);
 
     // This makes sure that the autonomous stops running when
