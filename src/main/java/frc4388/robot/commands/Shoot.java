@@ -4,9 +4,6 @@
 
 package frc4388.robot.commands;
 
-import edu.wpi.first.hal.simulation.SimulatorJNI;
-import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
-import edu.wpi.first.wpilibj.simulation.SimHooks;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ShooterConstants;
@@ -109,7 +106,6 @@ public class Shoot extends CommandBase {
   public void initialize() {
     m_odoX = 0;//m_swerve.getOdometry().getX();
     m_odoY = -1;//m_swerve.getOdometry().getY();
-    m_distance = Math.hypot(m_odoX, m_odoY);//Math.sqrt(Math.pow(m_odoX, 2) + Math.pow(m_odoY, 2));
 
     m_gyroAngle = m_swerve.getRegGyro().getDegrees();
 

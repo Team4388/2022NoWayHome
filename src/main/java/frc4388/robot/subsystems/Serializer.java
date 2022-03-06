@@ -1,8 +1,6 @@
 package frc4388.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc4388.robot.Constants;
 import frc4388.robot.Constants.SerializerConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import com.revrobotics.CANSparkMax;

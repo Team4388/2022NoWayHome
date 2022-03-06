@@ -6,9 +6,7 @@ package frc4388.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc4388.robot.Constants.StorageConstants;
 
 public class Storage extends SubsystemBase {
   public CANSparkMax m_storageMotor;

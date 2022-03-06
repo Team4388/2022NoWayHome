@@ -4,15 +4,13 @@
 
 package frc4388.robot.commands;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.opencv.core.Point;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc4388.robot.Constants.ShooterConstants;
+
 import frc4388.robot.Constants.VisionConstants;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
