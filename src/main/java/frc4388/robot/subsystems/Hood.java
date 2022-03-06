@@ -27,10 +27,10 @@ public class Hood extends SubsystemBase {
   public CANSparkMax m_angleAdjusterMotor;
   public SparkMaxLimitSwitch m_hoodUpLimitSwitch;
   public SparkMaxLimitSwitch m_hoodDownLimitSwitch;
-  public static Gains m_angleAdjusterGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
-  public RelativeEncoder m_angleEncoder = m_angleAdjusterMotor.getEncoder();
+  public static Gains m_angleAdjusterGains;
+  public RelativeEncoder m_angleEncoder;
 
-  public SparkMaxPIDController m_angleAdjusterPIDController = m_angleAdjusterMotor.getPIDController();
+  public SparkMaxPIDController m_angleAdjusterPIDController;
   
   
   public boolean m_isHoodReady = false;
@@ -42,6 +42,9 @@ public double m_fireAngle;
   public Hood(CANSparkMax angleAdjusterMotor) {
 
     m_angleAdjusterMotor = angleAdjusterMotor;
+    m_angleEncoder = m_angleAdjusterMotor.getEncoder();
+    m_angleAdjusterPIDController = m_angleAdjusterMotor.getPIDController();
+    m_angleAdjusterGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
 
     m_hoodUpLimitSwitch = m_angleAdjusterMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_hoodDownLimitSwitch = m_angleAdjusterMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
