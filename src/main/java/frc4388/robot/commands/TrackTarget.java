@@ -85,29 +85,6 @@ public class TrackTarget extends CommandBase {
     //m_turret.runshooterRotatePID(m_targetAngle);
   }
 
- /* public static double angleToCenter(double x, double y, double gyro) {
-    double angle = ((Math.atan2(y, x) * (180./Math.PI) - gyro) + 180. + 360.) % 360.; // Finds the angle between the gyro of the robot and the target (positive x is gyro 0)
-    return angle;
-  }*/
-
-  /**
-   * Checks if in hardware deadzone (due to mechanical limitations).
-   * @param angle Angle to check.
-   * @return True if in hardware deadzone.
-   */
-  public static boolean isHardwareDeadzone(double angle) {
-    return ((ShooterConstants.HARD_DEADZONE_LEFT > angle) || (angle > ShooterConstants.HARD_DEADZONE_RIGHT));
-  }
-
-  /**
-   * Checks if in digital deadzone (due to climber).
-   * @param angle Angle to check.
-   * @return True if in digital deadzone.
-   */
-  public static boolean isDigitalDeadzone(double angle) {
-    return ((ShooterConstants.DIG_DEADZONE_LEFT < angle) && (angle < ShooterConstants.DIG_DEADZONE_RIGHT));
-  }
-
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {

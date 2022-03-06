@@ -185,34 +185,6 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   /**
-   * Gets the distance between two given poses.
-   * 
-   * @param p1 The first pose.
-   * @param p2 The second pose.
-   * @return Absolute distance between p1 and p2.
-   */
-  public double distBtwPoses(Pose2d p1, Pose2d p2) {
-    return Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
-  }
-
-  /**
-   * Returns a scalar from your distance to the hub to your target distance.
-   * 
-   * @param target_dist The target distance.
-   * @return A scalar that multiplies your distance from the hub to get your
-   *         target distance.
-   */
-  public Pose2d poseGivenDist(double target_dist) {
-    Pose2d p1 = m_poseEstimator.getEstimatedPosition();
-    Pose2d p2 = SwerveDriveConstants.HUB_POSE;
-
-    double scalar = target_dist / distBtwPoses(p1, p2);
-    Pose2d new_pose = new Pose2d(p1.getX() * scalar, p1.getY() * scalar, p1.getRotation());
-
-    return new_pose;
-  }
-
-  /**
    * Gets the current pose of the robot.
    * 
    * @return Robot's current pose.
