@@ -131,7 +131,7 @@ public final class Constants {
     /* TODO: Update motor IDS */
     public static final int SHOULDER_ID = 1;
     public static final int ELBOW_ID = 3;
-    public static final int GYRO_ID = -1;
+    public static final int GYRO_ID = 14;
   
     // TODO Update this stuff too
     public static final double UPPER_ARM_LENGTH = 26; // Units should be in cm
