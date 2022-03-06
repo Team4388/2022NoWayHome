@@ -51,6 +51,7 @@
       "/LiveWindow/Ungrouped/Talon FX [8]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX [9]": "Motor Controller",
       "/LiveWindow/Vision": "Subsystem",
+      "/LiveWindow/VisionOdometry": "Subsystem",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/JVM Memory": "Command",
       "/SmartDashboard/Scheduler": "Scheduler",

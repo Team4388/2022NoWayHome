@@ -206,11 +206,27 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final double TURN_P_VALUE = 0.8;
-    public static final double X_ANGLE_ERROR = 0.5;
-    public static final double GRAV = 385.83;
-    public static final double TARGET_HEIGHT = 67.5;
-    public static final double FOV = 29.8; // Field of view limelight
+    // public static final double TURN_P_VALUE = 0.8;
+    // public static final double X_ANGLE_ERROR = 0.5;
+    // public static final double GRAV = 385.83;
+    // public static final double TARGET_HEIGHT = 67.5;
+    // public static final double FOV = 29.8; //Field of view limelight
+
     public static final double LIME_ANGLE = 24.7;
+
+    public static final String NAME = "photonCamera";
+
+    public static final double TARGET_HEIGHT = 8*12 + 8; // Convert to metric
+    public static final double TARGET_RADIUS = 4*12; // Convert to metric
+    public static final double H_FOV = 59.6;
+    public static final double V_FOV = 49.7;
+    public static final double LIME_VIXELS = 960;
+    public static final double LIME_HIXELS = 720;
+    public static final double TURRET_kP = 0.1;
+
+    public static final double RANGE = 10;
+
+    public static final double LIMELIGHT_RADIUS = 1.d;
+    public static final double SHOOTER_CORRECTION = 1.d;
   }
 }
