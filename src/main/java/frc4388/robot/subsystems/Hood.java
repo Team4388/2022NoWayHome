@@ -24,7 +24,7 @@ import frc4388.utility.Gains;
 public class Hood extends SubsystemBase {
   public BoomBoom m_shooterSubsystem;
   
-  public CANSparkMax m_angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
+  public CANSparkMax m_angleAdjusterMotor;
   public SparkMaxLimitSwitch m_hoodUpLimitSwitch;
   public SparkMaxLimitSwitch m_hoodDownLimitSwitch;
   public static Gains m_angleAdjusterGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
@@ -39,8 +39,9 @@ public double m_fireAngle;
   
 
   /** Creates a new Hood. */
-  public Hood() {
-     m_angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
+  public Hood(CANSparkMax angleAdjusterMotor) {
+
+    m_angleAdjusterMotor = angleAdjusterMotor;
 
     m_hoodUpLimitSwitch = m_angleAdjusterMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_hoodDownLimitSwitch = m_angleAdjusterMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);

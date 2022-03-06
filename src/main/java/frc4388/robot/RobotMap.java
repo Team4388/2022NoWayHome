@@ -13,6 +13,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -32,17 +33,15 @@ import frc4388.robot.subsystems.SwerveModule;
 public class RobotMap {
 
   public RobotMap() {
-    // configureLEDMotorControllers();
+    configureLEDMotorControllers();
     configureSwerveMotorControllers();
-    // configureShooterMotorControllers();
+    configureShooterMotorControllers();
   }
 
   /* LED Subsystem */
   public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
 
-  void configureLEDMotorControllers() {
-
-  }
+  void configureLEDMotorControllers() {}
 
   /* Swerve Subsystem */
 
@@ -167,7 +166,11 @@ public class RobotMap {
   public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
   public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
 
+  // turret subsystem
   public final CANSparkMax shooterTurret = new CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
+
+  // hood subsystem
+  public CANSparkMax angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
 
   // Create motor CANSparkMax
   void configureShooterMotorControllers() {
@@ -209,6 +212,9 @@ public class RobotMap {
     // SupplyCurrentLimitConfiguration(true, 12, 13, 0.4)); // TODO: dont pull
     // numbers out of our ass anymore
 
+    // hood subsystem
+    angleAdjusterMotor.restoreFactoryDefaults();
+    angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
   }
 
 

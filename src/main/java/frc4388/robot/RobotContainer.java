@@ -96,11 +96,11 @@ public class RobotContainer {
   private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  private final Hood m_robotHood = new Hood();
+  private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   private final Vision m_robotVision = new Vision(m_robotTurret, m_robotBoomBoom);
-
+  
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);

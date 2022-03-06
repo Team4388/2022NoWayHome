@@ -7,6 +7,7 @@ package frc4388.robot.commands;
 import edu.wpi.first.hal.simulation.SimulatorJNI;
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj.simulation.SimHooks;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.subsystems.BoomBoom;
@@ -44,7 +45,8 @@ public class Shoot extends CommandBase {
   public double proportional, integral, derivative;
   public double time;
   public double output;
-  public double tolerance = 5.0;
+  public double tolerance;
+  public boolean isAimedInTolerance;
 
   // testing
   public DummySensor dummy = new DummySensor(0);
@@ -75,6 +77,9 @@ public class Shoot extends CommandBase {
     derivative = 0;
     time = 0.02;
 
+    tolerance = 5.0;
+    isAimedInTolerance = false;
+
     DummySensor.resetAll();
   }
 
@@ -83,6 +88,8 @@ public class Shoot extends CommandBase {
    */
   public void updateError() {
     error = (m_targetAngle - m_turret.getBoomBoomAngleDegrees() + 360) % 360;
+    isAimedInTolerance = (Math.abs(error) <= tolerance);
+    SmartDashboard.putBoolean("isAimed?", isAimedInTolerance);
   }
 
   // Called when the command is initially scheduled.
@@ -154,7 +161,6 @@ public class Shoot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    updateError();
-    return Math.abs(error) <= tolerance;
+    return false;
   }
 }
