@@ -33,15 +33,15 @@ import frc4388.robot.subsystems.SwerveModule;
 public class RobotMap {
 
   public RobotMap() {
-    configureLEDMotorControllers();
+    // configureLEDMotorControllers();
     configureSwerveMotorControllers();
-    configureShooterMotorControllers();
+    // configureShooterMotorControllers();
   }
 
   /* LED Subsystem */
-  public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
+//   public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
 
-  void configureLEDMotorControllers() {}
+//   void configureLEDMotorControllers() {}
 
   /* Swerve Subsystem */
 
@@ -163,7 +163,7 @@ public class RobotMap {
 
   // Shooter Config
   /* Boom Boom Subsystem */
-  public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
+  /*public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
   public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
 
   // turret subsystem
@@ -202,7 +202,7 @@ public class RobotMap {
     shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+        ShooterConstants.SHOOTER_TIMEOUT_MS);*/
 
     // /* Turret Subsytem */
     // shooterFalconRight.configStatorCurrentLimit(new
@@ -213,9 +213,9 @@ public class RobotMap {
     // numbers out of our ass anymore
 
     // hood subsystem
-    angleAdjusterMotor.restoreFactoryDefaults();
-    angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
-  }
+    // angleAdjusterMotor.restoreFactoryDefaults();
+    // angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
+//   }
 
 
        
@@ -229,7 +229,7 @@ public class RobotMap {
   public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
 
   /* Storage Subsystem */
-  public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
-  public final DigitalInput beamShooter = new DigitalInput(StorageConstants.BEAM_SENSOR_SHOOTER);
-  public final DigitalInput beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
+//   public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
+//   public final DigitalInput beamShooter = new DigitalInput(StorageConstants.BEAM_SENSOR_SHOOTER);
+//   public final DigitalInput beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
 }

@@ -93,12 +93,12 @@ public class RobotContainer {
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
   private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
-  private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
-  private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
-  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
+  // private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
+  // private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  // private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  // private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
+  // private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  // private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -127,32 +127,32 @@ public class RobotContainer {
     /* Default Commands */
 
       // Swerve Drive with Input
-    m_robotSwerveDrive.setDefaultCommand(
+    /*m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
             getDriverController().getLeftX(),
             getDriverController().getLeftY(),
             getDriverController().getRightX(),
             getDriverController().getRightY(),
             true),
-            m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
+            m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));*/
       // Intake with Triggers
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
-            getOperatorController().getLeftTriggerAxis(), 
-            getOperatorController().getRightTriggerAxis()),
+            getDriverController().getLeftTriggerAxis(), 
+            getDriverController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
       // Storage Management
-    m_robotStorage.setDefaultCommand(
+    /*m_robotStorage.setDefaultCommand(
         new RunCommand(() -> m_robotStorage.manageStorage(), 
-        m_robotStorage).withName("Storage manageStorage defaultCommand"));
+        m_robotStorage).withName("Storage manageStorage defaultCommand"));*/
       // Serializer Management
     m_robotSerializer.setDefaultCommand(
-        new RunCommand(() -> m_robotSerializer.setSerializerStateWithBeam(), 
+        new RunCommand(() -> m_robotSerializer.setSerializer(0.25),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
       // Turret Manual
-    m_robotTurret.setDefaultCommand(
+    /*m_robotTurret.setDefaultCommand(
         new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));*/
 
     // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
@@ -187,6 +187,14 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
+    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
+        .whileHeld( new RunCommand(() -> m_robotSerializer.setSerializer(0.25)))
+        .whenReleased(new RunCommand(() -> m_robotSerializer.setSerializer(0.0)));
+    new JoystickButton(getDriverController(), XboxController.Button.kB.value)
+        .whileHeld(new RunCommand(() -> m_robotSerializer.setSerializer(-0.25)))
+        .whenReleased(new RunCommand(() -> m_robotSerializer.setSerializer(0.0)));
+  } 
+
     // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
     //     .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
 
@@ -199,25 +207,25 @@ public class RobotContainer {
     /* Operator Buttons */
 
       // X > Extend Intake
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    /*new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whenPressed(() -> m_robotIntake.runExtender(true));
       // Y > Retract Intake
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(() -> m_robotIntake.runExtender(false));
+        .whenPressed(() -> m_robotIntake.runExtender(false));*/
       // Right Bumper > Storage In
-    new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
-        .whenPressed(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED))
-        .whenReleased(() -> m_robotStorage.runStorage(0.0));
+    /*new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
+        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
       // Left Bumper > Storage Out (note: neccessary?)
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-        .whenPressed(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED))
-        .whenReleased(() -> m_robotStorage.runStorage(0.0));
+        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
       // A > Shoot with Odo
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));
       // B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
+        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));/*
   }
 
   /**

@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase {
    * @param rightTrigger Right Trigger to Run +
    */
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
-    m_intakeMotor.set(rightTrigger - leftTrigger);
+    m_intakeMotor.set((rightTrigger - leftTrigger) * 0.25);
   }
   /**
    * Runs The Extender
