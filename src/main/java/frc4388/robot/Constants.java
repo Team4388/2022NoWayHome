@@ -181,7 +181,7 @@ public final class Constants {
     public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
-    public static final float TURRET_FORWARD_LIMIT = 50; // TODO: find
+    public static final float TURRET_FORWARD_LIMIT = 130; // TODO: find
     public static final float TURRET_REVERSE_LIMIT = 0; // TODO: find
 
     // deadzones
