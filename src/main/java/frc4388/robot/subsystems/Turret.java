@@ -57,8 +57,8 @@ public class Turret extends SubsystemBase {
     SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
     SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
 
-    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.TURRET_FORWARD_LIMIT);
-    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.TURRET_REVERSE_LIMIT);
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.TURRET_FORWARD_LIMIT);
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.TURRET_REVERSE_LIMIT);
     setTurretSoftLimits(true);
 
     m_boomBoomRotateMotor.setInverted(false);

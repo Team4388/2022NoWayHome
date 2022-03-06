@@ -120,14 +120,7 @@ public class Shoot extends CommandBase {
     m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
 
     // deadzone processing
-    if (AimToCenter.isHardwareDeadzone(m_targetAngle)) {
-      m_targetAngle = m_targetAngle + 20;
-    }
-
-    if (AimToCenter.isDigitalDeadzone(m_targetAngle)) {
-      // this should rotate the entire swerve drive by 20 degrees, so shoot can now proceed like normal. idk if this will work
-      m_swerve.driveWithInput(0, 0, Math.cos(m_gyroAngle + 20), Math.sin(m_gyroAngle + 20), true);
-    }
+    if (AimToCenter.isDeadzone(m_targetAngle)) {}
     
     // initial error
     updateError();

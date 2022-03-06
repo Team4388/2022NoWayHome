@@ -61,21 +61,12 @@ public class AimToCenter extends CommandBase {
   }
 
   /**
-   * Checks if in hardware deadzone (due to mechanical limitations).
+   * Checks if in deadzone.
    * @param angle Angle to check.
-   * @return True if in hardware deadzone.
+   * @return True if in deadzone.
    */
-  public static boolean isHardwareDeadzone(double angle) {
-    return ((ShooterConstants.HARD_DEADZONE_LEFT > angle) || (angle > ShooterConstants.HARD_DEADZONE_RIGHT));
-  }
-
-  /**
-   * Checks if in digital deadzone (due to climber).
-   * @param angle Angle to check.
-   * @return True if in digital deadzone.
-   */
-  public static boolean isDigitalDeadzone(double angle) {
-    return ((ShooterConstants.DIG_DEADZONE_LEFT < angle) && (angle < ShooterConstants.DIG_DEADZONE_RIGHT));
+  public static boolean isDeadzone(double angle) {
+    return !((ShooterConstants.TURRET_REVERSE_LIMIT < angle) && (angle < ShooterConstants.TURRET_FORWARD_LIMIT));
   }
 
   // Called once the command ends or is interrupted.
