@@ -74,7 +74,10 @@ public class Claws extends SubsystemBase {
 
     m_open = open;
   }
-
+  /**
+   * Sets the state of both hooks
+   * @param open The state of the hooks
+   */
   public void setOpen(boolean open) {
     if(open) {
       // m_leftClaw.getEncoder().setPosition(ClawsConstants.OPEN_POSITION + m_leftOffset);

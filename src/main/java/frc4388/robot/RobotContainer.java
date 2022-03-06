@@ -146,6 +146,7 @@ public class RobotContainer {
             true),
             m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
+
     // continually sends updates to the Blinkin LED controller to keep the lights on
 //      m_robotLED
 //      .setDefaultCommand(new RunCommand(m_robotLED::updateLED,
@@ -193,13 +194,6 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
       .whenPressed(new RunClaw(m_claws, ClawType.LEFT, false))
       .whenPressed(new RunClaw(m_claws, ClawType.RIGHT, false));
-
-    // new JoystickButton(getOperatorJoystick(), XboxController.Y_BUTTON)
-    //     .whenPressed(() -> m_claws.setSpeed(0.5))
-    //     .whenReleased(() -> m_claws.setSpeed(0.0));
-    // new JoystickButton(getOperatorJoystick(), XboxController.X_BUTTON)
-    //     .whenPressed(() -> m_claws.setSpeed(-0.5))
-    //     .whenReleased(() -> m_claws.setSpeed(0.0));
 
     /*
      * new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
