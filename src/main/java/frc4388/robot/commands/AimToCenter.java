@@ -66,7 +66,10 @@ public class AimToCenter extends CommandBase {
    * @return True if in deadzone.
    */
   public static boolean isDeadzone(double angle) {
-    return !((ShooterConstants.TURRET_REVERSE_LIMIT < angle) && (angle < ShooterConstants.TURRET_FORWARD_LIMIT));
+    if (angle == Double.NaN) {
+      return false;
+    }
+    return !((ShooterConstants.TURRET_REVERSE_LIMIT <= angle) && (angle <= ShooterConstants.TURRET_FORWARD_LIMIT));
   }
 
   // Called once the command ends or is interrupted.

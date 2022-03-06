@@ -14,40 +14,40 @@ public class AimToCenterTest {
         boolean output;
 
             //20 deg
-        output = AimToCenter.isHardwareDeadzone(20.);
+        output = AimToCenter.isDeadzone(20.);
         Assert.assertFalse(output);
 
             //-10 deg
-        output = AimToCenter.isHardwareDeadzone(-10.);
+        output = AimToCenter.isDeadzone(-10.);
         Assert.assertTrue(output);
         
             //-1 deg
-        output = AimToCenter.isHardwareDeadzone(-1.);
+        output = AimToCenter.isDeadzone(-1.);
         Assert.assertTrue(output);
 
             //341 deg
-        output = AimToCenter.isHardwareDeadzone(341.);
+        output = AimToCenter.isDeadzone(341.);
         Assert.assertTrue(output);
 
             //340 deg
-        output = AimToCenter.isHardwareDeadzone(340.);
-        Assert.assertFalse(output);
+        output = AimToCenter.isDeadzone(340.);
+        Assert.assertTrue(output);
         
             //0 deg
-        output = AimToCenter.isHardwareDeadzone(0.);
+        output = AimToCenter.isDeadzone(0.);
         Assert.assertFalse(output);
         
             //200 deg
-        output = AimToCenter.isHardwareDeadzone(200.);
-        Assert.assertFalse(output);
+        output = AimToCenter.isDeadzone(200.);
+        Assert.assertTrue(output);
 
             //2000000 deg
-        output = AimToCenter.isHardwareDeadzone(2000000.);
+        output = AimToCenter.isDeadzone(2000000.);
         Assert.assertTrue(output);
 
             //NaN deg
-        output = AimToCenter.isHardwareDeadzone(Double.NaN);
-        Assert.assertFalse(output);
+        // output = AimToCenter.isDeadzone(Double.NaN);
+        // Assert.assertFalse(output);
     }
 
     @Test 
