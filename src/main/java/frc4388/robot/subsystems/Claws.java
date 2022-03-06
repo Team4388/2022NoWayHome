@@ -56,18 +56,23 @@ public class Claws extends SubsystemBase {
    * @param open Whether to open or close the claw.
    */
   public void runClaw(ClawType which, boolean open) {
+    
+    int direction = open ? 1 : -1;
+
     if (which == Claws.ClawType.LEFT) {
 
       // double setPos = open ? ClawsConstants.OPEN_POSITION + m_leftOffset : ClawsConstants.CLOSE_POSITION + m_leftOffset;
       // m_leftClaw.getEncoder().setPosition(setPos);
-      m_leftClaw.set(0.1);
+      m_leftClaw.set(direction * 0.1);
 
     } else if (which == Claws.ClawType.RIGHT) {
 
       // double setPos = open ? ClawsConstants.OPEN_POSITION + m_rightOffset : ClawsConstants.CLOSE_POSITION + m_rightOffset;
       // m_rightClaw.getEncoder().setPosition(setPos);
-      m_rightClaw.set(0.1);
+      m_rightClaw.set(direction * 0.1);
     }
+
+    m_open = open;
   }
 
   public void setOpen(boolean open) {
