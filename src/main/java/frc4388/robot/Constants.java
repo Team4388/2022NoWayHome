@@ -135,6 +135,7 @@ public final class Constants {
     public static final int STORAGE_CAN_ID = 17;
     public static final int BEAM_SENSOR_SHOOTER = 28; //TODO
     public static final int BEAM_SENSOR_INTAKE = 29; //TODO
+    public static final double STORAGE_SPEED = 0.3;
   }
   public static final class LEDConstants {
     public static final int LED_SPARK_ID = 0;

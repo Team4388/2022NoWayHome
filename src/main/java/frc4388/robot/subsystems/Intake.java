@@ -20,15 +20,17 @@ public class Intake extends SubsystemBase {
 
   private WPI_TalonFX m_intakeMotor;
   private CANSparkMax m_extenderMotor;
+  private Serializer m_serializer;
   private SparkMaxLimitSwitch m_inLimit;
   private SparkMaxLimitSwitch m_outLimit;
 
   public boolean toggle;
 
   /** Creates a new Intake. */
-  public Intake(WPI_TalonFX intakeMotor, CANSparkMax extenderMotor) {
+  public Intake(WPI_TalonFX intakeMotor, CANSparkMax extenderMotor, Serializer serializer) {
     m_intakeMotor = intakeMotor;
     m_extenderMotor = extenderMotor; 
+    m_serializer = serializer;
 
     m_extenderMotor.restoreFactoryDefaults();
 
@@ -59,8 +61,14 @@ public class Intake extends SubsystemBase {
    * @param extended Wether the Extender Is Extended
    */
   public void runExtender(boolean extended) { //TODO: Do not bring intake in if there is a ball in the extender (check if intake being in brakes the beam brake?)
-    double extenderMotorSpeed = extended ? 0.25d : 0.d;
+    if (!m_serializer.getBeam() && !extended) return;
+    double extenderMotorSpeed = extended ? 0.25d : -0.25d;
     m_extenderMotor.set(extenderMotorSpeed);
+  }
+
+  public void runExtender(double input) {
+    if (!m_serializer.getBeam() && input < 0.) return;
+    m_extenderMotor.set(input);
   }
   /**
    * Toggles The Extender
@@ -69,5 +77,4 @@ public class Intake extends SubsystemBase {
     toggle = !toggle;
     runExtender(toggle);
   }
-  //Test
 }

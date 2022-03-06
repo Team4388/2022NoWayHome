@@ -26,9 +26,8 @@ public class Storage extends SubsystemBase {
    * If Else, Stop Running Storage
    */
   public void manageStorage() {
-    if (getBeamIntake()) { //Maybe needs to be shooter
-      runStorage(1.d);
-    } else { runStorage(0.d); }
+    if (getBeamIntake()) runStorage(0.d);
+    else runStorage(1.d);
   }
   
   /**
@@ -43,7 +42,7 @@ public class Storage extends SubsystemBase {
    * @return The State Of The Beam on the Shooter
    */
   public boolean getBeamShooter(){
-    return m_beamShooter.get();
+    return m_beamShooter.get();//True if open
   }
 
   /**
@@ -51,7 +50,7 @@ public class Storage extends SubsystemBase {
    * @return The Beam State Of The Intake
    */
   public boolean getBeamIntake(){
-    return m_beamIntake.get();
+    return m_beamIntake.get(); //True if open
   }
   
 
