@@ -22,8 +22,8 @@ import frc4388.robot.Constants;
 import frc4388.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
-  private WPI_TalonFX m_shoulder;
-  private WPI_TalonFX m_elbow;
+  public WPI_TalonFX m_shoulder;
+  public WPI_TalonFX m_elbow;
 
   private double m_shoulderOffset;
   private double m_elbowOffset;
@@ -33,8 +33,6 @@ public class Climber extends SubsystemBase {
   private double m_robotAngle;
   private double m_robotPosition;
   
-
-
   private double[] m_position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
   
   public Climber(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_PigeonIMU gyro, boolean groundRelative) {
@@ -142,6 +140,12 @@ public class Climber extends SubsystemBase {
     angles[1] = elbowAngle;
     return angles;
   }
+
+public void setMotors(double shoulderOutput, double elbowOutput) {
+  m_shoulder.set(shoulderOutput);
+  m_elbow.set(elbowOutput);
+}
+
 /* Rotation Matrix
  R = [cos(0) -sin(0) \n sin(0) cos(0)] 
  Rv = [cos(0) -sin(0) \n sin(0) cos(0)] = [x \n y] = [xcos(0) - ysin(0), xsin(0) + ycos(0)]

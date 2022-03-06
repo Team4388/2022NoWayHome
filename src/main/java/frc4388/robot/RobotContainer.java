@@ -137,8 +137,13 @@ public class RobotContainer {
 
     // moves climber in xy space with two-axis input from the operator controller
     m_robotClimber.setDefaultCommand(
-        new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftX(),
-            getOperatorController().getLeftY()), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
+      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX(), getOperatorController().getLeftY()), 
+      m_robotClimber));
+
+    // IK command
+    // m_robotClimber.setDefaultCommand(
+    //     new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftX(),
+    //         getOperatorController().getLeftY()), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
     
     // Turret default command
     //m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
