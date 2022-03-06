@@ -165,7 +165,7 @@ public class Climber extends SubsystemBase {
       {0, 0, 1}
     };
 
-    if (m_robotPosition < m_robotAngle ||  m_robotPosition > m_robotAngle){
+    if (m_robotPosition != m_robotAngle){
       setRobotAngle(ClimberConstants.ROBOT_ANGLE_ID, rotMax, m_robotPosition);
     }
 
