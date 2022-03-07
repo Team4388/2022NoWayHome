@@ -96,9 +96,9 @@ public class RobotContainer {
   // private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
   // private final LED m_robotLED = new LED(m_robotMap.LEDController);
   private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
-  public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
+  private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
+  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  // private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);*/
   
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -150,10 +150,11 @@ public class RobotContainer {
         new RunCommand(() -> m_robotSerializer.setSerializer(0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
       // Turret Manual
-    /*m_robotTurret.setDefaultCommand(
-        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));*/
-
+    m_robotTurret.setDefaultCommand(
+        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX() * 0.1), 
+        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+    m_robotHood.setDefaultCommand(
+       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY() * 0.1), m_robotHood));
     // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
@@ -209,18 +210,20 @@ public class RobotContainer {
     /* Operator Buttons */
 
       // X > Extend Intake
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    /*new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whenPressed(() -> m_robotIntake.runExtender(true));
       // Y > Retract Intake
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(() -> m_robotIntake.runExtender(false));
+        .whenPressed(() -> m_robotIntake.runExtender(false));*/
     
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
         .whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));    
-        
+      
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+        .whenPressed(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.05)));
       // Right Bumper > Storage In
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))

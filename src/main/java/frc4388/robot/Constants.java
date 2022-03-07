@@ -182,9 +182,6 @@ public final class Constants {
     public static final double TURRET_FORWARD_LIMIT = 150; // TODO: find
     public static final double TURRET_REVERSE_LIMIT = 0; // TODO: find
 
-    public static final int SHOOTER_FALCON_BALLER_ID = 0; // TODO: find
-    public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; // "//
-
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(0, 0, 0, 0, 0, 0); // TODO: tune values
 
     /* Hood Constants */
