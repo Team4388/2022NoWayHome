@@ -25,8 +25,7 @@ public class DesmosServer extends Thread {
 
     private static boolean running = false;
     
-    public static boolean debug = false;
-    
+    private ServerSocket serverSocket;
     private int activePort;
     
     /** 
@@ -51,7 +50,7 @@ public class DesmosServer extends Thread {
     public void run() {
         try {
             runServer(activePort);
-        } catch(Exception err) {
+        } catch(IOException err) {
             err.printStackTrace();
         }
     }
@@ -65,7 +64,7 @@ public class DesmosServer extends Thread {
     public void runServer(int port) throws IOException {
     	System.out.println("Initializing DesmosServer on port " + port + "...");
     	
-        ServerSocket serverSocket = new ServerSocket(port);
+        serverSocket = new ServerSocket(port);
         running = true;
         
         System.out.println("DesmosServer is active!");
@@ -87,10 +86,6 @@ public class DesmosServer extends Thread {
         BufferedReader bufferedReader = new BufferedReader(clientStream);
 
         ArrayList<String> headers = new ArrayList<>();
-        
-        if(debug) {
-        	System.out.println("debug");
-        }
 
         String header;
         while((header = bufferedReader.readLine()).length() != 0) {
@@ -189,14 +184,32 @@ public class DesmosServer extends Thread {
     
     // ---------------------------------------------------------------------
 
+    /**
+     * Adds integer to desmos queue
+     * 
+     * @param name Name of desmos variable
+     * @param value Integer value
+     * */
     public static void putInteger(String name, Integer value) {        
-        desmosQueue.put(name, new String[] {"integer", value.toString()});
+        desmosQueue.put(name, new String[] {"number", value.toString()});
     }
 
+    /**
+     * Adds double to desmos queue
+     * 
+     * @param name Name of desmos variable
+     * @param value Double value
+     * */
     public static void putDouble(String name, Double value) {
-        desmosQueue.put(name, new String[] {"double", value.toString()});
+        desmosQueue.put(name, new String[] {"number", value.toString()});
     }
 
+    /**
+     * Adds point to desmos queue
+     * 
+     * @param name Name of desmos variable
+     * @param value Point value
+     * */
     public static void putPoint(String name, Point point) {
         desmosQueue.put(name, new String[] {"point", "(" + point.x + "," + point.y + ")"});
     }
@@ -205,6 +218,14 @@ public class DesmosServer extends Thread {
     	desmosQueue.put(name, new String[] {"array", Arrays.toString(arr).replace(" ", "")});
     }
 
+    /**
+     * Adds table to desmos queue
+     * 
+     * @param name ID of table
+     * @param id Column ID
+     * @param column Double array containing column values
+     * @param table Repeat id and column in sequence
+     * */
     public static void putTable(String name, Object... table) {
         String tableStr = "";
 
@@ -226,35 +247,60 @@ public class DesmosServer extends Thread {
 
     // ---------------------------------------------------------------------
 
+    /**
+     * Reads desmos integer
+     * 
+     * @param name Desmos variable name
+     * @return Numeric value, if variable is an expression it will be evaluated
+     * <p>if variable is a double it will be cast to int
+     * */
     public static int readInteger(String name) {
-        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("integer"))
+        if(!readVariables.containsKey(name) || !readVariables.get(name)[0].equals("number"))
             return 0;
         
-        return Integer.parseInt(readVariables.get(name)[1]);
+        return (int) Double.parseDouble(readVariables.get(name)[1]);
     }
 
+    /**
+     * Reads desmos double
+     * 
+     * @param name Desmos variable name
+     * @return Numeric value, if variable is an expression it will be evaluated
+     * */
     public static double readDouble(String name) {
-        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("double"))
+        if(!readVariables.containsKey(name) || !readVariables.get(name)[0].equals("number"))
             return 0;
         
         return Double.parseDouble(readVariables.get(name)[1]);
     }
 
+    /**
+     * Reads desmos point
+     * 
+     * @param name Desmos variable name
+     * @return Point, if variable contains expressions they will be evaluated
+     * */
     public static Point readPoint(String name) {
         Point point = new Point();
 
-        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("point"))
+        if(!readVariables.containsKey(name) || !readVariables.get(name)[0].equals("point"))
             return point;
 
         String pointStr = readVariables.get(name)[1];
         point.x = Double.parseDouble(pointStr.split(",")[0]);
-        point.x = Double.parseDouble(pointStr.split(",")[1]);
+        point.y = Double.parseDouble(pointStr.split(",")[1]);
 
         return point;
     }
     
+    /**
+     * Reads desmos array, including table columns
+     * 
+     * @param name Desmos variable name
+     * @returns Array of numeric values, if array contains expressions they will be evaluated
+     * */
     public static double[] readArray(String name) {
-        if(!readVariables.containsKey(name) && !readVariables.get(name)[0].equals("array"))
+        if(!readVariables.containsKey(name) || !readVariables.get(name)[0].equals("array"))
             return new double[0];
 
     	String[] unparsed = readVariables.get(name)[1].split(",");
