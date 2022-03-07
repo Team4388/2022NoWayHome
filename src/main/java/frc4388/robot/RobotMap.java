@@ -159,7 +159,7 @@ public class RobotMap {
     rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(),
         RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  }
+    }
 
   // Shooter Config
   /* Boom Boom Subsystem */
@@ -204,6 +204,8 @@ public class RobotMap {
     shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
+    shooterFalconRight.follow(shooterFalconLeft);
+
     // /* Turret Subsytem */
     // shooterFalconRight.configStatorCurrentLimit(new
     // StatorCurrentLimitConfiguration(true, 6, 9, 4.2)); // TODO: dont pull numbers
@@ -229,7 +231,7 @@ public class RobotMap {
   public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
 
   /* Storage Subsystem */
-//   public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
+  public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
 //   public final DigitalInput beamShooter = new DigitalInput(StorageConstants.BEAM_SENSOR_SHOOTER);
 //   public final DigitalInput beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
 }

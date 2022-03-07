@@ -19,6 +19,12 @@ public class Storage extends SubsystemBase {
     m_beamShooter = beamShooter;
     m_beamIntake = beamIntake;
   }
+
+  public Storage(CANSparkMax storageMotor) {
+    m_storageMotor = storageMotor;
+    m_beamShooter = null;
+    m_beamIntake = null;
+  }
   /**
    * If The Beam Is Broken, Run Storage
    * If Else, Stop Running Storage
@@ -57,6 +63,6 @@ public class Storage extends SubsystemBase {
    * Every Robot Tick Manage The Storage
    */
   public void periodic() {
-    manageStorage();
+    //manageStorage();
   }
 }

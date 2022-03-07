@@ -152,7 +152,7 @@ public class SwerveDrive extends SubsystemBase {
     for (int i = 0; i < desiredStates.length; i++) {
       SwerveModule module = modules[i];
       SwerveModuleState state = desiredStates[i];
-      module.setDesiredState(state, false);
+      module.setDesiredState(state, ignoreAngles);
     }
     // modules[0].setDesiredState(desiredStates[0], false);
   }

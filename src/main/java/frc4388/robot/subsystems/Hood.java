@@ -46,8 +46,8 @@ public double m_fireAngle;
     m_hoodUpLimitSwitch.enableLimitSwitch(true);
     m_hoodDownLimitSwitch.enableLimitSwitch(true);
 
-    m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.HOOD_FORWARD_LIMIT);
-    m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.HOOD_REVERSE_LIMIT);
+    m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.HOOD_FORWARD_LIMIT);
+    m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.HOOD_REVERSE_LIMIT);
     setHoodSoftLimits(true);
   }
     

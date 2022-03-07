@@ -32,9 +32,8 @@ import frc4388.utility.LEDPatterns;
 public final class Constants {
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 4;
-    public static final double WHEEL_SPEED = 0.1;
-    public static final double WIDTH = 15.25;
-    public static final double HEIGHT = 15.25;
+    public static final double WIDTH = 23.5;
+    public static final double HEIGHT = 25.5;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
     public static final double MAX_SPEED_FEET_PER_SEC = 20; // TODO: redundant constant?
@@ -67,9 +66,9 @@ public final class Constants {
     // 180-2.021484375;//0.0;//134.384765625
 
     public static final double RIGHT_FRONT_ENCODER_OFFSET = (4 * 360. - 152.05 - 180 - 90) % 360.;
-    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.58 + 180 - 90) % 360.;
+    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.58 + 180 - 90 ) % 360.;
     public static final double LEFT_BACK_ENCODER_OFFSET = (4 * 360. - 189.50 - 90) % 360.;
-    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.31 - 180 - 90) % 360.;
+    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.31 - 90 - 180) % 360.;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;
@@ -164,7 +163,7 @@ public final class Constants {
         true, 60, 40, 0.5);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
-    public static final double TURRET_SPEED_MULTIPLIER = 0.1d;
+    public static final double TURRET_SPEED_MULTIPLIER = 0.4d;
     public static final int DEGREES_PER_ROT = 0;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
@@ -179,8 +178,8 @@ public final class Constants {
     public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
     public static final double SHOOTER_TURRET_MIN = -1.0;
-    public static final double TURRET_FORWARD_LIMIT = 150; // TODO: find
-    public static final double TURRET_REVERSE_LIMIT = 0; // TODO: find
+    public static final double TURRET_FORWARD_LIMIT = 61.7; // TODO: find
+    public static final double TURRET_REVERSE_LIMIT = -42.3; // TODO: find
 
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(0, 0, 0, 0, 0, 0); // TODO: tune values
 
@@ -188,8 +187,8 @@ public final class Constants {
     public static final int SHOOTER_ANGLE_ADJUST_ID = 20;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; // TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; // TODO: Find
-    public static final float HOOD_FORWARD_LIMIT = 200; // TODO: find
-    public static final float HOOD_REVERSE_LIMIT = 0; // TODO: find
+    public static final double HOOD_FORWARD_LIMIT = 48.69; // TODO: find
+    public static final double HOOD_REVERSE_LIMIT = -100; // TODO: find
 
   }
 

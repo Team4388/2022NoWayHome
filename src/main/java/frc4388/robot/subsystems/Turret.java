@@ -29,7 +29,7 @@ public class Turret extends SubsystemBase {
   public CANSparkMax m_boomBoomRotateMotor;// = new CANSparkMax(ShooterConstants.SHOOTER_ROTATE_ID,
                                            // MotorType.kBrushless);
   public static Gains m_shooterTGains = ShooterConstants.SHOOTER_TURRET_GAINS;
-  SparkMaxLimitSwitch m_boomBoomRightLimit, m_boomBoomLeftLimit;
+  // SparkMaxLimitSwitch m_boomBoomRightLimit, m_boomBoomLeftLimit;
   public Gyro m_turretGyro;
 
   public double m_targetDistance = 0;
@@ -47,18 +47,18 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
     m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
 
-    m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_boomBoomRightLimit.enableLimitSwitch(true);
-    m_boomBoomLeftLimit.enableLimitSwitch(true);
-    SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
-    SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
+    // m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_boomBoomRightLimit.enableLimitSwitch(true);
+    // m_boomBoomLeftLimit.enableLimitSwitch(true);
+    // SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
+    // SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
 
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.TURRET_FORWARD_LIMIT);
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.TURRET_REVERSE_LIMIT);
     setTurretSoftLimits(true);
 
-    m_boomBoomRotateMotor.setInverted(false);
+    m_boomBoomRotateMotor.setInverted(true);
 
     m_boomBoomRotatePIDController.setP(m_shooterTGains.kP);
     m_boomBoomRotatePIDController.setI(m_shooterTGains.kI);

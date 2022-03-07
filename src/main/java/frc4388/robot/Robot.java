@@ -128,6 +128,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
+    SmartDashboard.putNumber("Turret", m_robotContainer.m_robotMap.shooterTurret.getEncoder().getPosition());
+    SmartDashboard.putNumber("Hood", m_robotContainer.m_robotMap.angleAdjusterMotor.getEncoder().getPosition());
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or
@@ -137,8 +139,8 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     
-    SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
-    SmartDashboard.putNumber("Hood Encoder Position", m_robotContainer.m_robotHood.m_angleEncoder.getPosition());
+    //SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
+    //SmartDashboard.putNumber("Hood Encoder Position", m_robotContainer.m_robotHood.m_angleEncoder.getPosition());
 
     // odo chooser stuff
     addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 

@@ -87,17 +87,17 @@ import frc4388.utility.controller.DeadbandedXboxController;
 public class RobotContainer {
   private static final Logger LOGGER = Logger.getLogger(RobotContainer.class.getSimpleName());
   /* RobotMap */
-  private final RobotMap m_robotMap = new RobotMap();
+  public final RobotMap m_robotMap = new RobotMap();
 
   // Subsystems 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
-  private final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
-  private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
-  // private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
+  public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
+  public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
+  public final Storage m_robotStorage = new Storage(m_robotMap.storageMotor);
   // private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
-  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  public final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
+  public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   // private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);*/
   
   /* Controllers */
@@ -127,31 +127,32 @@ public class RobotContainer {
     /* Default Commands */
 
       // Swerve Drive with Input
-    /*m_robotSwerveDrive.setDefaultCommand(
+    m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
             getDriverController().getLeftX(),
             getDriverController().getLeftY(),
+            //getDriverController().getRightX(),
             getDriverController().getRightX(),
-            getDriverController().getRightY(),
+             getDriverController().getRightY(),
             true),
-            m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));*/
+            m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
       // Intake with Triggers
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
-            getDriverController().getLeftTriggerAxis(), 
-            getDriverController().getRightTriggerAxis()),
+            getOperatorController().getLeftTriggerAxis(), 
+            getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
       // Storage Management
     /*m_robotStorage.setDefaultCommand(
         new RunCommand(() -> m_robotStorage.manageStorage(), 
         m_robotStorage).withName("Storage manageStorage defaultCommand"));*/
       // Serializer Management
-    m_robotSerializer.setDefaultCommand(
-        new RunCommand(() -> m_robotSerializer.setSerializer(0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
-        m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
+    // m_robotSerializer.setDefaultCommand(
+    //     new RunCommand(() -> m_robotSerializer.setSerializer(0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
+    //     m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
       // Turret Manual
     m_robotTurret.setDefaultCommand(
-        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX() * 0.1), 
+        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
         m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
     m_robotHood.setDefaultCommand(
        new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY() * 0.1), m_robotHood));
@@ -190,22 +191,14 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-        .whileHeld( new RunCommand(() -> m_robotSerializer.setSerializer(0.25)))
-        .whenReleased(new RunCommand(() -> m_robotSerializer.setSerializer(0.0)));
-
-    new JoystickButton(getDriverController(), XboxController.Button.kB.value)
-        .whileHeld(new RunCommand(() -> m_robotSerializer.setSerializer(-0.25)))
-        .whenReleased(new RunCommand(() -> m_robotSerializer.setSerializer(0.0)));
-
     // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
     //     .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
 
-    // new JoystickButton(getDriverController(), XboxController.Button.kX.value) //Temp
-    //     .whenPressed(() -> m_robotMap.leftFront.reset())
-    //     .whenPressed(() -> m_robotMap.rightFront.reset())
-    //     .whenPressed(() -> m_robotMap.leftBack.reset())
-    //     .whenPressed(() -> m_robotMap.rightBack.reset());
+    new JoystickButton(getDriverController(), XboxController.Button.kX.value) //Temp
+        .whenPressed(() -> m_robotMap.leftFront.reset())
+        .whenPressed(() -> m_robotMap.rightFront.reset())
+        .whenPressed(() -> m_robotMap.leftBack.reset())
+        .whenPressed(() -> m_robotMap.rightBack.reset());
 
     /* Operator Buttons */
 
@@ -216,14 +209,23 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(() -> m_robotIntake.runExtender(false));*/
     
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
         .whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));    
       
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.05)));
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.3)))
+        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
+        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-0.75), m_robotStorage))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
+        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(0.75), m_robotStorage))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
       // Right Bumper > Storage In
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
