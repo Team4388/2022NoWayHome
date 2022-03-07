@@ -4,9 +4,12 @@
 
 package frc4388.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ShooterConstants;
+import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.SwerveDrive;
@@ -32,13 +35,12 @@ public class Shoot extends CommandBase {
   public double m_targetVel;
   public double m_targetHood;
   public double m_targetAngle;
-  public double m_driveTargetAngle;
+  public Pose2d m_targetPoint;
 
   // pid
   public double error;
   public double prevError;
-  public Gains driveGains = ShooterConstants.SHOOT_DRIVE_GAINS;
-  public Gains turretGains = ShooterConstants.SHOOT_TURRET_GAINS;
+  public Gains gains = ShooterConstants.SHOOT_GAINS;
   public double kP, kI, kD;
   public double proportional, integral, derivative;
   public double time;
@@ -49,6 +51,7 @@ public class Shoot extends CommandBase {
   public int inverted;
 
   // testing
+  public boolean simMode = true;
   public DummySensor driveDummy;
   public DummySensor turretDummy;
 
@@ -69,9 +72,9 @@ public class Shoot extends CommandBase {
     
     addRequirements(m_swerve, m_boomBoom, m_turret, m_hood);
 
-    kP = driveGains.kP;
-    kI = driveGains.kI;
-    kD = driveGains.kD;
+    kP = gains.kP;
+    kI = gains.kI;
+    kD = gains.kD;
 
     proportional = 0;
     integral = 0;
@@ -81,24 +84,30 @@ public class Shoot extends CommandBase {
     tolerance = 5.0;
     isAimedInTolerance = false;
 
-    driveDummy = new DummySensor(180);
-    turretDummy = new DummySensor(180);
+    if (simMode) {
+      driveDummy = new DummySensor(180);
+      turretDummy = new DummySensor(180);
 
-    DummySensor.resetAll();
+      DummySensor.resetAll();
+    }
   }
 
   /**
    * Updates error for custom PID.
    */
   public void updateError() {
+    m_targetPoint = new Pose2d(hTargetDistanceFromHub(), vTargetDistanceFromHub(), SwerveDriveConstants.HUB_POSE.getRotation());
     m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, driveDummy.get());
     // m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
     error = (m_targetAngle - turretDummy.get() + 360) % 360;
     // error = (m_targetAngle - m_turret.getBoomBoomAngleDegrees() + 360) % 360;
     isAimedInTolerance = (Math.abs(error) <= tolerance);
-    SmartDashboard.putBoolean("isAimed?", isAimedInTolerance);
-    System.out.println("Target Angle: " + m_targetAngle);
-    System.out.println("Error: " + error);
+
+    if (simMode) {
+      SmartDashboard.putBoolean("isAimed?", isAimedInTolerance);
+      System.out.println("Target Angle: " + m_targetAngle);
+      System.out.println("Error: " + error);
+    }
   }
 
   // Called when the command is initially scheduled.
@@ -143,24 +152,68 @@ public class Shoot extends CommandBase {
     output = kP * proportional + kI * integral + kD * derivative;
     normOutput = output/360 * inverted;
   }
-  
+  // TODO: horizontal velocity correction
+  public double hTargetDistanceFromHub() {
+    
+    double hVel = m_swerve.getChassisSpeeds()[0];
+    double velBeforeCorrection = m_boomBoom.getVelocity(m_distance);
+    double vDistanceFromHub = m_odoY;
+    double approxTravelTime = vDistanceFromHub / velBeforeCorrection;
+    double hTargetDistanceFromHub = hVel * approxTravelTime;
+    
+    // return hTargetDistanceFromHub;
+    return 0.0; // this is for no velocity correction
+  }
+
+  public Pose2d findTargetPoint() {
+
+    // position vector and radius
+    Translation2d position = new Translation2d(m_odoX, m_odoY);
+    double radius = position.getNorm();
+
+    // equation of circle = x^2 + y^2 = m_distance^2
+    // derivative of circle = 2x + 2y * y' = 0 --> y' = -x/y
+
+    // velocity vector (x, y)
+    Translation2d cartesianVelocity = new Translation2d(m_swerve.getChassisSpeeds()[0], m_swerve.getChassisSpeeds()[1]);
+
+    // unit tangential vector
+    Translation2d tangential = new Translation2d(0, 0);
+    // velocity vector (tangential, radial)
+    Translation2d polarVelocity = new Translation2d(0, 0);
+
+    return SwerveDriveConstants.HUB_POSE;
+  }
+
+  // TODO: vertical velocity correction
+  public double vTargetDistanceFromHub() {
+    return 0.0; // this is for no velocity correction
+  }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("Normalized Output: " + normOutput);
-    // custom pid
+    if (simMode) {
+      System.out.println("Normalized Output: " + normOutput);
+    }
+      // custom pid
     runPID();
-    driveDummy.apply(normOutput);
-    System.out.println("Drive Dummy: " + driveDummy.get());
+
+    if (simMode) {
+      driveDummy.apply(normOutput);
+      System.out.println("Drive Dummy: " + driveDummy.get());
+    }
     m_swerve.driveWithInput(0, 0, normOutput, true); // i have no idea if this is how you rotate the
                                                  // entire swerve drive or its the line below
     // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
     
     m_hood.runAngleAdjustPID(m_targetHood);
     m_boomBoom.runDrumShooterVelocityPID(m_targetVel);
-  
-    turretDummy.apply(normOutput);
-    System.out.println("Turret Dummy: " + turretDummy.get());
+
+    if (simMode) {
+      turretDummy.apply(normOutput);
+      System.out.println("Turret Dummy: " + turretDummy.get());
+    }
     m_turret.m_boomBoomRotateMotor.set(normOutput);
   }
 
@@ -171,6 +224,9 @@ public class Shoot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return isAimedInTolerance;
+    if (simMode) {
+      return isAimedInTolerance;
+    }
+    return false;
   }
 }

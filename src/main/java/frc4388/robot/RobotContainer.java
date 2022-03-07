@@ -95,10 +95,10 @@ public class RobotContainer {
   private final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
   // private final Storage m_robotStorage = new Storage(m_robotMap.storageMotor, m_robotMap.beamIntake, m_robotMap.beamShooter);
   // private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  /*private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  private final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
-  private final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);*/
+  private final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
+  public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
+  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -214,6 +214,13 @@ public class RobotContainer {
       // Y > Retract Intake
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(() -> m_robotIntake.runExtender(false));
+    
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+        .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0)));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));    
+        
       // Right Bumper > Storage In
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
@@ -402,8 +409,8 @@ public class RobotContainer {
     Rotation2d rotation = m_robotSwerveDrive.m_gyro.getRotation2d();
     // FIXME: Chassis speeds are created from joystick inputs and do not reflect
     // actual robot velocity.
-    Translation2d velocity = new Translation2d(m_robotSwerveDrive.chassisSpeeds.vxMetersPerSecond,
-        m_robotSwerveDrive.chassisSpeeds.vyMetersPerSecond);
+    Translation2d velocity = new Translation2d(m_robotSwerveDrive.getChassisSpeeds()[0],
+        m_robotSwerveDrive.getChassisSpeeds()[1]);
     Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false,
         SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
     pathPoints.add(waypoint);

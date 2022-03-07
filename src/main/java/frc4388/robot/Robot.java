@@ -136,6 +136,9 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    
+    SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
+    SmartDashboard.putNumber("Hood Encoder Position", m_robotContainer.m_robotHood.m_angleEncoder.getPosition());
 
     // odo chooser stuff
     addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 

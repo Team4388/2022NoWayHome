@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -63,7 +64,7 @@ public class SwerveDrive extends SubsystemBase {
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
   public Rotation2d rotTarget = new Rotation2d();
-  public ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
+  private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
   private final Field2d m_field = new Field2d();
 
@@ -113,12 +114,12 @@ public class SwerveDrive extends SubsystemBase {
 
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
-    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-                rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-            : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-                rot * SwerveDriveConstants.ROTATION_SPEED));
+    chassisSpeeds = fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
+            rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
+            rot * SwerveDriveConstants.ROTATION_SPEED);
+    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
 
@@ -175,11 +176,18 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Odometry: θ", getOdometry().getRotation().getDegrees());
 
     // chassis speeds
-    // TODO: find the actual max velocity in m/s of the robot in fast mode to have
-    // accurate chassis speeds
+    // TODO: find the actual max velocity in m/s of the robot in fast mode to have accurate chassis speeds
     SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
     SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
+  }
+
+  /**
+   * Gets the current chassis speeds in m/s and rad/s.
+   * @return Current chassis speeds (vx, vy, ω)
+   */
+  public double[] getChassisSpeeds() {
+    return new double[] {chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond};
   }
 
   /**

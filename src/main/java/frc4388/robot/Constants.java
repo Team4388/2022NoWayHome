@@ -115,7 +115,6 @@ public final class Constants {
 
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
-    // TODO: put in real numbers for the hub
     public static final Pose2d HUB_POSE = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
   }
 
@@ -172,8 +171,7 @@ public final class Constants {
     public static final double ENCODER_TICKS_PER_REV = 2048;
 
     // Shoot Command Constants
-    public static final Gains SHOOT_DRIVE_GAINS = new Gains(5.0, 0.0, 0.0, 0.0, 0, 1.0);
-    public static final Gains SHOOT_TURRET_GAINS = new Gains(2.0, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOT_GAINS = new Gains(5.0, 0.0, 0.0, 0.0, 0, 1.0);
 
     /* Turret Constants */
     // ID
@@ -193,7 +191,7 @@ public final class Constants {
     public static final int SHOOTER_ANGLE_ADJUST_ID = 20;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; // TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; // TODO: Find
-    public static final float HOOD_FORWARD_LIMIT = 0; // TODO: find
+    public static final float HOOD_FORWARD_LIMIT = 200; // TODO: find
     public static final float HOOD_REVERSE_LIMIT = 0; // TODO: find
 
   }
@@ -209,8 +207,8 @@ public final class Constants {
 
     public static final String NAME = "photonCamera";
 
-    public static final double TARGET_HEIGHT = 8*12 + 8; // Convert to metric
-    public static final double TARGET_RADIUS = 4*12; // Convert to metric
+    public static final double TARGET_HEIGHT = 8*12 + 8; //TODO: Convert to metric (does this still need to be converted?)
+    public static final double TARGET_RADIUS = 4*12; //TODO: Convert to metric (does this still need to be converted?)
     public static final double H_FOV = 59.6;
     public static final double V_FOV = 49.7;
     public static final double LIME_VIXELS = 960;

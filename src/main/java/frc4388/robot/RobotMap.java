@@ -35,7 +35,7 @@ public class RobotMap {
   public RobotMap() {
     // configureLEDMotorControllers();
     configureSwerveMotorControllers();
-    // configureShooterMotorControllers();
+    configureShooterMotorControllers();
   }
 
   /* LED Subsystem */
@@ -213,8 +213,8 @@ public class RobotMap {
     // numbers out of our ass anymore
 
     // hood subsystem
-    // angleAdjusterMotor.restoreFactoryDefaults();
-    // angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
+    angleAdjusterMotor.restoreFactoryDefaults();
+    angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
   }
 
 
