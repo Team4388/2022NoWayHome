@@ -38,13 +38,13 @@ public class SwerveDrive extends SubsystemBase {
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
   Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight),
-      Units.inchesToMeters(halfWidth));
+      Units.inchesToMeters(-halfWidth));
   Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight),
-      Units.inchesToMeters(-halfWidth));
-  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
       Units.inchesToMeters(halfWidth));
-  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
+  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
       Units.inchesToMeters(-halfWidth));
+  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
+      Units.inchesToMeters(halfWidth));
 
   public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation,
       m_backLeftLocation, m_backRightLocation);
@@ -77,7 +77,7 @@ public class SwerveDrive extends SubsystemBase {
     m_rightBack = rightBack;
     m_gyro = gyro;
 
-    modules = new SwerveModule[] { m_leftFront, m_rightFront, m_leftBack, m_rightBack };
+    modules = new SwerveModule[] {  m_leftFront, m_rightFront, m_leftBack, m_rightBack};
 
     m_poseEstimator = new SwerveDrivePoseEstimator(
         m_gyro.getRotation2d(),
@@ -108,7 +108,7 @@ public class SwerveDrive extends SubsystemBase {
       ignoreAngles = true;
     else
       ignoreAngles = false;
-    Translation2d speed = new Translation2d(-speedX, speedY);
+    Translation2d speed = new Translation2d(-speedY, -speedX);
     double mag = speed.getNorm();
     speed = speed.times(mag * speedAdjust);
 
@@ -116,9 +116,9 @@ public class SwerveDrive extends SubsystemBase {
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
+            rot * SwerveDriveConstants.ROTATION_SPEED * 8, m_gyro.getRotation2d())
         : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED);
+            -rot * SwerveDriveConstants.ROTATION_SPEED * 8);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
@@ -128,17 +128,19 @@ public class SwerveDrive extends SubsystemBase {
     Translation2d speed = new Translation2d(-leftX, leftY);
     speed = speed.times(speed.getNorm() * speedAdjust);
     if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0, 1));
+      rotTarget = new Rotation2d(rightX, -rightY).plus(new Rotation2d(0, 1));
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
     double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED, m_gyro.getRotation2d())
-        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED);
+            rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d(m_gyro.getRotation2d().getDegrees()))
+        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * 8);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
         chassisSpeeds);
     setModuleStates(states);
+    // SmartDashboard.putNumber("rot", rot);
+    // SmartDashboard.putNumber("rotarget", rotTarget.getDegrees());
   }
 
   /**
@@ -149,6 +151,7 @@ public class SwerveDrive extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates,
         Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
+    // int i = 2; {
     for (int i = 0; i < desiredStates.length; i++) {
       SwerveModule module = modules[i];
       SwerveModuleState state = desiredStates[i];

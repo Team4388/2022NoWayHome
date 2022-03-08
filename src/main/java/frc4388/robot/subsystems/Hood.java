@@ -20,8 +20,8 @@ public class Hood extends SubsystemBase {
   public BoomBoom m_shooterSubsystem;
   
   public CANSparkMax m_angleAdjusterMotor;
-  public SparkMaxLimitSwitch m_hoodUpLimitSwitch;
-  public SparkMaxLimitSwitch m_hoodDownLimitSwitch;
+  // public SparkMaxLimitSwitch m_hoodUpLimitSwitch;
+  // public SparkMaxLimitSwitch m_hoodDownLimitSwitch;
   public static Gains m_angleAdjusterGains;
   public RelativeEncoder m_angleEncoder;
 
@@ -41,10 +41,10 @@ public double m_fireAngle;
     m_angleAdjusterPIDController = m_angleAdjusterMotor.getPIDController();
     m_angleAdjusterGains = ShooterConstants.SHOOTER_ANGLE_GAINS;
 
-    m_hoodUpLimitSwitch = m_angleAdjusterMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_hoodDownLimitSwitch = m_angleAdjusterMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_hoodUpLimitSwitch.enableLimitSwitch(true);
-    m_hoodDownLimitSwitch.enableLimitSwitch(true);
+    // m_hoodUpLimitSwitch = m_angleAdjusterMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_hoodDownLimitSwitch = m_angleAdjusterMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_hoodUpLimitSwitch.enableLimitSwitch(true);
+    // m_hoodDownLimitSwitch.enableLimitSwitch(true);
 
     m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.HOOD_FORWARD_LIMIT);
     m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.HOOD_REVERSE_LIMIT);

@@ -20,6 +20,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.CSV;
@@ -31,6 +32,7 @@ public class BoomBoom extends SubsystemBase {
   public WPI_TalonFX m_shooterFalconRight;
   public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
   public static BoomBoom m_boomBoom;
+  double speed2;
 
   double velP;
   double input;
@@ -168,14 +170,15 @@ public class BoomBoom extends SubsystemBase {
   public void passRequiredSubsystem(Hood subsystem0, Turret subsystem1) {
     m_hoodSubsystem = subsystem0;
     m_turretSubsystem = subsystem1;
-  }
+  } 
 
   /**
    * Runs the Drum motor at a given speed
    * @param speed percent output form -1.0 to 1.0
    */
   public void runDrumShooter(double speed) {
-    m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed);
+    m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed + speed2);
+    SmartDashboard.putNumber("BoomBoom percent speed", speed + speed2);
 
   }
 
@@ -198,5 +201,10 @@ public class BoomBoom extends SubsystemBase {
     // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 *
     // feedforward.calculate(targetVel));
     // m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
+  }
+
+  public void increaseSpeed(double amount)
+  {
+    speed2 = speed2 + amount;
   }
 }

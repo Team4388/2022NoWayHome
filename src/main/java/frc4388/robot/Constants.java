@@ -31,7 +31,7 @@ import frc4388.utility.LEDPatterns;
  */
 public final class Constants {
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 4;
+    public static final double ROTATION_SPEED = 0.5;
     public static final double WIDTH = 23.5;
     public static final double HEIGHT = 23.5;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
@@ -40,18 +40,18 @@ public final class Constants {
     public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20; // TODO: redundant constant?
 
     // IDs
-    public static final int LEFT_FRONT_STEER_CAN_ID = 2;
-    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
-    public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
-    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5;
-    public static final int LEFT_BACK_STEER_CAN_ID = 6;
-    public static final int LEFT_BACK_WHEEL_CAN_ID = 7;
-    public static final int RIGHT_BACK_STEER_CAN_ID = 8;
-    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;
-    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;
-    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
-    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
-    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
+    public static final int LEFT_FRONT_STEER_CAN_ID = 2; //
+    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3; //
+    public static final int RIGHT_FRONT_STEER_CAN_ID = 4; //
+    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5; //
+    public static final int LEFT_BACK_STEER_CAN_ID = 6; //
+    public static final int LEFT_BACK_WHEEL_CAN_ID = 7; //
+    public static final int RIGHT_BACK_STEER_CAN_ID = 8; //
+    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9; //
+    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10; //
+    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11; //
+    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;//
+    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13; //
     public static final int GYRO_ID = 14;
 
     // offsets are in degrees
@@ -65,10 +65,10 @@ public final class Constants {
     // public static final double RIGHT_BACK_ENCODER_OFFSET = 360. + 2.15 - 3.637;//
     // 180-2.021484375;//0.0;//134.384765625
 
-    public static final double RIGHT_FRONT_ENCODER_OFFSET = (4 * 360. - 152.05 - 180 - 90) % 360.;
-    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.58 + 180 - 90 ) % 360.;
-    public static final double LEFT_BACK_ENCODER_OFFSET = (4 * 360. - 189.50 - 90) % 360.;
-    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.31 - 90 - 180) % 360.;
+    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.58 + 180 ) % 360.;
+    public static final double RIGHT_FRONT_ENCODER_OFFSET = (4 * 360. - 152.05 - 180 ) % 360.;
+    public static final double LEFT_BACK_ENCODER_OFFSET = (4 * 360. - 189.50) % 360.;
+    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.31 - 180) % 360.;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;
@@ -176,10 +176,10 @@ public final class Constants {
     // ID
     public static final int TURRET_MOTOR_CAN_ID = 19;
     public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
-    public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
+    public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 0.7);
     public static final double SHOOTER_TURRET_MIN = -1.0;
-    public static final double TURRET_FORWARD_LIMIT = 61.7; // TODO: find
-    public static final double TURRET_REVERSE_LIMIT = -42.3; // TODO: find
+    public static final double TURRET_FORWARD_LIMIT = 55.0; // TODO: find
+    public static final double TURRET_REVERSE_LIMIT = -55.0; // TODO: find
 
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(0, 0, 0, 0, 0, 0); // TODO: tune values
 
@@ -187,8 +187,8 @@ public final class Constants {
     public static final int SHOOTER_ANGLE_ADJUST_ID = 20;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; // TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; // TODO: Find
-    public static final double HOOD_FORWARD_LIMIT = 48.69; // TODO: find
-    public static final double HOOD_REVERSE_LIMIT = -100; // TODO: find
+    public static final double HOOD_FORWARD_LIMIT = 0.0; // TODO: find
+    public static final double HOOD_REVERSE_LIMIT = -150; // TODO: find
 
   }
 

@@ -120,6 +120,7 @@ public class SwerveModule extends SubsystemBase {
     double desiredTicks = currentTicks + deltaTicks;
 
     if (!ignoreAngle) {
+      
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
     }
 
