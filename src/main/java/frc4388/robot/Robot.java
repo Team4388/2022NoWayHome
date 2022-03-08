@@ -190,16 +190,6 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     LOGGER.fine("disabledInit()");
     m_robotTime.endMatchTime();
-    if (isTest()) {
-      // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
-      File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner")
-          .resolve("recording." + System.currentTimeMillis() + ".path").toFile();
-      if (Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
-        m_robotContainer.createPath(null, null, false).write(outputFile);
-        LOGGER.log(Level.SEVERE, "Recorded path to {0}.", outputFile.getPath());
-      } else
-        LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
-    }
   }
 
   @Override

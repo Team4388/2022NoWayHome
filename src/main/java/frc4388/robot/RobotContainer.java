@@ -59,6 +59,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.PathRecorder;
 import frc4388.robot.commands.Shoot;
 import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
@@ -105,19 +106,7 @@ public class RobotContainer {
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
 
   /* Autonomous */
-  private PathPlannerTrajectory loadedPathTrajectory = null;
-  private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
-  private final List<Waypoint> pathPoints = new ArrayList<>();
-  private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
-  private final NetworkTable recordingNetworkTable = networkTableInstance.getTable("Recording");
-
-  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter
-      .ofPattern("'Recording' yyyy-MM-dd HH-mm-ss.SSS'.path'");
-  private static final Clock SYSTEM_CLOCK = Clock.system(ZoneId.systemDefault());
-  private static final Path PATHPLANNER_DIRECTORY = Filesystem.getDeployDirectory().toPath().resolve("pathplanner");
-  // Function that removes the ".path" from the end of a string.
-  private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern
-      .compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
+  private final PathRecorder m_pathChooser = new PathRecorder(m_robotSwerveDrive);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -160,13 +149,10 @@ public class RobotContainer {
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    /*
-     * m_robotLED
-     * .setDefaultCommand(new RunCommand(m_robotLED::updateLED,
-     * m_robotLED).withName("LED update defaultCommand"));
-     * autoInit();
-     * recordInit();
-     */
+    
+    // m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED).withName("LED update defaultCommand"));
+    // Creates a button on the SmartDashboard that will record the path of the robot.
+    SmartDashboard.putData("Path Recording", m_pathChooser);
   }
 
   /**
@@ -248,18 +234,18 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if (loadedPathTrajectory != null) {
+    if (m_pathChooser.getPath() != null) {
       PIDController xController = SwerveDriveConstants.X_CONTROLLER;
       PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
       ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
       thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-      PathPlannerState initialState = loadedPathTrajectory.getInitialState();
+      PathPlannerState initialState = m_pathChooser.getPath().getInitialState();
       Pose2d initialPosition = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
       return new SequentialCommandGroup(
           new InstantCommand(m_robotSwerveDrive.m_gyro::reset),
           new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(initialPosition)),
-          new PPSwerveControllerCommand(loadedPathTrajectory, m_robotSwerveDrive::getOdometry,
+          new PPSwerveControllerCommand(m_pathChooser.getPath(), m_robotSwerveDrive::getOdometry,
               m_robotSwerveDrive.m_kinematics, xController, yController, thetaController,
               m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive),
           new InstantCommand(m_robotSwerveDrive::stopModules)).withName("Run Autonomous Path");
@@ -294,178 +280,5 @@ public class RobotContainer {
 
   public XboxController getOperatorController() {
     return m_operatorXbox;
-  }
-
-  /**
-   * Creates a WatchKey for the path planner directory and registers it with the
-   * WatchService.
-   * Then creates a NotifierCommand that will update the auto chooser with the
-   * latest path files.
-   * Finally, adds the existing path files to the auto chooser
-   */
-  private void autoInit() {
-    try {
-      WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
-          StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
-          StandardWatchEventKinds.ENTRY_DELETE);
-      // TODO: Store this and other commands as fields so they can be rescheduled.
-      new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
-        @Override
-        public boolean runsWhenDisabled() {
-          return true;
-        }
-      }.withName("Path Watcher").schedule();
-    } catch (IOException exception) {
-      LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
-    }
-    Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles())
-        .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
-        .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-  }
-
-  /**
-   * Creates a button on the SmartDashboard that will record the path of the
-   * robot.
-   */
-  public void recordInit() {
-    SmartDashboard.putData("Recording",
-        new RunCommand(this::recordPeriodic) {
-          @Override
-          public void end(boolean interupted) {
-            new InstantCommand(RobotContainer.this::saveRecording) {
-              @Override
-              public boolean runsWhenDisabled() {
-                return true;
-              }
-            }.withName("Save Recording").schedule();
-          }
-        }.withName("Record Path (Cancel to Save)"));
-  }
-
-  /**
-   * Called when a file is created, modified, or deleted.
-   * Adds newly created .path files to the SendableChooser.
-   * Reloads the path if the currently selected file is modified.
-   * 
-   * @param watchKey The WatchKey that is being observed.
-   */
-  private void updateAutoChooser(WatchKey watchKey) {
-    List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-    if (!watchEvents.isEmpty()) {
-      List<WatchEvent<?>> pathWatchEvents = watchEvents.stream()
-          .filter(e -> e.kind().type().isAssignableFrom(Path.class)).collect(Collectors.toList());
-      for (WatchEvent<?> pathWatchEvent : pathWatchEvents) {
-        Path watchEventPath = (Path) pathWatchEvent.context();
-        File watchEventFile = watchEventPath.toFile();
-        String watchEventFileName = watchEventFile.getName();
-        if (watchEventFileName.endsWith(".path")) {
-          if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-            LOGGER.log(Level.WARNING, "PathPlanner file {0} created. Options added to SendableChooser.",
-                watchEventFileName);
-            autoChooser.addOption(watchEventFile.getName(), watchEventFile);
-          } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-            LOGGER.log(Level.WARNING, "PathPlanner file {0} modified.", watchEventFileName);
-            if (watchEventFileName.equals(autoChooser.getSelected().getName())) {
-              LOGGER.log(Level.SEVERE, "PathPlanner file {0} already selected. Reloading path.", watchEventFileName);
-              loadPath(watchEventFileName);
-            }
-          } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-            LOGGER.log(Level.SEVERE,
-                "PathPlanner file {0} deleted. Removing options from SendableChooser not yet implemented.",
-                watchEventFileName);
-          }
-        }
-      }
-    }
-    if (!watchKey.reset())
-      LOGGER.severe("File watch key invalid.");
-  }
-
-  private void loadPath(String pathName) {
-    LOGGER.warning("Loading path " + pathName);
-    loadedPathTrajectory = null;
-    loadedPathTrajectory = PathPlanner.loadPath(PATH_EXTENSION_REMOVER.apply(Objects.requireNonNullElse(pathName, "")),
-        SwerveDriveConstants.PATH_MAX_VELOCITY, SwerveDriveConstants.PATH_MAX_ACCELERATION);
-    LOGGER.info("Done loading");
-  }
-
-  private void saveRecording() {
-    // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
-    File outputFile = PATHPLANNER_DIRECTORY
-        .resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
-    LOGGER.log(Level.WARNING, "Creating path {0}.", outputFile.getPath());
-    if (!pathPoints.isEmpty() && Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
-      // TODO: Change to use measured maximum velocity and acceleration.
-      var path = createPath(null, null, false);
-      if (RobotBase.isReal())
-        path.write(outputFile);
-      StringWriter writer = new StringWriter();
-      path.write(writer);
-      recordingNetworkTable.getEntry(outputFile.getName()).setString(writer.toString());
-      autoChooser.setDefaultOption(outputFile.getName(), outputFile);
-      LOGGER.log(Level.INFO, "Recorded path to {0}.", outputFile.getPath());
-    } else
-      LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
-  }
-
-  public void recordPeriodic() {
-    Translation2d position = m_robotSwerveDrive.m_poseEstimator.getEstimatedPosition().getTranslation();
-    Rotation2d rotation = m_robotSwerveDrive.m_gyro.getRotation2d();
-    // FIXME: Chassis speeds are created from joystick inputs and do not reflect
-    // actual robot velocity.
-    Translation2d velocity = new Translation2d(m_robotSwerveDrive.getChassisSpeeds().vxMetersPerSecond,
-        m_robotSwerveDrive.getChassisSpeeds().vyMetersPerSecond);
-    Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false,
-        SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
-    pathPoints.add(waypoint);
-  }
-
-  public PathPlannerUtil.Path createPath(Double maxVelocity, Double maxAcceleration, Boolean isReversed) {
-    // Remove points whose angles to neighboring points are less than 10 degrees
-    // apart.
-    int j = 0;
-    for (int i = 1; i < pathPoints.size() - 1; i++) {
-      var prev = pathPoints.get(j).anchorPoint.orElseThrow();
-      var current = pathPoints.get(i).anchorPoint.orElseThrow();
-      var next = pathPoints.get(i + 1).anchorPoint.orElseThrow();
-      var fromPrevious = current.minus(prev);
-      var toNext = next.minus(current);
-      var angleFromPrevious = new Rotation2d(fromPrevious.getX(), fromPrevious.getY());
-      var angleToNext = new Rotation2d(toNext.getX(), toNext.getY());
-      if (Math.abs(angleFromPrevious.minus(angleToNext).getDegrees()) < SwerveDriveConstants.MIN_WAYPOINT_ANGLE
-          || (next.getDistance(prev) < SwerveDriveConstants.MIN_WAYPOINT_DISTANCE
-              && pathPoints.get(i).velOverride.map(v -> v < SwerveDriveConstants.MIN_WAYPOINT_VELOCITY).orElse(false)))
-        pathPoints.set(i, null);
-      else
-        j = i;
-    }
-    pathPoints.removeIf(Objects::isNull);
-    // Make control points
-    pathPoints.get(0).nextControl = Optional.of(makeControlPoints(null, pathPoints.get(0).anchorPoint.orElseThrow(),
-        pathPoints.get(1).anchorPoint.orElseThrow()).getSecond());
-    for (int i = 1; i < pathPoints.size() - 1; i++) {
-      var controls = makeControlPoints(pathPoints.get(i - 1).anchorPoint.orElseThrow(),
-          pathPoints.get(i).anchorPoint.orElseThrow(), pathPoints.get(i + 1).anchorPoint.orElseThrow());
-      pathPoints.get(i).prevControl = Optional.of(controls.getFirst());
-      pathPoints.get(i).nextControl = Optional.of(controls.getSecond());
-    }
-    pathPoints.get(pathPoints.size() - 1).prevControl = Optional
-        .of(makeControlPoints(pathPoints.get(pathPoints.size() - 2).anchorPoint.orElseThrow(),
-            pathPoints.get(pathPoints.size() - 1).anchorPoint.orElseThrow(), null).getFirst());
-    // Create the path
-    PathPlannerUtil.Path path = new PathPlannerUtil.Path();
-    path.waypoints = Optional.ofNullable(pathPoints.toArray(PathPlannerUtil.Path.Waypoint[]::new));
-    path.maxVelocity = Optional.ofNullable(maxVelocity);
-    path.maxAcceleration = Optional.ofNullable(maxAcceleration);
-    path.isReversed = Optional.ofNullable(isReversed);
-    pathPoints.clear();
-    return path;
-  }
-
-  private static Pair<Translation2d, Translation2d> makeControlPoints(Translation2d prev, Translation2d current,
-      Translation2d next) {
-    var line = Objects.requireNonNullElse(next, current).minus(Objects.requireNonNullElse(prev, current)).div(4);
-    return Pair.of(current.minus(line), current.plus(line));
   }
 }

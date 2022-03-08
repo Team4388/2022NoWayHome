@@ -61,6 +61,18 @@
       "/SmartDashboard/Scheduler": "Scheduler",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/Usable Deploy Space": "Command"
+    },
+    "windows": {
+      "/LiveWindow/SwerveDrive": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Scheduler": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {

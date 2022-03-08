@@ -1,7 +1,6 @@
 package frc4388.utility;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Optional;
 

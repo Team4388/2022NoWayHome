@@ -5,6 +5,9 @@
       "label": "downloadDeployDirectory",
       "type": "shell",
       "command": "scp -prv lvuser@roboRIO-4388-FRC.local:/home/lvuser/deploy ./src/main/",
+      "windows": {
+        "command": "explorer.exe ftp://roboRIO-TEAM-frc.local/home/lvuser/deploy"
+      },
       "presentation": {
         "echo": true,
         "reveal": "always",
