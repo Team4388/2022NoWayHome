@@ -16,6 +16,11 @@
             let elt = document.getElementById('calculator');
             let calculator = Desmos.GraphingCalculator(elt);
 
+            let coord = {
+                x: window.innerWidth - 20,
+                y: window.innerHeight - 20
+            };
+
             let helperExpressions = {};
             let variables = [];
 
@@ -33,11 +38,29 @@
             }
 
             function handleError() {
+                let pcoord = calculator.pixelsToMath(coord);
+                calculator.setExpression({
+                    id: 'status',
+                    latex: '(' + pcoord.x + ',' + pcoord.y + ')',
+                    color: '#ff0000',
+                    pointSize: '20',
+                    secret: true
+                });
+
                 console.log('Request failed');
                 setTimeout(requestVariables, 0);
             }
 
             function setVariables() {
+                let pcoord = calculator.pixelsToMath(coord);
+                calculator.setExpression({
+                    id: 'status',
+                    latex: '(' + pcoord.x + ',' + pcoord.y + ')',
+                    color: '#00ff00',
+                    pointSize: '20',
+                    secret: true
+                });
+
                 variables = JSON.parse(this.responseText);
 
                 for(let variable of variables) {

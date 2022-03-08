@@ -71,9 +71,6 @@ public class DesmosServer extends Thread {
 
         while(true) {
             Socket client = serverSocket.accept();
-            // Indicate Active to desmos client
-            DesmosServer.putInteger("Active", 1);
-
             handleClient(client);
         }
     }
