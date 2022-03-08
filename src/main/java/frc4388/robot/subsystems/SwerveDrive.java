@@ -5,6 +5,7 @@
 package frc4388.robot.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
+import com.ctre.phoenix.sensors.PigeonIMUConfiguration;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.VecBuilder;
@@ -186,8 +187,8 @@ public class SwerveDrive extends SubsystemBase {
    * Gets the current chassis speeds in m/s and rad/s.
    * @return Current chassis speeds (vx, vy, ω)
    */
-  public double[] getChassisSpeeds() {
-    return new double[] {chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond};
+  public ChassisSpeeds getChassisSpeeds() {
+    return chassisSpeeds;
   }
 
   /**

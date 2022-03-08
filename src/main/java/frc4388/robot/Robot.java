@@ -19,12 +19,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
+import frc4388.utility.VelocityCorrection;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -138,9 +140,19 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    // velocity correction tests
+    VelocityCorrection vc = new VelocityCorrection(m_robotContainer.m_robotSwerveDrive, m_robotContainer.m_robotBoomBoom);
     
     //SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
     //SmartDashboard.putNumber("Hood Encoder Position", m_robotContainer.m_robotHood.m_angleEncoder.getPosition());
+    // System.out.println("Position: (" + vc.position.x + ", " + vc.position.y + ")");
+    // System.out.println("Velocity: (" + vc.cartesianVelocity.x + ", " + vc.cartesianVelocity.y + ")");
+    // System.out.println("Tangential Velocity: (" + vc.tangentialVelocity.x + ", " + vc.tangentialVelocity.y + ")");
+    // System.out.println("Radial Velocity: (" + vc.radialVelocity.x + ", " + vc.radialVelocity.y + ")");
+
+    SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
+    SmartDashboard.putNumber("Hood Encoder Position", m_robotContainer.m_robotHood.m_angleEncoder.getPosition());
 
     // odo chooser stuff
     addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 
