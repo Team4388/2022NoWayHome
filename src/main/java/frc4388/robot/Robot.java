@@ -37,9 +37,8 @@ public class Robot extends TimedRobot {
     
     desmosServer = new DesmosServer(8000);
     desmosServer.start();
-    DesmosServer.putInteger("Active", 1);
 
-    DesmosServer.putTable("test", "x1", new double[] {1, 2}, "y1", new double[] {1, 2});
+    DesmosServer.putTable("table", "x1", new double[] {1, 2, 3.1, 3.9}, "y1", new double[] {1, 2, 2.9, 4.1});
   }
 
   /**
