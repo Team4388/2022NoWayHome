@@ -76,9 +76,10 @@ public class TrackTarget extends CommandBase {
     }
     catch (Exception e){
     }
-    vel = m_boomBoom.getVelocity(distance);
+    vel = m_boomBoom.getVelocity(distance); // has been changed for robot reveal night so this variable is percent output
     hood = m_boomBoom.getHood(distance);
-    m_boomBoom.runDrumShooterVelocityPID(vel);
+    m_boomBoom.runDrumShooter(vel);
+    // m_boomBoom.runDrumShooterVelocityPID(vel);
     m_hood.runAngleAdjustPID(hood);
     //m_turret.runshooterRotatePID(m_targetAngle);
   }
