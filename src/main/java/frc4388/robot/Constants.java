@@ -33,7 +33,7 @@ public final class Constants {
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 4;
     public static final double WIDTH = 23.5;
-    public static final double HEIGHT = 25.5;
+    public static final double HEIGHT = 23.5;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
     public static final double MAX_SPEED_FEET_PER_SEC = 20; // TODO: redundant constant?
