@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -50,7 +51,6 @@ public class BoomBoom extends SubsystemBase {
   }
 
   private ShooterTableEntry[] m_shooterTable;
-
   /*
   * Creates new BoomBoom subsystem, has drum shooter and angle adjuster
   */
@@ -165,6 +165,7 @@ public class BoomBoom extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // speed2 = SmartDashboard.getNumber("Shooter Offset", 0.0);
   }
 
   public void passRequiredSubsystem(Hood subsystem0, Turret subsystem1) {

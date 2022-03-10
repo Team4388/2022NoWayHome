@@ -37,14 +37,10 @@ public class SwerveDrive extends SubsystemBase {
 
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
-  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight),
-      Units.inchesToMeters(-halfWidth));
-  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight),
-      Units.inchesToMeters(halfWidth));
-  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
-      Units.inchesToMeters(-halfWidth));
-  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight),
-      Units.inchesToMeters(halfWidth));
+  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(-halfWidth));
+  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(halfWidth));
+  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
+  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
 
   public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation,
       m_backLeftLocation, m_backRightLocation);
@@ -108,29 +104,29 @@ public class SwerveDrive extends SubsystemBase {
       ignoreAngles = true;
     else
       ignoreAngles = false;
-    Translation2d speed = new Translation2d(-speedY, -speedX);
+    Translation2d speed = new Translation2d(speedX, speedY);
     double mag = speed.getNorm();
     speed = speed.times(mag * speedAdjust);
 
-    double xSpeedMetersPerSecond = -speed.getX();
+    double xSpeedMetersPerSecond = speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED * 8, m_gyro.getRotation2d())
-        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            -rot * SwerveDriveConstants.ROTATION_SPEED * 8);
+            -rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
+        : new ChassisSpeeds(ySpeedMetersPerSecond, -xSpeedMetersPerSecond,
+            -rot * SwerveDriveConstants.ROTATION_SPEED);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
 
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative) {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
-    Translation2d speed = new Translation2d(-leftX, leftY);
+    Translation2d speed = new Translation2d(leftX, leftY);
     speed = speed.times(speed.getNorm() * speedAdjust);
     if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightX, -rightY).plus(new Rotation2d(0, 1));
+      rotTarget = new Rotation2d(rightY, rightX);
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
-    double xSpeedMetersPerSecond = -speed.getX();
+    double xSpeedMetersPerSecond = speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,

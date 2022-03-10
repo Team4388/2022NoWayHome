@@ -31,7 +31,7 @@ import frc4388.utility.LEDPatterns;
  */
 public final class Constants {
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 0.5;
+    public static final double ROTATION_SPEED = 4.0;
     public static final double WIDTH = 23.5;
     public static final double HEIGHT = 23.5;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
@@ -150,6 +150,7 @@ public final class Constants {
     public static final int XBOX_OPERATOR_ID = 1;
     public static final double LEFT_AXIS_DEADBAND = 0.1;
     public static final double RIGHT_AXIS_DEADBAND = 0.6;
+    public static final boolean SKEW_STICKS = true;
   }
 
   public static final class ShooterConstants {

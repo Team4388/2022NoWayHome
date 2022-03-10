@@ -4,6 +4,7 @@ import static frc4388.robot.Constants.OIConstants.LEFT_AXIS_DEADBAND;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
+import frc4388.robot.Constants.OIConstants;
 
 public class DeadbandedXboxController extends XboxController {
   public DeadbandedXboxController(int port) { super(port); }
@@ -14,7 +15,7 @@ public class DeadbandedXboxController extends XboxController {
   public static Translation2d skewToDeadzonedCircle(double x, double y) {
     Translation2d translation2d = new Translation2d(x, y);
     double magnitude = translation2d.getNorm();
-    if (magnitude >= 1) return translation2d.div(magnitude);
+    if (OIConstants.SKEW_STICKS && magnitude >= 1) return translation2d.div(magnitude);
     if (magnitude < LEFT_AXIS_DEADBAND) return new Translation2d(0,0);
     return translation2d;
   }
