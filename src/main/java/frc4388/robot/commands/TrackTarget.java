@@ -78,7 +78,8 @@ public class TrackTarget extends CommandBase {
     }
     vel = m_boomBoom.getVelocity(distance);
     hood = m_boomBoom.getHood(distance);
-    m_boomBoom.runDrumShooterVelocityPID(vel);
+    m_boomBoom.runDrumShooter(vel);
+    // m_boomBoom.runDrumShooterVelocityPID(vel);
     m_hood.runAngleAdjustPID(hood);
     //m_turret.runshooterRotatePID(m_targetAngle);
   }
