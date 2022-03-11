@@ -106,7 +106,7 @@ public class RobotContainer {
   private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   
   private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(30);
-  private final WPI_TalonFX testSoulderMotor = new WPI_TalonFX(31);
+  private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(31);
   private final Climber m_robotClimber = new Climber(testElbowMotor);
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -132,7 +132,7 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureButtonBindings();
-    testSoulderMotor.setNeutralMode(NeutralMode.Brake);
+    testShoulderMotor.setNeutralMode(NeutralMode.Brake);
     /* Default Commands */
 
       // Swerve Drive with Input
@@ -172,13 +172,10 @@ public class RobotContainer {
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    /*
-     * m_robotLED
-     * .setDefaultCommand(new RunCommand(m_robotLED::updateLED,
-     * m_robotLED).withName("LED update defaultCommand"));
-     * autoInit();
-     * recordInit();
-     */
+    //  m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED).withName("LED update defaultCommand"));
+
+    //  autoInit();
+    //  recordInit();
   }
 
   /**
@@ -229,33 +226,27 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(() -> m_robotIntake.runExtender(false));*/
     
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value) //8ft
-        // .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0)));
-        // .whenPressed(() -> m_robotBoomBoom.increaseSpeed(0.025));
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.425)))
-        .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-25)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value) //8ft
+    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.425)))
+    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-25)))
+    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value) //12ft
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.475)))
-        .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-47.57)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
-        // .whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));    
-        // .whenPressed(() -> m_robotBoomBoom.increaseSpeed(-0.025));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value) //12ft
+    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.475)))
+    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-47.57)))
+    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value) //16ft
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.5)))
-        .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-55.55)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value) //16ft
+    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.5)))
+    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-55.55)))
+    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
       
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.525)))
-        .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-96)))
-        // .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
-        // .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.45)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
+    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.525)))
+    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-96)))
+    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
@@ -278,8 +269,8 @@ public class RobotContainer {
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
 
        //B > Shoot with Lime
-    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-    //     .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   }
 
   /**

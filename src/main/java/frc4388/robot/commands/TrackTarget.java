@@ -46,7 +46,8 @@ public class TrackTarget extends CommandBase {
     m_boomBoom = boomBoom;
     m_hood = hood;
     m_visionOdometry = visionOdometry;
-    addRequirements(m_turret, m_drive, m_visionOdometry);
+
+    addRequirements(m_turret, m_boomBoom, m_hood, m_drive, m_visionOdometry);
   }
 
   // Called when the command is initially scheduled.
@@ -78,9 +79,9 @@ public class TrackTarget extends CommandBase {
     }
     vel = m_boomBoom.getVelocity(distance);
     hood = m_boomBoom.getHood(distance);
-    m_boomBoom.runDrumShooter(vel);
+    // m_boomBoom.runDrumShooter(vel);
     // m_boomBoom.runDrumShooterVelocityPID(vel);
-    m_hood.runAngleAdjustPID(hood);
+    // m_hood.runAngleAdjustPID(hood);
     //m_turret.runshooterRotatePID(m_targetAngle);
   }
 
