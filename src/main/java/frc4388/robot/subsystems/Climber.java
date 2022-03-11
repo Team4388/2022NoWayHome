@@ -17,6 +17,7 @@ import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants;
 import frc4388.robot.Constants.ClimberConstants;
@@ -48,6 +49,16 @@ public class Climber extends SubsystemBase {
 
     m_shoulderOffset = m_shoulder.getSelectedSensorPosition();
     m_elbowOffset = m_elbow.getSelectedSensorPosition();
+
+    m_elbow.configForwardSoftLimitThreshold(ClimberConstants.ELBOW_SOFT_LIMIT_FORWARD);
+    m_elbow.configForwardSoftLimitEnable(false);
+    m_elbow.configReverseSoftLimitThreshold(ClimberConstants.ELBOW_SOFT_LIMIT_REVERSE);
+    m_elbow.configReverseSoftLimitEnable(false);
+
+    m_shoulder.configForwardSoftLimitThreshold(ClimberConstants.SHOULDER_SOFT_LIMIT_FORWARD);
+    m_shoulder.configForwardSoftLimitEnable(false);
+    m_shoulder.configReverseSoftLimitThreshold(ClimberConstants.SHOULDER_SOFT_LIMIT_REVERSE);
+    m_shoulder.configReverseSoftLimitEnable(false);
 
     if(groundRelative)
       m_gyro = gyro;
@@ -256,6 +267,12 @@ public void setMotors(double shoulderOutput, double elbowOutput) {
     m_robotPosition = robotPosition;
     m_robotAngle = robotAngle;
     m_robotAngle = 45; //45 is placeholder
+  }
+
+  @Override
+  public void periodic(){
+    SmartDashboard.putNumber("Shoulder", m_shoulder.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Elbow", m_elbow.getSelectedSensorPosition());
   }
   
 }

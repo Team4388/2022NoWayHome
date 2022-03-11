@@ -169,6 +169,11 @@ public final class Constants {
 
     public static final double GEAR_BOX_RATIO = 144.d * 60.d / 24.d;
 
+    public static final double SHOULDER_SOFT_LIMIT_FORWARD = 0;
+    public static final double SHOULDER_SOFT_LIMIT_REVERSE = 0;
+    public static final double ELBOW_SOFT_LIMIT_FORWARD = 0;
+    public static final double ELBOW_SOFT_LIMIT_REVERSE = 0;
+
     // PID Constants
     public static final int SHOULDER_SLOT_IDX = 0;
     public static final int SHOULDER_PID_LOOP_IDX = 1;

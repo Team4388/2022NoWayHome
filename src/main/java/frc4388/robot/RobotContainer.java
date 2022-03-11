@@ -94,7 +94,7 @@ public class RobotContainer {
   /* Subsystems */
   private final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
   
-  private final Claws m_claws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
+  private final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack,
       m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
@@ -137,8 +137,9 @@ public class RobotContainer {
 
     // moves climber in xy space with two-axis input from the operator controller
     m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX(), getOperatorController().getLeftY()), 
+      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX() * 0.4, getOperatorController().getLeftY() * 0.4), 
       m_robotClimber));
+
 
     // IK command
     // m_robotClimber.setDefaultCommand(
@@ -217,12 +218,20 @@ public class RobotContainer {
     /* Operator Buttons */
     // run claws
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-      .whenPressed(new RunClaw(m_claws, ClawType.LEFT, true))
-      .whenPressed(new RunClaw(m_claws, ClawType.RIGHT, true));
+      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.2)))
+      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.0)));
     
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-      .whenPressed(new RunClaw(m_claws, ClawType.LEFT, false))
-      .whenPressed(new RunClaw(m_claws, ClawType.RIGHT, false));
+      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, -0.2)))
+      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.0)));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.2)))
+      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.0)));
+    
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, -0.2)))
+      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.0)));
 
     /*
      * // activates "BoomBoom"

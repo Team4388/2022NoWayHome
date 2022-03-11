@@ -74,6 +74,27 @@ public class Claws extends SubsystemBase {
 
     m_open = open;
   }
+
+
+
+  public void runClaw(ClawType which, double input) {
+    
+
+    if (which == Claws.ClawType.LEFT) {
+      m_leftClaw.set(input);
+
+    } else if (which == Claws.ClawType.RIGHT) {
+      m_rightClaw.set(input);
+    }
+  }
+
+
+
+  public void runClaws(double input)
+  {
+    m_leftClaw.set(input);
+    m_rightClaw.set(input);
+  }
   /**
    * Sets the state of both hooks
    * @param open The state of the hooks
