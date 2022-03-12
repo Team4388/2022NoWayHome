@@ -67,6 +67,7 @@ import frc4388.robot.commands.Shoot;
 import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Climber;
+import frc4388.robot.subsystems.Extender;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.Intake;
 import frc4388.robot.subsystems.LED;
@@ -98,7 +99,9 @@ public class RobotContainer {
   // Subsystems 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
-  public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
+  public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotSerializer);
+  public final Extender m_robotExtender = new Extender(m_robotMap.extenderMotor);
+  
   public final Storage m_robotStorage = new Storage(m_robotMap.storageMotor);
   // private final LED m_robotLED = new LED(m_robotMap.LEDController);
   // public final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
@@ -258,11 +261,11 @@ public class RobotContainer {
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whileHeld(new RunCommand(() -> m_robotIntake.runExtender(1.0), m_robotIntake))
-        .whenReleased(new RunCommand(() -> m_robotIntake.runExtender(0.0), m_robotIntake));
+        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whileHeld(new RunCommand(() -> m_robotIntake.runExtender(-1.0), m_robotIntake))
-        .whenReleased(new RunCommand(() -> m_robotIntake.runExtender(0.0), m_robotIntake));
+        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
       // Right Bumper > Storage In
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))

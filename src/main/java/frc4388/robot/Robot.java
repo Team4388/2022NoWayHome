@@ -137,6 +137,7 @@ public class Robot extends TimedRobot {
       m_robotContainer.m_robotClimber.getCurrent() +
       // m_robotContainer.m_robotHood.getCurrent() +
       m_robotContainer.m_robotIntake.getCurrent() +
+      m_robotContainer.m_robotExtender.getCurrent() +
       m_robotContainer.m_robotSerializer.getCurrent() +
       m_robotContainer.m_robotStorage.getCurrent() +
       m_robotContainer.m_robotSwerveDrive.getCurrent();
@@ -151,10 +152,10 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     
-    VelocityCorrection vc = new VelocityCorrection(m_robotContainer.m_robotSwerveDrive, m_robotContainer.m_robotBoomBoom);
-    System.out.println("Position: " + vc.position);
-    System.out.println("Velocity: " + vc.cartesianVelocity);
-    System.out.println("Target: " + vc.target.toString());
+    // VelocityCorrection vc = new VelocityCorrection(m_robotContainer.m_robotSwerveDrive, m_robotContainer.m_robotBoomBoom);
+    // System.out.println("Position: " + vc.position);
+    // System.out.println("Velocity: " + vc.cartesianVelocity);
+    // System.out.println("Target: " + vc.target.toString());
 
 
     //SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
