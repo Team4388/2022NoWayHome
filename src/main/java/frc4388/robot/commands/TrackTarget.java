@@ -61,21 +61,21 @@ public class TrackTarget extends CommandBase {
   @Override
   public void execute() {
     //m_targetAngle = angleToCenter(x, y, m_drive.getRegGyro().getDegrees());
-    m_visionOdometry.setLEDs(true);
-    points = m_visionOdometry.getTargetPoints();
-    double pointTotal = 0;
-    for(Point point : points)
-    {
-      pointTotal = pointTotal + point.x;
-    }
-    average = pointTotal/points.size();
-    output = average/VisionConstants.LIME_HIXELS * VisionConstants.TURRET_kP;
-    m_turret.runTurretWithInput(output);
-    try{
+    try {
+      m_visionOdometry.setLEDs(true);
+      points = m_visionOdometry.getTargetPoints();
+      double pointTotal = 0;
+      for(Point point : points) {
+        pointTotal = pointTotal + point.x;
+      }
+      average = pointTotal/points.size();
+      output = average/VisionConstants.LIME_HIXELS * VisionConstants.TURRET_kP;
+      m_turret.runTurretWithInput(output);
       pos = m_visionOdometry.getVisionOdometry();
       distance = Math.hypot(pos.getX(), pos.getY());
     }
     catch (Exception e){
+      System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
     vel = m_boomBoom.getVelocity(distance);
     hood = m_boomBoom.getHood(distance);
