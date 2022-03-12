@@ -120,7 +120,7 @@ public class SwerveModule extends SubsystemBase {
     double desiredTicks = currentTicks + deltaTicks;
 
     if (!ignoreAngle) {
-      
+
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
     }
 
@@ -192,5 +192,7 @@ public class SwerveModule extends SubsystemBase {
     canCoder.setPositionToAbsolute();
     // canCoder.configSensorInitializationStrategy(initializationStrategy)
   }
-
+  public double getCurrent(){
+    return angleMotor.getSupplyCurrent() + driveMotor.getSupplyCurrent();
+  }
 }

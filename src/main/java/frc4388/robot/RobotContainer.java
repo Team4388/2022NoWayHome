@@ -107,7 +107,7 @@ public class RobotContainer {
   
   private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(30);
   private final WPI_TalonFX testSoulderMotor = new WPI_TalonFX(31);
-  private final Climber m_robotClimber = new Climber(testElbowMotor);
+  public final Climber m_robotClimber = new Climber(testElbowMotor);
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);

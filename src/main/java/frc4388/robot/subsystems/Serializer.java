@@ -48,4 +48,7 @@ public class Serializer extends SubsystemBase{
   public boolean getSerializerState() {
     return serializerState;
   }
+  public double getCurrent(){
+    return m_serializerBelt.getOutputCurrent();
+  }
 }

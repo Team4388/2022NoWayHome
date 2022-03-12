@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.IntakeConstants;
@@ -186,7 +187,9 @@ public class RobotMap {
         ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
+    shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configStatorCurrentLimit(ShooterConstants.STATOR_CURRENT_LIMIT_CONFIG_SHOOTER,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     // RIGHT FALCON
@@ -201,7 +204,9 @@ public class RobotMap {
         ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
+    shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconRight.configStatorCurrentLimit(ShooterConstants.STATOR_CURRENT_LIMIT_CONFIG_SHOOTER,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     shooterFalconRight.follow(shooterFalconLeft);
@@ -229,6 +234,15 @@ public class RobotMap {
   /* Intake Subsytem */
   public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
   public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
+
+  void configureIntakeMotors(){
+    intakeMotor.configFactoryDefault();
+    intakeMotor.setNeutralMode(NeutralMode.Coast);
+    intakeMotor.configSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    intakeMotor.configStatorCurrentLimit(IntakeConstants.STATOR_CURRENT_LIMIT_CONFIG_INTAKE,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+  }
 
   /* Storage Subsystem */
   public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);

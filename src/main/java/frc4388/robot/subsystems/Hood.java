@@ -95,4 +95,8 @@ public double m_fireAngle;
   public double getAnglePositionDegrees(){
     return 0.0;//((m_angleEncoder.getPosition() - ShooterConstants.HOOD_MOTOR_POS_AT_ZERO_ROT) * 360/ShooterConstants.HOOD_MOTOR_ROTS_PER_ROT) - 90;
   }
+
+  public double getCurrent(){
+    return m_angleAdjusterMotor.getOutputCurrent();
+  }
 }

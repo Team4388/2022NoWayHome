@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 
@@ -52,6 +53,8 @@ public class Intake extends SubsystemBase {
    */
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
     m_intakeMotor.set((rightTrigger - leftTrigger) * 0.3);
+    SmartDashboard.putNumber("Intake Current Supply", m_intakeMotor.getSupplyCurrent());
+    SmartDashboard.putNumber("Intake Current Stator", m_intakeMotor.getStatorCurrent());
   }
   /**
    * Runs The Extender-
@@ -73,5 +76,9 @@ public class Intake extends SubsystemBase {
   public void toggleExtender() {
     toggle = !toggle;
     runExtender(toggle);
+  }
+
+  public double getCurrent(){
+    return m_intakeMotor.getSupplyCurrent() + m_extenderMotor.getOutputCurrent();
   }
 }

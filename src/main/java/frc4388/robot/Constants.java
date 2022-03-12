@@ -4,6 +4,7 @@
 
 package frc4388.robot;
 
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -129,6 +130,10 @@ public final class Constants {
     // CAN IDs
     public static final int INTAKE_MOTOR = 15;
     public static final int EXTENDER_MOTOR = 16;
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE = new SupplyCurrentLimitConfiguration(
+        false, 10, 0, 0); //Find
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_INTAKE = new StatorCurrentLimitConfiguration(
+        false, 15, 0, 0);
   }
   public static final class StorageConstants {
     public static final int STORAGE_CAN_ID = 18;
@@ -160,8 +165,10 @@ public final class Constants {
     public static final int SHOOTER_TIMEOUT_MS = 32;
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
-    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(
-        true, 60, 40, 0.5);
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER = new SupplyCurrentLimitConfiguration(
+        true, 10, 0, 0);
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_SHOOTER = new StatorCurrentLimitConfiguration(
+        true, 27, 0, 0);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
     public static final double TURRET_SPEED_MULTIPLIER = 0.4d;

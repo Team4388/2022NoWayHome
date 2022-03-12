@@ -65,4 +65,7 @@ public class Storage extends SubsystemBase {
   public void periodic() {
     //manageStorage();
   }
+  public double getCurrent(){
+    return m_storageMotor.getOutputCurrent();
+  }
 }

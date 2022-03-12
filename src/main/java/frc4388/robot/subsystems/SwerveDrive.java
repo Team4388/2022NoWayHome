@@ -258,4 +258,8 @@ public class SwerveDrive extends SubsystemBase {
       speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
     }
   }
+
+  public double getCurrent(){
+    return m_leftFront.getCurrent() + m_rightFront.getCurrent() + m_rightBack.getCurrent() + m_leftBack.getCurrent();
+  }
 }

@@ -109,4 +109,8 @@ public class Turret extends SubsystemBase {
         / ShooterConstants.TURRET_MOTOR_ROTS_PER_ROT;
   }
 
+  public double getCurrent(){
+    return m_boomBoomRotateMotor.getOutputCurrent();
+  }
+
 }

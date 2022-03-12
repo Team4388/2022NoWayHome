@@ -180,6 +180,8 @@ public class BoomBoom extends SubsystemBase {
   public void runDrumShooter(double speed) {
     m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed + speed2);
     SmartDashboard.putNumber("BoomBoom percent speed", speed + speed2);
+    SmartDashboard.putNumber("BoomBoom current stator", m_shooterFalconLeft.getStatorCurrent());
+    SmartDashboard.putNumber("BoomBoom current supply", m_shooterFalconLeft.getSupplyCurrent());
 
   }
 
@@ -207,5 +209,9 @@ public class BoomBoom extends SubsystemBase {
   public void increaseSpeed(double amount)
   {
     speed2 = speed2 + amount;
+  }
+
+  public double getCurrent(){
+    return m_shooterFalconLeft.getSupplyCurrent() + m_shooterFalconRight.getSupplyCurrent();
   }
 }
