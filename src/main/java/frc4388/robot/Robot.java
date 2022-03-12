@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
+import frc4388.utility.VelocityCorrection;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -150,6 +151,12 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     
+    VelocityCorrection vc = new VelocityCorrection(m_robotContainer.m_robotSwerveDrive, m_robotContainer.m_robotBoomBoom);
+    System.out.println("Position: " + vc.position);
+    System.out.println("Velocity: " + vc.cartesianVelocity);
+    System.out.println("Target: " + vc.target.toString());
+
+
     //SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
     //SmartDashboard.putNumber("Hood Encoder Position", m_robotContainer.m_robotHood.m_angleEncoder.getPosition());
 
