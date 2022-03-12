@@ -47,14 +47,12 @@ public class BoomBoom extends SubsystemBase {
   // SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(69, 42, 0); //get real values later
 
   public static class ShooterTableEntry {
-    public Double distance, hoodExt, drumVelocity;
+    public Double distance, hoodExt, drumVelocity, duration;
   }
 
   private ShooterTableEntry[] m_shooterTable;
-  /*
-  * Creates new BoomBoom subsystem, has drum shooter and angle adjuster
-  */
-  /** Creates a new BoomBoom. */
+
+  /** Creates a new BoomBoom, which has a drum shooter and angle adjuster. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
     m_shooterFalconLeft = shooterFalconLeft;
     m_shooterFalconRight = shooterFalconRight;
@@ -94,18 +92,37 @@ public class BoomBoom extends SubsystemBase {
     }
   }
 
+  /**
+   * This is a function that takes a value (distance) and returns a value (drumVelocity) that is a
+   * linear interpolation of the two values (drumVelocity) at the two closest points in the table
+   * (m_shooterTable) to the given value (distance). 
+   * @param distance Distance in shooter table
+   * @return Drum Velocity in units per 100 ms
+   */
   public Double getVelocity(final Double distance) {
-    // This is a function that takes a value (distance) and returns a value (drumVelocity) that is a
-    // linear interpolation of the two values (drumVelocity) at the two closest points in the table
-    // (m_shooterTable) to the given value (distance).
     return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
   }
 
+  /**
+   * This is a function that takes a value (distance) and returns a value (hoodExt) that is a linear
+   * interpolation of the two values (hoodExt) at the two closest points in the table (m_shooterTable)
+   * to the given value (distance).
+   * @param distance Distance in shooter table
+   * @return Hood extension in units
+   */
   public Double getHood(final Double distance) {
-    // This is a function that takes a value (distance) and returns a value (hoodExt) that is a linear
-    // interpolation of the two values (hoodExt) at the two closest points in the table (m_shooterTable)
-    // to the given value (distance).
     return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
+  }
+
+  /**
+   * This is a function that takes a value (distance) and returns a value (duration) that is a linear
+   * interpolation of the two values (duration) at the two closest points in the table (m_shooterTable)
+   * to the given value (distance).
+   * @param distance Distance in shooter table
+   * @return Shot duration in seconds
+   */
+  public Double getDuration(final Double distance) {
+    return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.duration).doubleValue();
   }
 
   /**
