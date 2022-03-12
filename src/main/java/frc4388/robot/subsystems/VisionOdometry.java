@@ -54,13 +54,14 @@ public class VisionOdometry extends SubsystemBase {
    * Breaks down targets into 4 corners and uses the top 2 points
    * 
    * @return Vision points on the rim of the target in screen space
+   * @throws VisionObscuredException
    */
-  public ArrayList<Point> getTargetPoints() {
+  public ArrayList<Point> getTargetPoints() throws VisionObscuredException {
     PhotonPipelineResult result = m_camera.getLatestResult();
     latency = result.getLatencyMillis();
   
     if(!result.hasTargets())
-      return new ArrayList<Point>();
+      throw new VisionObscuredException();
     
     ArrayList<Point> points = new ArrayList<>();
 
@@ -99,7 +100,7 @@ public class VisionOdometry extends SubsystemBase {
     ArrayList<Point> screenPoints = getTargetPoints();
 
     if(screenPoints.size() < 3)
-      throw new VisionObscuredException("Not enough vision points available");
+      throw new VisionObscuredException("Less than 3 vision points available");
 
     ArrayList<Point3> points3d = get3dPoints(screenPoints);
     ArrayList<Point> points = topView(points3d);
@@ -125,6 +126,7 @@ public class VisionOdometry extends SubsystemBase {
   public double getLatency() {
     return latency;
   }
+
   public boolean getLEDs() {
     if (m_camera.getLEDMode() == VisionLEDMode.kOff) return false;
     return true;
