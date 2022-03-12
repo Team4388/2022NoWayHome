@@ -4,6 +4,7 @@
 
 package frc4388.utility;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /** Aarav's good vector class (better than WPILib) */
@@ -11,9 +12,11 @@ public class Vector2D extends Vector2d {
 
   public double x;
   public double y;
+  public double angle;
 
   public Vector2D() {
     super();
+    this.angle = Math.atan2(this.y, this.x);
   }
 
   public Vector2D(double x, double y) {
@@ -21,6 +24,7 @@ public class Vector2D extends Vector2d {
 
     this.x = x;
     this.y = y;
+    this.angle = Math.atan2(this.y, this.x);
   }
 
   public static Vector2D add(Vector2D v1, Vector2D v2) {
