@@ -35,6 +35,10 @@ public class Vector2D extends Vector2d {
     return new Vector2D(scalar * v1.x, scalar * v1.y);
   }
 
+  public Vector2D unit() {
+    return new Vector2D(this.x / this.magnitude(), this.y / this.magnitude());
+  }
+
   public static Vector2D round(Vector2D v, int places) {
     int scale = (int) Math.pow(10, places);
 
@@ -50,6 +54,7 @@ public class Vector2D extends Vector2d {
 
   @Override
   public String toString() {
+    Vector2d test = new Vector2d();
     return ("(" + this.x + ", " + this.y + ")");
   }
 
