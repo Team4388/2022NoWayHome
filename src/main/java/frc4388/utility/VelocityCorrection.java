@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.SwerveDrive;
 
@@ -52,7 +53,6 @@ public class VelocityCorrection {
   }
 
   private Vector2d getTangentialVelocity() {
-
     double hubElevation = Math.atan2(position.y, position.x);
     unitTangentialVelocity = new Vector2d(Math.cos(hubElevation - (Math.PI/2)), Math.sin(hubElevation - (Math.PI/2)));
     double tangentialVelocityMag = cartesianVelocity.scalarProject(unitTangentialVelocity);
@@ -61,10 +61,11 @@ public class VelocityCorrection {
   }
 
   private Vector2d getTargetPoint() {
-
     double drumVelocity = boomBoom.getVelocity(radius);
     double ballVelocity = drumVelocity; // TODO: convert from drum velocity to actual ball velocity 
     double approxShotTime = radius / ballVelocity; // TODO: better approximation to get shot time (physics/calculus?)
+    
+    // TODO: to find shot time, use a timer and a shooter tables sort of thing to find the shot time at different radii
 
     Vector2d tangentialTargetPoint = VelocityCorrection.multiply(unitTangentialVelocity, -1 * approxShotTime);
     Vector2d radialTargetPoint = VelocityCorrection.multiply(unitRadialVelocity, -1 * approxShotTime);
