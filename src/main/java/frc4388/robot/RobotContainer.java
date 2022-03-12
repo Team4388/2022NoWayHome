@@ -4,78 +4,34 @@
 
 package frc4388.robot;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.time.Clock;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import com.diffplug.common.base.Errors;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import frc4388.robot.commands.AimToCenter;
 import frc4388.robot.commands.PathRecorder;
-import frc4388.robot.commands.Shoot;
-import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.Intake;
-import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.Serializer;
 import frc4388.robot.subsystems.Storage;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
-import frc4388.robot.subsystems.Vision;
-import frc4388.robot.subsystems.VisionOdometry;
-import frc4388.utility.LEDPatterns;
-import frc4388.utility.ListeningSendableChooser;
-import frc4388.utility.PathPlannerUtil;
-import frc4388.utility.PathPlannerUtil.Path.Waypoint;
 import frc4388.utility.controller.DeadbandedXboxController;
 
 /**
@@ -90,7 +46,7 @@ public class RobotContainer {
   /* RobotMap */
   public final RobotMap m_robotMap = new RobotMap();
 
-  // Subsystems 
+  /* Subsystems */
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
   public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotMap.extenderMotor, m_robotSerializer);
@@ -162,70 +118,69 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    
-    /* Driver Buttons */
-      // Start > Calibrate Odometry
-    new JoystickButton(getDriverController(), XboxController.Button.kBack.value)
-        .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-        // Start > Calibrate Odometry
-    new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
-      .whenPressed(m_robotSwerveDrive::resetGyro);
-      // Left Bumper > Shift Down
-    new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
-        .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
-      // Right Bumper > Shift Up
-    new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-        .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+    for (XboxController.Button binding : XboxController.Button.values()) {
+      /* ------------------------------------ Driver ------------------------------------ */
+      JoystickButton button = new JoystickButton(getDriverController(), binding.value);
+      if (binding == XboxController.Button.kLeftBumper)
+        /* Left Bumper > Shift Down */ button.whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+      else if (binding == XboxController.Button.kRightBumper)
+        /* Right Bumper > Shift Up */ button.whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+      else if (binding == XboxController.Button.kLeftStick)
+        /* Left Stick > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kRightStick)
+        /* Right Stick > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kA)
+        /* A > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kB)
+        /* B > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kX)
+        /* X > TEMP */ button.whenPressed(() -> {
+          m_robotMap.leftFront.reset();
+          m_robotMap.rightFront.reset();
+          m_robotMap.leftBack.reset();
+          m_robotMap.rightBack.reset();
+        });
+      else if (binding == XboxController.Button.kY)
+        /* Y > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kBack)
+        /* Start > Reset Odometry */ button.whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+      else if (binding == XboxController.Button.kStart)
+        /* Start > Reset Gyro */ button.whenPressed(m_robotSwerveDrive::resetGyro);
 
-    // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-    //     .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-
-    new JoystickButton(getDriverController(), XboxController.Button.kX.value) //Temp
-        .whenPressed(() -> m_robotMap.leftFront.reset())
-        .whenPressed(() -> m_robotMap.rightFront.reset())
-        .whenPressed(() -> m_robotMap.leftBack.reset())
-        .whenPressed(() -> m_robotMap.rightBack.reset());
-
-    /* Operator Buttons */
-
-      // X > Extend Intake
-    /*new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(() -> m_robotIntake.runExtender(true));
-      // Y > Retract Intake
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(() -> m_robotIntake.runExtender(false));*/
-    
-    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0)));
-
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));    
-      
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.3)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
-
-    new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-0.75), m_robotStorage))
-        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
-
-    new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(0.75), m_robotStorage))
-        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
-      // Right Bumper > Storage In
-    // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
-    //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
-    //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-    //   // Left Bumper > Storage Out (note: neccessary?)
-    // new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-    //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
-    //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-      // A > Shoot with Odo
-    /*new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));
-      // B > Shoot with Lime
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));*/
+      /* ------------------------------------ Operator ------------------------------------ */
+      button = new JoystickButton(getDriverController(), binding.value);
+      if (binding == XboxController.Button.kLeftBumper)
+        /* Left Bumper > Storage Out */ button
+          .whileHeld(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED), m_robotStorage)
+          .whenReleased(() -> m_robotStorage.runStorage(0.0), m_robotStorage);
+      else if (binding == XboxController.Button.kRightBumper)
+        /* Right Bumper > Storage In */ button
+          .whileHeld(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
+          .whenReleased(() -> m_robotStorage.runStorage(0.0), m_robotStorage);
+      else if (binding == XboxController.Button.kLeftStick)
+        /* Left Stick > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kRightStick)
+        /* Right Stick > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kA)
+        // /* A > Shoot with Odo */ // button.whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood))
+        /* A > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kB)
+        // /* B > Shoot with Lime */ // button.whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry))
+        /* B > Reset Hood*/
+        button.whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));
+      else if (binding == XboxController.Button.kX)
+        // /* X > Extend Intake */ // button.whenPressed(() -> m_robotIntake.runExtender(true))
+        /* X > Run Shooter */ button
+          .whileHeld(() -> m_robotBoomBoom.runDrumShooter(0.3))
+          .whenReleased(() -> m_robotBoomBoom.runDrumShooter(0.0));
+      else if (binding == XboxController.Button.kY)
+        // /* Y >  Retract Intake */ // operatorButton.whenPressed(() -> m_robotIntake.runExtender(false))
+        /* Y > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kBack)
+        /* Back > Unbound */ {/* No Commands */}
+      else if (binding == XboxController.Button.kStart)
+        /* Start > Unbound */ {/* No Commands */}
+    }
   }
 
   /**
