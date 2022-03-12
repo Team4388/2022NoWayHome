@@ -36,7 +36,7 @@ public class Storage extends SubsystemBase {
   
   /**
    * Runs The Storage at a Specifyed Speed
-   * @param input The Specifyed Speed
+   * @param input The value frm -1.0 to 1.0, positive is inwards (towards the shooter)
    */
   public void runStorage(double input) {
     m_storageMotor.set(input);

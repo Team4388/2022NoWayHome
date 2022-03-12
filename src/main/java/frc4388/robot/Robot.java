@@ -129,17 +129,17 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
-    SmartDashboard.putNumber("Turret", m_robotContainer.m_robotMap.shooterTurret.getEncoder().getPosition());
-    SmartDashboard.putNumber("Hood", m_robotContainer.m_robotMap.angleAdjusterMotor.getEncoder().getPosition());
+    // SmartDashboard.putNumber("Turret", m_robotContainer.m_robotMap.shooterTurret.getEncoder().getPosition());
+    // SmartDashboard.putNumber("Hood", m_robotContainer.m_robotMap.angleAdjusterMotor.getEncoder().getPosition());
     current = 
-      m_robotContainer.m_robotBoomBoom.getCurrent() +
+      // m_robotContainer.m_robotBoomBoom.getCurrent() +
       m_robotContainer.m_robotClimber.getCurrent() +
-      m_robotContainer.m_robotHood.getCurrent() +
+      // m_robotContainer.m_robotHood.getCurrent() +
       m_robotContainer.m_robotIntake.getCurrent() +
       m_robotContainer.m_robotSerializer.getCurrent() +
       m_robotContainer.m_robotStorage.getCurrent() +
-      m_robotContainer.m_robotSwerveDrive.getCurrent() +
-      m_robotContainer.m_robotTurret.getCurrent();
+      m_robotContainer.m_robotSwerveDrive.getCurrent();
+      // m_robotContainer.m_robotTurret.getCurrent();
     SmartDashboard.putNumber("Total Robot Current Draw", current);
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled

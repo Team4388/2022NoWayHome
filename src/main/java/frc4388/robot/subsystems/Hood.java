@@ -79,7 +79,10 @@ public double m_fireAngle;
     m_angleAdjusterPIDController.setReference(targetAngle, ControlType.kPosition);
   }
   
-
+ /**
+  * Runs the hood with the given input
+  * @param input value from -1.0 to 1.0, postive is upward (more horizontal shootijng angle)
+  */
   public void runHood(double input) {
     m_angleAdjusterMotor.set(input);
   }

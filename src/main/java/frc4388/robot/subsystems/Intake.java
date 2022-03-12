@@ -47,9 +47,9 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
   /**
-   * Runs The Intake With Triggers.
-   * @param leftTrigger Left Trigger to Run -
-   * @param rightTrigger Right Trigger to Run +
+   * Runs The Intake With Triggers as input
+   * @param leftTrigger Left Trigger to Run Inward
+   * @param rightTrigger Right Trigger to Run Outward
    */
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
     m_intakeMotor.set((rightTrigger - leftTrigger) * 0.3);
@@ -65,7 +65,10 @@ public class Intake extends SubsystemBase {
     double extenderMotorSpeed = extended ? 0.25d : -0.25d;
     m_extenderMotor.set(extenderMotorSpeed);
   }
-
+  /**
+   * Moves the extender motor to pull the intake in or out
+   * @param input A value from -1.0 to 1.0, positive is in
+   */
   public void runExtender(double input) {
     if (!m_serializer.getBeam() && input < 0.) return;
     m_extenderMotor.set(input);

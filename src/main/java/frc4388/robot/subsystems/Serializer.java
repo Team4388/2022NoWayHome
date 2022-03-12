@@ -19,7 +19,10 @@ public class Serializer extends SubsystemBase{
     // m_serializerShooterBelt.set(0);
     
   }
-
+  /**
+   * 
+   * @param input from -1.0 to 1.0, positive is inward
+   */
   public void setSerializer(double input){
     m_serializerBelt.set(input);
   }
