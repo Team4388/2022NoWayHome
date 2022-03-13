@@ -176,7 +176,7 @@ public class RobotContainer {
         new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
         m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
     m_robotHood.setDefaultCommand(
-       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getLeftY()), m_robotHood));
+       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
     // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
@@ -260,9 +260,6 @@ public class RobotContainer {
       
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
         .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(10000)))
-        // .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.6)))
-        // .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
-    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-96)))
         .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
@@ -281,11 +278,14 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
     //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(-500), m_robotBoomBoom));
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+        .whileHeld(new RunCommand(() -> m_robotTurret.runshooterRotatePID(-180.0), m_robotTurret));
+
+    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(-500), m_robotBoomBoom));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
     //     .whileHeld(new InstantCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))

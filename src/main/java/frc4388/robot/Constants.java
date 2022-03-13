@@ -184,7 +184,7 @@ public final class Constants {
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
     public static final double TURRET_SPEED_MULTIPLIER = 0.4d;
-    public static final int DEGREES_PER_ROT = 0;
+    public static final double DEGREES_PER_ROT = 180.0/105.45445251464844;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
     public static final double ENCODER_TICKS_PER_REV = 2048;
@@ -196,10 +196,10 @@ public final class Constants {
     // ID
     public static final int TURRET_MOTOR_CAN_ID = 19;
       //Gains for turret
-    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.1, 0.0, 0.1, 0.0, 0, 0.6);
+    public static final double SHOOTER_TURRET_MIN = -0.6;
       //Gains for hood
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 0.7);
-    public static final double SHOOTER_TURRET_MIN = -1.0;
     public static final double TURRET_FORWARD_LIMIT = 17.0; // TODO: find
     public static final double TURRET_REVERSE_LIMIT = -105.0; // TODO: find
       //Shooter gains for actual Drum
