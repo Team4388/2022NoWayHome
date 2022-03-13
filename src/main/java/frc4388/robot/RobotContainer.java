@@ -104,7 +104,7 @@ public class RobotContainer {
   
   public final Storage m_robotStorage = new Storage(m_robotMap.storageMotor);
   // private final LED m_robotLED = new LED(m_robotMap.LEDController);
-  // public final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
+  public final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   // public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
@@ -151,7 +151,7 @@ public class RobotContainer {
             //getDriverController().getRightX(),
             getDriverController().getRightX(),
             // getDriverController().getRightY(),
-            false),
+            true),
             m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
       // Intake with Triggers
     m_robotIntake.setDefaultCommand(
@@ -251,10 +251,10 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-55.55)))
     //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
       
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
-    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.525)))
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.1)))
     //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-96)))
-    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
+        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))

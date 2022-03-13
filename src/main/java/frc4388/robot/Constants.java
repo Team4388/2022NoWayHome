@@ -219,7 +219,7 @@ public final class Constants {
     // public static final double TARGET_HEIGHT = 67.5;
     // public static final double FOV = 29.8; //Field of view limelight
 
-    public static final double LIME_ANGLE = 24.7;
+    public static final double LIME_ANGLE = 50;
 
     public static final String NAME = "photonCamera";
 
