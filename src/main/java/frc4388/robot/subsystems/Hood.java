@@ -50,13 +50,14 @@ public class Hood extends SubsystemBase {
 
     m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.HOOD_FORWARD_LIMIT);
     m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.HOOD_REVERSE_LIMIT);
-    setHoodSoftLimits(false);
+    setHoodSoftLimits(true);
   }
     
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Hood Angle", m_angleEncoder.getPosition());
   }
 
     /**
@@ -87,7 +88,6 @@ public class Hood extends SubsystemBase {
   */
   public void runHood(double input) {
     m_angleAdjusterMotor.set(input);
-    SmartDashboard.putNumber("Hood Angle", m_angleAdjusterMotor.getAlternateEncoder(1024).getPosition());
   }
 
   public void resetGyroAngleAdj(){

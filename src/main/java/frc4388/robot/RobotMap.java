@@ -236,7 +236,7 @@ public class RobotMap {
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     shooterFalconRight.follow(shooterFalconLeft);
-  }
+//   }
 
 //     // /* Turret Subsytem */
     // shooterFalconRight.configStatorCurrentLimit(new
@@ -247,10 +247,10 @@ public class RobotMap {
 //     // numbers out of our ass anymore
 
 //     // hood subsystem
-//     angleAdjusterMotor.restoreFactoryDefaults();
-//     angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
-//     angleAdjusterMotor.setInverted(true);
-//   }
+    angleAdjusterMotor.restoreFactoryDefaults();
+    angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
+    angleAdjusterMotor.setInverted(true);
+  }
 
 
        

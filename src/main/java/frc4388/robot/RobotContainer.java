@@ -105,7 +105,7 @@ public class RobotContainer {
   public final Storage m_robotStorage = new Storage(m_robotMap.storageMotor);
   // private final LED m_robotLED = new LED(m_robotMap.LEDController);
   public final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
-  // public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
+  public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(30);
@@ -134,6 +134,7 @@ public class RobotContainer {
   
   
   public boolean manual = false;
+  public static boolean softLimits = true;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -174,8 +175,8 @@ public class RobotContainer {
     m_robotTurret.setDefaultCommand(
         new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
         m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
-    // m_robotHood.setDefaultCommand(
-    //    new RunCommand(() -> m_robotHood.runHood(getOperatorController().getLeftY() * 0.15), m_robotHood));
+    m_robotHood.setDefaultCommand(
+       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getLeftY()), m_robotHood));
     // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
@@ -228,11 +229,17 @@ public class RobotContainer {
     /* Operator Buttons */
 
       // X > Extend Intake
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(true), m_robotVisionOdometry));
-      // Y > Retract Intake
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(true), m_robotVisionOdometry));
+
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret));
+  
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+        .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
+
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-    //     .whenPressed(() -> m_robotIntake.runExtender(false));
+    //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
     
     // new JoystickButton(getOperatorController(), XboxController.Button.kA.value) //8ft
     //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.425)))
@@ -252,7 +259,7 @@ public class RobotContainer {
     //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
       
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.1)))
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.2)))
     //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-96)))
         .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
@@ -289,12 +296,21 @@ public class RobotContainer {
     //     .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   
     /* Button Box Buttons */
+
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
-        .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
-        .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
+      .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
+      .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
+      .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
+      .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
+      .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
+      .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood));
+
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
+    //     .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
+    //     .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
     
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-        .whileHeld(new RunMiddleSwitch());
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+    //     .whileHeld(new RunMiddleSwitch());
       
     new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightSwitch")));
@@ -348,6 +364,10 @@ public class RobotContainer {
 
   public void setManual(boolean set) {
     this.manual = set;
+  }
+
+  public static void setSoftLimits(boolean set) {
+    softLimits = set;
   }
 
   /**

@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase {
    * @param rightTrigger Right Trigger to Run Outward
    */
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
-    m_intakeMotor.set((rightTrigger - leftTrigger) * 0.3);
+    m_intakeMotor.set((rightTrigger - leftTrigger) * 0.4);
     SmartDashboard.putNumber("Intake Current Supply", m_intakeMotor.getSupplyCurrent());
     SmartDashboard.putNumber("Intake Current Stator", m_intakeMotor.getStatorCurrent());
   }
