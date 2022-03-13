@@ -112,6 +112,18 @@ public final class Constants {
     public static final double TICK_TIME_TO_SECONDS = 0.1;
     public static final double SECONDS_TO_TICK_TIME = 1 / TICK_TIME_TO_SECONDS;
 
+    // current limits
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_STEER = new SupplyCurrentLimitConfiguration(
+      false, 10, 0, 0);
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_STEER = new StatorCurrentLimitConfiguration(
+      false, 15, 0, 0);
+
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL = new SupplyCurrentLimitConfiguration(
+      false, 10, 0, 0);
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_WHEEL = new StatorCurrentLimitConfiguration(
+      false, 15, 0, 0);
+
+
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
     public static final Pose2d HUB_POSE = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));

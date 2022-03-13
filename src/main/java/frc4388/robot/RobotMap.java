@@ -138,6 +138,28 @@ public class RobotMap {
     rightBackSteerMotor.setNeutralMode(mode);
     rightBackWheelMotor.setNeutralMode(mode);// Coast
 
+    // current limits
+    
+    leftFrontSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    rightFrontSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    leftBackSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    rightBackSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    
+    leftFrontWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightFrontWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+    leftBackWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightBackWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+
+    leftFrontSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    rightFrontSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    leftBackSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    rightBackSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    
+    leftFrontWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightFrontWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+    leftBackWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightBackWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+
     leftFront = new SwerveModule(leftFrontWheelMotor, leftFrontSteerMotor, leftFrontEncoder,
         SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
     leftBack = new SwerveModule(leftBackWheelMotor, leftBackSteerMotor, leftBackEncoder,
@@ -238,10 +260,8 @@ public class RobotMap {
   void configureIntakeMotors(){
     intakeMotor.configFactoryDefault();
     intakeMotor.setNeutralMode(NeutralMode.Coast);
-    intakeMotor.configSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
-    intakeMotor.configStatorCurrentLimit(IntakeConstants.STATOR_CURRENT_LIMIT_CONFIG_INTAKE,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    intakeMotor.configSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE);
+    intakeMotor.configStatorCurrentLimit(IntakeConstants.STATOR_CURRENT_LIMIT_CONFIG_INTAKE);
   }
 
   /* Storage Subsystem */
