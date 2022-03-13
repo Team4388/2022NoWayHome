@@ -29,10 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -52,7 +50,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -60,7 +57,6 @@ import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
@@ -232,11 +228,11 @@ public class RobotContainer {
     /* Operator Buttons */
 
       // X > Extend Intake
-    /*new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(() -> m_robotIntake.runExtender(true));
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+        .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(true), m_robotVisionOdometry));
       // Y > Retract Intake
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(() -> m_robotIntake.runExtender(false));*/
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //     .whenPressed(() -> m_robotIntake.runExtender(false));
     
     // new JoystickButton(getOperatorController(), XboxController.Button.kA.value) //8ft
     //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.425)))
