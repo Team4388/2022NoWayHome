@@ -269,15 +269,7 @@ public class Robot extends TimedRobot {
    * This function is called periodically during operator control.
    */
   @Override
-  public void teleopPeriodic() {
-    boolean robotManual = m_robotContainer.manual;
-    
-    if (robotManual) {
-      m_robotContainer.configureManualButtonBindings();
-    } else {
-      m_robotContainer.configureAutomaticButtonBindings();
-    }
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {

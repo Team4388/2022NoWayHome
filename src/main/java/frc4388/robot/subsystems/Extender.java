@@ -23,9 +23,6 @@ public class Extender extends SubsystemBase {
 
     m_extenderMotor = extenderMotor;
 
-    m_extenderMotor.restoreFactoryDefaults();
-    m_extenderMotor.setInverted(true);
-
     m_inLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_outLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_inLimit.enableLimitSwitch(true);

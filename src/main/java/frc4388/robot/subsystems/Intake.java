@@ -23,9 +23,6 @@ public class Intake extends SubsystemBase {
   public Intake(WPI_TalonFX intakeMotor, Serializer serializer) {
     m_intakeMotor = intakeMotor;
     m_serializer = serializer;
-
-    m_intakeMotor.setNeutralMode(NeutralMode.Brake);
-    m_intakeMotor.setInverted(false);
   }
 
   @Override

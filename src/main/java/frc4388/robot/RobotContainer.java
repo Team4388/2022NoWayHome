@@ -29,7 +29,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
 import com.pathplanner.lib.PathPlanner;
@@ -58,11 +57,11 @@ import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.RunMiddleSwitch;
 import frc4388.robot.commands.Shoot;
 import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
@@ -116,7 +115,7 @@ public class RobotContainer {
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
-  private final ButtonBox m_buttonFox = new ButtonBox(OIConstants.BUTTON_FOX_ID);
+  private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
 
   /* Autonomous */
   private PathPlannerTrajectory loadedPathTrajectory = null;
@@ -226,19 +225,14 @@ public class RobotContainer {
     //     .whenPressed(() -> m_robotMap.leftBack.reset())
     //     .whenPressed(() -> m_robotMap.rightBack.reset()); 
 
-    
-    
-    
-    
-    
     /* Operator Buttons */
 
       // X > Extend Intake
-    /*new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(() -> m_robotIntake.runExtender(true));
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+        .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(true), m_robotVisionOdometry));
       // Y > Retract Intake
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(() -> m_robotIntake.runExtender(false));*/
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //     .whenPressed(() -> m_robotIntake.runExtender(false));
     
     // new JoystickButton(getOperatorController(), XboxController.Button.kA.value) //8ft
     //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.425)))
@@ -263,7 +257,7 @@ public class RobotContainer {
         .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
+        .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
@@ -286,7 +280,6 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
     //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
 
-
       // A > Shoot with Odo
     /*new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
@@ -296,35 +289,21 @@ public class RobotContainer {
     //     .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   
     /* Button Box Buttons */
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kLeftSwitch.value)
-        .whenPressed(new RunCommand(() -> setManual(true)))
-        .whenReleased(new RunCommand(() -> setManual(false)));
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
+        .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
+        .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
     
-    // new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-    //     .whileHeld(new RunCommand(() -> System.out.println("MiddleSwitch")));
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+        .whileHeld(new RunMiddleSwitch());
       
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kRightSwitch.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightSwitch")));
 
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kLeftButton.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
         .whileHeld(new RunCommand(() -> System.out.println("LeftButton")));
 
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kRightButton.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightButton.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightButton")));
-  }
-
-  public void configureManualButtonBindings() {
-
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-      .whileHeld(new RunCommand(() -> System.out.println("MANUAL")));
-
-  }
-
-  public void configureAutomaticButtonBindings() {
-    
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-    .whileHeld(new RunCommand(() -> System.out.println("AUTOMATIC")));
-    
   }
 
   /**
@@ -363,8 +342,8 @@ public class RobotContainer {
     return m_operatorXbox;
   }
 
-  public ButtonBox getButtonFox() {
-    return m_buttonFox;
+  public ButtonBox getButtonBox() {
+    return m_buttonBox;
   }
 
   public void setManual(boolean set) {
