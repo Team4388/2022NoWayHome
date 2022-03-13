@@ -7,7 +7,7 @@ package frc4388.robot.subsystems;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.SparkMaxRelativeEncoder.Type;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -60,8 +60,6 @@ public class Turret extends SubsystemBase {
 
     m_boomBoomRotateMotor.setInverted(true);
 
-    // m_boomBoomRotateMotor.getAlternateEncoder(4096).setPosition(0);
-
     m_boomBoomRotatePIDController.setP(m_shooterTGains.kP);
     m_boomBoomRotatePIDController.setI(m_shooterTGains.kI);
     m_boomBoomRotatePIDController.setD(m_shooterTGains.kD);
@@ -104,12 +102,10 @@ public class Turret extends SubsystemBase {
   }
 
   public double getboomBoomRotatePosition() {
-    // return 0.0;
     return m_boomBoomRotateEncoder.getPosition();
   }
 
   public double getBoomBoomAngleDegrees() {
-    // return 0.0;
     return (m_boomBoomRotateEncoder.getPosition() - ShooterConstants.TURRET_MOTOR_POS_AT_ZERO_ROT) * 360
         / ShooterConstants.TURRET_MOTOR_ROTS_PER_ROT;
   }

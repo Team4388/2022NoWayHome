@@ -112,9 +112,9 @@ public class SwerveDrive extends SubsystemBase {
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            -rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
+            -rot * SwerveDriveConstants.ROTATION_SPEED * speedAdjust, new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
         : new ChassisSpeeds(ySpeedMetersPerSecond, -xSpeedMetersPerSecond,
-            -rot * SwerveDriveConstants.ROTATION_SPEED);
+            -rot * SwerveDriveConstants.ROTATION_SPEED * speedAdjust);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
@@ -262,5 +262,9 @@ public class SwerveDrive extends SubsystemBase {
 
   public double getCurrent(){
     return m_leftFront.getCurrent() + m_rightFront.getCurrent() + m_rightBack.getCurrent() + m_leftBack.getCurrent();
+  }
+
+  public double getVoltage(){
+    return m_leftFront.getVoltage() + m_rightFront.getVoltage() + m_rightBack.getVoltage() + m_leftBack.getVoltage();
   }
 }

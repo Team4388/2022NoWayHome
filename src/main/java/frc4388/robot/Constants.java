@@ -32,7 +32,7 @@ import frc4388.utility.LEDPatterns;
  */
 public final class Constants {
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 4.0;
+    public static final double ROTATION_SPEED = 2.0;
     public static final double WIDTH = 23.5;
     public static final double HEIGHT = 23.5;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
@@ -183,7 +183,7 @@ public final class Constants {
         true, 27, 0, 0);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
-    public static final double TURRET_SPEED_MULTIPLIER = 0.75d;
+    public static final double TURRET_SPEED_MULTIPLIER = 0.4d;
     public static final int DEGREES_PER_ROT = 0;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
@@ -195,19 +195,21 @@ public final class Constants {
     /* Turret Constants */
     // ID
     public static final int TURRET_MOTOR_CAN_ID = 19;
+      //Gains for turret
     public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
+      //Gains for hood
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 0.7);
     public static final double SHOOTER_TURRET_MIN = -1.0;
-    public static final double TURRET_FORWARD_LIMIT = 17.0;
-    public static final double TURRET_REVERSE_LIMIT = -105.0;
-
-    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0, 0, 0, 0, 0, 0); // TODO: tune values
+    public static final double TURRET_FORWARD_LIMIT = 17.0; // TODO: find
+    public static final double TURRET_REVERSE_LIMIT = -105.0; // TODO: find
+      //Shooter gains for actual Drum
+    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0.4, 0.0, 15.0, 0.05, 0, 0); // TODO: tune values
 
     /* Hood Constants */
     public static final int SHOOTER_ANGLE_ADJUST_ID = 20;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; // TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; // TODO: Find
-    public static final double HOOD_FORWARD_LIMIT = -0.0; // TODO: find
+    public static final double HOOD_FORWARD_LIMIT = 0.0; // TODO: find
     public static final double HOOD_REVERSE_LIMIT = -150; // TODO: find
 
   }

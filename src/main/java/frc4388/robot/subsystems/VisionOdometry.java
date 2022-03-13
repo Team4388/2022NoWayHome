@@ -112,7 +112,7 @@ public class VisionOdometry extends SubsystemBase {
     }
 
     guess = correctGuessForCenter(guess, m_shooter.getBoomBoomAngleDegrees());
-    guess = correctGuessForGyro(guess, m_drive.getRegGyro().getDegrees());
+    // guess = correctGuessForGyro(guess, m_drive.getRegGyro().getDegrees());
 
     SmartDashboard.putNumber("Vision ODO x: ", guess.x);
     SmartDashboard.putNumber("Vision ODO y: ", guess.y);

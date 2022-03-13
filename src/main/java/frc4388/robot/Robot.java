@@ -143,6 +143,8 @@ public class Robot extends TimedRobot {
       m_robotContainer.m_robotSwerveDrive.getCurrent();
       // m_robotContainer.m_robotTurret.getCurrent();
     SmartDashboard.putNumber("Total Robot Current Draw", current);
+    SmartDashboard.putNumber("Drive Train Voltage", m_robotContainer.m_robotSwerveDrive.getVoltage());
+    SmartDashboard.putNumber("Drive Train Current", m_robotContainer.m_robotSwerveDrive.getCurrent());
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or

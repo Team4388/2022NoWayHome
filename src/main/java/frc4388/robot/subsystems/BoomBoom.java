@@ -37,6 +37,7 @@ public class BoomBoom extends SubsystemBase {
 
   double velP;
   double input;
+  public double pidOffset = 0;
 
   public boolean m_isDrumReady = false;
   public double m_fireVel;
@@ -56,6 +57,7 @@ public class BoomBoom extends SubsystemBase {
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
     m_shooterFalconLeft = shooterFalconLeft;
     m_shooterFalconRight = shooterFalconRight;
+    setShooterGains();
 
     try {
       // This is a helper class that allows us to read a CSV file into a Java array.
@@ -183,6 +185,9 @@ public class BoomBoom extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     // speed2 = SmartDashboard.getNumber("Shooter Offset", 0.0);
+    SmartDashboard.putNumber("Shooter Current", getCurrent());
+    SmartDashboard.putNumber("Shooter Voltage",  m_shooterFalconLeft.getMotorOutputVoltage());
+    SmartDashboard.putNumber("Shooter Actual Velocity", m_shooterFalconLeft.getSelectedSensorVelocity());
   }
 
   public void passRequiredSubsystem(Hood subsystem0, Turret subsystem1) {
@@ -211,7 +216,8 @@ public class BoomBoom extends SubsystemBase {
   }
 
   public void runDrumShooterVelocityPID(double targetVel) {
-    m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); // Init
+    SmartDashboard.putNumber("Target Drum Velocity", 10000 + pidOffset);
+    m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel + pidOffset); // Init
     
     // New BoomBoom controller stuff
     // Controls a motor with the output of the BangBang controller
@@ -221,6 +227,10 @@ public class BoomBoom extends SubsystemBase {
     // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 *
     // feedforward.calculate(targetVel));
     // m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
+  }
+
+  public void updateOffset(double change) {
+    pidOffset = pidOffset + change;
   }
 
   public void increaseSpeed(double amount)
