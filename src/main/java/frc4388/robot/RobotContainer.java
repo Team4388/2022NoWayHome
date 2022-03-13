@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -51,6 +52,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -63,6 +65,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.RunMiddleSwitch;
 import frc4388.robot.commands.Shoot;
 import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
@@ -226,11 +229,6 @@ public class RobotContainer {
     //     .whenPressed(() -> m_robotMap.leftBack.reset())
     //     .whenPressed(() -> m_robotMap.rightBack.reset()); 
 
-    
-    
-    
-    
-    
     /* Operator Buttons */
 
       // X > Extend Intake
@@ -263,7 +261,7 @@ public class RobotContainer {
     //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
+        .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
@@ -286,7 +284,6 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
     //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
 
-
       // A > Shoot with Odo
     /*new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
@@ -297,11 +294,11 @@ public class RobotContainer {
   
     /* Button Box Buttons */
     new JoystickButton(getButtonFox(), ButtonBox.Button.kLeftSwitch.value)
-        .whenPressed(new RunCommand(() -> setManual(true)))
-        .whenReleased(new RunCommand(() -> setManual(false)));
+        .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
+        .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
     
-    // new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-    //     .whileHeld(new RunCommand(() -> System.out.println("MiddleSwitch")));
+    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
+        .whileHeld(new RunMiddleSwitch());
       
     new JoystickButton(getButtonFox(), ButtonBox.Button.kRightSwitch.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightSwitch")));
@@ -311,20 +308,6 @@ public class RobotContainer {
 
     new JoystickButton(getButtonFox(), ButtonBox.Button.kRightButton.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightButton")));
-  }
-
-  public void configureManualButtonBindings() {
-
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-      .whileHeld(new RunCommand(() -> System.out.println("MANUAL")));
-
-  }
-
-  public void configureAutomaticButtonBindings() {
-    
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-    .whileHeld(new RunCommand(() -> System.out.println("AUTOMATIC")));
-    
   }
 
   /**
