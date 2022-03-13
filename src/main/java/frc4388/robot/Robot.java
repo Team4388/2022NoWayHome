@@ -270,6 +270,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    boolean robotManual = m_robotContainer.manual;
+    
+    if (robotManual) {
+      m_robotContainer.configureManualButtonBindings();
+    } else {
+      m_robotContainer.configureAutomaticButtonBindings();
+    }
   }
 
   @Override

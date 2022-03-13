@@ -132,6 +132,9 @@ public class RobotContainer {
   // Function that removes the ".path" from the end of a string.
   private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern
       .compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
+  
+  
+  public boolean manual = false;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -292,17 +295,13 @@ public class RobotContainer {
     // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
     //     .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   
-  
-  
-  
-  
     /* Button Box Buttons */
     new JoystickButton(getButtonFox(), ButtonBox.Button.kLeftSwitch.value)
-        .whenPressed(new InstantCommand(() -> configureManualButtonBindings()))
-        .whenReleased(new InstantCommand(() -> configureButtonBindings()));
+        .whenPressed(new RunCommand(() -> setManual(true)))
+        .whenReleased(new RunCommand(() -> setManual(false)));
     
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-        .whileHeld(new RunCommand(() -> System.out.println("MiddleSwitch")));
+    // new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
+    //     .whileHeld(new RunCommand(() -> System.out.println("MiddleSwitch")));
       
     new JoystickButton(getButtonFox(), ButtonBox.Button.kRightSwitch.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightSwitch")));
@@ -314,13 +313,18 @@ public class RobotContainer {
         .whileHeld(new RunCommand(() -> System.out.println("RightButton")));
   }
 
-  public void configureManualButtonBindings()
-  {
+  public void configureManualButtonBindings() {
+
     new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
-      .whileHeld(new RunCommand(() -> System.out.println("Deez Nuts")));
-  
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kRightSwitch.value)
-      .whileHeld(new RunCommand(() -> System.out.println("Inna mouth")));
+      .whileHeld(new RunCommand(() -> System.out.println("MANUAL")));
+
+  }
+
+  public void configureAutomaticButtonBindings() {
+    
+    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
+    .whileHeld(new RunCommand(() -> System.out.println("AUTOMATIC")));
+    
   }
 
   /**
@@ -361,6 +365,10 @@ public class RobotContainer {
 
   public ButtonBox getButtonFox() {
     return m_buttonFox;
+  }
+
+  public void setManual(boolean set) {
+    this.manual = set;
   }
 
   /**
