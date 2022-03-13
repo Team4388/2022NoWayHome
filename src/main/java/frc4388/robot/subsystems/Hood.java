@@ -11,6 +11,7 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc4388.robot.Constants.ShooterConstants;
@@ -48,7 +49,7 @@ public double m_fireAngle;
 
     m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.HOOD_FORWARD_LIMIT);
     m_angleAdjusterMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.HOOD_REVERSE_LIMIT);
-    setHoodSoftLimits(true);
+    setHoodSoftLimits(false);
   }
     
 
@@ -85,6 +86,7 @@ public double m_fireAngle;
   */
   public void runHood(double input) {
     m_angleAdjusterMotor.set(input);
+    SmartDashboard.putNumber("Hood Angle", m_angleAdjusterMotor.getAlternateEncoder(1024).getPosition());
   }
 
   public void resetGyroAngleAdj(){

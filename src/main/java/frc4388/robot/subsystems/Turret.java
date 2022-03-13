@@ -56,7 +56,7 @@ public class Turret extends SubsystemBase {
 
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.TURRET_FORWARD_LIMIT);
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.TURRET_REVERSE_LIMIT);
-    setTurretSoftLimits(true);
+    setTurretSoftLimits(false);
 
     m_boomBoomRotateMotor.setInverted(true);
 
@@ -89,6 +89,7 @@ public class Turret extends SubsystemBase {
 
   public void runTurretWithInput(double input) {
     m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER);
+    SmartDashboard.putNumber("Turret Angle", m_boomBoomRotateMotor.getAlternateEncoder(1024).getPosition());
   }
 
   public void runshooterRotatePID(double targetAngle) {
