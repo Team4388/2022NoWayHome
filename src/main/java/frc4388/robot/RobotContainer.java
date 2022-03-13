@@ -298,8 +298,8 @@ public class RobotContainer {
   
     /* Button Box Buttons */
     new JoystickButton(getButtonFox(), ButtonBox.Button.kLeftSwitch.value)
-        .whenPressed(new InstantCommand(() -> configureManualButtonBindings()))
-        .whenReleased(new InstantCommand(() -> configureButtonBindings()));
+        .whenPressed(new RunCommand(() -> configureManualButtonBindings()))
+        .whenReleased(new RunCommand(() -> configureButtonBindings()));
     
     new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
         .whileHeld(new RunCommand(() -> System.out.println("MiddleSwitch")));
