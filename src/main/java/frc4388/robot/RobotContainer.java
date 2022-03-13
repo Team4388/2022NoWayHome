@@ -259,7 +259,7 @@ public class RobotContainer {
     //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
       
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.2)))
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
     //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-96)))
         .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
