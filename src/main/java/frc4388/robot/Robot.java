@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc4388.utility.DesmosServer;
 import frc4388.utility.RobotTime;
 import frc4388.utility.VelocityCorrection;
 
@@ -45,6 +46,8 @@ public class Robot extends TimedRobot {
   private HashMap<String, Pose2d> odoChoices = new HashMap<>();
   private Pose2d selectedOdo;
   private double current;
+
+  private static DesmosServer desmosServer = new DesmosServer(8000);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -116,6 +119,8 @@ public class Robot extends TimedRobot {
         return "Not Running";
       }
     });
+
+    desmosServer.start();
   }
 
   /**
