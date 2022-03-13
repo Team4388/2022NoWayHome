@@ -286,7 +286,7 @@ public class RobotMap {
 //   public final DigitalInput beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
 
     void configureStorageMotors() {
-            storageMotor.restoreFactoryDefaults();
+        storageMotor.restoreFactoryDefaults();
     }
 
 }

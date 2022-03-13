@@ -31,7 +31,7 @@ public class Hood extends SubsystemBase {
   
   public boolean m_isHoodReady = false;
 
-public double m_fireAngle;
+  public double m_fireAngle;
   
 
   /** Creates a new Hood. */
