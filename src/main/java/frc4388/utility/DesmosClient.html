@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://www.desmos.com/api/v1.6/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+        <style>
+            #status {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                width: 60pt;
+                height: 20pt;
+
+                background-color: rgba(0, 0, 0, .8);
+
+                font-family: Arial, Helvetica, sans-serif;
+
+                text-align: center;
+                line-height: 20pt;
+            }
+        </style>
+        <title>Desmos Client</title>
+    </head>
+    <body>
+        <div id="calculator" style="width: 100wh; height: 100vh; position: absolute; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden;"></div>
+        <div id="status" style="color: #00FF00;">Active</div>
+        <script>
+            const EXPRESSION_TYPES = {
+                'expression': ['number', 'point', 'array'],
+                'note': ['note'],
+                'table': ['table']
+            };
+
+            let status = document.getElementById('status');
+
+            let elt = document.getElementById('calculator');
+            let calculator = Desmos.GraphingCalculator(elt);
+
+            let helperExpressions = {};
+            let variables = [];
+
+            let url = prompt("Robot URL", "localhost");
+            let port = 8000;
+
+            function requestVariables() {
+                let http = new XMLHttpRequest();
+                http.addEventListener("load", setVariables);
+                http.addEventListener("error", handleError);
+                http.open("POST", `http://${url}:${port}`);
+
+                let json = serverStringify(getVariables());
+                http.send(json);
+            }
+
+            function handleError() {
+                status.style = 'color: #FF0000;';
+                status.innerHTML = 'Offline';
+
+                console.log('Request failed');
+                setTimeout(requestVariables, 0);
+            }
+
+            function setVariables() {
+                status.style = 'color: #00FF00;';
+                status.innerHTML = 'Active';
+
+                variables = JSON.parse(this.responseText);
+
+                for(let variable of variables) {
+                    if(EXPRESSION_TYPES['expression'].includes(variable['type'])) {
+                        variable['lname'] = latexName(variable['name']);
+                        calculator.setExpression({ id: variable['name'], latex: variable['lname'] + '=' + variable['value']});
+                    } else if(EXPRESSION_TYPES['table'].includes(variable['type'])) {
+                        let cols = getColumns(variable['value'].split(' '));
+                        calculator.setExpression({ type: 'table', id: variable['name'], columns: cols});
+                    } else
+                        console.log('Invalid input type : ' + variable['type']);
+                }
+                
+                setTimeout(requestVariables, 0);
+            }
+
+            function getColumns(unparsedCols) {
+                let cols = [];
+                for(let col of unparsedCols) {
+                    col = col.split(',');
+                    let latexStr = latexName(col[0]);
+                    let valuesArr = col.slice(1, col.length);
+
+                    cols.push({ latex: latexStr, values: valuesArr });
+                }
+
+                return cols;
+            }
+
+            function getVariables() {
+                let vars = [];
+                let expressions = calculator.getExpressions();
+
+                for(expression of expressions) {
+                    if(expression.type === 'expression')
+                        vars = readVariable(expression.latex);
+                    else if(expression.type === 'table')
+                        vars = readTable(expression);
+                    else
+                        console.log('Invalid output type : ' + expression.type);
+                }
+
+                return vars;
+            }
+
+            function findExpressionType(lvalue) {
+                let raw = lvalue.replace('\\left', '')
+                                .replace('\\right', '');
+                
+                if(raw.match(/\([a-zA-Z0-9._{}\(\)]*,[a-zA-Z0-9._{}\(\)]*\)/))
+                    return 'point';
+                else if(raw.match(/\[[a-zA-Z0-9.,_{}\(\)]*\]/))
+                    return 'array';
+                else
+                    return 'number';
+            }
+
+            function readVariable(latex) {
+                let vars = [];
+                let lname = latex.split('=')[0];
+                let lvalue = latex.split('=')[1];
+                
+                if(lname && lname != '' && lvalue && lvalue != '') {
+                    let name = regularName(lname);
+                    let value = regularValue(lvalue);
+
+                    let type = findExpressionType(lvalue);
+
+                    let numericValue, numericValueX, numericValueY, listValue;
+                    switch(type) {
+                        case 'number':
+                            numericValue = getNumericValue(name, lname);
+                            break;
+                        case 'point':
+                            numericValueX = getNumericValue(name + 'x', lname + '.x');
+                            numericValueY = getNumericValue(name + 'y', lname + '.y');
+                            break;
+                        case 'array':
+                            listValue = getListValue(name, lname);
+                            break;
+                    }
+
+                    if(numericValue)
+                        vars.push({"name": name, "type": "number", "value": numericValue});
+                    if(numericValueX && numericValueY)
+                        vars.push({"name": name, "type": "point", "value": numericValueX + ',' + numericValueY});
+                    if(listValue)
+                        vars.push({"name": name, "type": "array", "value": listValue.toString()});
+                }
+
+                return vars;
+            }
+
+            function readTable(expression) {
+                let vars = [];
+
+                for(let column of expression.columns) {
+                    let name = regularName(column.latex);
+                    let listValue = getListValue(name, column.latex);
+
+                    if(listValue)
+                        vars.push({"name": name, "type": "array", "value": listValue.toString()});
+                }
+
+                return vars;
+            }
+
+            function getNumericValue(key, lname) {
+                if(!(key in helperExpressions))
+                    helperExpressions[key] = calculator.HelperExpression({ latex: lname });
+                else
+                    return helperExpressions[key].numericValue;
+            }
+
+            function getListValue(key, lname) {
+                if(!(key in helperExpressions))
+                    helperExpressions[key] = calculator.HelperExpression({ latex: lname });
+                else
+                    return helperExpressions[key].listValue;
+            }
+
+            function latexName(name) {
+                return name.substring(0, 1) + '_{' + name.substring(1, name.length) + '}';
+            }
+
+            function regularName(lname) {
+                return lname.substring(0, 1) + lname.substring(3, lname.length - 1);
+            }
+
+            function regularValue(lvalue) {
+                let value = lvalue.replace('\\left(', '')
+                                .replace('\\right)', '')
+                                .replace('\\left[', '')
+                                .replace('\\right]', '')
+                                .replace('(', '')
+                                .replace(')', '')
+                                .replace('[', '')
+                                .replace(']', '');
+                return value;
+            }
+
+            function serverStringify(vars) {
+                let stringified = '';
+
+                for(let variable of vars) {
+                    stringified += variable['name'] + '\t'
+                                + variable['type'] + '\t'
+                                + variable['value'] + '\n';
+                }
+
+                return stringified;
+            }
+
+            setTimeout(requestVariables, 0);
+          </script>
+    </body>
+</html>
