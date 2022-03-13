@@ -119,7 +119,7 @@ public class RobotContainer {
   /* Controllers */
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
-  private final ButtonBox m_buttonFox = new ButtonBox(OIConstants.BUTTON_FOX_ID);
+  private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
 
   /* Autonomous */
   private PathPlannerTrajectory loadedPathTrajectory = null;
@@ -293,20 +293,20 @@ public class RobotContainer {
     //     .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   
     /* Button Box Buttons */
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kLeftSwitch.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
         .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
         .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
     
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kMiddleSwitch.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
         .whileHeld(new RunMiddleSwitch());
       
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kRightSwitch.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightSwitch")));
 
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kLeftButton.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
         .whileHeld(new RunCommand(() -> System.out.println("LeftButton")));
 
-    new JoystickButton(getButtonFox(), ButtonBox.Button.kRightButton.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightButton.value)
         .whileHeld(new RunCommand(() -> System.out.println("RightButton")));
   }
 
@@ -346,8 +346,8 @@ public class RobotContainer {
     return m_operatorXbox;
   }
 
-  public ButtonBox getButtonFox() {
-    return m_buttonFox;
+  public ButtonBox getButtonBox() {
+    return m_buttonBox;
   }
 
   public void setManual(boolean set) {
