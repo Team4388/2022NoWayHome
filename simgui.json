@@ -23,6 +23,7 @@
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/BoomBoom": "Subsystem",
       "/LiveWindow/Climber": "Subsystem",
+      "/LiveWindow/Extender": "Subsystem",
       "/LiveWindow/Hood": "Subsystem",
       "/LiveWindow/Intake": "Subsystem",
       "/LiveWindow/LED": "Subsystem",

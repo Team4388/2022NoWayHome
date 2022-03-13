@@ -222,6 +222,7 @@ public class RobotMap {
 //     // hood subsystem
 //     angleAdjusterMotor.restoreFactoryDefaults();
 //     angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
+//     angleAdjusterMotor.setInverted(true);
 //   }
 
 
