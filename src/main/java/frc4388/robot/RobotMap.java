@@ -37,6 +37,10 @@ public class RobotMap {
     // configureLEDMotorControllers();
     configureSwerveMotorControllers();
     // configureShooterMotorControllers();
+    configureIntakeMotors();
+    configureExtenderMotors();
+    configureSerializerMotors();
+    configureStorageMotors();
   }
 
   /* LED Subsystem */
@@ -182,7 +186,7 @@ public class RobotMap {
     rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(),
         RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    }
+}
 
 //   // Shooter Config
 //   /* Boom Boom Subsystem */
@@ -257,15 +261,32 @@ public class RobotMap {
   public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
   public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
 
-  void configureIntakeMotors(){
+  void configureIntakeMotors() {
     intakeMotor.configFactoryDefault();
+    intakeMotor.setInverted(false);
     intakeMotor.setNeutralMode(NeutralMode.Coast);
+
     intakeMotor.configSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE);
     intakeMotor.configStatorCurrentLimit(IntakeConstants.STATOR_CURRENT_LIMIT_CONFIG_INTAKE);
   }
 
+  void configureExtenderMotors() {
+      extenderMotor.restoreFactoryDefaults();
+      extenderMotor.setInverted(true);
+      extenderMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+    void configureSerializerMotors() {
+        serializerBelt.restoreFactoryDefaults();
+    }
+
   /* Storage Subsystem */
-  public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
+    public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
 //   public final DigitalInput beamShooter = new DigitalInput(StorageConstants.BEAM_SENSOR_SHOOTER);
 //   public final DigitalInput beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
+
+    void configureStorageMotors() {
+            storageMotor.restoreFactoryDefaults();
+    }
+
 }
