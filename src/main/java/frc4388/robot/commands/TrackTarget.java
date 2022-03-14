@@ -16,7 +16,9 @@ import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
+import frc4388.robot.subsystems.Vision;
 import frc4388.robot.subsystems.VisionOdometry;
+import frc4388.utility.DesmosServer;
 
 public class TrackTarget extends CommandBase {
   /** Creates a new TrackTarget. */
@@ -36,6 +38,8 @@ public class TrackTarget extends CommandBase {
   double output;
   Pose2d pos = new Pose2d();
   ArrayList<Point> points = new ArrayList<>();
+
+  boolean isExecuted = false;
 
   // public static Gains m_aimGains;
 
@@ -64,25 +68,37 @@ public class TrackTarget extends CommandBase {
     try {
       m_visionOdometry.setLEDs(true);
       points = m_visionOdometry.getTargetPoints();
-      double pointTotal = 0;
-      for(Point point : points) {
-        pointTotal = pointTotal + point.x;
+      for(int i = 0; i < points.size(); i++) {
+        DesmosServer.putPoint("Point" + i, points.get(i));
       }
-      average = pointTotal/points.size();
-      output = average/VisionConstants.LIME_HIXELS * VisionConstants.TURRET_kP;
-      m_turret.runTurretWithInput(output);
-      pos = m_visionOdometry.getVisionOdometry();
-      distance = Math.hypot(pos.getX(), pos.getY());
+
+      Point average = VisionOdometry.averagePoint(points);
+      DesmosServer.putPoint("average", average);
+
+      output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
+      output *= 2;
+      DesmosServer.putDouble("output", output);
+      // m_turret.runTurretWithInput(output);
+
+      double y_rot = average.y / VisionConstants.LIME_VIXELS;
+      y_rot *= Math.toRadians(VisionConstants.V_FOV);
+      y_rot -= Math.toRadians(VisionConstants.V_FOV) / 2;
+      y_rot += Math.toRadians(VisionConstants.LIME_ANGLE);
+
+      double distance = (VisionConstants.TARGET_HEIGHT - VisionConstants.LIME_HEIGHT) / Math.tan(y_rot);
+      DesmosServer.putDouble("distance", distance);
+
+      // isExecuted = true;
     }
     catch (Exception e){
       System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
-    vel = m_boomBoom.getVelocity(distance);
-    hood = m_boomBoom.getHood(distance);
+    // vel = m_boomBoom.getVelocity(distance);
+    // hood = m_boomBoom.getHood(distance);
     // m_boomBoom.runDrumShooter(vel);
     // m_boomBoom.runDrumShooterVelocityPID(vel);
     // m_hood.runAngleAdjustPID(hood);
-    //m_turret.runshooterRotatePID(m_targetAngle);
+    // m_turret.runshooterRotatePID(m_targetAngle);
   }
 
   // Called once the command ends or is interrupted.
@@ -94,5 +110,6 @@ public class TrackTarget extends CommandBase {
   @Override
   public boolean isFinished() {
     return false;
+    // return isExecuted && Math.abs(output) < .1;
   }
 }

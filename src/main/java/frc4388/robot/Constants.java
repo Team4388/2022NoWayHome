@@ -221,16 +221,17 @@ public final class Constants {
     // public static final double TARGET_HEIGHT = 67.5;
     // public static final double FOV = 29.8; //Field of view limelight
 
-    public static final double LIME_ANGLE = 50;
+    public static final double LIME_ANGLE = 56.4;
 
     public static final String NAME = "photonCamera";
 
     public static final double TARGET_HEIGHT = 8*12 + 8; //TODO: Convert to metric (does this still need to be converted?)
+    public static final double LIME_HEIGHT = 26;
     public static final double TARGET_RADIUS = 4*12; //TODO: Convert to metric (does this still need to be converted?)
     public static final double H_FOV = 59.6;
     public static final double V_FOV = 49.7;
-    public static final double LIME_VIXELS = 960;
-    public static final double LIME_HIXELS = 720;
+    public static final double LIME_HIXELS = 960;
+    public static final double LIME_VIXELS = 720;
     public static final double TURRET_kP = 0.1;
 
     public static final double RANGE = 10;

@@ -107,7 +107,7 @@ public class RobotContainer {
   public final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
-  private final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
+  public final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
   private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(30);
   private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(31);
   public final Climber m_robotClimber = new Climber(testElbowMotor);
@@ -304,8 +304,8 @@ public class RobotContainer {
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
 
        //B > Shoot with Lime
-    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-    //     .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry));
   
     /* Button Box Buttons */
 
