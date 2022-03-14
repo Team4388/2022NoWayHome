@@ -54,6 +54,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -61,6 +62,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.ExtenderIntakeGroup;
 import frc4388.robot.commands.RunMiddleSwitch;
 import frc4388.robot.commands.Shoot;
 import frc4388.robot.commands.TrackTarget;
@@ -237,8 +239,8 @@ public class RobotContainer {
     // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
     //     .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret));
   
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
@@ -260,9 +262,9 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-55.55)))
     //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
       
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(10000)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
+    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(10000)))
+    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
@@ -272,14 +274,26 @@ public class RobotContainer {
         .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     .whileHeld(new RunExtender(m_robotIntake, m_robotExtender, 0.5))
+    //     .whenReleased(new RunCommand(() -> RunExtender.changeDirection(), m_robotIntake, m_robotExtender));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+        .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
+        // .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.changeDirection()));
+
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     .whenPressed(new ParallelCommandGroup(
+    //                  new RunCommand(() -> m_robotIntake.m_intakeMotor.set(ExtenderIntakeGroup.direction * -0.2), m_robotIntake),
+    //                  new RunCommand(() -> m_robotExtender.m_extenderMotor.set(ExtenderIntakeGroup.direction * 0.5), m_robotExtender)))
+    //     .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.changeDirection()));
+    
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotExtender.m_extenderMotor.getEncoder().setPosition(0)));
+
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
-        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender))
-        .whenReleased(new RunCommand(() -> m_robotExtender.switchDirection(), m_robotExtender));
-
-    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-    //     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
-    //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
         .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
@@ -314,10 +328,15 @@ public class RobotContainer {
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
       .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
       .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
+      .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
+
       .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
+      .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
+
       .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
-      .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood));
+      .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
+      .whenReleased(new InstantCommand(() -> m_robotExtender.m_extenderMotor.getEncoder().setPosition(0), m_robotExtender));
 
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
     //     .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))

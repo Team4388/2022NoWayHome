@@ -4,20 +4,24 @@
 
 package frc4388.robot.subsystems;
 
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc4388.robot.Constants.ExtenderConstants;
+import frc4388.utility.DesmosServer;
 
 public class Extender extends SubsystemBase {
   
-  CANSparkMax m_extenderMotor;
+  public CANSparkMax m_extenderMotor;
 
   private SparkMaxLimitSwitch m_inLimit;
   private SparkMaxLimitSwitch m_outLimit;
 
   public boolean toggle;
-  public int direction = 1;
 
   /** Creates a new Extender. */
   public Extender(CANSparkMax extenderMotor) {
@@ -26,13 +30,28 @@ public class Extender extends SubsystemBase {
 
     m_inLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_outLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_inLimit.enableLimitSwitch(true);
-    m_outLimit.enableLimitSwitch(true);
+    m_inLimit.enableLimitSwitch(false);
+    m_outLimit.enableLimitSwitch(false);
+
+    m_extenderMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ExtenderConstants.EXTENDER_FORWARD_LIMIT);
+    m_extenderMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ExtenderConstants.EXTENDER_REVERSE_LIMIT);
+    setExtenderSoftLimits(true);
+  }
+
+  /**
+   * Set status of extender motor soft limits.
+   * @param set Boolean to set soft limits to.
+   */
+  public void setExtenderSoftLimits(boolean set) {
+    m_extenderMotor.enableSoftLimit(SoftLimitDirection.kForward, set);
+    m_extenderMotor.enableSoftLimit(SoftLimitDirection.kReverse, set);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Extender Position", m_extenderMotor.getEncoder().getPosition());
+    DesmosServer.putDouble("ExtenderPosition", m_extenderMotor.getEncoder().getPosition());
   }
 
     /**
@@ -47,12 +66,7 @@ public class Extender extends SubsystemBase {
 
   public void runExtender(double input) {
     // if (!m_serializer.getBeam() && input < 0.) return;
-    if (this.direction > 0) {}
-    m_extenderMotor.set(this.direction * input);
-  }
-
-  public void switchDirection() {
-    this.direction = this.direction * -1;
+    m_extenderMotor.set(input);
   }
 
   public double getCurrent() {

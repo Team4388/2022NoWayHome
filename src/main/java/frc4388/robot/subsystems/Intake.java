@@ -12,11 +12,13 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc4388.robot.commands.ExtenderIntakeGroup;
+
 import com.revrobotics.CANSparkMax;
 
 public class Intake extends SubsystemBase {
 
-  private WPI_TalonFX m_intakeMotor;
+  public WPI_TalonFX m_intakeMotor;
   private Serializer m_serializer;
 
   /** Creates a new Intake. */
@@ -28,6 +30,8 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Intake Percent Output", m_intakeMotor.get());
+    SmartDashboard.putNumber("Extender Direction", ExtenderIntakeGroup.direction);
   }
   /**
    * Runs The Intake With Triggers as input

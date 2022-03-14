@@ -146,6 +146,12 @@ public final class Constants {
     public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_INTAKE = new StatorCurrentLimitConfiguration(
         false, 15, 0, 0);
   }
+
+  public static final class ExtenderConstants {
+    public static final double EXTENDER_FORWARD_LIMIT = 250.0;
+    public static final double EXTENDER_REVERSE_LIMIT = 0.0;
+  }
+
   public static final class StorageConstants {
     public static final int STORAGE_CAN_ID = 18;
     public static final int BEAM_SENSOR_SHOOTER = 28; //TODO

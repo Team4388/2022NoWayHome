@@ -5,25 +5,19 @@
 package frc4388.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc4388.robot.subsystems.Extender;
 import frc4388.robot.subsystems.Intake;
 
-public class RunExtenderOut extends CommandBase {
+public class RunIntakeConditionally extends CommandBase {
 
   private Intake intake;
-  private Extender extender;
-  private int direction;
 
-  /** Creates a new RunExtenderOut. */
-  public RunExtenderOut(Intake intake, Extender extender) {
+  /** Creates a new RunIntakeConditionally. */
+  public RunIntakeConditionally(Intake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
-
+    
     this.intake = intake;
-    this.extender = extender;
 
-    this.direction = 1;
-
-    addRequirements(this.intake, this.extender);
+    addRequirements(this.intake);
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +26,13 @@ public class RunExtenderOut extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (ExtenderIntakeGroup.direction > 0) {
+      this.intake.m_intakeMotor.set(-0.4);
+    } else {
+      this.intake.m_intakeMotor.set(0);
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
