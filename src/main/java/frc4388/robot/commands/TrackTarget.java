@@ -39,6 +39,8 @@ public class TrackTarget extends CommandBase {
   Pose2d pos = new Pose2d();
   ArrayList<Point> points = new ArrayList<>();
 
+  double m=0;
+  double b=0;
   boolean isExecuted = false;
 
   // public static Gains m_aimGains;
@@ -88,6 +90,14 @@ public class TrackTarget extends CommandBase {
       double distance = (VisionConstants.TARGET_HEIGHT - VisionConstants.LIME_HEIGHT) / Math.tan(y_rot);
       DesmosServer.putDouble("distance", distance);
 
+      updateRegressionDesmos();
+      double regressedDistance = distanceRegression(distance);
+      DesmosServer.putDouble("distanceReg", regressedDistance);
+
+      //Vision odemetry circle fit based pose estimate
+      Point targetOffset = m_visionOdometry.getTargetOffset();
+      DesmosServer.putPoint("targetOff", targetOffset);
+
       // isExecuted = true;
     }
     catch (Exception e){
@@ -99,6 +109,15 @@ public class TrackTarget extends CommandBase {
     // m_boomBoom.runDrumShooterVelocityPID(vel);
     // m_hood.runAngleAdjustPID(hood);
     // m_turret.runshooterRotatePID(m_targetAngle);
+  }
+
+  public final double distanceRegression(double distance) {
+    return m * distance + b;
+  }
+
+  public void updateRegressionDesmos() {
+    m = DesmosServer.readDouble("m");
+    b = DesmosServer.readDouble("b");
   }
 
   // Called once the command ends or is interrupted.
