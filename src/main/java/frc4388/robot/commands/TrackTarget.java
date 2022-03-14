@@ -23,7 +23,6 @@ import frc4388.utility.DesmosServer;
 public class TrackTarget extends CommandBase {
   /** Creates a new TrackTarget. */
   Turret m_turret;
-  SwerveDrive m_drive;
   VisionOdometry m_visionOdometry;
   BoomBoom m_boomBoom;
   Hood m_hood;
@@ -45,15 +44,14 @@ public class TrackTarget extends CommandBase {
 
   // public static Gains m_aimGains;
 
-  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, SwerveDrive drive, VisionOdometry visionOdometry) {
+  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
-    m_drive = drive;
     m_boomBoom = boomBoom;
     m_hood = hood;
     m_visionOdometry = visionOdometry;
 
-    addRequirements(m_turret, m_boomBoom, m_hood, m_drive, m_visionOdometry);
+    addRequirements(m_turret, m_boomBoom, m_hood, m_visionOdometry);
   }
 
   // Called when the command is initially scheduled.
@@ -102,6 +100,7 @@ public class TrackTarget extends CommandBase {
     }
     catch (Exception e){
       e.printStackTrace();
+      m_turret.runshooterRotatePID(180);
       // System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
     // vel = m_boomBoom.getVelocity(distance);
