@@ -121,6 +121,7 @@ public class Robot extends TimedRobot {
     });
 
     desmosServer.start();
+    DesmosServer.putTable("table", "x1", new double[] {44}, "y1", new double[] {0});
   }
 
   /**

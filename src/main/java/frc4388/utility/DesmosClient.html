@@ -116,8 +116,10 @@
                     return 'point';
                 else if(raw.match(/\[[a-zA-Z0-9.,_{}\(\)]*\]/))
                     return 'array';
-                else
+                else if(raw.contains('='))
                     return 'number';
+                else
+                    return 'none';
             }
 
             function readVariable(latex) {
