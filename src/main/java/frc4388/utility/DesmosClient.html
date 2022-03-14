@@ -116,7 +116,7 @@
                     return 'point';
                 else if(raw.match(/\[[a-zA-Z0-9.,_{}\(\)]*\]/))
                     return 'array';
-                else if(raw.contains('='))
+                else if(raw.includes('='))
                     return 'number';
                 else
                     return 'none';
