@@ -80,7 +80,7 @@ public class TrackTarget extends CommandBase {
       output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
       output *= 2;
       DesmosServer.putDouble("output", output);
-      // m_turret.runTurretWithInput(output);
+      m_turret.runTurretWithInput(output);
 
       double y_rot = average.y / VisionConstants.LIME_VIXELS;
       y_rot *= Math.toRadians(VisionConstants.V_FOV);
@@ -101,7 +101,8 @@ public class TrackTarget extends CommandBase {
       // isExecuted = true;
     }
     catch (Exception e){
-      System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
+      e.printStackTrace();
+      // System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
     // vel = m_boomBoom.getVelocity(distance);
     // hood = m_boomBoom.getHood(distance);
