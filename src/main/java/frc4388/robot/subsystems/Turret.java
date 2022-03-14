@@ -72,7 +72,7 @@ public class Turret extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Turret Angle Rotations", m_boomBoomRotateEncoder.getPosition());
-    SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.DEGREES_PER_ROT);
+    SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
   }
 
   /**
@@ -94,7 +94,7 @@ public class Turret extends SubsystemBase {
   }
 
   public void runshooterRotatePID(double targetAngle) {
-    targetAngle = targetAngle / ShooterConstants.DEGREES_PER_ROT;
+    targetAngle = targetAngle / ShooterConstants.TURRET_DEGREES_PER_ROT;
     m_boomBoomRotatePIDController.setReference(targetAngle, ControlType.kPosition);
   }
 

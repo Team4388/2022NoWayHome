@@ -59,6 +59,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.OIConstants;
+import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AimToCenter;
@@ -291,11 +292,11 @@ public class RobotContainer {
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //     .whenPressed(new InstantCommand(() -> m_robotExtender.m_extenderMotor.getEncoder().setPosition(0)));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
-        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+    //     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+    //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
         .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
@@ -317,10 +318,14 @@ public class RobotContainer {
       // A > Shoot with Odo
     /*new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
+      
+      new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+          .whenPressed(new RunCommand(() -> m_robotTurret.runshooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT), m_robotTurret));
 
        //B > Shoot with Lime
-    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-    //     .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
+        .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)));
 
   
     /* Button Box Buttons */

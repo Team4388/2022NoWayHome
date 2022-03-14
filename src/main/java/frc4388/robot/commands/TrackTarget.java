@@ -112,12 +112,14 @@ public class TrackTarget extends CommandBase {
   }
 
   public final double distanceRegression(double distance) {
-    return m * distance + b;
+    return (1.09517561985 * distance + 20.1846165624);
   }
 
   public void updateRegressionDesmos() {
     m = DesmosServer.readDouble("m");
     b = DesmosServer.readDouble("b");
+
+    DesmosServer.putArray("MB", m, b);
   }
 
   // Called once the command ends or is interrupted.

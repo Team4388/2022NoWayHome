@@ -190,7 +190,7 @@ public final class Constants {
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
     public static final double TURRET_SPEED_MULTIPLIER = 0.6;
-    public static final double DEGREES_PER_ROT = 180.0/105.45445251464844;
+    public static final double TURRET_DEGREES_PER_ROT = 180.0/105.45445251464844;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
     public static final double ENCODER_TICKS_PER_REV = 2048;
