@@ -17,6 +17,7 @@ public class Extender extends SubsystemBase {
   private SparkMaxLimitSwitch m_outLimit;
 
   public boolean toggle;
+  public int direction = 1;
 
   /** Creates a new Extender. */
   public Extender(CANSparkMax extenderMotor) {
@@ -46,7 +47,12 @@ public class Extender extends SubsystemBase {
 
   public void runExtender(double input) {
     // if (!m_serializer.getBeam() && input < 0.) return;
-    m_extenderMotor.set(input);
+    if (this.direction > 0) {}
+    m_extenderMotor.set(this.direction * input);
+  }
+
+  public void switchDirection() {
+    this.direction = this.direction * -1;
   }
 
   public double getCurrent() {
