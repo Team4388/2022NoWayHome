@@ -320,7 +320,7 @@ public class RobotContainer {
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
       
       new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-          .whenPressed(new RunCommand(() -> m_robotTurret.runshooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT), m_robotTurret));
+          .whileHeld(new RunCommand(() -> m_robotTurret.runshooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT), m_robotTurret));
 
        //B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)

@@ -100,7 +100,6 @@ public class TrackTarget extends CommandBase {
     }
     catch (Exception e){
       e.printStackTrace();
-      m_turret.runshooterRotatePID(180);
       // System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
     // vel = m_boomBoom.getVelocity(distance);
