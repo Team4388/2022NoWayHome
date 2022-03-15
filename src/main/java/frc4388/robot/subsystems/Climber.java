@@ -15,6 +15,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import org.opencv.core.Point;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,7 +36,7 @@ public class Climber extends SubsystemBase {
   private double m_robotAngle;
   private double m_robotPosition;
   
-  private double[] m_position = {ClimberConstants.MIN_ARM_LENGTH, 0.d};
+  private Point m_position = new Point(ClimberConstants.MIN_ARM_LENGTH, 0.d);
   
   public Climber(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_PigeonIMU gyro, boolean groundRelative) {
     m_shoulder = shoulder;
@@ -68,46 +70,46 @@ public class Climber extends SubsystemBase {
 
   /* getJointAngles
    * Gets joint angles for climber arm
-   * xTarget and yTarget are set in the xy plane of the climber, accounting for the
+   * targetPoint.x and targetPoint.y are set in the xy plane of the climber, accounting for the
    * rotation of the robot. Both parameters should be in cm.
    * returns [shoulderAngle, elbowAngle] in radians
    * Does not set the motors automatically
    * 
    * IK resource: https://devforum.roblox.com/t/2-joint-2-limb-inverse-kinematics/252399 */
-  public static double[] getJointAngles(double xTarget, double yTarget, double tiltAngle) {
+  public static double[] getJointAngles(Point targetPoint, double tiltAngle) {
     double [] angles = new double[2];
   
-    double mag = Math.hypot(xTarget, yTarget);
+    double mag = Math.hypot(targetPoint.x, targetPoint.y);
     if(mag >= ClimberConstants.MAX_ARM_LENGTH) {
-      xTarget = (xTarget / mag) * ClimberConstants.MAX_ARM_LENGTH;
-      yTarget = (yTarget / mag) * ClimberConstants.MAX_ARM_LENGTH;
+      targetPoint.x = (targetPoint.x / mag) * ClimberConstants.MAX_ARM_LENGTH;
+      targetPoint.y = (targetPoint.y / mag) * ClimberConstants.MAX_ARM_LENGTH;
       mag = ClimberConstants.MAX_ARM_LENGTH;
     } else if(mag < ClimberConstants.MIN_ARM_LENGTH && mag != 0) {
-      xTarget = (xTarget / mag) * ClimberConstants.MIN_ARM_LENGTH;
-      yTarget = (yTarget / mag) * ClimberConstants.MIN_ARM_LENGTH;
+      targetPoint.x = (targetPoint.x / mag) * ClimberConstants.MIN_ARM_LENGTH;
+      targetPoint.y = (targetPoint.y / mag) * ClimberConstants.MIN_ARM_LENGTH;
       mag = ClimberConstants.MIN_ARM_LENGTH;
     } else if(mag < ClimberConstants.MIN_ARM_LENGTH) {
-      xTarget = ClimberConstants.MIN_ARM_LENGTH;
-      yTarget = 0.d;
+      targetPoint.x = ClimberConstants.MIN_ARM_LENGTH;
+      targetPoint.y = 0.d;
       mag = ClimberConstants.MIN_ARM_LENGTH;
     }
   
     // The angle to the target point
     double theta;
-    if(xTarget == 0.d) {
+    if(targetPoint.x == 0.d) {
       theta = Math.PI/2.d; // TODO rename variable
     } else {
-      theta = Math.atan(yTarget / xTarget);
+      theta = Math.atan(targetPoint.y / targetPoint.x);
     }
     theta += tiltAngle;
     
-    if(xTarget < 0.d)
+    if(targetPoint.x < 0.d)
         theta += Math.PI;
     
     
     // Correct target position for tilt
-    xTarget = Math.cos(theta) * mag;
-    yTarget = Math.sin(theta) * mag;
+    targetPoint.x = Math.cos(theta) * mag;
+    targetPoint.y = Math.sin(theta) * mag;
     
     // Law and Order: Cosines edition
     double shoulderAngle;
@@ -128,10 +130,10 @@ public class Climber extends SubsystemBase {
     // If the climber is resting on the robot base, rotate the upper arm in the direction of the target
     if(shoulderAngle <= ClimberConstants.SHOULDER_RESTING_ANGLE) {
       shoulderAngle = ClimberConstants.SHOULDER_RESTING_ANGLE;
-      double xDiff = xTarget - ClimberConstants.LOWER_ARM_LENGTH;
+      double xDiff = targetPoint.x - ClimberConstants.LOWER_ARM_LENGTH;
       // System.out.println("xDiff: " + xDiff);
   
-      elbowAngle = Math.atan(-yTarget / xDiff);
+      elbowAngle = Math.atan(-targetPoint.y / xDiff);
       // System.out.println("ea2: " + elbowAngle);
       if(elbowAngle < 0) {
         elbowAngle = Math.PI - Math.abs(elbowAngle);
@@ -234,10 +236,10 @@ public void setMotors(double shoulderOutput, double elbowOutput) {
   }
 
   public void controlWithInput(double xInput, double yInput) {
-    m_position[0] += xInput * ClimberConstants.MOVE_SPEED;
-    m_position[1] += yInput * ClimberConstants.MOVE_SPEED;
+    m_position.x += xInput * ClimberConstants.MOVE_SPEED;
+    m_position.y += yInput * ClimberConstants.MOVE_SPEED;
 
-    System.out.println("x: " + m_position[0] + " y: " + m_position[1]);
+    System.out.println("x: " + m_position.x + " y: " + m_position.y);
 
     double tiltAngle = m_groundRelative ? getRobotTilt() : 0.d;
 
@@ -259,7 +261,7 @@ public void setMotors(double shoulderOutput, double elbowOutput) {
     // double[] testAngles6 = getJointAngles(60, 25, 0);
     // System.out.println("just xy: " + testAngles6[0] + ", " + testAngles6[1]);
 
-    double[] jointAngles = getJointAngles(m_position[0], m_position[1], tiltAngle);
+    double[] jointAngles = getJointAngles(m_position, tiltAngle);
     setJointAngles(jointAngles);
   }
   
@@ -274,5 +276,4 @@ public void setMotors(double shoulderOutput, double elbowOutput) {
     SmartDashboard.putNumber("Shoulder", m_shoulder.getSelectedSensorPosition());
     SmartDashboard.putNumber("Elbow", m_elbow.getSelectedSensorPosition());
   }
-  
 }
