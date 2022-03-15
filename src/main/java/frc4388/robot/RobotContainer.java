@@ -264,18 +264,19 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-55.55)))
     //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
       
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value) //20ft
-    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(10000)))
-    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value) //20ft
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(10000)))
+        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-        .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
+        .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
+        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
+        //Toggles extender in and out
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
@@ -285,21 +286,21 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
     //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        // .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
-        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
-        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     // .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
+    //     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+    //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
         // .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0)));
     
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-      .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
-      .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-
     // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));
+    //   .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+    //   .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
-    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(-500), m_robotBoomBoom));
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+        .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+        .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(-500), m_robotBoomBoom));
 
       // Right Bumper > Storage In
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
@@ -318,9 +319,10 @@ public class RobotContainer {
       //     .whileHeld(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT), m_robotTurret));
 
        //B > Shoot with Lime
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
-        .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        // .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
+        // .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)));
+        // .whileHeld%
 
   
     /* Button Box Buttons */
@@ -349,10 +351,12 @@ public class RobotContainer {
         .whileHeld(new RunCommand(() -> System.out.println("RightSwitch")));
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
-        .whileHeld(new RunCommand(() -> System.out.println("LeftButton")));
+    .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+    .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kRightButton.value)
-        .whileHeld(new RunCommand(() -> System.out.println("RightButton")));
+    .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+    .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
   }
 
   /**

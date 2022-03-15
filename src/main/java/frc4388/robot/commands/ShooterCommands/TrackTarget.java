@@ -86,6 +86,7 @@ public class TrackTarget extends CommandBase {
       y_rot += Math.toRadians(VisionConstants.LIME_ANGLE);
 
       double distance = (VisionConstants.TARGET_HEIGHT - VisionConstants.LIME_HEIGHT) / Math.tan(y_rot);
+      
       DesmosServer.putDouble("distance", distance);
 
       updateRegressionDesmos();
