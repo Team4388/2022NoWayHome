@@ -4,11 +4,9 @@
 
 package frc4388.robot.subsystems;
 
-import com.ctre.phoenix.sensors.PigeonIMU.FusionStatus;
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,14 +44,8 @@ public class SwerveDrive extends SubsystemBase {
       m_backLeftLocation, m_backRightLocation);
 
   public SwerveModule[] modules;
-  public WPI_PigeonIMU m_gyro;
-  protected FusionStatus fstatus = new FusionStatus();
+  public WPI_Pigeon2 m_gyro;
 
-  /*
-   * Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings.
-   * The numbers used
-   * below are robot specific, and should be tuned.
-   */
   public SwerveDrivePoseEstimator m_poseEstimator;
   public SwerveDriveOdometry m_odometry;
 
@@ -65,7 +57,7 @@ public class SwerveDrive extends SubsystemBase {
   private final Field2d m_field = new Field2d();
 
   public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack,
-      WPI_PigeonIMU gyro) {
+      WPI_Pigeon2 gyro) {
 
     m_leftFront = leftFront;
     m_leftBack = leftBack;
@@ -74,14 +66,14 @@ public class SwerveDrive extends SubsystemBase {
     m_gyro = gyro;
 
     modules = new SwerveModule[] {  m_leftFront, m_rightFront, m_leftBack, m_rightBack};
-
+    
     m_poseEstimator = new SwerveDrivePoseEstimator(
         m_gyro.getRotation2d(),
         new Pose2d(),
         m_kinematics,
-        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),
-        VecBuilder.fill(Units.degreesToRadians(1)),
-        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)));
+        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),  // TODO: tune
+        VecBuilder.fill(Units.degreesToRadians(1)),            // TODO: tune
+        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
 
     m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
 

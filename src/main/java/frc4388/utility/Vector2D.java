@@ -27,22 +27,50 @@ public class Vector2D extends Vector2d {
     this.angle = Math.atan2(this.y, this.x);
   }
 
+  /**
+   * Add two vectors, component-wise.
+   * @param v1 First vector in the addition.
+   * @param v2 Second vector in the addition.
+   * @return New vector which is the sum.
+   */
   public static Vector2D add(Vector2D v1, Vector2D v2) {
     return new Vector2D(v1.x + v2.x, v1.y + v2.y);
   }
 
+  /**
+   * Subtract two vectors, component-wise.
+   * @param v1 First vector in the subtraction.
+   * @param v2 Second vector in the subtraction.
+   * @return New vector which is the difference.
+   */
   public static Vector2D subtract(Vector2D v1, Vector2D v2) {
     return new Vector2D(v1.x - v2.x, v1.y - v2.y);
   }
 
+  /**
+   * Multiply a vector with a scalar, component-wise.
+   * @param v1 Vector to multiply.
+   * @param v2 Scalar to multiply.
+   * @return New vector which is the product.
+   */
   public static Vector2D multiply(Vector2D v1, double scalar) {
     return new Vector2D(scalar * v1.x, scalar * v1.y);
   }
 
+  /**
+   * Find unit vector.
+   * @return The unit vector.
+   */
   public Vector2D unit() {
     return new Vector2D(this.x / this.magnitude(), this.y / this.magnitude());
   }
 
+  /**
+   * Round a vector to a certain number of places, component-wise.
+   * @param v Vector to round.
+   * @param places Number of places to round to.
+   * @return New rounded vector.
+   */
   public static Vector2D round(Vector2D v, int places) {
     int scale = (int) Math.pow(10, places);
 
@@ -58,7 +86,6 @@ public class Vector2D extends Vector2d {
 
   @Override
   public String toString() {
-    Vector2d test = new Vector2d();
     return ("(" + this.x + ", " + this.y + ")");
   }
 

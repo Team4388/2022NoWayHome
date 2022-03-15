@@ -12,7 +12,6 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ExtenderConstants;
-import frc4388.utility.DesmosServer;
 
 public class Extender extends SubsystemBase {
   
@@ -51,7 +50,6 @@ public class Extender extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Extender Position", m_extenderMotor.getEncoder().getPosition());
-    DesmosServer.putDouble("ExtenderPosition", m_extenderMotor.getEncoder().getPosition());
   }
 
     /**

@@ -18,7 +18,7 @@ import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Vision;
 import frc4388.robot.subsystems.VisionOdometry;
-import frc4388.utility.DesmosServer;
+import frc4388.utility.desmos.DesmosServer;
 
 public class TrackTarget extends CommandBase {
   /** Creates a new TrackTarget. */

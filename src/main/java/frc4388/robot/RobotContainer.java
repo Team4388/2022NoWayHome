@@ -297,8 +297,10 @@ public class RobotContainer {
     //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
-        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
+        // .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+        // .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender))
+        .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0)));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
     //     .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));

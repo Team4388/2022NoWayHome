@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.WPI_PigeonIMU;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -63,7 +63,7 @@ public class RobotMap {
   public final CANCoder leftBackEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
   public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
 
-  public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(SwerveDriveConstants.GYRO_ID);
+  public final WPI_Pigeon2 gyro = new WPI_Pigeon2(SwerveDriveConstants.GYRO_ID);
 
   public SwerveModule leftFront;
   public SwerveModule leftBack;
