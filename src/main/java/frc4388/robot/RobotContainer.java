@@ -62,11 +62,11 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import frc4388.robot.commands.AimToCenter;
-import frc4388.robot.commands.ExtenderIntakeGroup;
 import frc4388.robot.commands.RunMiddleSwitch;
-import frc4388.robot.commands.Shoot;
-import frc4388.robot.commands.TrackTarget;
+import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
+import frc4388.robot.commands.ShooterCommands.AimToCenter;
+import frc4388.robot.commands.ShooterCommands.Shoot;
+import frc4388.robot.commands.ShooterCommands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.Extender;
@@ -96,13 +96,14 @@ import frc4388.utility.controller.DeadbandedXboxController;
  */
 public class RobotContainer {
   private static final Logger LOGGER = Logger.getLogger(RobotContainer.class.getSimpleName());
-  /* RobotMap */
+
+  // RobotMap
   public final RobotMap m_robotMap = new RobotMap();
 
   // Subsystems 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
-  public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor, m_robotSerializer);
+  public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor);
   public final Extender m_robotExtender = new Extender(m_robotMap.extenderMotor);
   
   public final Storage m_robotStorage = new Storage(m_robotMap.storageMotor);
@@ -115,12 +116,12 @@ public class RobotContainer {
   private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(31);
   public final Climber m_robotClimber = new Climber(testElbowMotor);
 
-  /* Controllers */
+  // Controllers
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
   private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
 
-  /* Autonomous */
+  // Autonomous
   private PathPlannerTrajectory loadedPathTrajectory = null;
   private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
   private final List<Waypoint> pathPoints = new ArrayList<>();
@@ -275,20 +276,8 @@ public class RobotContainer {
         .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     .whileHeld(new RunExtender(m_robotIntake, m_robotExtender, 0.5))
-    //     .whenReleased(new RunCommand(() -> RunExtender.changeDirection(), m_robotIntake, m_robotExtender));
-
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
-        // .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.changeDirection()));
-
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     .whenPressed(new ParallelCommandGroup(
-    //                  new RunCommand(() -> m_robotIntake.m_intakeMotor.set(ExtenderIntakeGroup.direction * -0.2), m_robotIntake),
-    //                  new RunCommand(() -> m_robotExtender.m_extenderMotor.set(ExtenderIntakeGroup.direction * 0.5), m_robotExtender)))
-    //     .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.changeDirection()));
-    
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //     .whenPressed(new InstantCommand(() -> m_robotExtender.m_extenderMotor.getEncoder().setPosition(0)));
 
@@ -297,10 +286,14 @@ public class RobotContainer {
     //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
-        // .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
-        // .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender))
-        .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0)));
+        // .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
+        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+        // .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0)));
+    
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+      .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+      .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
     //     .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));
@@ -321,8 +314,8 @@ public class RobotContainer {
     /*new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
       
-      new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-          .whileHeld(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT), m_robotTurret));
+      // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+      //     .whileHeld(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT), m_robotTurret));
 
        //B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
@@ -343,7 +336,7 @@ public class RobotContainer {
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
-      .whenReleased(new InstantCommand(() -> m_robotExtender.m_extenderMotor.getEncoder().setPosition(0), m_robotExtender));
+      .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender));
 
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
     //     .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))

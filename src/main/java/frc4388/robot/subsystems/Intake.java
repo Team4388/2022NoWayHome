@@ -4,27 +4,20 @@
 
 package frc4388.robot.subsystems;
 
-//Imported Limit switch ONLY
-import com.revrobotics.SparkMaxLimitSwitch;
-
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc4388.robot.commands.ExtenderIntakeGroup;
-
-import com.revrobotics.CANSparkMax;
+import frc4388.robot.Constants.IntakeConstants;
+import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 
 public class Intake extends SubsystemBase {
 
-  public WPI_TalonFX m_intakeMotor;
-  private Serializer m_serializer;
+  private WPI_TalonFX m_intakeMotor;
 
   /** Creates a new Intake. */
-  public Intake(WPI_TalonFX intakeMotor, Serializer serializer) {
+  public Intake(WPI_TalonFX intakeMotor) {
     m_intakeMotor = intakeMotor;
-    m_serializer = serializer;
   }
 
   @Override
@@ -39,9 +32,17 @@ public class Intake extends SubsystemBase {
    * @param rightTrigger Right Trigger to Run Outward
    */
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
-    m_intakeMotor.set((rightTrigger - leftTrigger) * 0.4);
+    m_intakeMotor.set((rightTrigger - leftTrigger) * IntakeConstants.INTAKE_SPEED_MULTIPLIER);
     SmartDashboard.putNumber("Intake Current Supply", m_intakeMotor.getSupplyCurrent());
     SmartDashboard.putNumber("Intake Current Stator", m_intakeMotor.getStatorCurrent());
+  }
+
+  public void runAtOutput(double output, double multiplier) {
+    m_intakeMotor.set(output * multiplier);
+  }
+
+  public void runAtOutput(double output) {
+    m_intakeMotor.set(output * IntakeConstants.INTAKE_SPEED_MULTIPLIER);
   }
   
   public double getCurrent() {

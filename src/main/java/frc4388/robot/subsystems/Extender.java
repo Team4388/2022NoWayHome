@@ -15,12 +15,10 @@ import frc4388.robot.Constants.ExtenderConstants;
 
 public class Extender extends SubsystemBase {
   
-  public CANSparkMax m_extenderMotor;
+  private CANSparkMax m_extenderMotor;
 
   private SparkMaxLimitSwitch m_inLimit;
   private SparkMaxLimitSwitch m_outLimit;
-
-  public boolean toggle;
 
   /** Creates a new Extender. */
   public Extender(CANSparkMax extenderMotor) {
@@ -52,30 +50,20 @@ public class Extender extends SubsystemBase {
     SmartDashboard.putNumber("Extender Position", m_extenderMotor.getEncoder().getPosition());
   }
 
-    /**
-   * Runs The Extender-
-   * @param extended Wether the Extender Is Extended
-   */
-  // public void runExtender(boolean extended) {
-  //   if (!m_serializer.getBeam() && !extended) return;
-  //   double extenderMotorSpeed = extended ? 0.25d : -0.25d;
-  //   m_extenderMotor.set(extenderMotorSpeed);
-  // }
-
   public void runExtender(double input) {
     // if (!m_serializer.getBeam() && input < 0.) return;
     m_extenderMotor.set(input);
   }
 
+  public double getPosition() {
+    return m_extenderMotor.getEncoder().getPosition();
+  }
+
+  public void setEncoder(double position) {
+    m_extenderMotor.getEncoder().setPosition(position);
+  }
+
   public double getCurrent() {
     return m_extenderMotor.getOutputCurrent();
   }
-
-  /**
-   * Toggles The Extender
-  */
-  // public void toggleExtender() {
-  //   toggle = !toggle;
-  //   runExtender(toggle);
-  // }
 }

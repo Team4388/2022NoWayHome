@@ -2,7 +2,8 @@ package frc4388.commands;
 
 import org.junit.Test;
 
-import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.ShooterCommands.AimToCenter;
+
 import org.junit.Assert;
 
 public class AimToCenterTest {

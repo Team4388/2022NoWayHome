@@ -145,6 +145,7 @@ public final class Constants {
         false, 10, 0, 0); //Find
     public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_INTAKE = new StatorCurrentLimitConfiguration(
         false, 15, 0, 0);
+    public static final double INTAKE_SPEED_MULTIPLIER = 0.4;
   }
 
   public static final class ExtenderConstants {
