@@ -90,7 +90,14 @@ public class Hood extends SubsystemBase {
     m_angleAdjusterMotor.set(input);
   }
 
-  public void resetGyroAngleAdj(){
+  /**
+   * Run a PID to go to the zero position.
+   */
+  public void gotoZero() {
+    runAngleAdjustPID(0);
+  }
+
+  public void resetGyroAngleAdj() {
     m_angleEncoder.setPosition(0);
   }
 

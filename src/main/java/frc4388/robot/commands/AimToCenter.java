@@ -43,7 +43,7 @@ public class AimToCenter extends CommandBase {
   @Override
   public void execute() {
     m_targetAngle = angleToCenter(x, y, m_drive.getRegGyro().getDegrees());
-    m_turret.runshooterRotatePID(m_targetAngle);
+    m_turret.runShooterRotatePID(m_targetAngle);
 
     // Check if limelight is within range (comment out to disable vision odo)
     if (Math.abs(m_turret.getBoomBoomAngleDegrees() - m_targetAngle) < VisionConstants.RANGE){

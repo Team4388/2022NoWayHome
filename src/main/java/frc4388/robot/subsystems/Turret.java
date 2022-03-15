@@ -93,13 +93,20 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER);
   }
 
-  public void runshooterRotatePID(double targetAngle) {
+  public void runShooterRotatePID(double targetAngle) {
     targetAngle = targetAngle / ShooterConstants.TURRET_DEGREES_PER_ROT;
     m_boomBoomRotatePIDController.setReference(targetAngle, ControlType.kPosition);
   }
 
   public void resetGyroShooterRotate() {
     m_boomBoomRotateEncoder.setPosition(0);
+  }
+
+  /**
+   * Run a PID to go to the zero position.
+   */
+  public void gotoZero() {
+    runShooterRotatePID(0);
   }
 
   public double getboomBoomRotatePosition() {
