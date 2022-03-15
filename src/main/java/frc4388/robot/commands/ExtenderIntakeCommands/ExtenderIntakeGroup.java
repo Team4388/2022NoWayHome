@@ -19,11 +19,11 @@ public class ExtenderIntakeGroup extends ParallelRaceGroup {
   public ExtenderIntakeGroup(Intake intake, Extender extender) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    ExtenderIntakeGroup.direction = 1;
+    ExtenderIntakeGroup.direction = 1; // Does this make sense? It kind of defeats the purpose of making it static, does it work without?
     addCommands(new RunIntakeConditionally(intake), new RunExtender(extender));
   }
 
-  public static void changeDirection() {
+  public static void changeDirection() { // Never implemented?
     ExtenderIntakeGroup.direction *= -1;
   }
 }
