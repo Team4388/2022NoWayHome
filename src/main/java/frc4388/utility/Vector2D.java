@@ -6,7 +6,11 @@ package frc4388.utility;
 
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
-/** Aarav's good vector class (better than WPILib) */
+/**
+ * 
+ * Aarav's good vector class (better than WPILib)
+ * @author Aarav Shah */
+
 public class Vector2D extends Vector2d {
 
   public double x;
