@@ -217,7 +217,7 @@ public class BoomBoom extends SubsystemBase {
 
   public void runDrumShooterVelocityPID(double targetVel) {
     SmartDashboard.putNumber("Target Drum Velocity", 10000 + pidOffset);
-    m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel + pidOffset); // Init
+    m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); // Init
     
     // New BoomBoom controller stuff
     // Controls a motor with the output of the BangBang controller

@@ -59,6 +59,8 @@ public class VisionOdometry extends SubsystemBase {
   public ArrayList<Point> getTargetPoints() throws VisionObscuredException {
     PhotonPipelineResult result = m_camera.getLatestResult();
     latency = result.getLatencyMillis();
+
+    System.out.println("Result: " + result.hasTargets() + ", latency: " + latency);
   
     if(!result.hasTargets())
       throw new VisionObscuredException();

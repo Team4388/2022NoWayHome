@@ -321,7 +321,8 @@ public class RobotContainer {
        //B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
         .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
-        .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)));
+        .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)))
+        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
         // .whileHeld%
 
   

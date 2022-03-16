@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.opencv.core.Point;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import frc4388.robot.Constants.VisionConstants;
@@ -76,7 +77,8 @@ public class TrackTarget extends CommandBase {
       DesmosServer.putPoint("average", average);
 
       output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-      output *= 2;
+      output *= 4;
+      // output *= 0.5;
       DesmosServer.putDouble("output", output);
       m_turret.runTurretWithInput(output);
 
@@ -94,14 +96,20 @@ public class TrackTarget extends CommandBase {
       DesmosServer.putDouble("distanceReg", regressedDistance);
 
       //Vision odemetry circle fit based pose estimate
-      Point targetOffset = m_visionOdometry.getTargetOffset();
-      DesmosServer.putPoint("targetOff", targetOffset);
+      // Point targetOffset = m_visionOdometry.getTargetOffset();
+      // DesmosServer.putPoint("targetOff", targetOffset);
 
-      vel = m_boomBoom.getVelocity(distance);
-      hood = m_boomBoom.getHood(distance);
+      vel = m_boomBoom.getVelocity(regressedDistance + 30);
+      hood = m_boomBoom.getHood(regressedDistance + 30);
       // m_boomBoom.runDrumShooter(vel);
       m_boomBoom.runDrumShooterVelocityPID(vel);
       m_hood.runAngleAdjustPID(hood);
+
+      SmartDashboard.putNumber("Regressed Distance", regressedDistance);
+      SmartDashboard.putNumber("Distance", distance);
+      SmartDashboard.putNumber("Hood Target Angle Track", hood);
+      SmartDashboard.putNumber("Vel Target Track", vel);
+
 
       // isExecuted = true;
     }
@@ -113,7 +121,7 @@ public class TrackTarget extends CommandBase {
   }
 
   public final double distanceRegression(double distance) {
-    return (1.09517561985 * distance + 20.1846165624);
+    return (79.6078 * Math.pow(1.01343, distance) - 56.6671);
   }
 
   public void updateRegressionDesmos() {
