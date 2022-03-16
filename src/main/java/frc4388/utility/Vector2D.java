@@ -4,6 +4,10 @@
 
 package frc4388.utility;
 
+import java.security.InvalidParameterException;
+
+import org.opencv.core.Point;
+
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /**
@@ -27,6 +31,26 @@ public class Vector2D extends Vector2d {
 
     this.x = x;
     this.y = y;
+    this.angle = Math.atan2(this.y, this.x);
+  }
+
+  public Vector2D(double[] vec) {
+    super(vec[0], vec[1]);
+
+    if (vec.length != 2) {
+      throw new InvalidParameterException();
+    }
+
+    this.x = vec[0];
+    this.y = vec[1];
+    this.angle = Math.atan2(this.y, this.x);
+  }
+
+  public Vector2D(Point p) {
+    super(p.x, p.y);
+
+    this.x = p.x;
+    this.y = p.y;
     this.angle = Math.atan2(this.y, this.x);
   }
 
