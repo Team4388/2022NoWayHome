@@ -8,8 +8,8 @@ import org.opencv.core.Point;
 
 import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc4388.robot.Constants.ClimberConstants;
 import frc4388.robot.subsystems.Claws;
-import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.ClimberRewrite;
 import frc4388.utility.Vector2D;
 
@@ -20,9 +20,12 @@ public class RunClimberPath extends CommandBase {
   Point[] path;
   int nextIndex;
 
+  boolean endPath;
+
   /** Creates a new RunClimberPath. */
   public RunClimberPath(Point[] _path, ClimberRewrite _climber, Claws _claws) {
     path = _path;
+    endPath = false;
 
     climber = _climber;
     claws = _claws;
@@ -42,10 +45,20 @@ public class RunClimberPath extends CommandBase {
     if(!claws.fullyOpen())
       return;
     
-    Point climberPos = climber.getClimberPosition();
-    Vector2D dir = new Vector2D();
+    Point climberPos = ClimberRewrite.getClimberPosition(climber.getJointAngles());
 
-    climber.controlWithInput(dir.x * .02, dir.y * .02);
+    Vector2D dir = new Vector2D(path[nextIndex]);
+    dir.subtract(new Vector2D(climberPos));
+
+    if(!endPath && dir.magnitude() < ClimberConstants.THRESHOLD && nextIndex < path.length-1)
+      nextIndex++;
+    else if(!endPath && dir.magnitude() < ClimberConstants.THRESHOLD) {
+      endPath = true;
+      claws.setOpen(false);
+    } else if(!endPath) {
+      dir = dir.unit();
+      climber.controlWithInput(dir.x, dir.y);
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -55,6 +68,6 @@ public class RunClimberPath extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return endPath && claws.fullyClosed();
   }
 }

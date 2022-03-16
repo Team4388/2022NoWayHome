@@ -59,6 +59,15 @@ public class Vector2D extends Vector2d {
   }
 
   /**
+   * Adds vector to current object
+   * @param v Vector to add
+   */
+  public void add(Vector2D v) {
+    x += v.x;
+    y += v.x;
+  }
+
+  /**
    * Subtract two vectors, component-wise.
    * @param v1 First vector in the subtraction.
    * @param v2 Second vector in the subtraction.
@@ -66,6 +75,15 @@ public class Vector2D extends Vector2d {
    */
   public static Vector2D subtract(Vector2D v1, Vector2D v2) {
     return new Vector2D(v1.x - v2.x, v1.y - v2.y);
+  }
+
+  /**
+   * Subtracts vector from current object
+   * @param v Vector to subtract
+   */
+  public void subtract(Vector2D v) {
+    x -= v.x;
+    y -= v.x;
   }
 
   /**
@@ -78,6 +96,15 @@ public class Vector2D extends Vector2d {
     return new Vector2D(scalar * v1.x, scalar * v1.y);
   }
 
+  /**
+   * Multiply a vector with a scalar, component-wise.
+   * @param scalar Scalar to multiply
+   */
+  public void multiply(double scalar) {
+    x *= scalar;
+    y *= scalar;
+  }
+
     /**
    * Divide a vector with a scalar, component-wise.
    * @param v1 Vector to divide.
@@ -86,6 +113,15 @@ public class Vector2D extends Vector2d {
    */
   public static Vector2D divide(Vector2D v1, double scalar) {
     return new Vector2D(v1.x / scalar, v1.y / scalar);
+  }
+
+  /**
+   * Divide a vector with a scalar, component-wise.
+   * @param scalar Scalar to divide
+   */
+  public void divide(double scalar) {
+    x /= scalar;
+    y /= scalar;
   }
 
   /**

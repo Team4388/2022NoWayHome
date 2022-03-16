@@ -187,6 +187,8 @@ public final class Constants {
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
 
+    public static final double THRESHOLD = 0;
+
     // TODO: Update Constants
     // Robot Angle
     public static final double ROBOT_ANGLE_ID = 0;

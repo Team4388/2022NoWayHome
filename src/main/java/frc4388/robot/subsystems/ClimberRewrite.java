@@ -123,6 +123,13 @@ public class ClimberRewrite extends SubsystemBase {
     m_elbow.set(elbowOutput);
   }
 
+  public double[] getJointAngles() {
+    return new double[] {
+      (m_shoulder.getSelectedSensorPosition() * Math.PI) / (Constants.TICKS_PER_ROTATION_FX/2.d) / ClimberConstants.SHOULDER_GB_RATIO,
+      (m_elbow.getSelectedSensorPosition() * Math.PI) / (Constants.TICKS_PER_ROTATION_FX/2.d) / ClimberConstants.ELBOW_GB_RATIO
+    };
+  }
+
   public void setJointAngles(double[] angles) {
     System.out.println(angles);
     setJointAngles(angles[0], angles[1]);
@@ -152,13 +159,13 @@ public class ClimberRewrite extends SubsystemBase {
   }
 
   public void controlWithInput(double xInput, double yInput) {
-    tPoint.x += xInput * ClimberConstants.MOVE_SPEED;
-    tPoint.y += yInput * ClimberConstants.MOVE_SPEED;
+    tPoint.x += xInput * ClimberConstants.MOVE_SPEED * .02;
+    tPoint.y += yInput * ClimberConstants.MOVE_SPEED * .02;
   }
 
   @Override
   public void periodic() {
-    double[] jointAngles = getJointAngles(tPoint, 0.d);
+    double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
     setJointAngles(jointAngles);
   }
 
@@ -172,8 +179,8 @@ public class ClimberRewrite extends SubsystemBase {
    * 
    * @param targetPoint Target xy point for the climber arm to go to
    * @param tiltAngle The tilt of the robot
-   * @returns [shoulderAngle, elbowAngle] in radians */
-   public static double[] getJointAngles(Point targetPoint, double tiltAngle) {
+   * @return [shoulderAngle, elbowAngle] in radians */
+   public static double[] getTargetJointAngles(Point targetPoint, double tiltAngle) {
     double [] angles = new double[2];
   
     double mag = Math.hypot(targetPoint.x, targetPoint.y);
@@ -251,9 +258,19 @@ public class ClimberRewrite extends SubsystemBase {
     return angles;
   }
 
-  public static Point getClimberPoint(double shoulderAngle, double elbowAngle) {
-    return null;
+  public static Point getClimberPosition(double shoulderAngle, double elbowAngle) {
+    Point climberPoint = new Point(0, 0);
+
+    climberPoint.x += Math.sin(shoulderAngle);
+    climberPoint.y += Math.cos(shoulderAngle);
+
+    climberPoint.x -= Math.sin(elbowAngle - shoulderAngle);
+    climberPoint.y += Math.cos(elbowAngle - shoulderAngle);
+
+    return climberPoint;
   }
 
-  public static Point getClimberPoint
+  public static Point getClimberPosition(double[] jointAngles) {
+    return getClimberPosition(jointAngles[0], jointAngles[1]);
+  }
 }
