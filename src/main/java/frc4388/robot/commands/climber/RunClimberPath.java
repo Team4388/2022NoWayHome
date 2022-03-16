@@ -10,16 +10,18 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.subsystems.Claws;
 import frc4388.robot.subsystems.Climber;
+import frc4388.robot.subsystems.ClimberRewrite;
+import frc4388.utility.Vector2D;
 
 public class RunClimberPath extends CommandBase {
-  Climber climber;
+  ClimberRewrite climber;
   Claws claws;
 
   Point[] path;
   int nextIndex;
 
   /** Creates a new RunClimberPath. */
-  public RunClimberPath(Point[] _path, Climber _climber, Claws _claws) {
+  public RunClimberPath(Point[] _path, ClimberRewrite _climber, Claws _claws) {
     path = _path;
 
     climber = _climber;
@@ -40,12 +42,10 @@ public class RunClimberPath extends CommandBase {
     if(!claws.fullyOpen())
       return;
     
-    Vector2d vec = new Vector2d(1,1);
-    double mag = vec.magnitude();
-    vec.x /= mag;
-    vec.y /= mag;
+    Point climberPos = climber.getClimberPosition();
+    Vector2D dir = new Vector2D();
 
-    climber.controlWithInput(vec.x * .02, vec.y * .02);
+    climber.controlWithInput(dir.x * .02, dir.y * .02);
   }
 
   // Called once the command ends or is interrupted.

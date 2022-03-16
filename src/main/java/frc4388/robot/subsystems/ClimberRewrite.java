@@ -250,4 +250,10 @@ public class ClimberRewrite extends SubsystemBase {
     angles[1] = elbowAngle;
     return angles;
   }
+
+  public static Point getClimberPoint(double shoulderAngle, double elbowAngle) {
+    return null;
+  }
+
+  public static Point getClimberPoint
 }
