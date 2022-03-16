@@ -167,7 +167,8 @@ public final class Constants {
     public static final double SHOULDER_MAX_ANGLE = 135;
     public static final double ELBOW_MAX_ANGLE = 180;
 
-    public static final double GEAR_BOX_RATIO = 144.d * 60.d / 24.d;
+    public static final double ELBOW_GB_RATIO = 1.d;
+    public static final double SHOULDER_GB_RATIO = 1.d;
 
     public static final double SHOULDER_SOFT_LIMIT_FORWARD = 0;
     public static final double SHOULDER_SOFT_LIMIT_REVERSE = 0;
@@ -198,6 +199,8 @@ public final class Constants {
 
     public static final double OPEN_POSITION = 0;
     public static final double CLOSE_POSITION = 0;
+
+    public static final double THRESHOLD = 0;
 
     public static final double CALIBRATION_SPEED = 0;
 

@@ -1,5 +1,7 @@
 package frc4388.robot.subsystems;
 
+import java.nio.file.ClosedWatchServiceException;
+
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -7,6 +9,7 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ClawConstants;
+import frc4388.robot.Constants.ClimberConstants;
 
 public class Claws extends SubsystemBase {
   public CANSparkMax m_leftClaw;
@@ -112,15 +115,20 @@ public class Claws extends SubsystemBase {
       m_rightClaw.set(-0.1);
     }
 
-    m_open = open;
+    // m_open = open;
   }
 
   public double[] getOffsets() {
     return new double[] {m_leftOffset, m_rightOffset};
   }
 
-  public boolean getOpen() {
-    return m_open;
+  public boolean fullyOpen() {
+    return Math.abs(m_leftClaw.getEncoder().getPosition() - ClawConstants.OPEN_POSITION) < ClawConstants.THRESHOLD &&
+        Math.abs(m_rightClaw.getEncoder().getPosition() - ClawConstants.OPEN_POSITION) < ClawConstants.THRESHOLD;  }
+
+  public boolean fullyClosed() {
+    return Math.abs(m_leftClaw.getEncoder().getPosition() - ClawConstants.CLOSE_POSITION) < ClawConstants.THRESHOLD &&
+        Math.abs(m_rightClaw.getEncoder().getPosition() - ClawConstants.CLOSE_POSITION) < ClawConstants.THRESHOLD;
   }
 
   /**
