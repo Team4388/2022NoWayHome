@@ -30,37 +30,42 @@ public class Turret extends SubsystemBase {
   public CANSparkMax m_boomBoomRotateMotor;// = new CANSparkMax(ShooterConstants.SHOOTER_ROTATE_ID,
                                            // MotorType.kBrushless);
   public static Gains m_shooterTGains = ShooterConstants.SHOOTER_TURRET_GAINS;
-  // SparkMaxLimitSwitch m_boomBoomRightLimit, m_boomBoomLeftLimit;
-  public Gyro m_turretGyro;
 
-  public double m_targetDistance = 0;
+  SparkMaxPIDController m_boomBoomRotatePIDController;
+  public RelativeEncoder m_boomBoomRotateEncoder;
 
-  public boolean m_isAimReady = false;
+  SparkMaxPIDController m_boomBoomRotatePIDController;
+  public RelativeEncoder m_boomBoomRotateEncoder;
 
-  SparkMaxPIDController m_boomBoomRotatePIDController;// = m_boomBoomRotateMotor.getPIDController();
-  public RelativeEncoder m_boomBoomRotateEncoder;// = m_boomBoomRotateMotor.getEncoder();
   SparkMaxLimitSwitch m_boomBoomLeftLimit;
   SparkMaxLimitSwitch m_boomBoomRightLimit;
 
-  // Variables
-  public Turret(CANSparkMax boomBoomRotateMotor) { // Take in rotate motor as an argument
+  public Turret(CANSparkMax boomBoomRotateMotor) {
 
     m_boomBoomRotateMotor = boomBoomRotateMotor;
     m_boomBoomRotatePIDController = m_boomBoomRotateMotor.getPIDController();
     m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
-    m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
 
     m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit.enableLimitSwitch(true);
     m_boomBoomLeftLimit.enableLimitSwitch(true);
 
+    // setTurretLimitSwitches(false);
+    // SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
+    // SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
+
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.TURRET_FORWARD_LIMIT);
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.TURRET_REVERSE_LIMIT);
     setTurretSoftLimits(true);
 
-    m_boomBoomRotateMotor.setInverted(true);
-
+    setTurretPIDGains();
+  }
+  
+  /**
+   * Set gains for turret PIDs.
+   */
+  public void setTurretPIDGains() {
     m_boomBoomRotatePIDController.setP(m_shooterTGains.kP);
     m_boomBoomRotatePIDController.setI(m_shooterTGains.kI);
     m_boomBoomRotatePIDController.setD(m_shooterTGains.kD);
@@ -85,6 +90,15 @@ public class Turret extends SubsystemBase {
   public void setTurretSoftLimits(boolean set) {
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kForward, set);
     m_boomBoomRotateMotor.enableSoftLimit(SoftLimitDirection.kReverse, set);
+  }
+
+  /**
+   * Set status of turret limit switches.
+   * @param set Boolean to set limit switches to.
+   */
+  public void setTurretLimitSwitches(boolean set) {
+    m_boomBoomRightLimit.enableLimitSwitch(set);
+    m_boomBoomLeftLimit.enableLimitSwitch(set);
   }
 
   public void passRequiredSubsystem(BoomBoom subsystem0, SwerveDrive subsystem1) {
@@ -115,14 +129,21 @@ public class Turret extends SubsystemBase {
     runShooterRotatePID(0);
   }
 
-  public double getboomBoomRotatePosition() {
+  /**
+   * Run a PID to go to the midpoint position, between the two soft limits.
+   */
+  public void gotoMidpoint() {
+    runShooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT);
+  }
+
+  public double getEncoderPosition() {
     return m_boomBoomRotateEncoder.getPosition();
   }
 
   public double getBoomBoomAngleDegrees() {
     return (m_boomBoomRotateEncoder.getPosition() - ShooterConstants.TURRET_MOTOR_POS_AT_ZERO_ROT) * 360
         / ShooterConstants.TURRET_MOTOR_ROTS_PER_ROT;
-  }
+  } // TODO: does this method work?
 
   public double getCurrent(){
     return m_boomBoomRotateMotor.getOutputCurrent();

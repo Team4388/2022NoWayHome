@@ -13,13 +13,14 @@ import frc4388.robot.subsystems.Intake;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ExtenderIntakeGroup extends ParallelRaceGroup {
   
-  public static int direction = 1; // assume extender starts retracted completely
+  public static int direction;
 
   /** Creates a new RunExtenderAndIntake. */
   public ExtenderIntakeGroup(Intake intake, Extender extender) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    ExtenderIntakeGroup.direction = 1; // Does this make sense? It kind of defeats the purpose of making it static, does it work without?
+    
+    ExtenderIntakeGroup.direction = 1; // assume extender starts retracted completely
     addCommands(new RunIntakeConditionally(intake), new RunExtender(extender));
   }
 

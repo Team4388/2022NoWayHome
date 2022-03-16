@@ -188,16 +188,16 @@ public class RobotMap {
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 }
 
-//   // Shooter Config
-//   /* Boom Boom Subsystem */
+  // Shooter Config
+  /* Boom Boom Subsystem */
   public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
   public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
 
-//   // turret subsystem
+  // turret subsystem
   public final CANSparkMax shooterTurret = new CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
 
   // hood subsystem
-  public CANSparkMax angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
+  public final CANSparkMax angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
 
   // Create motor CANSparkMax
   void configureShooterMotorControllers() {
@@ -219,9 +219,9 @@ public class RobotMap {
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     // RIGHT FALCON
-    shooterFalconRight.setInverted(false);
-    shooterFalconRight.setNeutralMode(NeutralMode.Coast);
     shooterFalconRight.configFactoryDefault();
+    shooterFalconRight.setNeutralMode(NeutralMode.Coast);
+    shooterFalconRight.setInverted(false);
     shooterFalconRight.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
     // m_shooterFalconRight.configPeakOutputForward(0,
@@ -236,24 +236,18 @@ public class RobotMap {
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     shooterFalconRight.follow(shooterFalconLeft);
-//   }
 
-//     // /* Turret Subsytem */
-    // shooterFalconRight.configStatorCurrentLimit(new
-    // StatorCurrentLimitConfiguration(true, 6, 9, 4.2)); // TODO: dont pull numbers
-    // out of our ass anymore
-    // shooterFalconLeft.configSupplyCurrentLimit(new
-    // SupplyCurrentLimitConfiguration(true, 12, 13, 0.4)); // TODO: dont pull
-//     // numbers out of our ass anymore
+    // turret
+    shooterTurret.restoreFactoryDefaults();
+    shooterTurret.setIdleMode(IdleMode.kBrake);
+    shooterTurret.setInverted(true);
 
-//     // hood subsystem
+    // hood subsystem
     angleAdjusterMotor.restoreFactoryDefaults();
     angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
     angleAdjusterMotor.setInverted(true);
   }
-
-
-       
+  
   /* Serializer Subsystem */
   public final CANSparkMax serializerBelt = new CANSparkMax(SerializerConstants.SERIALIZER_BELT, MotorType.kBrushless);
   public final DigitalInput serializerBeam = new DigitalInput(SerializerConstants.SERIALIZER_BELT_BEAM);
@@ -277,14 +271,12 @@ public class RobotMap {
       extenderMotor.setIdleMode(IdleMode.kBrake);
   }
 
-    void configureSerializerMotors() {
-        serializerBelt.restoreFactoryDefaults();
-    }
+  void configureSerializerMotors() {
+      serializerBelt.restoreFactoryDefaults();
+  }
 
-  /* Storage Subsystem */
+    /* Storage Subsystem */
     public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
-//   public final DigitalInput beamShooter = new DigitalInput(StorageConstants.BEAM_SENSOR_SHOOTER);
-//   public final DigitalInput beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
 
     void configureStorageMotors() {
         storageMotor.restoreFactoryDefaults();

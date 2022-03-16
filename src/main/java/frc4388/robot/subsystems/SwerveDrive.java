@@ -65,7 +65,7 @@ public class SwerveDrive extends SubsystemBase {
     m_rightBack = rightBack;
     m_gyro = gyro;
 
-    modules = new SwerveModule[] {  m_leftFront, m_rightFront, m_leftBack, m_rightBack};
+    modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
     
     m_poseEstimator = new SwerveDrivePoseEstimator(
         m_gyro.getRotation2d(),
