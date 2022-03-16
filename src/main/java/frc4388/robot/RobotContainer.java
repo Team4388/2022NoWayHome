@@ -76,6 +76,7 @@ import frc4388.robot.subsystems.VisionOdometry;
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.ListeningSendableChooser;
 import frc4388.utility.PathPlannerUtil;
+import frc4388.utility.Vector2D;
 import frc4388.utility.PathPlannerUtil.Path.Waypoint;
 import frc4388.utility.controller.DeadbandedXboxController;
 

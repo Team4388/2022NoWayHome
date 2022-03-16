@@ -8,6 +8,7 @@ import java.security.InvalidParameterException;
 
 import org.opencv.core.Point;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
 /**
@@ -22,8 +23,7 @@ public class Vector2D extends Vector2d {
   public double angle;
 
   public Vector2D() {
-    super();
-    this.angle = Math.atan2(this.y, this.x);
+    this(0, 0);
   }
 
   public Vector2D(double x, double y) {
@@ -35,23 +35,19 @@ public class Vector2D extends Vector2d {
   }
 
   public Vector2D(double[] vec) {
-    super(vec[0], vec[1]);
+    this(vec[0], vec[1]);
 
     if (vec.length != 2) {
       throw new InvalidParameterException();
     }
-
-    this.x = vec[0];
-    this.y = vec[1];
-    this.angle = Math.atan2(this.y, this.x);
   }
 
   public Vector2D(Point p) {
-    super(p.x, p.y);
+    this(p.x, p.y);
+  }
 
-    this.x = p.x;
-    this.y = p.y;
-    this.angle = Math.atan2(this.y, this.x);
+  public Vector2D(Translation2d t) {
+    this(t.getX(), t.getY());
   }
 
   /**
