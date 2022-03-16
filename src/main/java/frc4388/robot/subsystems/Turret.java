@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc4388.robot.Constants.ShooterConstants;
+import frc4388.robot.commands.ShooterCommands.Shoot;
 import frc4388.utility.Gains;
 
 public class Turret extends SubsystemBase {
@@ -38,6 +39,8 @@ public class Turret extends SubsystemBase {
 
   SparkMaxPIDController m_boomBoomRotatePIDController;// = m_boomBoomRotateMotor.getPIDController();
   public RelativeEncoder m_boomBoomRotateEncoder;// = m_boomBoomRotateMotor.getEncoder();
+  SparkMaxLimitSwitch m_boomBoomLeftLimit;
+  SparkMaxLimitSwitch m_boomBoomRightLimit;
 
   // Variables
   public Turret(CANSparkMax boomBoomRotateMotor) { // Take in rotate motor as an argument
@@ -47,12 +50,10 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
     m_boomBoomRotateMotor.setIdleMode(IdleMode.kBrake);
 
-    // m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    // m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    // m_boomBoomRightLimit.enableLimitSwitch(true);
-    // m_boomBoomLeftLimit.enableLimitSwitch(true);
-    // SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
-    // SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
+    m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_boomBoomRightLimit.enableLimitSwitch(true);
+    m_boomBoomLeftLimit.enableLimitSwitch(true);
 
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.TURRET_FORWARD_LIMIT);
     m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.TURRET_REVERSE_LIMIT);
@@ -73,6 +74,8 @@ public class Turret extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Turret Angle Rotations", m_boomBoomRotateEncoder.getPosition());
     SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
+    if (m_boomBoomLeftLimit.isPressed()) m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_LIMIT - 2);
+    if (m_boomBoomRightLimit.isPressed()) m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_FORWARD_LIMIT + 2);
   }
 
   /**
@@ -88,7 +91,10 @@ public class Turret extends SubsystemBase {
     m_boomBoomSubsystem = subsystem0;
     m_sDriveSubsystem = subsystem1;
   }
-
+  /**
+   * Move the turret with an input
+   * @param input from -1.0 to 1.0, positive is clockwise
+   */
   public void runTurretWithInput(double input) {
     m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER);
   }

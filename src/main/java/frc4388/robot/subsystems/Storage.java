@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.DigitalInput;
 import com.revrobotics.ColorSensorV3;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class Storage extends SubsystemBase {
   public CANSparkMax m_storageMotor;
@@ -49,11 +50,13 @@ public class Storage extends SubsystemBase {
   }
 
   public boolean getRed(){
-    return (m_colorSensor.getRed() >= 200);
+    // return (m_colorSensor.getRed() >= 200 && m_colorSensor.getBlue() < 100  && m_colorSensor.getGreen() < 100);
+    return (m_colorSensor.getColor() == Color.kRed);
   }
 
   public boolean getBlue(){
-    return (m_colorSensor.getBlue() >= 200);
+    // return (m_colorSensor.getBlue() >= 200  && m_colorSensor.getRed() < 100  && m_colorSensor.getGreen() < 100);
+    return (m_colorSensor.getColor() == Color.kBlue);
   }
   
 
