@@ -47,6 +47,7 @@ public class RunClaw extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_claws.checkSwitchAndCurrent(clawType);
+    // return m_claws.checkSwitchAndCurrent(clawType);
+    return false; // TODO: real return
   }
 }

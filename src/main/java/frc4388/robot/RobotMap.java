@@ -8,6 +8,7 @@ package frc4388.robot;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -63,7 +64,7 @@ public class RobotMap {
   public final CANCoder leftBackEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
   public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
 
-  public final WPI_PigeonIMU gyro = new WPI_PigeonIMU(SwerveDriveConstants.GYRO_ID);
+  public final WPI_Pigeon2 gyro = new WPI_Pigeon2(SwerveDriveConstants.GYRO_ID);
 
   public SwerveModule leftFront;
   public SwerveModule leftBack;
@@ -171,8 +172,10 @@ public class RobotMap {
   public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
 
   /* Hooks Subsystem */
-  public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);
-  public final CANSparkMax rightClaw = new CANSparkMax(ClawConstants.RIGHT_CLAW_ID, MotorType.kBrushless);
+//   public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);
+//   public final CANSparkMax rightClaw = new CANSparkMax(ClawConstants.RIGHT_CLAW_ID, MotorType.kBrushless);
+  public final Servo leftClaw = new Servo(1);  // TODO: find actual channel
+  public final Servo rightClaw = new Servo(1); // TODO: find actual channel
 
   // Shooter Config
   /* Boom Boom Subsystem */

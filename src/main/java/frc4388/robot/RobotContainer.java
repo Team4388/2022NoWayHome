@@ -57,7 +57,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Claws;
 import frc4388.robot.commands.RunClaw;
-import frc4388.robot.subsystems.Climber;
+import frc4388.robot.subsystems.ClimberRewrite;
 import frc4388.robot.subsystems.Claws.ClawType;
 import frc4388.robot.commands.AimToCenter;
 import frc4388.robot.commands.Shoot;
@@ -92,7 +92,7 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  private final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+  private final ClimberRewrite m_robotClimber= new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
   
   private final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
 
