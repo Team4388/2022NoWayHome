@@ -11,9 +11,7 @@ import org.opencv.core.Point;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
-/**
- * 
- * Aarav's good vector class (better than WPILib)
+/** Aarav's good vector class (better than WPILib)
  * @author Aarav Shah */
 
 public class Vector2D extends Vector2d {
