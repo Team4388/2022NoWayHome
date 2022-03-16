@@ -122,7 +122,7 @@ public class Turret extends SubsystemBase {
     runShooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT);
   }
 
-  public double getboomBoomRotatePosition() {
+  public double getEncoderPosition() {
     return m_boomBoomRotateEncoder.getPosition();
   }
 
