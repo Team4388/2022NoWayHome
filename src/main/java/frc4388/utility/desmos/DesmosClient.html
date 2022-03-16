@@ -27,13 +27,16 @@
             const EXPRESSION_TYPES = {
                 'expression': ['number', 'point', 'array'],
                 'note': ['note'],
-                'table': ['table']
+                'table': ['table'],
+                'clear': ['all', 'except', 'single']
             };
 
             let status = document.getElementById('status');
 
             let elt = document.getElementById('calculator');
             let calculator = Desmos.GraphingCalculator(elt);
+
+            const clearState = calculator.getState();
 
             let helperExpressions = {};
             let variables = [];
@@ -72,6 +75,8 @@
                     } else if(EXPRESSION_TYPES['table'].includes(variable['type'])) {
                         let cols = getColumns(variable['value'].split(' '));
                         calculator.setExpression({ type: 'table', id: variable['name'], columns: cols});
+                    } else if(EXPRESSION_TYPES['clear'].includes(variable['type'])) {
+                        clear(variable['value'], variable['type']);
                     } else
                         console.log('Invalid input type : ' + variable['type']);
                 }
@@ -90,6 +95,47 @@
                 }
 
                 return cols;
+            }
+
+            function clear(lname, type) {
+                let state = calculator.getState();
+                let expressions = state.expressions.list;
+
+                if(expressions.length === 0)
+                    return;
+
+                let lnames = lname.split(',');
+
+                switch(type) {
+                    case 'all':
+                        state = clearState;
+                        break;
+                    case 'except':
+                        for(let i = 0; i < expressions.length; i++) {
+                            if(!expressions[i].latex.includes('='))
+                                return;
+                            
+                            let expressionName = regularName(expressions[i].latex.split('=')[0]);
+                            if(!lnames.includes(expressionName)) {
+                                expressions.splice(i, 1);
+                                i--;
+                            }
+                        }
+                        break;
+                    case 'single':
+                        for(let i = 0; i < expressions.length; i++) {
+                            if(!expressions[i].latex.includes('='))
+                                return;
+
+                            if(lnames.includes(regularName(expressions[i].split('=')[0]))) {
+                                expressions.splice(i, 1);
+                                i--;
+                            }
+                        }
+                        break;
+                }
+
+                calculator.setState(state);
             }
 
             function getVariables() {
@@ -116,13 +162,14 @@
                     return 'point';
                 else if(raw.match(/\[[a-zA-Z0-9.,_{}\(\)]*\]/))
                     return 'array';
-                else if(raw.includes('='))
-                    return 'number';
                 else
-                    return 'none';
+                    return 'number';
             }
 
             function readVariable(latex) {
+                if(!latex.includes('='))
+                    return [];
+
                 let vars = [];
                 let lname = latex.split('=')[0];
                 let lvalue = latex.split('=')[1];
@@ -191,6 +238,9 @@
             }
 
             function regularName(lname) {
+                if(lname.length == 1)
+                    return lname;
+
                 return lname.substring(0, 1) + lname.substring(3, lname.length - 1);
             }
 

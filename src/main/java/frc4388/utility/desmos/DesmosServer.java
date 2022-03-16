@@ -23,6 +23,8 @@ public class DesmosServer extends Thread {
     private static HashMap<String, String[]> desmosQueue = new HashMap<>();
     private static HashMap<String, String[]> readVariables = new HashMap<>();
 
+    private static int clearCount = 0;
+
     private static boolean running = false;
     
     private ServerSocket serverSocket;
@@ -127,6 +129,8 @@ public class DesmosServer extends Thread {
         clientOutput.write(getJSONOutput().getBytes());
         clientOutput.flush();
         clientOutput.close();
+
+        clearCount = 0;
     }
 
     /**
@@ -243,6 +247,40 @@ public class DesmosServer extends Thread {
         tableStr = tableStr.substring(0, tableStr.length()-1); // remove space at the end
 
         desmosQueue.put(name, new String[] {"table", tableStr});
+    }
+
+    /**
+     * Clears entire expression panel
+     */
+    public static void clearAll() {
+        desmosQueue.put("clear" + clearCount, new String[] {"all", "n/a"});
+        clearCount++;
+    }
+
+    /**
+     * Clears entire expression panel except for expressions in {@code names}
+     * 
+     * @param names Names which should be preserved in clear
+     */
+    public static void clearExcept(String... names) {
+        String namesStr = Arrays.toString(names).replace(" ", "");
+        namesStr = namesStr.substring(1, namesStr.length()-1);
+
+        desmosQueue.put("clear" + clearCount, new String[] {"except", namesStr});
+        clearCount++;
+    }
+
+    /**
+     * Removes expressions in {@code names}
+     * 
+     * @param names Names which should be removed
+     */
+    public static void clearSpecific(String... names) {
+        String namesStr = Arrays.toString(names).replace(" ", "");
+        namesStr = namesStr.substring(1, namesStr.length()-1);
+        
+        desmosQueue.put("clear" + clearCount, new String[] {"specific", namesStr});
+        clearCount++;
     }
 
     // ---------------------------------------------------------------------

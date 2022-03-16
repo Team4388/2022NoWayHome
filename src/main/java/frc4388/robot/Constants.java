@@ -243,7 +243,8 @@ public final class Constants {
 
     public static final double RANGE = 10;
 
-    public static final double LIMELIGHT_RADIUS = 1.d;
+    public static final double EDGE_TO_CENTER = 20;
+    public static final double LIMELIGHT_RADIUS = 8;
     public static final double SHOOTER_CORRECTION = 1.d;
   }
 }

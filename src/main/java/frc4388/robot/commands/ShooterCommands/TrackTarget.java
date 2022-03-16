@@ -86,16 +86,22 @@ public class TrackTarget extends CommandBase {
       y_rot += Math.toRadians(VisionConstants.LIME_ANGLE);
 
       double distance = (VisionConstants.TARGET_HEIGHT - VisionConstants.LIME_HEIGHT) / Math.tan(y_rot);
-      
       DesmosServer.putDouble("distance", distance);
 
       updateRegressionDesmos();
       double regressedDistance = distanceRegression(distance);
+      regressedDistance += VisionConstants.EDGE_TO_CENTER + VisionConstants.LIMELIGHT_RADIUS;
       DesmosServer.putDouble("distanceReg", regressedDistance);
 
       //Vision odemetry circle fit based pose estimate
       Point targetOffset = m_visionOdometry.getTargetOffset();
       DesmosServer.putPoint("targetOff", targetOffset);
+
+      vel = m_boomBoom.getVelocity(distance);
+      hood = m_boomBoom.getHood(distance);
+      // m_boomBoom.runDrumShooter(vel);
+      m_boomBoom.runDrumShooterVelocityPID(vel);
+      m_hood.runAngleAdjustPID(hood);
 
       // isExecuted = true;
     }
@@ -103,11 +109,6 @@ public class TrackTarget extends CommandBase {
       e.printStackTrace();
       // System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
-    // vel = m_boomBoom.getVelocity(distance);
-    // hood = m_boomBoom.getHood(distance);
-    // m_boomBoom.runDrumShooter(vel);
-    // m_boomBoom.runDrumShooterVelocityPID(vel);
-    // m_hood.runAngleAdjustPID(hood);
     // m_turret.runshooterRotatePID(m_targetAngle);
   }
 
