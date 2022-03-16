@@ -67,6 +67,7 @@ import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.AimToCenter;
 import frc4388.robot.commands.ShooterCommands.Shoot;
 import frc4388.robot.commands.ShooterCommands.TrackTarget;
+import frc4388.robot.commands.StorageCommands.ManageStorage;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.Extender;
@@ -164,6 +165,12 @@ public class RobotContainer {
             getOperatorController().getLeftTriggerAxis(), 
             getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
+    
+    m_robotStorage.setDefaultCommand(
+        new ManageStorage(m_robotStorage, 
+                          m_robotBoomBoom, 
+                          m_robotTurret).withName("Storage ManageStorage defaultCommand"));
+    
     // m_robotClimber.setDefaultCommand(
     //   new RunCommand(() -> m_robotClimber.runWithInput(getOperatorController().getRightY() * 0.6), m_robotClimber)
     // );

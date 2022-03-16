@@ -31,10 +31,7 @@ public class Turret extends SubsystemBase {
                                            // MotorType.kBrushless);
   public static Gains m_shooterTGains = ShooterConstants.SHOOTER_TURRET_GAINS;
 
-  SparkMaxPIDController m_boomBoomRotatePIDController;
-  public RelativeEncoder m_boomBoomRotateEncoder;
-
-  SparkMaxPIDController m_boomBoomRotatePIDController;
+  public SparkMaxPIDController m_boomBoomRotatePIDController;
   public RelativeEncoder m_boomBoomRotateEncoder;
 
   SparkMaxLimitSwitch m_boomBoomLeftLimit;
@@ -141,9 +138,8 @@ public class Turret extends SubsystemBase {
   }
 
   public double getBoomBoomAngleDegrees() {
-    return (m_boomBoomRotateEncoder.getPosition() - ShooterConstants.TURRET_MOTOR_POS_AT_ZERO_ROT) * 360
-        / ShooterConstants.TURRET_MOTOR_ROTS_PER_ROT;
-  } // TODO: does this method work?
+    return (getEncoderPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
+  }
 
   public double getCurrent(){
     return m_boomBoomRotateMotor.getOutputCurrent();

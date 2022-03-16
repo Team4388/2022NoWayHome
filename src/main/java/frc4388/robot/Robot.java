@@ -19,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -48,6 +49,8 @@ public class Robot extends TimedRobot {
   private double current;
 
   private static DesmosServer desmosServer = new DesmosServer(8000);
+
+  public static Alliance alliance;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -231,6 +234,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     LOGGER.fine("autonomousInit()");
 
+    Robot.alliance = DriverStation.getAlliance();
+
     selectedOdo = odoChooser.getSelected();
     if (selectedOdo == null) {
       selectedOdo = m_robotContainer.getOdometry();
@@ -256,6 +261,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     LOGGER.fine("teleopInit()");
+
+    Robot.alliance = DriverStation.getAlliance();
+
     m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
 
     selectedOdo = odoChooser.getSelected();

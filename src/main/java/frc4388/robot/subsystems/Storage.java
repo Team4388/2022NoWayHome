@@ -6,7 +6,12 @@ package frc4388.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -58,7 +63,10 @@ public class Storage extends SubsystemBase {
     // return (m_colorSensor.getBlue() >= 200  && m_colorSensor.getRed() < 100  && m_colorSensor.getGreen() < 100);
     return (m_colorSensor.getColor() == Color.kBlue);
   }
-  
+
+  public Alliance getColor() {
+    return (getRed() ? Alliance.Red : Alliance.Blue);
+  }  
 
   @Override
   /**
