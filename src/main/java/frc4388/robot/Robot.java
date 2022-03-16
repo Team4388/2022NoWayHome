@@ -162,15 +162,6 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    
-    // VelocityCorrection vc = new VelocityCorrection(m_robotContainer.m_robotSwerveDrive, m_robotContainer.m_robotBoomBoom);
-    // System.out.println("Position: " + vc.position);
-    // System.out.println("Velocity: " + vc.cartesianVelocity);
-    // System.out.println("Target: " + vc.target.toString());
-
-
-    //SmartDashboard.putNumber("Turret Encoder Position", m_robotContainer.m_robotTurret.m_boomBoomRotateEncoder.getPosition());
-    //SmartDashboard.putNumber("Hood Encoder Position", m_robotContainer.m_robotHood.m_angleEncoder.getPosition());
 
     // odo chooser stuff
     addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 
@@ -178,12 +169,6 @@ public class Robot extends TimedRobot {
                   new Pose2d(1, 3, new Rotation2d(Math.PI/4)));
     updateOdoChooser();
     SmartDashboard.putData("Odometry Chooser", odoChooser);
-
-    // print odometry data to smart dashboard for debugging (if causing timeout
-    // errors, you can comment it)
-    SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
-    SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
-    SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
   }
 
   public void updateOdoChooser() {    

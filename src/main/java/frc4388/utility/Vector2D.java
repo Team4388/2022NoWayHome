@@ -57,6 +57,16 @@ public class Vector2D extends Vector2d {
     return new Vector2D(scalar * v1.x, scalar * v1.y);
   }
 
+    /**
+   * Divide a vector with a scalar, component-wise.
+   * @param v1 Vector to divide.
+   * @param v2 Scalar to divide.
+   * @return New vector which is the division.
+   */
+  public static Vector2D divide(Vector2D v1, double scalar) {
+    return new Vector2D(v1.x / scalar, v1.y / scalar);
+  }
+
   /**
    * Find unit vector.
    * @return The unit vector.

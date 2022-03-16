@@ -53,7 +53,7 @@ public class ManageStorage extends CommandBase {
 
       // * CommandScheduler.getInstance().schedule(new ExampleCommand());
       // * new ExampleCommand().schedule();
-      // * new ExampleCommand().execute();
+      // * new ExampleCommand().execute(); (accompanied by initialize and onFinished)
       
       new SpitOutWrongColor(this.storage, this.drum, this.turret); // ? is this how you run a command inside a command
     }

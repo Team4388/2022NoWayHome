@@ -45,10 +45,8 @@ public class Turret extends SubsystemBase {
 
     m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_boomBoomRightLimit.enableLimitSwitch(true);
-    m_boomBoomLeftLimit.enableLimitSwitch(true);
+    setTurretLimitSwitches(true);
 
-    // setTurretLimitSwitches(false);
     // SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
     // SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
 
@@ -74,8 +72,13 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    
     SmartDashboard.putNumber("Turret Angle Rotations", m_boomBoomRotateEncoder.getPosition());
     SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
+    SmartDashboard.putBoolean("Left Limit Switch Pressed", m_boomBoomLeftLimit.isPressed());
+    SmartDashboard.putBoolean("Right Limit Switch Pressed", m_boomBoomRightLimit.isPressed());
+
     if (m_boomBoomLeftLimit.isPressed()) m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_LIMIT - 2);
     if (m_boomBoomRightLimit.isPressed()) m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_FORWARD_LIMIT + 2);
   }
