@@ -62,7 +62,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import frc4388.robot.commands.RunMiddleSwitch;
+import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.AimToCenter;
 import frc4388.robot.commands.ShooterCommands.Shoot;
@@ -316,7 +316,7 @@ public class RobotContainer {
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
       
       // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-      //     .whileHeld(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-44 * ShooterConstants.TURRET_DEGREES_PER_ROT), m_robotTurret));
+      //     .whileHeld(new RunCommand(() -> m_robotTurret.gotoMidpoint(), m_robotTurret));
 
        //B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
