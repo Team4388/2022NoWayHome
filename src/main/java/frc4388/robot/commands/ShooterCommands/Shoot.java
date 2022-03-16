@@ -96,7 +96,7 @@ public class Shoot extends CommandBase {
    * Updates error for custom PID.
    */
   public void updateError() {
-    m_targetPoint = new Pose2d(hTargetDistanceFromHub(), vTargetDistanceFromHub(), SwerveDriveConstants.HUB_POSE.getRotation());
+    m_targetPoint = SwerveDriveConstants.HUB_POSE;
     m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, driveDummy.get());
     // m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
     error = (m_targetAngle - turretDummy.get() + 360) % 360;
@@ -151,43 +151,6 @@ public class Shoot extends CommandBase {
     derivative = (error - prevError) / time;
     output = kP * proportional + kI * integral + kD * derivative;
     normOutput = output/360 * inverted;
-  }
-  // TODO: horizontal velocity correction
-  public double hTargetDistanceFromHub() {
-    
-    double hVel = m_swerve.getChassisSpeeds()[0];
-    double velBeforeCorrection = m_boomBoom.getVelocity(m_distance);
-    double vDistanceFromHub = m_odoY;
-    double approxTravelTime = vDistanceFromHub / velBeforeCorrection;
-    double hTargetDistanceFromHub = hVel * approxTravelTime;
-    
-    // return hTargetDistanceFromHub;
-    return 0.0; // this is for no velocity correction
-  }
-
-  public Pose2d findTargetPoint() {
-
-    // position vector and radius
-    Translation2d position = new Translation2d(m_odoX, m_odoY);
-    double radius = position.getNorm();
-
-    // equation of circle = x^2 + y^2 = m_distance^2
-    // derivative of circle = 2x + 2y * y' = 0 --> y' = -x/y
-
-    // velocity vector (x, y)
-    Translation2d cartesianVelocity = new Translation2d(m_swerve.getChassisSpeeds()[0], m_swerve.getChassisSpeeds()[1]);
-
-    // unit tangential vector
-    Translation2d tangential = new Translation2d(0, 0);
-    // velocity vector (tangential, radial)
-    Translation2d polarVelocity = new Translation2d(0, 0);
-
-    return SwerveDriveConstants.HUB_POSE;
-  }
-
-  // TODO: vertical velocity correction
-  public double vTargetDistanceFromHub() {
-    return 0.0; // this is for no velocity correction
   }
 
   // Called every time the scheduler runs while the command is scheduled.
