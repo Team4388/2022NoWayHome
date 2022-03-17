@@ -42,23 +42,23 @@ public class RunClimberPath extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(!claws.fullyOpen())
+    // if(!claws.fullyOpen())
       return;
     
-    Point climberPos = ClimberRewrite.getClimberPosition(climber.getJointAngles());
+    // Point climberPos = ClimberRewrite.getClimberPosition(climber.getJointAngles());
 
-    Vector2D dir = new Vector2D(path[nextIndex]);
-    dir.subtract(new Vector2D(climberPos));
+    // Vector2D dir = new Vector2D(path[nextIndex]);
+    // dir.subtract(new Vector2D(climberPos));
 
-    if(!endPath && dir.magnitude() < ClimberConstants.THRESHOLD && nextIndex < path.length-1)
-      nextIndex++;
-    else if(!endPath && dir.magnitude() < ClimberConstants.THRESHOLD) {
-      endPath = true;
-      claws.setOpen(false);
-    } else if(!endPath) {
-      dir = dir.unit();
-      climber.controlWithInput(dir.x, dir.y);
-    }
+    // if(!endPath && dir.magnitude() < ClimberConstants.THRESHOLD && nextIndex < path.length-1)
+    //   nextIndex++;
+    // else if(!endPath && dir.magnitude() < ClimberConstants.THRESHOLD) {
+    //   endPath = true;
+    //   claws.setOpen(false);
+    // } else if(!endPath) {
+    //   dir = dir.unit();
+    //   climber.controlWithInput(dir.x, dir.y);
+    // }
   }
 
   // Called once the command ends or is interrupted.
@@ -68,6 +68,7 @@ public class RunClimberPath extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return endPath && claws.fullyClosed();
+    // return endPath && claws.fullyClosed();
+    return false;
   }
 }

@@ -37,7 +37,7 @@ public class RunClaw extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_claws.runClaw(clawType, open);
+    // m_claws.runClaw(clawType, open);
   }
 
   // Called once the command ends or is interrupted.

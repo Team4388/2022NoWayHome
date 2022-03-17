@@ -207,6 +207,10 @@ public final class Constants {
     public static final double CALIBRATION_SPEED = 0;
 
     public static final double CURRENT_LIMIT = 0.0; // TODO: set actual current limit;
+
+    public static final int TOP_LIMIT = 1800;
+    public static final int BOTTOM_LIMIT = 1200;
+
   }
   /**
    * The OIConstants class contains the ID for the XBox controllers

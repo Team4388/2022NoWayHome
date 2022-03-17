@@ -137,9 +137,9 @@ public class RobotContainer {
     /* Default Commands */
 
     // moves climber in xy space with two-axis input from the operator controller
-    m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX() * 0.4, getOperatorController().getLeftY() * 0.4), 
-      m_robotClimber));
+    // m_robotClimber.setDefaultCommand(
+    //   new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX() * 0.4, getOperatorController().getLeftY() * 0.4), 
+    //   m_robotClimber));
 
 
     // IK command
@@ -235,10 +235,10 @@ public class RobotContainer {
     //   .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.0)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-      .whenPressed(new RunCommand(() -> m_robotClaws.setOpen(true)));
+      .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-      .whenPressed(new RunCommand(() -> m_robotClaws.setOpen(false)));
+      .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(false)));
   }
 
     /*

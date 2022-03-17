@@ -8,6 +8,7 @@ import com.revrobotics.SparkMaxLimitSwitch;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ClawConstants;
 import frc4388.robot.Constants.ClimberConstants;
@@ -59,71 +60,76 @@ public class Claws extends SubsystemBase {
    * @param which Which claw to run.
    * @param open Whether to open or close the claw.
    */
-  public void runClaw(ClawType which, boolean open) {
+  // public void runClaw(ClawType which, boolean open) {
     
-    int direction = open ? 1 : -1;
+  //   int direction = open ? 1 : -1;
 
-    if (which == Claws.ClawType.LEFT) {
+  //   if (which == Claws.ClawType.LEFT) {
 
-      // double setPos = open ? ClawsConstants.OPEN_POSITION + m_leftOffset : ClawsConstants.CLOSE_POSITION + m_leftOffset;
-      // m_leftClaw.getEncoder().setPosition(setPos);
-      m_leftClaw.setSpeed(direction * 0.1);
+  //     // double setPos = open ? ClawsConstants.OPEN_POSITION + m_leftOffset : ClawsConstants.CLOSE_POSITION + m_leftOffset;
+  //     // m_leftClaw.getEncoder().setPosition(setPos);
+  //     m_leftClaw.setSpeed(direction * 0.1);
 
-    } else if (which == Claws.ClawType.RIGHT) {
+  //   } else if (which == Claws.ClawType.RIGHT) {
 
-      // double setPos = open ? ClawsConstants.OPEN_POSITION + m_rightOffset : ClawsConstants.CLOSE_POSITION + m_rightOffset;
-      // m_rightClaw.getEncoder().setPosition(setPos);
-      m_rightClaw.setSpeed(direction * 0.1);
-    }
+  //     // double setPos = open ? ClawsConstants.OPEN_POSITION + m_rightOffset : ClawsConstants.CLOSE_POSITION + m_rightOffset;
+  //     // m_rightClaw.getEncoder().setPosition(setPos);
+  //     m_rightClaw.setSpeed(direction * 0.1);
+  //   }
 
-    m_open = open;
-  }
+  //   m_open = open;
+  // }
 
-  public void runClaw(ClawType which, double input) {
-    if (which == Claws.ClawType.LEFT) {
-      m_leftClaw.setSpeed(input);
+  // public void runClaw(ClawType which, double input) {
+  //   if (which == Claws.ClawType.LEFT) {
+  //     m_leftClaw.setSpeed(input);
 
-    } else if (which == Claws.ClawType.RIGHT) {
-      m_rightClaw.setSpeed(input);
-    }
-  }
+  //   } else if (which == Claws.ClawType.RIGHT) {
+  //     m_rightClaw.setSpeed(input);
+  //   }
+  // }
 
-  public void runClaws(double input)
-  {
-    m_leftClaw.setSpeed(input);
-    m_rightClaw.setSpeed(input);
-  }
+  // public void runClaws(double input)
+  // {
+  //   m_leftClaw.setSpeed(input);
+  //   m_rightClaw.setSpeed(input);
+  // }
 
   /**
    * Sets the state of both hooks
    * @param open The state of the hooks
    */
   public void setOpen(boolean open) {
+    SmartDashboard.putBoolean("open", open);
     if(open) {
       // m_leftClaw.getEncoder().setPosition(ClawsConstants.OPEN_POSITION + m_leftOffset);
       // m_rightClaw.getEncoder().setPosition(ClawsConstants.OPEN_POSITION + m_rightOffset);
-      m_leftClaw.set(-ClawConstants.OPEN_POSITION);
-      m_rightClaw.set(ClawConstants.OPEN_POSITION);
+      // m_leftClaw.setPosition(.7);
+      // m_rightClaw.setPosition(.7);
+      m_leftClaw.setRaw(ClawConstants.BOTTOM_LIMIT);//ClawConstants.OPEN_POSITION);
+      m_rightClaw.setRaw(ClawConstants.TOP_LIMIT);//ClawConstants.OPEN_POSITION);
     } else {
       // m_leftClaw.getEncoder().setPosition(ClawsConstants.CLOSE_POSITION + m_leftOffset);
       // m_rightClaw.getEncoder().setPosition(ClawsConstants.CLOSE_POSITION + m_rightOffset);
-      m_leftClaw.set(-ClawConstants.CLOSE_POSITION);
-      m_rightClaw.set(ClawConstants.CLOSE_POSITION);
+      // m_leftClaw.setPosition(.3);
+      // m_rightClaw.setPosition(.3);
+      m_leftClaw.setRaw(ClawConstants.TOP_LIMIT);
+      m_rightClaw.setRaw(ClawConstants.BOTTOM_LIMIT);
     }
   }
 
-  public double[] getOffsets() {
-    return new double[] {m_leftOffset, m_rightOffset};
-  }
+  // public double[] getOffsets() {
+  //   return new double[] {m_leftOffset, m_rightOffset};
+  // }
 
-  public boolean fullyOpen() {
-    return Math.abs(m_leftClaw.getPosition() - ClawConstants.OPEN_POSITION) < ClawConstants.THRESHOLD &&
-        Math.abs(m_rightClaw.getPosition() - ClawConstants.OPEN_POSITION) < ClawConstants.THRESHOLD;  }
+  // public boolean fullyOpen() {
+  //   return Math.abs(m_leftClaw.getPosition() - ClawConstants.OPEN_POSITION) < ClawConstants.THRESHOLD &&
+  //       Math.abs(m_rightClaw.getPosition() - ClawConstants.OPEN_POSITION) < ClawConstants.THRESHOLD;  }
 
-  public boolean fullyClosed() {
-    return Math.abs(m_leftClaw.getPosition() - ClawConstants.CLOSE_POSITION) < ClawConstants.THRESHOLD &&
-        Math.abs(m_rightClaw.getPosition() - ClawConstants.CLOSE_POSITION) < ClawConstants.THRESHOLD;
-  }
+  // public boolean fullyClosed() {
+  //   return Math.abs(m_leftClaw.getPosition() - ClawConstants.CLOSE_POSITION) < ClawConstants.THRESHOLD &&
+  //       Math.abs(m_rightClaw.getPosition() - ClawConstants.CLOSE_POSITION) < ClawConstants.THRESHOLD;
+  // }
 
   /**
    * Check if a limit switch is pressed or current limit exceeded for a claw.
@@ -145,12 +151,12 @@ public class Claws extends SubsystemBase {
   //   return false;
   // }
 
-  @Override
-  public void periodic() {
-    if (fullyOpen() || fullyClosed()) {
-      m_leftClaw.setSpeed(0.0);
-      m_rightClaw.setSpeed(0.0);
-    }
+  // @Override
+  // public void periodic() {
+  //   if (fullyOpen() || fullyClosed()) {
+  //     m_leftClaw.setSpeed(0.0);
+  //     m_rightClaw.setSpeed(0.0);
+  //   }
 
   //   if(m_leftLimitSwitchF.isPressed() || m_leftLimitSwitchR.isPressed())
   //     // m_leftOffset = m_leftClaw.getEncoder().getPosition();
@@ -159,5 +165,5 @@ public class Claws extends SubsystemBase {
   //   if(m_rightLimitSwitchF.isPressed() || m_rightLimitSwitchR.isPressed())
   //     // m_rightOffset = m_rightClaw.getEncoder().getPosition();
   //     m_rightOffset = m_rightClaw.getPosition();
-  }
+  // }
 }
