@@ -209,14 +209,13 @@ public final class Constants {
       //Gains for hood
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 0.7);
 
-    //#region test start
-    
-    //#endregion test end
     public static final double TURRET_FORWARD_HARD_LIMIT = 18.429;
     public static final double TURRET_REVERSE_HARD_LIMIT = -106.454;
 
-    public static final double TURRET_FORWARD_SOFT_LIMIT = TURRET_FORWARD_HARD_LIMIT - 4;
+    public static final double TURRET_FORWARD_SOFT_LIMIT = TURRET_FORWARD_HARD_LIMIT - 5;
     public static final double TURRET_REVERSE_SOFT_LIMIT = TURRET_REVERSE_HARD_LIMIT + 2;
+
+    public static final double TURRET_HARD_LIMIT_TOLERANCE = 20.0;
       //Shooter gains for actual Drum
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(0.4, 0.0, 15.0, 0.05, 0, 0);
 
