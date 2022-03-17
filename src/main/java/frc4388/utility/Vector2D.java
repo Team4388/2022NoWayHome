@@ -63,8 +63,8 @@ public class Vector2D extends Vector2d {
    * @param v Vector to add
    */
   public void add(Vector2D v) {
-    x += v.x;
-    y += v.x;
+    this.x += v.x;
+    this.y += v.x;
   }
 
   /**
@@ -82,8 +82,8 @@ public class Vector2D extends Vector2d {
    * @param v Vector to subtract
    */
   public void subtract(Vector2D v) {
-    x -= v.x;
-    y -= v.x;
+    this.x -= v.x;
+    this.y -= v.x;
   }
 
   /**
@@ -101,8 +101,8 @@ public class Vector2D extends Vector2d {
    * @param scalar Scalar to multiply
    */
   public void multiply(double scalar) {
-    x *= scalar;
-    y *= scalar;
+    this.x *= scalar;
+    this.y *= scalar;
   }
 
     /**
@@ -120,8 +120,8 @@ public class Vector2D extends Vector2d {
    * @param scalar Scalar to divide
    */
   public void divide(double scalar) {
-    x /= scalar;
-    y /= scalar;
+    this.x /= scalar;
+    this.y /= scalar;
   }
 
   /**
