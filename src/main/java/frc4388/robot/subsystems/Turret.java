@@ -37,23 +37,35 @@ public class Turret extends SubsystemBase {
   SparkMaxLimitSwitch m_boomBoomLeftLimit;
   SparkMaxLimitSwitch m_boomBoomRightLimit;
 
+  boolean hasLeftSwitchChanged = false;
+  boolean hasRightSwitchChanged = false;
+
+  boolean leftPrevState = false;
+  boolean rightPrevState = false;
+  boolean leftState;
+  boolean rightState;
+
+  long leftCurrentTime;
+  long rightCurrentTime;
+  long leftElapsedTime;
+  long rightElapsedTime;
+
   public Turret(CANSparkMax boomBoomRotateMotor) {
 
     m_boomBoomRotateMotor = boomBoomRotateMotor;
     m_boomBoomRotatePIDController = m_boomBoomRotateMotor.getPIDController();
     m_boomBoomRotateEncoder = m_boomBoomRotateMotor.getEncoder();
 
-    m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_boomBoomLeftLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    m_boomBoomRightLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_boomBoomLeftLimit.enableLimitSwitch(true);
+    // m_boomBoomRightLimit.enableLimitSwitch(true);
     setTurretLimitSwitches(true);
 
-    // SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
-    // SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
-
-    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.TURRET_FORWARD_LIMIT);
-    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.TURRET_REVERSE_LIMIT);
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ShooterConstants.TURRET_FORWARD_SOFT_LIMIT);
+    m_boomBoomRotateMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ShooterConstants.TURRET_REVERSE_SOFT_LIMIT);
     setTurretSoftLimits(true);
-
+    
     setTurretPIDGains();
   }
   
@@ -68,19 +80,53 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotatePIDController.setIZone(m_shooterTGains.kIzone);
     m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.kPeakOutput);
   }
-
+  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+    
+    SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
+    SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
     
     SmartDashboard.putNumber("Turret Angle Rotations", m_boomBoomRotateEncoder.getPosition());
     SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
     SmartDashboard.putBoolean("Left Limit Switch Pressed", m_boomBoomLeftLimit.isPressed());
     SmartDashboard.putBoolean("Right Limit Switch Pressed", m_boomBoomRightLimit.isPressed());
 
-    if (m_boomBoomLeftLimit.isPressed()) m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_LIMIT - 2);
-    if (m_boomBoomRightLimit.isPressed()) m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_FORWARD_LIMIT + 2);
+    // limit switch annoying time thing
+    leftState = m_boomBoomLeftLimit.isPressed();
+    rightState = m_boomBoomRightLimit.isPressed();
+
+    hasLeftSwitchChanged = (leftState != leftPrevState);
+    hasRightSwitchChanged = (rightState != rightPrevState);
+
+    if (leftState && hasLeftSwitchChanged) {
+      leftCurrentTime = System.currentTimeMillis();
+      leftElapsedTime = 0;
+    }
+    
+    if (rightState && hasRightSwitchChanged) {
+      rightCurrentTime = System.currentTimeMillis();
+      rightElapsedTime = 0;
+    }
+
+    if (leftState && !hasLeftSwitchChanged) {
+      leftElapsedTime = System.currentTimeMillis() - leftCurrentTime;
+    }
+    
+    if (rightState && !hasRightSwitchChanged) {
+      rightElapsedTime = System.currentTimeMillis() - rightCurrentTime;
+    }
+
+    if (leftState && (leftElapsedTime > 500)) {
+      m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_FORWARD_HARD_LIMIT);// -95/*ShooterConstants.TURRET_FORWARD_SOFT_LIMIT - 2*/);
+    }
+    if (rightState && (rightElapsedTime > 500)) {
+      m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_HARD_LIMIT);// 0/*ShooterConstants.TURRET_REVERSE_LIMIT + 2*/);
+    }
+
+    leftPrevState = leftState;
+    rightPrevState = rightState;
   }
 
   /**
@@ -110,7 +156,7 @@ public class Turret extends SubsystemBase {
    * @param input from -1.0 to 1.0, positive is clockwise
    */
   public void runTurretWithInput(double input) {
-    m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER);
+    m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER * 0.5);
   }
 
   public void runShooterRotatePID(double targetAngle) {

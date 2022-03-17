@@ -17,18 +17,18 @@ public class Extender extends SubsystemBase {
   
   private CANSparkMax m_extenderMotor;
 
-  private SparkMaxLimitSwitch m_inLimit;
-  private SparkMaxLimitSwitch m_outLimit;
+  // private SparkMaxLimitSwitch m_inLimit;
+  // private SparkMaxLimitSwitch m_outLimit;
 
   /** Creates a new Extender. */
   public Extender(CANSparkMax extenderMotor) {
 
     m_extenderMotor = extenderMotor;
 
-    m_inLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_outLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_inLimit.enableLimitSwitch(false);
-    m_outLimit.enableLimitSwitch(false);
+    // m_inLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_outLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    // m_inLimit.enableLimitSwitch(false);
+    // m_outLimit.enableLimitSwitch(false);
 
     m_extenderMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ExtenderConstants.EXTENDER_FORWARD_LIMIT);
     m_extenderMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ExtenderConstants.EXTENDER_REVERSE_LIMIT);

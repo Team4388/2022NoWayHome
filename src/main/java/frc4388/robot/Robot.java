@@ -204,7 +204,7 @@ public class Robot extends TimedRobot {
         LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
     }
 
-    m_robotContainer.m_robotVisionOdometry.setLEDs(true);
+    m_robotContainer.m_robotVisionOdometry.setLEDs(false);
   }
 
   @Override
