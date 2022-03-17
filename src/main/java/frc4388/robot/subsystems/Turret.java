@@ -37,18 +37,12 @@ public class Turret extends SubsystemBase {
   SparkMaxLimitSwitch m_boomBoomLeftLimit;
   SparkMaxLimitSwitch m_boomBoomRightLimit;
 
-  boolean hasLeftSwitchChanged = false;
-  boolean hasRightSwitchChanged = false;
-
-  boolean leftPrevState = false;
-  boolean rightPrevState = false;
   boolean leftState;
-  boolean rightState;
+  boolean leftPrevState = false;
+  boolean hasLeftSwitchChanged = false;
 
   long leftCurrentTime;
-  long rightCurrentTime;
   long leftElapsedTime;
-  long rightElapsedTime;
 
   public Turret(CANSparkMax boomBoomRotateMotor) {
 
@@ -117,39 +111,24 @@ public class Turret extends SubsystemBase {
     // SmartDashboard.putBoolean("Right Limit Switch Pressed", m_boomBoomRightLimit.isPressed());
 
     // limit switch annoying time thing but actually worked first try wtf
-    // leftState = m_boomBoomLeftLimit.isPressed();
-    // rightState = m_boomBoomRightLimit.isPressed();
+    leftState = m_boomBoomLeftLimit.isPressed(); // * Get the state of the left limit switch (true for pressed).
 
-    // hasLeftSwitchChanged = (leftState != leftPrevState);
-    // hasRightSwitchChanged = (rightState != rightPrevState);
+    hasLeftSwitchChanged = (leftState != leftPrevState); // * Get whether the state of the left limit switch has changed, based on its previous state.
 
-    // if (leftState && hasLeftSwitchChanged) {
-    //   leftCurrentTime = System.currentTimeMillis();
-    //   leftElapsedTime = 0;
-    // }
+    if (leftState && hasLeftSwitchChanged) { // * If the left limit switch is pressed, and it recently changed, start the time.
+      leftCurrentTime = System.currentTimeMillis();
+      leftElapsedTime = 0;
+    }
+
+    if (leftState && !hasLeftSwitchChanged) { // * If the left limit switch is still pressed, but the state hasn't changed, then calculate elapsed time.
+      leftElapsedTime = System.currentTimeMillis() - leftCurrentTime;
+    }
     
-    // if (rightState && hasRightSwitchChanged) {
-    //   rightCurrentTime = System.currentTimeMillis();
-    //   rightElapsedTime = 0;
-    // }
+    if (leftState && (leftElapsedTime > 500)) { // * If the left limit switch is pressed for more than half a second, update the encoder position.
+      m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_HARD_LIMIT);
+    }
 
-    // if (leftState && !hasLeftSwitchChanged) {
-    //   leftElapsedTime = System.currentTimeMillis() - leftCurrentTime;
-    // }
-    
-    // if (rightState && !hasRightSwitchChanged) {
-    //   rightElapsedTime = System.currentTimeMillis() - rightCurrentTime;
-    // }
-
-    // if (leftState && (leftElapsedTime > 500)) {
-    //   m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_FORWARD_HARD_LIMIT);// -95/*ShooterConstants.TURRET_FORWARD_SOFT_LIMIT - 2*/);
-    // }
-    // if (rightState && (rightElapsedTime > 500)) {
-      // m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_HARD_LIMIT);// 0/*ShooterConstants.TURRET_REVERSE_LIMIT + 2*/);
-    // }
-
-    // leftPrevState = leftState;
-    // rightPrevState = rightState;
+    leftPrevState = leftState; // * Update the state of the left limit switch.
   }
 
   /**
