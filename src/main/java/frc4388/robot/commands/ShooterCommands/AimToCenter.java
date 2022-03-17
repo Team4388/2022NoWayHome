@@ -69,7 +69,7 @@ public class AimToCenter extends CommandBase {
     if (angle == Double.NaN) {
       return false;
     }
-    return !((ShooterConstants.TURRET_REVERSE_LIMIT <= angle) && (angle <= ShooterConstants.TURRET_FORWARD_LIMIT));
+    return !((ShooterConstants.TURRET_REVERSE_SOFT_LIMIT <= angle) && (angle <= ShooterConstants.TURRET_FORWARD_SOFT_LIMIT));
   }
 
   // Called once the command ends or is interrupted.

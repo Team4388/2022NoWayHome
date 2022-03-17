@@ -166,10 +166,10 @@ public class RobotContainer {
             getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
     
-    m_robotStorage.setDefaultCommand(
-        new ManageStorage(m_robotStorage, 
-                          m_robotBoomBoom, 
-                          m_robotTurret).withName("Storage ManageStorage defaultCommand"));
+    // m_robotStorage.setDefaultCommand(
+    //     new ManageStorage(m_robotStorage, 
+    //                       m_robotBoomBoom, 
+    //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
     
     // m_robotClimber.setDefaultCommand(
     //   new RunCommand(() -> m_robotClimber.runWithInput(getOperatorController().getRightY() * 0.6), m_robotClimber)
