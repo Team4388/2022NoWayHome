@@ -19,6 +19,7 @@ import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Vision;
 import frc4388.robot.subsystems.VisionOdometry;
+import frc4388.utility.Vector2D;
 import frc4388.utility.desmos.DesmosServer;
 
 public class TrackTarget extends CommandBase {
@@ -69,12 +70,23 @@ public class TrackTarget extends CommandBase {
     try {
       m_visionOdometry.setLEDs(true);
       points = m_visionOdometry.getTargetPoints();
+
+      Point average = VisionOdometry.averagePoint(points);
+
+      for(Point point : points) {
+        Vector2D difference = new Vector2D(point);
+        difference.subtract(new Vector2D(average));
+
+        if(difference.magnitude() < VisionConstants.POINTS_THRESHOLD)
+          points.remove(point);
+      }
+
+      average = VisionOdometry.averagePoint(points);
+      DesmosServer.putPoint("average", average);
+
       for(int i = 0; i < points.size(); i++) {
         DesmosServer.putPoint("Point" + i, points.get(i));
       }
-
-      Point average = VisionOdometry.averagePoint(points);
-      DesmosServer.putPoint("average", average);
 
       output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
       output *= 4;
