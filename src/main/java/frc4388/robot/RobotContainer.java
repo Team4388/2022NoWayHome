@@ -155,7 +155,7 @@ public class RobotContainer {
             getDriverController().getLeftY(),
             //getDriverController().getRightX(),
             getDriverController().getRightX(),
-            // getDriverController().getRightY(),
+            getDriverController().getRightY(),
             true),
             m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
       // Intake with Triggers

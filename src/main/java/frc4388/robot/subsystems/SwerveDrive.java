@@ -113,16 +113,16 @@ public class SwerveDrive extends SubsystemBase {
 
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative) {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
-    Translation2d speed = new Translation2d(leftX, leftY);
+    Translation2d speed = new Translation2d(-leftX, leftY);
     speed = speed.times(speed.getNorm() * speedAdjust);
     if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightY, rightX);
+      rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0, 1));
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
-    double xSpeedMetersPerSecond = speed.getX();
+    double xSpeedMetersPerSecond = -speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d(m_gyro.getRotation2d().getDegrees()))
+            rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d(m_gyro.getRotation2d().getRadians() + (Math.PI/2)))
         : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * 8);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
         chassisSpeeds);
@@ -154,6 +154,8 @@ public class SwerveDrive extends SubsystemBase {
     updateOdometry();
     updateSmartDash();
 
+    SmartDashboard.putNumber("Pigeon getRotation2d", m_gyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Pigeon getAngle", m_gyro.getAngle());
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Yaw (0 to 360)", m_gyro.getYaw() % 360);
 
@@ -165,7 +167,7 @@ public class SwerveDrive extends SubsystemBase {
     // odometry
     SmartDashboard.putNumber("Odometry: X", getOdometry().getX());
     SmartDashboard.putNumber("Odometry: Y", getOdometry().getY());
-    SmartDashboard.putNumber("Odometry: θ", getOdometry().getRotation().getDegrees());
+    SmartDashboard.putNumber("Odometry: Theta", getOdometry().getRotation().getDegrees());
 
     // chassis speeds
     // TODO: find the actual max velocity in m/s of the robot in fast mode to have accurate chassis speeds
