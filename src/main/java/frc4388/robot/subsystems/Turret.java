@@ -45,6 +45,8 @@ public class Turret extends SubsystemBase {
   long leftCurrentTime;
   long leftElapsedTime;
 
+  double speedLimiter;
+
   public Turret(CANSparkMax boomBoomRotateMotor) {
 
     m_boomBoomRotateMotor = boomBoomRotateMotor;
@@ -59,9 +61,10 @@ public class Turret extends SubsystemBase {
     
     m_boomBoomLeftLimit = m_boomBoomRotateMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     m_boomBoomRightLimit = m_boomBoomRotateMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    // setTurretLimitSwitches(true);
     m_boomBoomRightLimit.enableLimitSwitch(true);
     m_boomBoomLeftLimit.enableLimitSwitch(true);
+
+    this.speedLimiter = 1.0;
     
     setTurretPIDGains();
   }
@@ -99,6 +102,7 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotatePIDController.setFF(m_shooterTGains.kF);
     m_boomBoomRotatePIDController.setIZone(m_shooterTGains.kIzone);
     m_boomBoomRotatePIDController.setOutputRange(ShooterConstants.SHOOTER_TURRET_MIN, m_shooterTGains.kPeakOutput);
+    // TODO: add 0.1
   }
   
   @Override
@@ -140,6 +144,20 @@ public class Turret extends SubsystemBase {
     }
 
     leftPrevState = leftState; // * Update the state of the left limit switch.
+  
+  
+    // speed limiting near hard limits
+    double currentPos = this.getEncoderPosition();
+    double forwardDistance = Math.abs(currentPos - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT);
+    double reverseDistance = Math.abs(currentPos - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT);
+
+    if (forwardDistance < 20.0) {
+      this.speedLimiter = 0.2 + (forwardDistance * 0.05);
+    }
+
+    if (reverseDistance < 20.0) {
+      this.speedLimiter = 0.2 + (reverseDistance * 0.05);
+    }
   }
 
   /**
@@ -169,7 +187,7 @@ public class Turret extends SubsystemBase {
    * @param input from -1.0 to 1.0, positive is clockwise
    */
   public void runTurretWithInput(double input) {
-    m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER);
+    m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER * this.speedLimiter);
   }
 
   public void runShooterRotatePID(double targetAngle) {

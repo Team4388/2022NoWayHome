@@ -303,7 +303,9 @@ public class RobotContainer {
     //   .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));
+        // .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));\
+        .whileHeld(new RunCommand(() -> m_robotTurret.gotoZero(), m_robotTurret))
+        .whenReleased(new RunCommand(() -> m_robotTurret.m_boomBoomRotateMotor.set(0), m_robotTurret));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(-500), m_robotBoomBoom));
