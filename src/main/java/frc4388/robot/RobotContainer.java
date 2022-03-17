@@ -359,6 +359,10 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> TurretManual.setManual(true)))
     //     .whenReleased(new RunCommand(() -> TurretManual.setManual(false)));
 
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+        .whileHeld(new RunCommand(() -> m_robotTurret.turnOnLeftLimitSwitch(), m_robotTurret))
+        .whenReleased(new RunCommand(() -> m_robotTurret.turnOffLeftLimitSwitch(), m_robotTurret));
+
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));

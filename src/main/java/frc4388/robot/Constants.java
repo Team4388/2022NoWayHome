@@ -191,6 +191,7 @@ public final class Constants {
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
     public static final double TURRET_SPEED_MULTIPLIER = 0.6;
+    public static final double TURRET_CALIBRATION_MULTIPLIER = 0.5;
     public static final double TURRET_DEGREES_PER_ROT = 180.0/105.45445251464844;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
@@ -212,7 +213,7 @@ public final class Constants {
     
     //#endregion test end
     public static final double TURRET_FORWARD_HARD_LIMIT = 0.0;
-    public static final double TURRET_REVERSE_HARD_LIMIT = -85.0;
+    public static final double TURRET_REVERSE_HARD_LIMIT = -123.0;
 
     public static final double TURRET_FORWARD_SOFT_LIMIT = TURRET_FORWARD_HARD_LIMIT - 2;
     public static final double TURRET_REVERSE_SOFT_LIMIT = TURRET_REVERSE_HARD_LIMIT + 2;
