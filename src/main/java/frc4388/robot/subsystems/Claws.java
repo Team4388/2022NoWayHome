@@ -102,13 +102,13 @@ public class Claws extends SubsystemBase {
     if(open) {
       // m_leftClaw.getEncoder().setPosition(ClawsConstants.OPEN_POSITION + m_leftOffset);
       // m_rightClaw.getEncoder().setPosition(ClawsConstants.OPEN_POSITION + m_rightOffset);
-      m_leftClaw.set(0.1);
-      m_rightClaw.set(0.1);
+      m_leftClaw.set(-ClawConstants.OPEN_POSITION);
+      m_rightClaw.set(ClawConstants.OPEN_POSITION);
     } else {
       // m_leftClaw.getEncoder().setPosition(ClawsConstants.CLOSE_POSITION + m_leftOffset);
       // m_rightClaw.getEncoder().setPosition(ClawsConstants.CLOSE_POSITION + m_rightOffset);
-      m_leftClaw.set(-0.1);
-      m_rightClaw.set(-0.1);
+      m_leftClaw.set(-ClawConstants.CLOSE_POSITION);
+      m_rightClaw.set(ClawConstants.CLOSE_POSITION);
     }
   }
 

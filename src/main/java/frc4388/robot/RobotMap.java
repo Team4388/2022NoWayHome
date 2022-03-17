@@ -175,7 +175,7 @@ public class RobotMap {
 //   public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);
 //   public final CANSparkMax rightClaw = new CANSparkMax(ClawConstants.RIGHT_CLAW_ID, MotorType.kBrushless);
   public final Servo leftClaw = new Servo(1);  // TODO: find actual channel
-  public final Servo rightClaw = new Servo(1); // TODO: find actual channel
+  public final Servo rightClaw = new Servo(2); // TODO: find actual channel
 
   // Shooter Config
   /* Boom Boom Subsystem */

@@ -200,9 +200,9 @@ public final class Constants {
     public static final int RIGHT_CLAW_ID = 45;
 
     public static final double OPEN_POSITION = 0;  // TODO: find actual position
-    public static final double CLOSE_POSITION = 0; // TODO: find actual position
+    public static final double CLOSE_POSITION = 1; // TODO: find actual position
 
-    public static final double THRESHOLD = 0; // TODO: find actual threshold
+    public static final double THRESHOLD = .1; // TODO: find actual threshold
 
     public static final double CALIBRATION_SPEED = 0;
 

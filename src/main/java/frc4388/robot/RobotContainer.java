@@ -218,21 +218,27 @@ public class RobotContainer {
 
     /* Operator Buttons */
     // run claws
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.2)))
-      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //   .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.2)))
+    //   .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.0)));
     
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, -0.2)))
-      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.0)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //   .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, -0.2)))
+    //   .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.LEFT, 0.0)));
+
+    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+    //   .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.2)))
+    //   .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.0)));
+    
+    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+    //   .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, -0.2)))
+    //   .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.0)));
+
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+      .whenPressed(new RunCommand(() -> m_robotClaws.setOpen(true)));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.2)))
-      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.0)));
-    
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-      .whileHeld(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, -0.2)))
-      .whenReleased(new RunCommand(() -> m_robotClaws.runClaw(ClawType.RIGHT, 0.0)));
+      .whenPressed(new RunCommand(() -> m_robotClaws.setOpen(false)));
   }
 
     /*
