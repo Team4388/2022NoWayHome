@@ -51,7 +51,12 @@ public class BoomBoom extends SubsystemBase {
     public Double distance, hoodExt, drumVelocity;
   }
 
+  public static class VelocityCorrectionTableEntry {
+    public Double distance, duration;
+  }
+
   private ShooterTableEntry[] m_shooterTable;
+  private VelocityCorrectionTableEntry[] m_velocityCorrectionTable;
 
   /** Creates a new BoomBoom, which has a drum shooter and angle adjuster. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
@@ -61,7 +66,7 @@ public class BoomBoom extends SubsystemBase {
 
     try {
       // This is a helper class that allows us to read a CSV file into a Java array.
-      CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
+      CSV<ShooterTableEntry> shooterCSV = new CSV<>(ShooterTableEntry::new) {
         // This is a regular expression that removes all parentheses from the header of the CSV file.
         private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
 
@@ -80,17 +85,50 @@ public class BoomBoom extends SubsystemBase {
           return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
         }
       };
+
+      CSV<VelocityCorrectionTableEntry> velocityCorrectionCSV = new CSV<>(VelocityCorrectionTableEntry::new) {
+        // This is a regular expression that removes all parentheses from the header of the CSV file.
+        private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
+
+        /**
+         * Removes the parentheses from the CSV header
+         * 
+         * @param header The header to be sanitized.
+         * @return The headerSanitizer method is overriding the headerSanitizer method in the parent class.
+         *         The parentheses.matcher(header) is matching the header with the parentheses regular
+         *         expression. The replaceAll method is replacing all of the parentheses with an empty
+         *         string. The super.headerSanitizer(parentheses.matcher(header).replaceAll("")) is calling
+         *         the parent sanitizer.
+         */
+        @Override
+        protected String headerSanitizer(final String header) {
+          return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
+        }
+      };
+      
       // This is reading the CSV file into a Java array.
-      m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
+      m_shooterTable = shooterCSV.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
       // This is a running a helper method that is logging the contents of the table to the console on a new thread.
       new Thread(() -> LOGGER.fine(() -> CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
+      
+      // This is reading the CSV file into a Java array.
+      m_velocityCorrectionTable = velocityCorrectionCSV.read(new File(Filesystem.getDeployDirectory(), "VelocityCorrectionData.csv").toPath());
+      // This is a running a helper method that is logging the contents of the table to the console on a new thread.
+      new Thread(() -> LOGGER.fine(() -> CSV.ReflectionTable.create(m_velocityCorrectionTable, RobotBase.isSimulation()))).start();
+
     } catch (final IOException exception) {
-      ShooterTableEntry dummyEntry = new ShooterTableEntry();
-      dummyEntry.distance = 0.0;
-      dummyEntry.hoodExt = 0.0;
-      dummyEntry.drumVelocity = 0.0;
-      m_shooterTable = new ShooterTableEntry[] { dummyEntry };
+
+      ShooterTableEntry dummyShooterEntry = new ShooterTableEntry();
+      dummyShooterEntry.distance = 0.0;
+      dummyShooterEntry.hoodExt = 0.0;
+      dummyShooterEntry.drumVelocity = 0.0;
+      m_shooterTable = new ShooterTableEntry[] { dummyShooterEntry };
       LOGGER.log(Level.SEVERE, "Exception while reading shooter CSV table.", exception);
+
+      VelocityCorrectionTableEntry dummyVelocityCorrectionEntry = new VelocityCorrectionTableEntry();
+      dummyVelocityCorrectionEntry.distance = 0.0;
+      m_velocityCorrectionTable = new VelocityCorrectionTableEntry[] { dummyVelocityCorrectionEntry };
+      LOGGER.log(Level.SEVERE, "Exception while reading velocity correction CSV table.", exception);
     }
   }
 
@@ -114,6 +152,17 @@ public class BoomBoom extends SubsystemBase {
    */
   public Double getHood(final Double distance) {
     return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
+  }
+
+  /**
+   * This is a function that takes a value (distance) and returns a value (duration) that is a linear
+   * interpolation of the two values (duration) at the two closest points in the table (m_velocityCorrectionTable)
+   * to the given value (distance).
+   * @param distance Distance in velocityCorrection table
+   * @return Duration in milliseconds
+   */
+  public Double getDuration(final Double distance) {
+    return linearInterpolate(m_velocityCorrectionTable, distance, e -> e.distance, e -> e.duration).doubleValue();
   }
 
   /**

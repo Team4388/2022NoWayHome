@@ -178,8 +178,8 @@ public class SwerveDrive extends SubsystemBase {
    * Gets the current chassis speeds in m/s and rad/s.
    * @return Current chassis speeds (vx, vy, ω)
    */
-  public double[] getChassisSpeeds() {
-    return new double[] {chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond};
+  public ChassisSpeeds getChassisSpeeds() {
+    return new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond);
   }
 
   /**

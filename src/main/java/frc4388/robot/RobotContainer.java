@@ -551,8 +551,8 @@ public class RobotContainer {
     Rotation2d rotation = m_robotSwerveDrive.m_gyro.getRotation2d();
     // FIXME: Chassis speeds are created from joystick inputs and do not reflect
     // actual robot velocity.
-    Translation2d velocity = new Translation2d(m_robotSwerveDrive.getChassisSpeeds()[0],
-        m_robotSwerveDrive.getChassisSpeeds()[1]);
+    Translation2d velocity = new Translation2d(m_robotSwerveDrive.getChassisSpeeds().vxMetersPerSecond,
+        m_robotSwerveDrive.getChassisSpeeds().vyMetersPerSecond);
     Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false,
         SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
     pathPoints.add(waypoint);
