@@ -63,7 +63,7 @@ import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
-import frc4388.robot.commands.ButtonBoxCommands.TurretManual;
+// import frc4388.robot.commands.ButtonBoxCommands.TurretManual;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.AimToCenter;
 import frc4388.robot.commands.ShooterCommands.Shoot;
@@ -353,8 +353,8 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
     //     .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
     
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-        .whileHeld(new TurretManual(m_robotTurret));
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+    //     .whileHeld(new TurretManual(m_robotTurret));
       
     // control turret manual mode
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)

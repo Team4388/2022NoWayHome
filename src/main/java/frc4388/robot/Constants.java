@@ -4,6 +4,8 @@
 
 package frc4388.robot;
 
+import java.security.PublicKey;
+
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
@@ -215,7 +217,7 @@ public final class Constants {
     public static final double TURRET_FORWARD_SOFT_LIMIT = TURRET_FORWARD_HARD_LIMIT - 5;
     public static final double TURRET_REVERSE_SOFT_LIMIT = TURRET_REVERSE_HARD_LIMIT + 2;
 
-    public static final double TURRET_HARD_LIMIT_TOLERANCE = 20.0;
+    public static final double TURRET_SOFT_LIMIT_TOLERANCE = 20.0;
       //Shooter gains for actual Drum
     public static final Gains DRUM_SHOOTER_GAINS = new Gains(0.4, 0.0, 15.0, 0.05, 0, 0);
 
@@ -223,8 +225,9 @@ public final class Constants {
     public static final int SHOOTER_ANGLE_ADJUST_ID = 20;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; // TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; // TODO: Find
-    public static final double HOOD_FORWARD_LIMIT = 0.0; // TODO: find
-    public static final double HOOD_REVERSE_LIMIT = -150; // TODO: find
+    public static final double HOOD_FORWARD_SOFT_LIMIT = 0.0; // TODO: find
+    public static final double HOOD_REVERSE_SOFT_LIMIT = -150; // TODO: find
+    public static final double HOOD_SOFT_LIMIT_TOLERANCE = 20.0;
 
   }
 

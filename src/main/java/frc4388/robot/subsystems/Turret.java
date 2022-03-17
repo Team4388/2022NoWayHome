@@ -146,17 +146,21 @@ public class Turret extends SubsystemBase {
     leftPrevState = leftState; // * Update the state of the left limit switch.
   
   
-    // * speed limiting near hard limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
+    // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
     double currentPos = this.getEncoderPosition();
     double forwardDistance = Math.abs(currentPos - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT);
     double reverseDistance = Math.abs(currentPos - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT);
 
-    if (forwardDistance < ShooterConstants.TURRET_HARD_LIMIT_TOLERANCE) {
+    if (forwardDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
       this.speedLimiter = 0.2 + (forwardDistance * 0.05);
     }
 
-    if (reverseDistance < ShooterConstants.TURRET_HARD_LIMIT_TOLERANCE) {
+    if (reverseDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
       this.speedLimiter = 0.2 + (reverseDistance * 0.05);
+    }
+
+    if ((forwardDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) && (reverseDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE)) {
+      this.speedLimiter = 1.0;
     }
   }
 
