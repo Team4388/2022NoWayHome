@@ -63,6 +63,7 @@ import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
+import frc4388.robot.commands.ButtonBoxCommands.TurretManual;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.AimToCenter;
 import frc4388.robot.commands.ShooterCommands.Shoot;
@@ -137,8 +138,6 @@ public class RobotContainer {
   private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern
       .compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
   
-  
-  public boolean manual = false;
   public static boolean softLimits = true;
 
   /**
@@ -166,10 +165,10 @@ public class RobotContainer {
             getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
     
-    m_robotStorage.setDefaultCommand(
-        new ManageStorage(m_robotStorage, 
-                          m_robotBoomBoom, 
-                          m_robotTurret).withName("Storage ManageStorage defaultCommand"));
+    // m_robotStorage.setDefaultCommand(
+    //     new ManageStorage(m_robotStorage, 
+    //                       m_robotBoomBoom, 
+    //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
     
     // m_robotClimber.setDefaultCommand(
     //   new RunCommand(() -> m_robotClimber.runWithInput(getOperatorController().getRightY() * 0.6), m_robotClimber)
@@ -352,11 +351,13 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
     //     .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
     
-    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-    //     .whileHeld(new RunMiddleSwitch());
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+        .whileHeld(new TurretManual(m_robotTurret));
       
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        .whileHeld(new RunCommand(() -> System.out.println("RightSwitch")));
+    // control turret manual mode
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+    //     .whileHeld(new RunCommand(() -> TurretManual.setManual(true)))
+    //     .whenReleased(new RunCommand(() -> TurretManual.setManual(false)));
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
@@ -405,10 +406,6 @@ public class RobotContainer {
 
   public ButtonBox getButtonBox() {
     return m_buttonBox;
-  }
-
-  public void setManual(boolean set) {
-    this.manual = set;
   }
 
   public static void setSoftLimits(boolean set) {
