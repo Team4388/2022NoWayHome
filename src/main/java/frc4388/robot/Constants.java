@@ -241,6 +241,8 @@ public final class Constants {
     public static final double LIME_VIXELS = 720;
     public static final double TURRET_kP = 0.1;
 
+    public static final double POINTS_THRESHOLD = 400;
+
     public static final double RANGE = 10;
 
     public static final double EDGE_TO_CENTER = 20;

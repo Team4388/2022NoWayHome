@@ -4,10 +4,16 @@
 
 package frc4388.utility;
 
+import java.security.InvalidParameterException;
+
+import org.opencv.core.Point;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.drive.Vector2d;
 
-/** Aarav's good vector class (better than WPILib) */
+/** Aarav's good vector class (better than WPILib)
+ * @author Aarav Shah */
+
 public class Vector2D extends Vector2d {
 
   public double x;
@@ -15,8 +21,7 @@ public class Vector2D extends Vector2d {
   public double angle;
 
   public Vector2D() {
-    super();
-    this.angle = Math.atan2(this.y, this.x);
+    this(0, 0);
   }
 
   public Vector2D(double x, double y) {
@@ -25,6 +30,22 @@ public class Vector2D extends Vector2d {
     this.x = x;
     this.y = y;
     this.angle = Math.atan2(this.y, this.x);
+  }
+
+  public Vector2D(double[] vec) {
+    this(vec[0], vec[1]);
+
+    if (vec.length != 2) {
+      throw new InvalidParameterException();
+    }
+  }
+
+  public Vector2D(Point p) {
+    this(p.x, p.y);
+  }
+
+  public Vector2D(Translation2d t) {
+    this(t.getX(), t.getY());
   }
 
   /**
@@ -38,6 +59,15 @@ public class Vector2D extends Vector2d {
   }
 
   /**
+   * Adds vector to current object
+   * @param v Vector to add
+   */
+  public void add(Vector2D v) {
+    x += v.x;
+    y += v.x;
+  }
+
+  /**
    * Subtract two vectors, component-wise.
    * @param v1 First vector in the subtraction.
    * @param v2 Second vector in the subtraction.
@@ -45,6 +75,15 @@ public class Vector2D extends Vector2d {
    */
   public static Vector2D subtract(Vector2D v1, Vector2D v2) {
     return new Vector2D(v1.x - v2.x, v1.y - v2.y);
+  }
+
+  /**
+   * Subtracts vector from current object
+   * @param v Vector to subtract
+   */
+  public void subtract(Vector2D v) {
+    x -= v.x;
+    y -= v.x;
   }
 
   /**
@@ -57,6 +96,15 @@ public class Vector2D extends Vector2d {
     return new Vector2D(scalar * v1.x, scalar * v1.y);
   }
 
+  /**
+   * Multiply a vector with a scalar, component-wise.
+   * @param scalar Scalar to multiply
+   */
+  public void multiply(double scalar) {
+    x *= scalar;
+    y *= scalar;
+  }
+
     /**
    * Divide a vector with a scalar, component-wise.
    * @param v1 Vector to divide.
@@ -65,6 +113,15 @@ public class Vector2D extends Vector2d {
    */
   public static Vector2D divide(Vector2D v1, double scalar) {
     return new Vector2D(v1.x / scalar, v1.y / scalar);
+  }
+
+  /**
+   * Divide a vector with a scalar, component-wise.
+   * @param scalar Scalar to divide
+   */
+  public void divide(double scalar) {
+    x /= scalar;
+    y /= scalar;
   }
 
   /**
@@ -96,7 +153,7 @@ public class Vector2D extends Vector2d {
 
   @Override
   public String toString() {
-    return ("(" + this.x + ", " + this.y + ")");
+    return "<" + this.x + ", " + this.y + ">";
   }
 
 }
