@@ -93,7 +93,7 @@ public class RobotContainer {
   private final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  private final ClimberRewrite m_robotClimber= new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+  private final ClimberRewrite m_robotClimber = new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
   
   private final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
 
