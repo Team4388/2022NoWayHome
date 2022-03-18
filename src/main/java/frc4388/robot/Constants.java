@@ -209,7 +209,7 @@ public final class Constants {
     public static final int ELBOW_PID_LOOP_IDX = 1;
 
     public static final Gains SHOULDER_GAINS = new Gains(0.5, 0.0, 0.0, 0.0, 0, 0.2);
-    public static final Gains ELBOW_GAINS = new Gains(0.5, 0.0, 30.0, 0.0, 0, 1.0); //Prev P 1   d 0.4
+    public static final Gains ELBOW_GAINS = new Gains(0.5, 1.0, 20.0, 0.0, 0, 1.0); //Prev P 1   d 0.4
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
 
