@@ -61,7 +61,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Claws;
-import frc4388.robot.commands.RunClaw;
 import frc4388.robot.subsystems.ClimberRewrite;
 import frc4388.robot.subsystems.Claws.ClawType;
 import frc4388.robot.Constants.OIConstants;
@@ -69,6 +68,7 @@ import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
+import frc4388.robot.commands.ClimberCommands.RunClaw;
 // import frc4388.robot.commands.ButtonBoxCommands.TurretManual;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.AimToCenter;
@@ -158,9 +158,9 @@ public class RobotContainer {
     /* Default Commands */
 
     // moves climber in xy space with two-axis input from the operator controller
-    m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getRightX() * 0.7, -getOperatorController().getRightY() * 0.7), 
-      m_robotClimber));
+    // m_robotClimber.setDefaultCommand(
+    //   new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getRightX() * 0.7, -getOperatorController().getRightY() * 0.7), 
+    //   m_robotClimber));
 
 
     // IK command
@@ -206,8 +206,8 @@ public class RobotContainer {
         new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
         m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
 
-    // m_robotHood.setDefaultCommand(
-    //    new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
+    m_robotHood.setDefaultCommand(
+       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
     // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
@@ -318,8 +318,22 @@ public class RobotContainer {
       .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
       .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
-    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-    //     .whileHeld(new TurretManual(m_robotTurret));
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+
+      .whenPressed(new InstantCommand(() -> m_robotTurret.setDefaultCommand(null)))
+      .whenPressed(new InstantCommand(() -> m_robotHood.setDefaultCommand(null)))
+      .whenPressed(new InstantCommand(() -> m_robotClimber.setDefaultCommand(
+        new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getLeftY(), -getOperatorController().getRightY()), m_robotClimber))))
+
+      .whenReleased(new InstantCommand(() -> m_robotClimber.setDefaultCommand(null)))
+      .whenReleased(new InstantCommand(() -> m_robotTurret.setDefaultCommand(
+        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret))))
+      .whenReleased(new InstantCommand(() -> m_robotHood.setDefaultCommand(
+        new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood))));
+
+      // .whenPressed(new InstantCommand(() -> this.currentMode = CurrentMode.CLIMBER))
+      // .whenReleased(new InstantCommand(() -> this.currentMode = CurrentMode.TURRET));
+      // .whenReleased(EnableClimber()));
       
     // control turret manual mode
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
@@ -407,7 +421,6 @@ public class RobotContainer {
    * Finally, adds the existing path files to the auto chooser
    */
   private void autoInit() {
-
     try {
       WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
           StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,

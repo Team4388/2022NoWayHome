@@ -173,6 +173,10 @@ public final class Constants {
     public static final int SHOULDER_ID = 30;
     public static final int ELBOW_ID = 31;
     public static final int GYRO_ID = 14;
+
+    public static final double INPUT_MULTIPLIER = 0.7;
+    public static final double ELBOW_SOFT_LIMIT_TOLERANCE = 20000.0;
+    public static final double SHOULDER_SOFT_LIMIT_TOLERANCE = 12000.0;
   
     // TODO Update this stuff too
     public static final double UPPER_ARM_LENGTH = 26; // Units should be in cm
@@ -192,10 +196,10 @@ public final class Constants {
     public static final double ELBOW_GB_RATIO = 1.d;
     public static final double SHOULDER_GB_RATIO = 1.d;
 
-    public static final double SHOULDER_SOFT_LIMIT_FORWARD = 53869;
-    public static final double SHOULDER_SOFT_LIMIT_REVERSE = 0;
-    public static final double ELBOW_SOFT_LIMIT_FORWARD = 281717;
-    public static final double ELBOW_SOFT_LIMIT_REVERSE = 0;
+    public static final double SHOULDER_FORWARD_SOFT_LIMIT = 53869;
+    public static final double SHOULDER_REVERSE_SOFT_LIMIT = 0;
+    public static final double ELBOW_FORWARD_SOFT_LIMIT = 281717;
+    public static final double ELBOW_REVERSE_SOFT_LIMIT = 0;
 
     // PID Constants
     public static final int SHOULDER_SLOT_IDX = 0;

@@ -68,19 +68,16 @@ public class Hood extends SubsystemBase {
     double reverseDistance = Math.abs(currentPos - ShooterConstants.HOOD_REVERSE_SOFT_LIMIT);
 
     if (forwardDistance < ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (forwardDistance * 0.05);
+      this.speedLimiter = 0.2 + (forwardDistance * (1 / ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE));
     }
 
     if (reverseDistance < ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (reverseDistance * 0.05);
+      this.speedLimiter = 0.2 + (reverseDistance * (1 / ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE));
     }
 
     if ((forwardDistance > ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) && (reverseDistance > ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE)) {
       this.speedLimiter = 1.0;
     }
-
-    double hoodCurrent = m_angleAdjusterMotor.getOutputCurrent();
-
   }
 
     /**
