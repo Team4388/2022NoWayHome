@@ -239,7 +239,7 @@ public class RobotMap {
 //   public final CANSparkMax serializerShooterBelt = new CANSparkMax(SerializerConstants.SERIALIZER_SHOOTER_BELT, MotorType.kBrushless);
   public final DigitalInput serializerBeam = new DigitalInput(SerializerConstants.SERIALIZER_BELT_BEAM);
   
-  /* Intake Subsytem */
+  /* Intake Subsystem */
   public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
   public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
 
