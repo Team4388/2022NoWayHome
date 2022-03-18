@@ -179,6 +179,7 @@ public class ClimberRewrite extends SubsystemBase {
     SmartDashboard.putNumber("Shoulder", m_shoulder.getSelectedSensorPosition());
     // double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
     // setJointAngles(jointAngles);
+    
   }
 
   /**
@@ -286,11 +287,6 @@ public class ClimberRewrite extends SubsystemBase {
     return getClimberPosition(jointAngles[0], jointAngles[1]);
   }
 
-<<<<<<< Updated upstream
-  public double getCurrent() {
-    return (this.m_elbow.getSupplyCurrent() + this.m_shoulder.getSupplyCurrent());
-  }
-=======
   public void setClimberSoftLimits(boolean set){
     m_elbow.configForwardSoftLimitEnable(set);
     m_shoulder.configForwardSoftLimitEnable(set);
@@ -305,5 +301,4 @@ public class ClimberRewrite extends SubsystemBase {
     return (m_shoulder.getSupplyCurrent() + m_elbow.getSupplyCurrent());
   }
 
->>>>>>> Stashed changes
 }

@@ -175,6 +175,7 @@ public final class Constants {
     public static final int GYRO_ID = 14;
 
     public static final double INPUT_MULTIPLIER = 0.7;
+    public static final double CLIMBER_SOFT_LIMIT_TOLERANCE = 20.0;
   
     // TODO Update this stuff too
     public static final double UPPER_ARM_LENGTH = 26; // Units should be in cm
