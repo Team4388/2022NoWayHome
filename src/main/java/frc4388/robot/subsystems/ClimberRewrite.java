@@ -6,6 +6,8 @@ package frc4388.robot.subsystems;
 
 import java.util.HashMap;
 
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -45,7 +47,7 @@ public class ClimberRewrite extends SubsystemBase {
     m_elbow.configFactoryDefault();
     m_elbow.setNeutralMode(NeutralMode.Brake);
 
-    setClimberGains();
+    // setClimberGains();
 
     // shoulderStartPosition = m_shoulder.getSelectedSensorPosition();
     // elbowStartPosition = m_elbow.getSelectedSensorPosition();
@@ -61,6 +63,13 @@ public class ClimberRewrite extends SubsystemBase {
     m_shoulder.configForwardSoftLimitEnable(false);
     m_shoulder.configReverseSoftLimitThreshold(ClimberConstants.SHOULDER_SOFT_LIMIT_REVERSE);
     m_shoulder.configReverseSoftLimitEnable(false);
+
+    m_shoulder.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    m_elbow.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    m_shoulder.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    
+    m_shoulder.overrideLimitSwitchesEnable(true);
+    m_elbow.overrideLimitSwitchesEnable(true);
 
     tPoint = new Point();
 

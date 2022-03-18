@@ -137,9 +137,9 @@ public class RobotContainer {
     /* Default Commands */
 
     // moves climber in xy space with two-axis input from the operator controller
-    // m_robotClimber.setDefaultCommand(
-    //   new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX() * 0.4, getOperatorController().getLeftY() * 0.4), 
-    //   m_robotClimber));
+    m_robotClimber.setDefaultCommand(
+      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX() * 0.2, getOperatorController().getLeftY() * 0.2), 
+      m_robotClimber));
 
 
     // IK command
