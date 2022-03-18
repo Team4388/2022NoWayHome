@@ -152,11 +152,11 @@ public class Turret extends SubsystemBase {
     double reverseDistance = Math.abs(currentPos - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT);
 
     if (forwardDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (forwardDistance * 0.05);
+      this.speedLimiter = 0.2 + (forwardDistance * (1 / ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE));
     }
 
     if (reverseDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (reverseDistance * 0.05);
+      this.speedLimiter = 0.2 + (reverseDistance * (1 / ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE));
     }
 
     if ((forwardDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) && (reverseDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE)) {

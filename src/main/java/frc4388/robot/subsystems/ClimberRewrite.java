@@ -37,6 +37,8 @@ public class ClimberRewrite extends SubsystemBase {
   private Point tPoint;
 
   private boolean groundRelative;
+  private double shoulderSpeedLimiter;
+  private double elbowSpeedLimiter;
 
   /** Creates a new ClimberRewrite. */
   public ClimberRewrite(WPI_TalonFX shoulder, WPI_TalonFX elbow, WPI_Pigeon2 gyro, boolean _groundRelative) {
@@ -55,14 +57,14 @@ public class ClimberRewrite extends SubsystemBase {
     // m_shoulder.setSelectedSensorPosition(((ClimberConstants.SHOULDER_RESTING_ANGLE * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI) * ClimberConstants.SHOULDER_GB_RATIO);
     // m_elbow.setSelectedSensorPosition(((ClimberConstants.ELBOW_RESTING_ANGLE * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI) * ClimberConstants.SHOULDER_GB_RATIO);
 
-    m_elbow.configForwardSoftLimitThreshold(ClimberConstants.ELBOW_SOFT_LIMIT_FORWARD);
+    m_elbow.configForwardSoftLimitThreshold(ClimberConstants.ELBOW_FORWARD_SOFT_LIMIT);
     m_elbow.configForwardSoftLimitEnable(true);
     // m_elbow.configReverseSoftLimitThreshold(ClimberConstants.ELBOW_SOFT_LIMIT_REVERSE);
     // m_elbow.configReverseSoftLimitEnable(true);
 
-    m_shoulder.configForwardSoftLimitThreshold(ClimberConstants.SHOULDER_SOFT_LIMIT_FORWARD);
+    m_shoulder.configForwardSoftLimitThreshold(ClimberConstants.SHOULDER_FORWARD_SOFT_LIMIT);
     m_shoulder.configForwardSoftLimitEnable(true);
-    m_shoulder.configReverseSoftLimitThreshold(ClimberConstants.SHOULDER_SOFT_LIMIT_REVERSE);
+    m_shoulder.configReverseSoftLimitThreshold(ClimberConstants.SHOULDER_REVERSE_SOFT_LIMIT);
     m_shoulder.configReverseSoftLimitEnable(false);
 
     m_shoulder.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
@@ -78,6 +80,7 @@ public class ClimberRewrite extends SubsystemBase {
       m_gyro = gyro;
     
     groundRelative = _groundRelative;
+    this.elbowSpeedLimiter = 1.0;
   }
 
   public void setClimberGains() {
@@ -129,8 +132,8 @@ public class ClimberRewrite extends SubsystemBase {
   }
 
   public void setMotors(double shoulderOutput, double elbowOutput) {
-    m_shoulder.set(shoulderOutput * ClimberConstants.INPUT_MULTIPLIER);
-    m_elbow.set(elbowOutput * ClimberConstants.INPUT_MULTIPLIER);
+    m_shoulder.set(shoulderOutput * ClimberConstants.INPUT_MULTIPLIER * this.shoulderSpeedLimiter);
+    m_elbow.set(elbowOutput * ClimberConstants.INPUT_MULTIPLIER * this.elbowSpeedLimiter);
   }
 
   public double[] getJointAngles() {
@@ -179,7 +182,40 @@ public class ClimberRewrite extends SubsystemBase {
     SmartDashboard.putNumber("Shoulder", m_shoulder.getSelectedSensorPosition());
     // double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
     // setJointAngles(jointAngles);
-    
+
+    // * speed limiting near ELBOW soft limits. tolerance (distance when ramping starts) is 20000 rotations. speed at hard limits is 0.2 (percent output).
+    double currentElbowPos = this.m_elbow.getSelectedSensorPosition();
+    double forwardElbowDistance = Math.abs(currentElbowPos - ClimberConstants.ELBOW_FORWARD_SOFT_LIMIT);
+    double reverseElbowDistance = Math.abs(currentElbowPos - ClimberConstants.ELBOW_REVERSE_SOFT_LIMIT);
+
+    if (forwardElbowDistance < ClimberConstants.ELBOW_SOFT_LIMIT_TOLERANCE) {
+      this.elbowSpeedLimiter = 0.15 + (forwardElbowDistance * (1 / ClimberConstants.ELBOW_SOFT_LIMIT_TOLERANCE));
+    }
+
+    if (reverseElbowDistance < ClimberConstants.ELBOW_SOFT_LIMIT_TOLERANCE) {
+      this.elbowSpeedLimiter = 0.15 + (reverseElbowDistance * (1 / ClimberConstants.ELBOW_SOFT_LIMIT_TOLERANCE));
+    }
+
+    if ((forwardElbowDistance > ClimberConstants.ELBOW_SOFT_LIMIT_TOLERANCE) && (reverseElbowDistance > ClimberConstants.ELBOW_SOFT_LIMIT_TOLERANCE)) {
+      this.elbowSpeedLimiter = 1.0;
+    }
+
+    // * speed limiting near SHOULDER soft limits. tolerance (distance when ramping starts) is 20000 rotations. speed at hard limits is 0.2 (percent output).
+    double currentShoulderPos = this.m_shoulder.getSelectedSensorPosition();
+    double forwardShoulderDistance = Math.abs(currentShoulderPos - ClimberConstants.SHOULDER_FORWARD_SOFT_LIMIT);
+    double reverseShoulderDistance = Math.abs(currentShoulderPos - ClimberConstants.SHOULDER_REVERSE_SOFT_LIMIT);
+
+    if (forwardShoulderDistance < ClimberConstants.SHOULDER_SOFT_LIMIT_TOLERANCE) {
+      this.shoulderSpeedLimiter = 0.15 + (forwardShoulderDistance * (1 / ClimberConstants.SHOULDER_SOFT_LIMIT_TOLERANCE));
+    }
+
+    if (reverseShoulderDistance < ClimberConstants.SHOULDER_SOFT_LIMIT_TOLERANCE) {
+      this.shoulderSpeedLimiter = 0.15 + (reverseShoulderDistance * (1 / ClimberConstants.SHOULDER_SOFT_LIMIT_TOLERANCE));
+    }
+
+    if ((forwardShoulderDistance > ClimberConstants.SHOULDER_SOFT_LIMIT_TOLERANCE) && (reverseShoulderDistance > ClimberConstants.SHOULDER_SOFT_LIMIT_TOLERANCE)) {
+      this.shoulderSpeedLimiter = 1.0;
+    }
   }
 
   /**
