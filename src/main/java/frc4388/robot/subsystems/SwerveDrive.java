@@ -113,17 +113,17 @@ public class SwerveDrive extends SubsystemBase {
 
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative) {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
-    Translation2d speed = new Translation2d(-leftX, leftY);
+    Translation2d speed = new Translation2d(leftX, leftY);
     speed = speed.times(speed.getNorm() * speedAdjust);
     if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0, 1));
+      rotTarget = new Rotation2d(rightX, rightY);
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
-    double xSpeedMetersPerSecond = -speed.getX();
+    double xSpeedMetersPerSecond = speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2)))
-        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * 8);
+            rot * SwerveDriveConstants.ROTATION_SPEED * speedAdjust, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
+        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * speedAdjust);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
         chassisSpeeds);
     setModuleStates(states);

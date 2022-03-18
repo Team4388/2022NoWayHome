@@ -171,9 +171,9 @@ public class RobotContainer {
     //                       m_robotBoomBoom, 
     //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
     
-    m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> m_robotClimber.runBothMotorsWithInputs(getDriverController().getLeftY() * 0.1, getDriverController().getRightY() * 0.1), m_robotClimber)
-    );
+    // m_robotClimber.setDefaultCommand(
+    //   new RunCommand(() -> m_robotClimber.runBothMotorsWithInputs(getDriverController().getLeftY() * 0.1, getDriverController().getRightY() * 0.1), m_robotClimber)
+    // );
       // Storage Management
     /*m_robotStorage.setDefaultCommand(
         new RunCommand(() -> m_robotStorage.manageStorage(), 
