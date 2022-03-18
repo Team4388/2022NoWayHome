@@ -17,6 +17,7 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import org.opencv.core.Point;
 
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants;
 import frc4388.robot.Constants.ClimberConstants;
@@ -51,16 +52,16 @@ public class ClimberRewrite extends SubsystemBase {
 
     // shoulderStartPosition = m_shoulder.getSelectedSensorPosition();
     // elbowStartPosition = m_elbow.getSelectedSensorPosition();
-    m_shoulder.setSelectedSensorPosition(((ClimberConstants.SHOULDER_RESTING_ANGLE * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI) * ClimberConstants.SHOULDER_GB_RATIO);
-    m_elbow.setSelectedSensorPosition(((ClimberConstants.ELBOW_RESTING_ANGLE * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI) * ClimberConstants.SHOULDER_GB_RATIO);
+    // m_shoulder.setSelectedSensorPosition(((ClimberConstants.SHOULDER_RESTING_ANGLE * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI) * ClimberConstants.SHOULDER_GB_RATIO);
+    // m_elbow.setSelectedSensorPosition(((ClimberConstants.ELBOW_RESTING_ANGLE * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI) * ClimberConstants.SHOULDER_GB_RATIO);
 
     m_elbow.configForwardSoftLimitThreshold(ClimberConstants.ELBOW_SOFT_LIMIT_FORWARD);
-    m_elbow.configForwardSoftLimitEnable(false);
-    m_elbow.configReverseSoftLimitThreshold(ClimberConstants.ELBOW_SOFT_LIMIT_REVERSE);
-    m_elbow.configReverseSoftLimitEnable(false);
+    m_elbow.configForwardSoftLimitEnable(true);
+    // m_elbow.configReverseSoftLimitThreshold(ClimberConstants.ELBOW_SOFT_LIMIT_REVERSE);
+    // m_elbow.configReverseSoftLimitEnable(true);
 
     m_shoulder.configForwardSoftLimitThreshold(ClimberConstants.SHOULDER_SOFT_LIMIT_FORWARD);
-    m_shoulder.configForwardSoftLimitEnable(false);
+    m_shoulder.configForwardSoftLimitEnable(true);
     m_shoulder.configReverseSoftLimitThreshold(ClimberConstants.SHOULDER_SOFT_LIMIT_REVERSE);
     m_shoulder.configReverseSoftLimitEnable(false);
 
@@ -174,6 +175,8 @@ public class ClimberRewrite extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Elbow", m_elbow.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Shoulder", m_shoulder.getSelectedSensorPosition());
     // double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
     // setJointAngles(jointAngles);
   }
@@ -283,7 +286,24 @@ public class ClimberRewrite extends SubsystemBase {
     return getClimberPosition(jointAngles[0], jointAngles[1]);
   }
 
+<<<<<<< Updated upstream
   public double getCurrent() {
     return (this.m_elbow.getSupplyCurrent() + this.m_shoulder.getSupplyCurrent());
   }
+=======
+  public void setClimberSoftLimits(boolean set){
+    m_elbow.configForwardSoftLimitEnable(set);
+    m_shoulder.configForwardSoftLimitEnable(set);
+  }
+
+  public void setEncoders(double value){
+    m_elbow.setSelectedSensorPosition(value);
+    m_shoulder.setSelectedSensorPosition(value);
+  }
+
+  public double getCurrent(){
+    return (m_shoulder.getSupplyCurrent() + m_elbow.getSupplyCurrent());
+  }
+
+>>>>>>> Stashed changes
 }

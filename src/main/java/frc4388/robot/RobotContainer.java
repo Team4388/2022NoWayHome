@@ -112,10 +112,14 @@ public class RobotContainer {
 
   /* Subsystems */
   public final ClimberRewrite m_robotClimber = new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+<<<<<<< Updated upstream
   
   private final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
 
   // Subsystems 
+=======
+  public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
+>>>>>>> Stashed changes
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
   public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor);
@@ -139,7 +143,7 @@ public class RobotContainer {
 
   // Autonomous
   private PathPlannerTrajectory loadedPathTrajectory = null;
-  // private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
+  private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
   private final List<Waypoint> pathPoints = new ArrayList<>();
   private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
   private final NetworkTable recordingNetworkTable = networkTableInstance.getTable("Recording");
@@ -199,6 +203,7 @@ public class RobotContainer {
     m_robotSerializer.setDefaultCommand(
       new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
+<<<<<<< Updated upstream
         
     // Turret Manual
 
@@ -212,9 +217,15 @@ public class RobotContainer {
         .until(() -> this.currentMode.equals(CurrentMode.TURRET)));
           
         // EnableTurret()
+=======
+      // Turret Manual
+    // m_robotTurret.setDefaultCommand(
+    //     new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
+    //     m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+>>>>>>> Stashed changes
 
-    m_robotHood.setDefaultCommand(
-       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
+    // m_robotHood.setDefaultCommand(
+    //    new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
     // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
@@ -268,10 +279,10 @@ public class RobotContainer {
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
         //Toggles extender in and out
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whileHeld(new RunCommand(() -> m_robotTurret.gotoZero(), m_robotTurret))
         .whenReleased(new RunCommand(() -> m_robotTurret.m_boomBoomRotateMotor.set(0), m_robotTurret));
 
@@ -292,7 +303,7 @@ public class RobotContainer {
       //     .whileHeld(new RunCommand(() -> m_robotTurret.gotoMidpoint(), m_robotTurret));
 
        //B > Shoot with Lime
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
         .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
         .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)))
         .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
@@ -305,15 +316,18 @@ public class RobotContainer {
       .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
       .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
       .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
+      .whenPressed(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(false), m_robotClimber))
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
       .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
+      .whenReleased(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(true), m_robotClimber))
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
       .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
-      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender));
+      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
+      .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
     new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
       .whenPressed(new InstantCommand(() -> this.currentMode = CurrentMode.CLIMBER))
@@ -411,6 +425,7 @@ public class RobotContainer {
    * Finally, adds the existing path files to the auto chooser
    */
   private void autoInit() {
+<<<<<<< Updated upstream
     // try {
     //   WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
     //       StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
@@ -429,6 +444,26 @@ public class RobotContainer {
     //     .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
     //     .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
     // SmartDashboard.putData("Auto Chooser", autoChooser);
+=======
+    try {
+      WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
+          StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
+          StandardWatchEventKinds.ENTRY_DELETE);
+      // TODO: Store this and other commands as fields so they can be rescheduled.
+      new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
+        @Override
+        public boolean runsWhenDisabled() {
+          return true;
+        }
+      }.withName("Path Watcher").schedule();
+    } catch (IOException exception) {
+      LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
+    }
+    Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles())
+        .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
+        .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+>>>>>>> Stashed changes
   }
 
   /**

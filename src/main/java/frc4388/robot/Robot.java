@@ -124,6 +124,7 @@ public class Robot extends TimedRobot {
     });
 
     desmosServer.start();
+    m_robotContainer.m_robotVisionOdometry.setLEDs(false);
     // DesmosServer.putTable("table", "x1", new double[] {44}, "y1", new double[] {0});
   }
 

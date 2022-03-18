@@ -194,9 +194,9 @@ public final class Constants {
     public static final double ELBOW_GB_RATIO = 1.d;
     public static final double SHOULDER_GB_RATIO = 1.d;
 
-    public static final double SHOULDER_SOFT_LIMIT_FORWARD = 0;
+    public static final double SHOULDER_SOFT_LIMIT_FORWARD = 53869;
     public static final double SHOULDER_SOFT_LIMIT_REVERSE = 0;
-    public static final double ELBOW_SOFT_LIMIT_FORWARD = 0;
+    public static final double ELBOW_SOFT_LIMIT_FORWARD = 281717;
     public static final double ELBOW_SOFT_LIMIT_REVERSE = 0;
 
     // PID Constants
