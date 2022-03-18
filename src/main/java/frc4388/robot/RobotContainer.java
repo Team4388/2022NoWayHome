@@ -112,10 +112,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final ClimberRewrite m_robotClimber = new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
-  
-  private final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
-
-  // Subsystems 
+  public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
   public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor);
