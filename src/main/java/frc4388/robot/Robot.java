@@ -163,6 +163,11 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    // print odometry data to smart dashboard for debugging (if causing timeout
+    // errors, you can comment it)
+    // SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
+    // SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
+    // SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
     // odo chooser stuff
     addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 
                   new Pose2d(1, 2, new Rotation2d(Math.PI/3)),
@@ -198,7 +203,7 @@ public class Robot extends TimedRobot {
       File outputFile = Filesystem.getDeployDirectory().toPath().resolve("pathplanner")
           .resolve("recording." + System.currentTimeMillis() + ".path").toFile();
       if (Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
-        m_robotContainer.createPath(null, null, false).write(outputFile);
+        // m_robotContainer.createPath(null, null, false).write(outputFile);
         LOGGER.log(Level.SEVERE, "Recorded path to {0}.", outputFile.getPath());
       } else
         LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
@@ -247,6 +252,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     LOGGER.fine("teleopInit()");
 
+
     Robot.alliance = DriverStation.getAlliance();
 
     m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
@@ -256,6 +262,7 @@ public class Robot extends TimedRobot {
       selectedOdo = m_robotContainer.getOdometry();
     }
     m_robotContainer.resetOdometry(selectedOdo);
+
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

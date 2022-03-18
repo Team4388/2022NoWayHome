@@ -33,6 +33,8 @@ import frc4388.utility.LEDPatterns;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final double TICKS_PER_ROTATION_FX = 2048;
+
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 4.0;
     public static final double WIDTH = 23.5;
@@ -167,6 +169,71 @@ public final class Constants {
     public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.FOREST_WAVES;
   }
 
+  public static final class ClimberConstants {
+    public static final int SHOULDER_ID = 30;
+    public static final int ELBOW_ID = 31;
+    public static final int GYRO_ID = 14;
+  
+    // TODO Update this stuff too
+    public static final double UPPER_ARM_LENGTH = 26; // Units should be in cm
+    public static final double LOWER_ARM_LENGTH = 27;
+
+    public static final double MAX_ARM_LENGTH = 53;
+    public static final double MIN_ARM_LENGTH = 1;
+    
+    public static final double MOVE_SPEED = .1; // cm per second
+
+    public static final double SHOULDER_RESTING_ANGLE = 0;
+    public static final double ELBOW_RESTING_ANGLE = 0;
+
+    public static final double SHOULDER_MAX_ANGLE = 135;
+    public static final double ELBOW_MAX_ANGLE = 180;
+
+    public static final double ELBOW_GB_RATIO = 1.d;
+    public static final double SHOULDER_GB_RATIO = 1.d;
+
+    public static final double SHOULDER_SOFT_LIMIT_FORWARD = 0;
+    public static final double SHOULDER_SOFT_LIMIT_REVERSE = 0;
+    public static final double ELBOW_SOFT_LIMIT_FORWARD = 0;
+    public static final double ELBOW_SOFT_LIMIT_REVERSE = 0;
+
+    // PID Constants
+    public static final int SHOULDER_SLOT_IDX = 0;
+    public static final int SHOULDER_PID_LOOP_IDX = 1;
+
+    public static final int ELBOW_SLOT_IDX = 0;
+    public static final int ELBOW_PID_LOOP_IDX = 1;
+
+    public static final Gains SHOULDER_GAINS = new Gains(.4, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains ELBOW_GAINS = new Gains(.4, 0.0, 0.0, 0.0, 0, 1.0);
+
+    public static final int CLIMBER_TIMEOUT_MS = 50;
+
+    public static final double THRESHOLD = 0;
+
+    // TODO: Update Constants
+    // Robot Angle
+    public static final double ROBOT_ANGLE_ID = 0;
+
+  }
+
+  public static final class ClawConstants {
+    public static final int LEFT_CLAW_ID = 44;
+    public static final int RIGHT_CLAW_ID = 45;
+
+    public static final double OPEN_POSITION = 0;  // TODO: find actual position
+    public static final double CLOSE_POSITION = 1; // TODO: find actual position
+
+    public static final double THRESHOLD = .1; // TODO: find actual threshold
+
+    public static final double CALIBRATION_SPEED = 0;
+
+    public static final double CURRENT_LIMIT = 0.0; // TODO: set actual current limit;
+
+    public static final int TOP_LIMIT = 1800;
+    public static final int BOTTOM_LIMIT = 1200;
+
+  }
   /**
    * The OIConstants class contains the ID for the XBox controllers
    */

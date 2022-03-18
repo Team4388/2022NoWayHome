@@ -59,6 +59,14 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc4388.robot.Constants.*;
+import frc4388.robot.subsystems.Claws;
+import frc4388.robot.commands.RunClaw;
+import frc4388.robot.subsystems.ClimberRewrite;
+import frc4388.robot.subsystems.Claws.ClawType;
+import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.Shoot;
+import frc4388.robot.commands.TrackTarget;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
@@ -82,6 +90,7 @@ import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Vision;
 import frc4388.robot.subsystems.VisionOdometry;
+
 import frc4388.utility.LEDPatterns;
 import frc4388.utility.ListeningSendableChooser;
 import frc4388.utility.PathPlannerUtil;
@@ -103,6 +112,11 @@ public class RobotContainer {
   // RobotMap
   public final RobotMap m_robotMap = new RobotMap();
 
+  /* Subsystems */
+  private final ClimberRewrite m_robotClimber = new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+  
+  private final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
+
   // Subsystems 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
@@ -118,7 +132,7 @@ public class RobotContainer {
 
   private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(30);
   private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(31);
-  public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
+  //public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
 
   // Controllers
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -127,7 +141,7 @@ public class RobotContainer {
 
   // Autonomous
   private PathPlannerTrajectory loadedPathTrajectory = null;
-  private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
+  // private final ListeningSendableChooser<File> autoChooser = new ListeningSendableChooser<>(this::loadPath);
   private final List<Waypoint> pathPoints = new ArrayList<>();
   private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
   private final NetworkTable recordingNetworkTable = networkTableInstance.getTable("Recording");
@@ -149,6 +163,17 @@ public class RobotContainer {
     configureButtonBindings();
     /* Default Commands */
 
+    // moves climber in xy space with two-axis input from the operator controller
+    m_robotClimber.setDefaultCommand(
+      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX() * 0.7, getOperatorController().getRightY() * 0.7), 
+      m_robotClimber));
+
+
+    // IK command
+    // m_robotClimber.setDefaultCommand(
+    //     new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftX(),
+    //         getOperatorController().getLeftY()), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
+    
       // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
@@ -208,6 +233,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     
     /* Driver Buttons */
+
       // Start > Calibrate Odometry
     new JoystickButton(getDriverController(), XboxController.Button.kBack.value)
         .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
@@ -215,74 +241,29 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
       .whenPressed(m_robotSwerveDrive::resetGyro);
       // Left Bumper > Shift Down
-    // new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
-    //     .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
-    //   // Right Bumper > Shift Up
-    // new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-    //     .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+    new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
+         .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+      // Right Bumper > Shift Up
+     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
+         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-    new JoystickButton(getDriverController(), XboxController.Axis.kLeftTrigger.value)
-      .whileHeld(new RunCommand(() -> m_robotClimber.runShoulderWithInput(0.1), m_robotClimber))
-      .whenReleased(new RunCommand(() -> m_robotClimber.runShoulderWithInput(0.0)));
-      
-      new JoystickButton(getDriverController(), XboxController.Axis.kRightTrigger.value)
-      .whileHeld(new RunCommand(() -> m_robotClimber.runShoulderWithInput(-0.1), m_robotClimber))
-      .whenReleased(new RunCommand(() -> m_robotClimber.runShoulderWithInput(0.0)));
-    
-    // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-    // .whenPressed(() -> m_robotBoomBoom.increaseSpeed(0.025));
 
-    // new JoystickButton(getDriverController(), XboxController.Button.kB.value)
-    // .whenPressed(() -> m_robotBoomBoom.increaseSpeed(-0.025));
-    //     .whileHeld(new RunCommand(() -> testElbowMotor.set(-0.2)))
-    //     .whenReleased(new RunCommand(() -> testElbowMotor.set(0)));
-
-    // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-    //     .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-
-    // new JoystickButton(getDriverController(), XboxController.Button.kX.value) //Temp
-    //     .whenPressed(() -> m_robotMap.leftFront.reset())
-    //     .whenPressed(() -> m_robotMap.rightFront.reset())
-    //     .whenPressed(() -> m_robotMap.leftBack.reset())
-    //     .whenPressed(() -> m_robotMap.rightBack.reset()); 
 
 
 
     /* Operator Buttons */
 
-      // X > Extend Intake
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(true), m_robotVisionOdometry));
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+      .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
 
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret));
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+      .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(false)));
   
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
 
-    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
-    
-    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value) //8ft
-    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.425)))
-    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-25)))
-    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
-
-    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value) //12ft
-    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.475)))
-    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-47.57)))
-    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
-
-
-    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value) //16ft
-    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.5)))
-    //     .whileHeld(new RunCommand(() -> m_robotHood.runAngleAdjustPID(-55.55)))
-    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
-      
-    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value) //20ft
-    //     .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(10000)))
-    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
+  
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
@@ -295,30 +276,10 @@ public class RobotContainer {
         //Toggles extender in and out
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
-    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotExtender.m_extenderMotor.getEncoder().setPosition(0)));
-
-    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-    //     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
-    //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     // .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
-    //     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
-    //     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-        // .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0)));
-    
-    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-    //   .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
-    //   .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        // .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(500), m_robotBoomBoom));\
         .whileHeld(new RunCommand(() -> m_robotTurret.gotoZero(), m_robotTurret))
         .whenReleased(new RunCommand(() -> m_robotTurret.m_boomBoomRotateMotor.set(0), m_robotTurret));
-
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(new InstantCommand(() -> m_robotBoomBoom.updateOffset(-500), m_robotBoomBoom));
 
       // Right Bumper > Storage In
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
@@ -359,10 +320,6 @@ public class RobotContainer {
       .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
       .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
       .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender));
-
-    // new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
-    //     .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
-    //     .whenReleased(new RunCommand(() -> RunMiddleSwitch.setManual(false)));
     
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
     //     .whileHeld(new TurretManual(m_robotTurret));
@@ -372,9 +329,6 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> TurretManual.setManual(true)))
     //     .whenReleased(new RunCommand(() -> TurretManual.setManual(false)));
 
-    // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-    //     .whileHeld(new RunCommand(() -> m_robotTurret.turnOnLeftLimitSwitch(), m_robotTurret))
-    //     .whenReleased(new RunCommand(() -> m_robotTurret.turnOffLeftLimitSwitch(), m_robotTurret));
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
@@ -391,26 +345,27 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if (loadedPathTrajectory != null) {
-      PIDController xController = SwerveDriveConstants.X_CONTROLLER;
-      PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
-      ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
-      thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    // if (loadedPathTrajectory != null) {
+    //   PIDController xController = SwerveDriveConstants.X_CONTROLLER;
+    //   PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
+    //   ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
+    //   thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-      PathPlannerState initialState = loadedPathTrajectory.getInitialState();
-      Pose2d initialPosition = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
-      return new SequentialCommandGroup(
-          new InstantCommand(m_robotSwerveDrive.m_gyro::reset),
-          new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(initialPosition)),
-          new PPSwerveControllerCommand(loadedPathTrajectory, m_robotSwerveDrive::getOdometry,
-              m_robotSwerveDrive.m_kinematics, xController, yController, thetaController,
-              m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive),
-          new InstantCommand(m_robotSwerveDrive::stopModules)).withName("Run Autonomous Path");
-    } else {
-      LOGGER.severe("No auto selected.");
-      return new RunCommand(() -> {
-      }).withName("No Autonomous Path");
-    }
+    //   PathPlannerState initialState = loadedPathTrajectory.getInitialState();
+    //   Pose2d initialPosition = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
+    //   return new SequentialCommandGroup(
+    //       new InstantCommand(m_robotSwerveDrive.m_gyro::reset),
+    //       new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(initialPosition)),
+    //       new PPSwerveControllerCommand(loadedPathTrajectory, m_robotSwerveDrive::getOdometry,
+    //           m_robotSwerveDrive.m_kinematics, xController, yController, thetaController,
+    //           m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive),
+    //       new InstantCommand(m_robotSwerveDrive::stopModules)).withName("Run Autonomous Path");
+    // } else {
+    //   LOGGER.severe("No auto selected.");
+    //   return new RunCommand(() -> {
+    //   }).withName("No Autonomous Path");
+    // }
+    return null;
   }
 
   public XboxController getDriverController() {
@@ -434,18 +389,18 @@ public class RobotContainer {
    * 
    * @return Odometry
    */
-  public Pose2d getOdometry() {
-    return m_robotSwerveDrive.getOdometry();
-  }
+  // public Pose2d getOdometry() {
+  //   return m_robotSwerveDrive.getOdometry();
+  // }
 
   /**
    * Set odometry to given pose.
    * 
    * @param pose Pose to set odometry to.
    */
-  public void resetOdometry(Pose2d pose) {
-    m_robotSwerveDrive.resetOdometry(pose);
-  }
+  // public void resetOdometry(Pose2d pose) {
+  //   m_robotSwerveDrive.resetOdometry(pose);
+  // }
 
   /**
    * Creates a WatchKey for the path planner directory and registers it with the
@@ -454,31 +409,32 @@ public class RobotContainer {
    * latest path files.
    * Finally, adds the existing path files to the auto chooser
    */
-  private void autoInit() {
-    try {
-      WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
-          StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
-          StandardWatchEventKinds.ENTRY_DELETE);
-      // TODO: Store this and other commands as fields so they can be rescheduled.
-      new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
-        @Override
-        public boolean runsWhenDisabled() {
-          return true;
-        }
-      }.withName("Path Watcher").schedule();
-    } catch (IOException exception) {
-      LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
-    }
-    Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles())
-        .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
-        .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
-    SmartDashboard.putData("Auto Chooser", autoChooser);
-  }
+  // private void autoInit() {
+  //   try {
+  //     WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
+  //         StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
+  //         StandardWatchEventKinds.ENTRY_DELETE);
+  //     // TODO: Store this and other commands as fields so they can be rescheduled.
+  //     new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
+  //       @Override
+  //       public boolean runsWhenDisabled() {
+  //         return true;
+  //       }
+  //     }.withName("Path Watcher").schedule();
+  //   } catch (IOException exception) {
+  //     LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
+  //   }
+  //   Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles())
+  //       .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
+  //       .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
+  //   SmartDashboard.putData("Auto Chooser", autoChooser);
+  // }
 
   /**
    * Creates a button on the SmartDashboard that will record the path of the
    * robot.
    */
+
   public void recordInit() {
     SmartDashboard.putData("Recording",
         new RunCommand(this::recordPeriodic) {

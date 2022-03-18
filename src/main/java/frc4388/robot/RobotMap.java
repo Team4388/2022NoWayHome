@@ -4,6 +4,12 @@
 
 package frc4388.robot;
 
+
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
@@ -11,14 +17,16 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import frc4388.robot.Constants.ClimberConstants;
+import frc4388.robot.Constants.ClawConstants;
 import frc4388.robot.Constants.IntakeConstants;
 import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.ShooterConstants;
@@ -49,7 +57,6 @@ public class RobotMap {
 //   void configureLEDMotorControllers() {}
 
   /* Swerve Subsystem */
-
   public final WPI_TalonFX leftFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
   public final WPI_TalonFX leftFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_WHEEL_CAN_ID);
   public final WPI_TalonFX rightFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ID);
@@ -188,6 +195,16 @@ public class RobotMap {
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 }
 
+  /* Climb Subsystem */
+  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
+  public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
+
+  /* Hooks Subsystem */
+//   public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);
+//   public final CANSparkMax rightClaw = new CANSparkMax(ClawConstants.RIGHT_CLAW_ID, MotorType.kBrushless);
+  public final Servo leftClaw = new Servo(1);  // TODO: find actual channel
+  public final Servo rightClaw = new Servo(2); // TODO: find actual channel
+
   // Shooter Config
   /* Boom Boom Subsystem */
   public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
@@ -247,12 +264,12 @@ public class RobotMap {
     angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
     angleAdjusterMotor.setInverted(true);
   }
-  
+
   /* Serializer Subsystem */
   public final CANSparkMax serializerBelt = new CANSparkMax(SerializerConstants.SERIALIZER_BELT, MotorType.kBrushless);
   public final DigitalInput serializerBeam = new DigitalInput(SerializerConstants.SERIALIZER_BELT_BEAM);
   
-  /* Intake Subsytem */
+  /* Intake Subsystem */
   public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
   public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
 
