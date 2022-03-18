@@ -4,6 +4,9 @@
 
 package frc4388.robot;
 
+import java.security.PublicKey;
+
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -12,7 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-
+import edu.wpi.first.math.util.Units;
 import frc4388.utility.Gains;
 import frc4388.utility.LEDPatterns;
 
@@ -33,28 +36,27 @@ public final class Constants {
   public static final double TICKS_PER_ROTATION_FX = 2048;
 
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 4;
-    public static final double WHEEL_SPEED = 0.1;
-    public static final double WIDTH = 15.25;
-    public static final double HEIGHT = 15.25;
+    public static final double ROTATION_SPEED = 4.0;
+    public static final double WIDTH = 23.5;
+    public static final double HEIGHT = 23.5;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
-    public static final double MAX_SPEED_FEET_PER_SEC = 20; // redundant constant?
-    public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20; // redundant constant?
+    public static final double MAX_SPEED_FEET_PER_SEC = 20; // TODO: redundant constant?
+    public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20; // TODO: redundant constant?
 
     // IDs
-    public static final int LEFT_FRONT_STEER_CAN_ID = 2;
-    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;
-    public static final int RIGHT_FRONT_STEER_CAN_ID = 4;
-    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5;
-    public static final int LEFT_BACK_STEER_CAN_ID = 6;
-    public static final int LEFT_BACK_WHEEL_CAN_ID = 7;
-    public static final int RIGHT_BACK_STEER_CAN_ID = 8;
-    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;
-    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;
-    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
-    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
-    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
+    public static final int LEFT_FRONT_STEER_CAN_ID = 2; //
+    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3; //
+    public static final int RIGHT_FRONT_STEER_CAN_ID = 4; //
+    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5; //
+    public static final int LEFT_BACK_STEER_CAN_ID = 6; //
+    public static final int LEFT_BACK_WHEEL_CAN_ID = 7; //
+    public static final int RIGHT_BACK_STEER_CAN_ID = 8; //
+    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9; //
+    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10; //
+    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11; //
+    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;//
+    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13; //
     public static final int GYRO_ID = 14;
 
     // offsets are in degrees
@@ -68,10 +70,10 @@ public final class Constants {
     // public static final double RIGHT_BACK_ENCODER_OFFSET = 360. + 2.15 - 3.637;//
     // 180-2.021484375;//0.0;//134.384765625
 
-    public static final double RIGHT_FRONT_ENCODER_OFFSET = (4 * 360. - 152.05 - 180 - 90) % 360.;
-    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.58 + 180 - 90) % 360.;
-    public static final double LEFT_BACK_ENCODER_OFFSET = (4 * 360. - 189.50 - 90) % 360.;
-    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.31 - 180 - 90) % 360.;
+    public static final double LEFT_FRONT_ENCODER_OFFSET = (4 * 360. - 232.58 + 180 ) % 360.;
+    public static final double RIGHT_FRONT_ENCODER_OFFSET = (4 * 360. - 152.05 - 180 ) % 360.;
+    public static final double LEFT_BACK_ENCODER_OFFSET = (4 * 360. - 189.50) % 360.;
+    public static final double RIGHT_BACK_ENCODER_OFFSET = (4 * 360. - 9.31 - 180) % 360.;
 
     // swerve PID constants
     public static final int SWERVE_SLOT_IDX = 0;
@@ -107,7 +109,6 @@ public final class Constants {
     public static final double INCHES_PER_WHEEL_REV = WHEEL_DIAMETER_INCHES * Math.PI;
     public static final double INCHES_PER_METER = 39.370;
     public static final double METERS_PER_INCH = 1 / INCHES_PER_METER;
-
     public static final double WHEEL_REV_PER_MOTOR_REV = 1 / MOTOR_REV_PER_WHEEL_REV;
     public static final double TICKS_PER_WHEEL_REV = TICKS_PER_MOTOR_REV * MOTOR_REV_PER_WHEEL_REV;
     public static final double TICKS_PER_INCH = TICKS_PER_WHEEL_REV / INCHES_PER_WHEEL_REV;
@@ -115,9 +116,20 @@ public final class Constants {
     public static final double TICK_TIME_TO_SECONDS = 0.1;
     public static final double SECONDS_TO_TICK_TIME = 1 / TICK_TIME_TO_SECONDS;
 
+    // current limits
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_STEER = new SupplyCurrentLimitConfiguration(
+      false, 10, 0, 0);
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_STEER = new StatorCurrentLimitConfiguration(
+      false, 15, 0, 0);
+
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL = new SupplyCurrentLimitConfiguration(
+      false, 10, 0, 0);
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_WHEEL = new StatorCurrentLimitConfiguration(
+      false, 15, 0, 0);
+
+
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
-    // TODO: put in real numbers for the hub
     public static final Pose2d HUB_POSE = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
   }
 
@@ -125,17 +137,28 @@ public final class Constants {
     public static final double SERIALIZER_BELT_SPEED = 0.1d;
     
     // CAN IDs
-    public static final int SERIALIZER_BELT = 16;
+    public static final int SERIALIZER_BELT = 17;
     public static final int SERIALIZER_BELT_BEAM = 27; // TODO
   }
   
   public static final class IntakeConstants {
     // CAN IDs
-    public static final int INTAKE_MOTOR = 14;
-    public static final int EXTENDER_MOTOR = 15;
+    public static final int INTAKE_MOTOR = 15;
+    public static final int EXTENDER_MOTOR = 16;
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE = new SupplyCurrentLimitConfiguration(
+        false, 10, 0, 0); //Find
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_INTAKE = new StatorCurrentLimitConfiguration(
+        false, 15, 0, 0);
+    public static final double INTAKE_SPEED_MULTIPLIER = 0.4;
   }
+
+  public static final class ExtenderConstants {
+    public static final double EXTENDER_FORWARD_LIMIT = 235.0;//250.0;
+    public static final double EXTENDER_REVERSE_LIMIT = 0.0;
+  }
+
   public static final class StorageConstants {
-    public static final int STORAGE_CAN_ID = 17;
+    public static final int STORAGE_CAN_ID = 18;
     public static final int BEAM_SENSOR_SHOOTER = 28; //TODO
     public static final int BEAM_SENSOR_INTAKE = 29; //TODO
     public static final double STORAGE_SPEED = 0.3;
@@ -217,8 +240,10 @@ public final class Constants {
   public static final class OIConstants {
     public static final int XBOX_DRIVER_ID = 0;
     public static final int XBOX_OPERATOR_ID = 1;
+    public static final int BUTTON_BOX_ID = 2;
     public static final double LEFT_AXIS_DEADBAND = 0.1;
     public static final double RIGHT_AXIS_DEADBAND = 0.6;
+    public static final boolean SKEW_STICKS = true;
   }
 
   public static final class ShooterConstants {
@@ -228,47 +253,48 @@ public final class Constants {
     public static final int SHOOTER_TIMEOUT_MS = 32;
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
-    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG = new SupplyCurrentLimitConfiguration(
-        true, 60, 40, 0.5);
-    public static final int SHOOTER_FALCON_LEFT_CAN_ID = 23;
-    public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 24;
-    public static final int SHOOTER_ROTATE_ID = 31; // TODO: find this value
-    public static final double TURRET_SPEED_MULTIPLIER = 0.1d;
-    public static final int DEGREES_PER_ROT = 0;
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER = new SupplyCurrentLimitConfiguration(
+        true, 10, 0, 0);
+    public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_SHOOTER = new StatorCurrentLimitConfiguration(
+        true, 27, 0, 0);
+    public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
+    public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
+    public static final double TURRET_SPEED_MULTIPLIER = 0.8;
+    public static final double TURRET_CALIBRATION_MULTIPLIER = 0.5;
+    public static final double TURRET_DEGREES_PER_ROT = 180.0/105.45445251464844;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
     public static final double ENCODER_TICKS_PER_REV = 2048;
 
     // Shoot Command Constants
-    public static final Gains SHOOT_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOT_GAINS = new Gains(5.0, 0.0, 0.0, 0.0, 0, 1.0);
 
     /* Turret Constants */
     // ID
-    public static final int TURRET_MOTOR_CAN_ID = 30;
-    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.6, 0.0, 0.0, 0.0, 0, 1.0);
-    public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.05, 0.0, 0.0, 0.0, 0, 0.3);
-    public static final double SHOOTER_TURRET_MIN = -1.0;
-    public static final float TURRET_FORWARD_LIMIT = 0; // TODO: find
-    public static final float TURRET_REVERSE_LIMIT = 0; // TODO: find
+    public static final int TURRET_MOTOR_CAN_ID = 19;
+      //Gains for turret
+    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.1, 0.0, 0.1, 0.0, 0, 0.3/*TURRET_SPEED_MULTIPLIER*/);
+    public static final double SHOOTER_TURRET_MIN = -0.3;//-TURRET_SPEED_MULTIPLIER;
+      //Gains for hood
+    public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 0.7);
 
-    // deadzones
-    public static final double HARD_DEADZONE_LEFT = 0.0;
-    public static final double HARD_DEADZONE_RIGHT = 340.0;
+    public static final double TURRET_FORWARD_HARD_LIMIT = 18.429;
+    public static final double TURRET_REVERSE_HARD_LIMIT = -106.454;
 
-    public static final double DIG_DEADZONE_LEFT = 40.0;
-    public static final double DIG_DEADZONE_RIGHT = 60.0;
+    public static final double TURRET_FORWARD_SOFT_LIMIT = TURRET_FORWARD_HARD_LIMIT - 5;
+    public static final double TURRET_REVERSE_SOFT_LIMIT = TURRET_REVERSE_HARD_LIMIT + 2;
 
-    public static final int SHOOTER_FALCON_BALLER_ID = 0; // TODO: find
-    public static final int SHOOTER_FALCON_BALLER_FOLLOWER_ID = 0; // "//
-
-    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0, 0, 0, 0, 0, 0); // TODO: tune values
+    public static final double TURRET_SOFT_LIMIT_TOLERANCE = 20.0;
+      //Shooter gains for actual Drum
+    public static final Gains DRUM_SHOOTER_GAINS = new Gains(0.4, 0.0, 15.0, 0.05, 0, 0);
 
     /* Hood Constants */
-    public static final int SHOOTER_ANGLE_ADJUST_ID = 32;
+    public static final int SHOOTER_ANGLE_ADJUST_ID = 20;
     public static final double HOOD_MOTOR_ROTS_PER_ROT = 1; // TODO: Find
     public static final double HOOD_MOTOR_POS_AT_ZERO_ROT = 0; // TODO: Find
-    public static final float HOOD_FORWARD_LIMIT = 0; // TODO: find
-    public static final float HOOD_REVERSE_LIMIT = 0; // TODO: find
+    public static final double HOOD_FORWARD_SOFT_LIMIT = 0.0; // TODO: find
+    public static final double HOOD_REVERSE_SOFT_LIMIT = -150; // TODO: find
+    public static final double HOOD_SOFT_LIMIT_TOLERANCE = 20.0;
 
   }
 
@@ -279,21 +305,25 @@ public final class Constants {
     // public static final double TARGET_HEIGHT = 67.5;
     // public static final double FOV = 29.8; //Field of view limelight
 
-    public static final double LIME_ANGLE = 24.7;
+    public static final double LIME_ANGLE = 56.4;
 
     public static final String NAME = "photonCamera";
 
-    public static final double TARGET_HEIGHT = 8*12 + 8; // Convert to metric
-    public static final double TARGET_RADIUS = 4*12; // Convert to metric
+    public static final double TARGET_HEIGHT = 8*12 + 8; //TODO: Convert to metric (does this still need to be converted?)
+    public static final double LIME_HEIGHT = 26;
+    public static final double TARGET_RADIUS = 4*12; //TODO: Convert to metric (does this still need to be converted?)
     public static final double H_FOV = 59.6;
-    public static final double V_FOV = 49.7;
-    public static final double LIME_VIXELS = 960;
-    public static final double LIME_HIXELS = 720;
+    public static final double V_FOV = 45.7;
+    public static final double LIME_HIXELS = 920;
+    public static final double LIME_VIXELS = 720;
     public static final double TURRET_kP = 0.1;
+
+    public static final double POINTS_THRESHOLD = 400;
 
     public static final double RANGE = 10;
 
-    public static final double LIMELIGHT_RADIUS = 1.d;
+    public static final double EDGE_TO_CENTER = 20;
+    public static final double LIMELIGHT_RADIUS = 8;
     public static final double SHOOTER_CORRECTION = 1.d;
   }
 }

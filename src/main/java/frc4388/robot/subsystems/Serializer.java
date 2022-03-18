@@ -1,8 +1,6 @@
 package frc4388.robot.subsystems;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc4388.robot.Constants;
 import frc4388.robot.Constants.SerializerConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import com.revrobotics.CANSparkMax;
@@ -21,7 +19,10 @@ public class Serializer extends SubsystemBase{
     // m_serializerShooterBelt.set(0);
     
   }
-
+  /**
+   * 
+   * @param input from -1.0 to 1.0, positive is inward
+   */
   public void setSerializer(double input){
     m_serializerBelt.set(input);
   }
@@ -49,5 +50,8 @@ public class Serializer extends SubsystemBase{
    */
   public boolean getSerializerState() {
     return serializerState;
+  }
+  public double getCurrent(){
+    return m_serializerBelt.getOutputCurrent();
   }
 }

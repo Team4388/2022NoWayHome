@@ -10,16 +10,18 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -40,15 +42,19 @@ import frc4388.robot.subsystems.SwerveModule;
 public class RobotMap {
 
   public RobotMap() {
-    configureLEDMotorControllers();
+    // configureLEDMotorControllers();
     configureSwerveMotorControllers();
     configureShooterMotorControllers();
+    configureIntakeMotors();
+    configureExtenderMotors();
+    configureSerializerMotors();
+    configureStorageMotors();
   }
 
   /* LED Subsystem */
-  public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
+//   public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
 
-  void configureLEDMotorControllers() {}
+//   void configureLEDMotorControllers() {}
 
   /* Swerve Subsystem */
   public final WPI_TalonFX leftFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
@@ -143,6 +149,28 @@ public class RobotMap {
     rightBackSteerMotor.setNeutralMode(mode);
     rightBackWheelMotor.setNeutralMode(mode);// Coast
 
+    // current limits
+    
+    leftFrontSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    rightFrontSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    leftBackSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    rightBackSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
+    
+    leftFrontWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightFrontWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+    leftBackWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightBackWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
+
+    leftFrontSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    rightFrontSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    leftBackSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    rightBackSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
+    
+    leftFrontWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightFrontWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+    leftBackWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+    rightBackWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
+
     leftFront = new SwerveModule(leftFrontWheelMotor, leftFrontSteerMotor, leftFrontEncoder,
         SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
     leftBack = new SwerveModule(leftBackWheelMotor, leftBackSteerMotor, leftBackEncoder,
@@ -165,7 +193,7 @@ public class RobotMap {
     rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(),
         RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-  }
+}
 
   /* Climb Subsystem */
   public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
@@ -186,7 +214,7 @@ public class RobotMap {
   public final CANSparkMax shooterTurret = new CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
 
   // hood subsystem
-  public CANSparkMax angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
+  public final CANSparkMax angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
 
   // Create motor CANSparkMax
   void configureShooterMotorControllers() {
@@ -202,13 +230,15 @@ public class RobotMap {
         ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
+    shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconLeft.configStatorCurrentLimit(ShooterConstants.STATOR_CURRENT_LIMIT_CONFIG_SHOOTER,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
     // RIGHT FALCON
-    shooterFalconRight.setInverted(false);
-    shooterFalconRight.setNeutralMode(NeutralMode.Coast);
     shooterFalconRight.configFactoryDefault();
+    shooterFalconRight.setNeutralMode(NeutralMode.Coast);
+    shooterFalconRight.setInverted(false);
     shooterFalconRight.configOpenloopRamp(1, ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
     // m_shooterFalconRight.configPeakOutputForward(0,
@@ -217,34 +247,56 @@ public class RobotMap {
         ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
-    shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG,
+    shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER,
+        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    shooterFalconRight.configStatorCurrentLimit(ShooterConstants.STATOR_CURRENT_LIMIT_CONFIG_SHOOTER,
         ShooterConstants.SHOOTER_TIMEOUT_MS);
 
-    // /* Turret Subsytem */
-    // shooterFalconRight.configStatorCurrentLimit(new
-    // StatorCurrentLimitConfiguration(true, 6, 9, 4.2)); // TODO: dont pull numbers
-    // out of our ass anymore
-    // shooterFalconLeft.configSupplyCurrentLimit(new
-    // SupplyCurrentLimitConfiguration(true, 12, 13, 0.4)); // TODO: dont pull
-    // numbers out of our ass anymore
+    shooterFalconRight.follow(shooterFalconLeft);
+
+    // turret
+    shooterTurret.restoreFactoryDefaults();
+    shooterTurret.setIdleMode(IdleMode.kBrake);
+    shooterTurret.setInverted(true);
 
     // hood subsystem
     angleAdjusterMotor.restoreFactoryDefaults();
     angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
+    angleAdjusterMotor.setInverted(true);
   }
 
-       
   /* Serializer Subsystem */
   public final CANSparkMax serializerBelt = new CANSparkMax(SerializerConstants.SERIALIZER_BELT, MotorType.kBrushless);
-//   public final CANSparkMax serializerShooterBelt = new CANSparkMax(SerializerConstants.SERIALIZER_SHOOTER_BELT, MotorType.kBrushless);
   public final DigitalInput serializerBeam = new DigitalInput(SerializerConstants.SERIALIZER_BELT_BEAM);
   
   /* Intake Subsystem */
   public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
   public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
 
-  /* Storage Subsystem */
-  public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
-  public final DigitalInput beamShooter = new DigitalInput(StorageConstants.BEAM_SENSOR_SHOOTER);
-  public final DigitalInput beamIntake = new DigitalInput(StorageConstants.BEAM_SENSOR_INTAKE);
+  void configureIntakeMotors() {
+    intakeMotor.configFactoryDefault();
+    intakeMotor.setInverted(false);
+    intakeMotor.setNeutralMode(NeutralMode.Coast);
+
+    intakeMotor.configSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE);
+    intakeMotor.configStatorCurrentLimit(IntakeConstants.STATOR_CURRENT_LIMIT_CONFIG_INTAKE);
+  }
+
+  void configureExtenderMotors() {
+      extenderMotor.restoreFactoryDefaults();
+      extenderMotor.setInverted(true);
+      extenderMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  void configureSerializerMotors() {
+      serializerBelt.restoreFactoryDefaults();
+  }
+
+    /* Storage Subsystem */
+    public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
+
+    void configureStorageMotors() {
+        storageMotor.restoreFactoryDefaults();
+    }
+
 }

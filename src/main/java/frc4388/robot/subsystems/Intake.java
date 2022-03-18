@@ -4,77 +4,48 @@
 
 package frc4388.robot.subsystems;
 
-//Imported Limit switch ONLY
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
-
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
+import frc4388.robot.Constants.IntakeConstants;
+import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 
 public class Intake extends SubsystemBase {
 
   private WPI_TalonFX m_intakeMotor;
-  private CANSparkMax m_extenderMotor;
-  private Serializer m_serializer;
-  private SparkMaxLimitSwitch m_inLimit;
-  private SparkMaxLimitSwitch m_outLimit;
-
-  public boolean toggle;
 
   /** Creates a new Intake. */
-  public Intake(WPI_TalonFX intakeMotor, CANSparkMax extenderMotor, Serializer serializer) {
+  public Intake(WPI_TalonFX intakeMotor) {
     m_intakeMotor = intakeMotor;
-    m_extenderMotor = extenderMotor; 
-    m_serializer = serializer;
-
-    m_extenderMotor.restoreFactoryDefaults();
-
-    m_intakeMotor.setNeutralMode(NeutralMode.Brake);
-    m_intakeMotor.setInverted(false);
-    m_extenderMotor.setInverted(true);
-    
-    m_inLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_outLimit = m_extenderMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-    m_inLimit.enableLimitSwitch(true);
-    m_outLimit.enableLimitSwitch(true);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Intake Percent Output", m_intakeMotor.get());
+    SmartDashboard.putNumber("Extender Direction", ExtenderIntakeGroup.direction);
   }
   /**
-   * Runs The Intake With Triggers.
-   * @param leftTrigger Left Trigger to Run -
-   * @param rightTrigger Right Trigger to Run +
+   * Runs The Intake With Triggers as input
+   * @param leftTrigger Left Trigger to Run Inward
+   * @param rightTrigger Right Trigger to Run Outward
    */
   public void runWithTriggers(double leftTrigger, double rightTrigger) {
-    m_intakeMotor.set(rightTrigger - leftTrigger);
-  }
-  /**
-   * Runs The Extender
-   * @param extended Wether the Extender Is Extended
-   */
-  public void runExtender(boolean extended) { //TODO: Do not bring intake in if there is a ball in the extender (check if intake being in brakes the beam brake?)
-    if (!m_serializer.getBeam() && !extended) return;
-    double extenderMotorSpeed = extended ? 0.25d : -0.25d;
-    m_extenderMotor.set(extenderMotorSpeed);
+    m_intakeMotor.set((rightTrigger - leftTrigger) * IntakeConstants.INTAKE_SPEED_MULTIPLIER);
+    SmartDashboard.putNumber("Intake Current Supply", m_intakeMotor.getSupplyCurrent());
+    SmartDashboard.putNumber("Intake Current Stator", m_intakeMotor.getStatorCurrent());
   }
 
-  public void runExtender(double input) {
-    if (!m_serializer.getBeam() && input < 0.) return;
-    m_extenderMotor.set(input);
+  public void runAtOutput(double output, double multiplier) {
+    m_intakeMotor.set(output * multiplier);
   }
-  /**
-   * Toggles The Extender
-  */
-  public void toggleExtender() {
-    toggle = !toggle;
-    runExtender(toggle);
+
+  public void runAtOutput(double output) {
+    m_intakeMotor.set(output * IntakeConstants.INTAKE_SPEED_MULTIPLIER);
+  }
+  
+  public double getCurrent() {
+    return m_intakeMotor.getSupplyCurrent();
   }
 }

@@ -54,13 +54,16 @@ public class VisionOdometry extends SubsystemBase {
    * Breaks down targets into 4 corners and uses the top 2 points
    * 
    * @return Vision points on the rim of the target in screen space
+   * @throws VisionObscuredException
    */
-  public ArrayList<Point> getTargetPoints() {
+  public ArrayList<Point> getTargetPoints() throws VisionObscuredException {
     PhotonPipelineResult result = m_camera.getLatestResult();
     latency = result.getLatencyMillis();
+
+    System.out.println("Result: " + result.hasTargets() + ", latency: " + latency);
   
     if(!result.hasTargets())
-      return new ArrayList<Point>();
+      throw new VisionObscuredException();
     
     ArrayList<Point> points = new ArrayList<>();
 
@@ -90,16 +93,11 @@ public class VisionOdometry extends SubsystemBase {
     m_camera.setLED(on ? VisionLEDMode.kOn : VisionLEDMode.kOff);
   }
 
-  /** Gets estimated odometry based on limelight data
-   * 
-   * @return The estimated odometry pose, including gyro rotation
-   * @throws VisionObscuredException
-   */
-  public Pose2d getVisionOdometry() throws VisionObscuredException {
+  public Point getTargetOffset() throws VisionObscuredException {
     ArrayList<Point> screenPoints = getTargetPoints();
 
     if(screenPoints.size() < 3)
-      throw new VisionObscuredException("Not enough vision points available");
+      throw new VisionObscuredException("Less than 3 vision points available");
 
     ArrayList<Point3> points3d = get3dPoints(screenPoints);
     ArrayList<Point> points = topView(points3d);
@@ -110,14 +108,25 @@ public class VisionOdometry extends SubsystemBase {
       guess = iterateGuess(guess, points);
     }
 
-    guess = correctGuessForCenter(guess, m_shooter.getBoomBoomAngleDegrees());
-    guess = correctGuessForGyro(guess, m_drive.getRegGyro().getDegrees());
+    return guess;
+  }
 
-    SmartDashboard.putNumber("Vision ODO x: ", guess.x);
-    SmartDashboard.putNumber("Vision ODO y: ", guess.y);
+  /** Gets estimated odometry based on limelight data
+   * 
+   * @return The estimated odometry pose, including gyro rotation
+   * @throws VisionObscuredException
+   */
+  public Pose2d getVisionOdometry() throws VisionObscuredException {
+    Point targetOffset = getTargetOffset();
+
+    targetOffset = correctGuessForCenter(targetOffset, m_shooter.getBoomBoomAngleDegrees());
+    targetOffset = correctGuessForGyro(targetOffset, m_drive.getRegGyro().getDegrees());
+
+    SmartDashboard.putNumber("Vision ODO x: ", targetOffset.x);
+    SmartDashboard.putNumber("Vision ODO y: ", targetOffset.y);
 
     Rotation2d rotation = new Rotation2d(Math.toDegrees(m_drive.getRegGyro().getDegrees()));
-    Pose2d odometryPose = new Pose2d(guess.x, guess.y, rotation);
+    Pose2d odometryPose = new Pose2d(targetOffset.x, targetOffset.y, rotation);
 
     return odometryPose;
   }
@@ -125,9 +134,9 @@ public class VisionOdometry extends SubsystemBase {
   public double getLatency() {
     return latency;
   }
+
   public boolean getLEDs() {
-    if (m_camera.getLEDMode() == VisionLEDMode.kOff) return false;
-    return true;
+    return m_camera.getLEDMode() != VisionLEDMode.kOff;
   }
 
   public void updateOdometryWithVision(){
@@ -139,6 +148,7 @@ public class VisionOdometry extends SubsystemBase {
       err.printStackTrace();
     } 
   }
+
   /** Reverse 3d projects target points from screen coordinates to 3d space
    * <p>
    * Uses the known height of the target to project points
@@ -284,9 +294,8 @@ public class VisionOdometry extends SubsystemBase {
    * @return The angle corrected for the quadrent
    */
   public static final double correctQuadrent(double angle, Point guess, Point circlePoint) {
-    if(circlePoint.x - guess.x < 0) {
+    if(circlePoint.x - guess.x < 0)
       return angle - Math.PI;
-    }
 
     return angle;
   }

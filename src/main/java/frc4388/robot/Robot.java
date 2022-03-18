@@ -7,20 +7,27 @@ package frc4388.robot;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 import com.diffplug.common.base.Errors;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
+import frc4388.utility.VelocityCorrection;
+import frc4388.utility.desmos.DesmosServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,6 +42,15 @@ public class Robot extends TimedRobot {
 
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
+
+  private SendableChooser<Pose2d> odoChooser = new SendableChooser<Pose2d>();
+  private HashMap<String, Pose2d> odoChoices = new HashMap<>();
+  private Pose2d selectedOdo;
+  private double current;
+
+  private static DesmosServer desmosServer = new DesmosServer(8000);
+
+  public static Alliance alliance;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -106,6 +122,9 @@ public class Robot extends TimedRobot {
         return "Not Running";
       }
     });
+
+    desmosServer.start();
+    // DesmosServer.putTable("table", "x1", new double[] {44}, "y1", new double[] {0});
   }
 
   /**
@@ -120,6 +139,21 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
+    // SmartDashboard.putNumber("Turret", m_robotContainer.m_robotMap.shooterTurret.getEncoder().getPosition());
+    // SmartDashboard.putNumber("Hood", m_robotContainer.m_robotMap.angleAdjusterMotor.getEncoder().getPosition());
+    current = 
+      m_robotContainer.m_robotBoomBoom.getCurrent() +
+      m_robotContainer.m_robotClimber.getCurrent() +
+      m_robotContainer.m_robotHood.getCurrent() +
+      m_robotContainer.m_robotIntake.getCurrent() +
+      m_robotContainer.m_robotExtender.getCurrent() +
+      m_robotContainer.m_robotSerializer.getCurrent() +
+      m_robotContainer.m_robotStorage.getCurrent() +
+      m_robotContainer.m_robotSwerveDrive.getCurrent();
+      m_robotContainer.m_robotTurret.getCurrent();
+    SmartDashboard.putNumber("Total Robot Current Draw", current);
+    SmartDashboard.putNumber("Drive Train Voltage", m_robotContainer.m_robotSwerveDrive.getVoltage());
+    SmartDashboard.putNumber("Drive Train Current", m_robotContainer.m_robotSwerveDrive.getCurrent());
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or
@@ -134,6 +168,25 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
     // SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
     // SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
+    // odo chooser stuff
+    addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 
+                  new Pose2d(1, 2, new Rotation2d(Math.PI/3)),
+                  new Pose2d(1, 3, new Rotation2d(Math.PI/4)));
+    updateOdoChooser();
+    SmartDashboard.putData("Odometry Chooser", odoChooser);
+  }
+
+  public void updateOdoChooser() {    
+    for (Map.Entry<String,Pose2d> entry : odoChoices.entrySet()) {
+      odoChooser.addOption(entry.getKey(), entry.getValue());
+    }
+  }
+
+  public void addOdoChoices(Pose2d... points) {
+    for (Pose2d point : points) {
+      String key = "(" + point.getX() + ", " + point.getY() + ", " + point.getRotation().getDegrees() + "°)";
+      odoChoices.put(key, point);
+    }
   }
 
   /**
@@ -155,6 +208,8 @@ public class Robot extends TimedRobot {
       } else
         LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
     }
+
+    m_robotContainer.m_robotVisionOdometry.setLEDs(false);
   }
 
   @Override
@@ -168,6 +223,15 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     LOGGER.fine("autonomousInit()");
+
+    Robot.alliance = DriverStation.getAlliance();
+
+    selectedOdo = odoChooser.getSelected();
+    if (selectedOdo == null) {
+      selectedOdo = m_robotContainer.getOdometry();
+    }
+    m_robotContainer.resetOdometry(selectedOdo);
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -187,7 +251,19 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     LOGGER.fine("teleopInit()");
-    // m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
+
+
+    Robot.alliance = DriverStation.getAlliance();
+
+    m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
+
+    selectedOdo = odoChooser.getSelected();
+    if (selectedOdo == null) {
+      selectedOdo = m_robotContainer.getOdometry();
+    }
+    m_robotContainer.resetOdometry(selectedOdo);
+
+
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -203,8 +279,7 @@ public class Robot extends TimedRobot {
    * This function is called periodically during operator control.
    */
   @Override
-  public void teleopPeriodic() {
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {

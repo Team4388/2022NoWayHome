@@ -3,6 +3,7 @@ package frc4388.utility.controller;
 import static frc4388.robot.Constants.OIConstants.LEFT_AXIS_DEADBAND;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import frc4388.robot.Constants.OIConstants;
 
 public class DeadbandedRawXboxController extends RawXboxController {
   public DeadbandedRawXboxController(int port) { super(port); }
@@ -13,7 +14,7 @@ public class DeadbandedRawXboxController extends RawXboxController {
   public static Translation2d skewToDeadzonedCircle(double x, double y) {
     Translation2d translation2d = new Translation2d(x, y);
     double magnitude = translation2d.getNorm();
-    if (magnitude >= 1) return translation2d.div(magnitude);
+    if (OIConstants.SKEW_STICKS && magnitude >= 1) return translation2d.div(magnitude);
     if (magnitude < LEFT_AXIS_DEADBAND) return new Translation2d(0,0);
     return translation2d;
   }
