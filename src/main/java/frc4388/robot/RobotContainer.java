@@ -112,14 +112,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final ClimberRewrite m_robotClimber = new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
-<<<<<<< Updated upstream
-  
-  private final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw);
-
-  // Subsystems 
-=======
   public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
->>>>>>> Stashed changes
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
   public final Intake m_robotIntake = new Intake(m_robotMap.intakeMotor);
@@ -203,7 +196,6 @@ public class RobotContainer {
     m_robotSerializer.setDefaultCommand(
       new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
-<<<<<<< Updated upstream
         
     // Turret Manual
 
@@ -217,12 +209,6 @@ public class RobotContainer {
         .until(() -> this.currentMode.equals(CurrentMode.TURRET)));
           
         // EnableTurret()
-=======
-      // Turret Manual
-    // m_robotTurret.setDefaultCommand(
-    //     new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-    //     m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
->>>>>>> Stashed changes
 
     // m_robotHood.setDefaultCommand(
     //    new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
@@ -425,26 +411,7 @@ public class RobotContainer {
    * Finally, adds the existing path files to the auto chooser
    */
   private void autoInit() {
-<<<<<<< Updated upstream
-    // try {
-    //   WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
-    //       StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
-    //       StandardWatchEventKinds.ENTRY_DELETE);
-    //   // TODO: Store this and other commands as fields so they can be rescheduled.
-    //   new NotifierCommand(() -> updateAutoChooser(watchKey), 0.5) {
-    //     @Override
-    //     public boolean runsWhenDisabled() {
-    //       return true;
-    //     }
-    //   }.withName("Path Watcher").schedule();
-    // } catch (IOException exception) {
-    //   LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
-    // }
-    // Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles())
-    //     .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
-    //     .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
-=======
+
     try {
       WatchKey watchKey = PATHPLANNER_DIRECTORY.register(FileSystems.getDefault().newWatchService(),
           StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
@@ -463,7 +430,6 @@ public class RobotContainer {
         .filter(file -> file.getName().endsWith(".path")).sorted(Comparator.comparingLong(File::lastModified))
         .forEachOrdered(file -> autoChooser.addOption(file.getName(), file));
     SmartDashboard.putData("Auto Chooser", autoChooser);
->>>>>>> Stashed changes
   }
 
   /**
