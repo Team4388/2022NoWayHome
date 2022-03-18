@@ -61,7 +61,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Claws;
-import frc4388.robot.subsystems.ClimberRewrite;
+import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.Claws.ClawType;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.ShooterConstants;
@@ -110,7 +110,7 @@ public class RobotContainer {
   public final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  public final ClimberRewrite m_robotClimber = new ClimberRewrite(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+  public final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
   public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
@@ -149,6 +149,8 @@ public class RobotContainer {
       .compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
   
   public static boolean softLimits = true;
+  public enum Mode {SHOOTER, CLIMBER};
+  public Mode currentMode = Mode.SHOOTER;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -202,13 +204,29 @@ public class RobotContainer {
         new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
       // Turret Manual
+    // m_robotTurret.setDefaultCommand(
+    //     new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
+    //     m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+
     m_robotTurret.setDefaultCommand(
-        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+       new RunCommand(() -> {
+        if (this.currentMode.equals(Mode.SHOOTER)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
+        if (this.currentMode.equals(Mode.CLIMBER)) { m_robotTurret.runTurretWithInput(0); }
+       }, m_robotTurret));
 
     m_robotHood.setDefaultCommand(
-       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
-    // m_robotTurret.setDefaultCommand(
+       new RunCommand(() -> {
+        if (this.currentMode.equals(Mode.SHOOTER)) { m_robotHood.runHood(getOperatorController().getRightY()); }
+        if (this.currentMode.equals(Mode.CLIMBER)) { m_robotHood.runHood(0); }
+       }, m_robotHood));
+      
+    m_robotClimber.setDefaultCommand(
+      new RunCommand(() -> {
+        if (this.currentMode.equals(Mode.SHOOTER)) { m_robotClimber.setMotors(0, 0); }
+        if (this.currentMode.equals(Mode.CLIMBER)) { m_robotClimber.setMotors(-getOperatorController().getLeftX(), -getOperatorController().getRightY()); }
+      }, m_robotClimber));
+
+       // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
@@ -318,18 +336,18 @@ public class RobotContainer {
       .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
       .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
 
-      .whenPressed(new InstantCommand(() -> m_robotTurret.setDefaultCommand(null)))
-      .whenPressed(new InstantCommand(() -> m_robotHood.setDefaultCommand(null)))
-      .whenPressed(new InstantCommand(() -> m_robotClimber.setDefaultCommand(
-        new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getLeftY(), -getOperatorController().getRightY()), m_robotClimber))))
+    //   .whenPressed(new InstantCommand(() -> m_robotTurret.setDefaultCommand(null)))
+    //   .whenPressed(new InstantCommand(() -> m_robotHood.setDefaultCommand(null)))
+    //   .whenPressed(new InstantCommand(() -> m_robotClimber.setDefaultCommand(
+    //     new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getLeftY(), -getOperatorController().getRightY()), m_robotClimber))))
 
-      .whenReleased(new InstantCommand(() -> m_robotClimber.setDefaultCommand(null)))
-      .whenReleased(new InstantCommand(() -> m_robotTurret.setDefaultCommand(
-        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret))))
-      .whenReleased(new InstantCommand(() -> m_robotHood.setDefaultCommand(
-        new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood))));
+    //   .whenReleased(new InstantCommand(() -> m_robotClimber.setDefaultCommand(null)))
+    //   .whenReleased(new InstantCommand(() -> m_robotTurret.setDefaultCommand(
+    //     new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret))))
+    //   .whenReleased(new InstantCommand(() -> m_robotHood.setDefaultCommand(
+    //     new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood))));
 
       // .whenPressed(new InstantCommand(() -> this.currentMode = CurrentMode.CLIMBER))
       // .whenReleased(new InstantCommand(() -> this.currentMode = CurrentMode.TURRET));

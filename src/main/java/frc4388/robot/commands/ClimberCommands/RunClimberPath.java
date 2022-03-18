@@ -10,11 +10,11 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ClimberConstants;
 import frc4388.robot.subsystems.Claws;
-import frc4388.robot.subsystems.ClimberRewrite;
+import frc4388.robot.subsystems.Climber;
 import frc4388.utility.Vector2D;
 
 public class RunClimberPath extends CommandBase {
-  ClimberRewrite climber;
+  Climber climber;
   Claws claws;
 
   Point[] path;
@@ -23,7 +23,7 @@ public class RunClimberPath extends CommandBase {
   boolean endPath;
 
   /** Creates a new RunClimberPath. */
-  public RunClimberPath(Point[] _path, ClimberRewrite _climber, Claws _claws) {
+  public RunClimberPath(Point[] _path, Climber _climber, Claws _claws) {
     path = _path;
     endPath = false;
 
