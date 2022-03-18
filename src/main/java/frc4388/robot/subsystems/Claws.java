@@ -106,15 +106,15 @@ public class Claws extends SubsystemBase {
       // m_rightClaw.getEncoder().setPosition(ClawsConstants.OPEN_POSITION + m_rightOffset);
       // m_leftClaw.setPosition(.7);
       // m_rightClaw.setPosition(.7);
-      m_leftClaw.setRaw(ClawConstants.BOTTOM_LIMIT);//ClawConstants.OPEN_POSITION);
-      m_rightClaw.setRaw(ClawConstants.TOP_LIMIT);//ClawConstants.OPEN_POSITION);
+      m_leftClaw.setRaw(ClawConstants.BOTTOM_LIMIT - 900);//ClawConstants.OPEN_POSITION);
+      m_rightClaw.setRaw(ClawConstants.TOP_LIMIT + 100);//ClawConstants.OPEN_POSITION);
     } else {
       // m_leftClaw.getEncoder().setPosition(ClawsConstants.CLOSE_POSITION + m_leftOffset);
       // m_rightClaw.getEncoder().setPosition(ClawsConstants.CLOSE_POSITION + m_rightOffset);
       // m_leftClaw.setPosition(.3);
       // m_rightClaw.setPosition(.3);
-      m_leftClaw.setRaw(ClawConstants.TOP_LIMIT);
-      m_rightClaw.setRaw(ClawConstants.BOTTOM_LIMIT);
+      m_leftClaw.setRaw(ClawConstants.TOP_LIMIT - 100);
+      m_rightClaw.setRaw(ClawConstants.BOTTOM_LIMIT - 700);
     }
   }
 
@@ -152,7 +152,9 @@ public class Claws extends SubsystemBase {
   // }
 
   // @Override
-  // public void periodic() {
+  public void periodic() {
+    SmartDashboard.putNumber("Servo Left Pos", m_leftClaw.getRaw());
+    SmartDashboard.putNumber("Servo Right Pos", m_rightClaw.getRaw());
   //   if (fullyOpen() || fullyClosed()) {
   //     m_leftClaw.setSpeed(0.0);
   //     m_rightClaw.setSpeed(0.0);
@@ -165,5 +167,5 @@ public class Claws extends SubsystemBase {
   //   if(m_rightLimitSwitchF.isPressed() || m_rightLimitSwitchR.isPressed())
   //     // m_rightOffset = m_rightClaw.getEncoder().getPosition();
   //     m_rightOffset = m_rightClaw.getPosition();
-  // }
+  }
 }
