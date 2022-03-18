@@ -24,6 +24,10 @@ public class ExtenderIntakeGroup extends ParallelRaceGroup {
     addCommands(new RunIntakeConditionally(intake), new RunExtender(extender));
   }
 
+  public static void setDirectionToOut() {
+    ExtenderIntakeGroup.direction = 1;
+  }
+
   public static void changeDirection() { // Never implemented?
     ExtenderIntakeGroup.direction *= -1;
   }

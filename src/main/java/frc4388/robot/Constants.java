@@ -151,7 +151,7 @@ public final class Constants {
   }
 
   public static final class ExtenderConstants {
-    public static final double EXTENDER_FORWARD_LIMIT = 250.0;
+    public static final double EXTENDER_FORWARD_LIMIT = 235.0;//250.0;
     public static final double EXTENDER_REVERSE_LIMIT = 0.0;
   }
 

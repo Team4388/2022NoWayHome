@@ -357,7 +357,8 @@ public class RobotContainer {
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
-      .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender));
+      .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
+      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender));
 
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
     //     .whileHeld(new RunCommand(() -> RunMiddleSwitch.setManual(true)))
