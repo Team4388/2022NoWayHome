@@ -174,8 +174,8 @@ public class ClimberRewrite extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
-    setJointAngles(jointAngles);
+    // double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
+    // setJointAngles(jointAngles);
   }
 
   /**
