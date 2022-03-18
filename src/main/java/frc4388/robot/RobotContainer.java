@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,8 +124,8 @@ public class RobotContainer {
   public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   public final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
 
-  // private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(30);
-  // private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(31);
+  private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(30);
+  private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(31);
   //public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
 
   // Controllers
@@ -151,15 +150,19 @@ public class RobotContainer {
   
   public static boolean softLimits = true;
 
-  public static enum CurrentMode {TURRET, CLIMBER};
-  public CurrentMode currentMode = CurrentMode.TURRET;
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     configureButtonBindings();
     /* Default Commands */
+
+    // moves climber in xy space with two-axis input from the operator controller
+    m_robotClimber.setDefaultCommand(
+      new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getRightX() * 0.7, -getOperatorController().getRightY() * 0.7), 
+      m_robotClimber));
+
+
     // IK command
     // m_robotClimber.setDefaultCommand(
     //     new RunCommand(() -> m_robotClimber.controlWithInput(getOperatorController().getLeftX(),
@@ -187,28 +190,21 @@ public class RobotContainer {
     //                       m_robotBoomBoom, 
     //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
     
-    // Storage Management
-    // m_robotStorage.setDefaultCommand(
-      //     new RunCommand(() -> m_robotStorage.manageStorage(), 
-      //     m_robotStorage).withName("Storage manageStorage defaultCommand"));
-      
+    // m_robotClimber.setDefaultCommand(
+    //   new RunCommand(() -> m_robotClimber.runBothMotorsWithInputs(getDriverController().getLeftY() * 0.1, getDriverController().getRightY() * 0.1), m_robotClimber)
+    // );
+      // Storage Management
+    /*m_robotStorage.setDefaultCommand(
+        new RunCommand(() -> m_robotStorage.manageStorage(), 
+        m_robotStorage).withName("Storage manageStorage defaultCommand"));*/
       // Serializer Management
     m_robotSerializer.setDefaultCommand(
-      new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
+        new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
-        
-    // Turret Manual
-
+      // Turret Manual
     m_robotTurret.setDefaultCommand(
-      new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret)
-        .until(() -> this.currentMode.equals(CurrentMode.CLIMBER)));
-        // .withName("Turret runTurretWithInput defaultCommand");
-
-    m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> m_robotClimber.setMotors(getDriverController().getLeftY(), getDriverController().getRightY()), m_robotClimber)
-        .until(() -> this.currentMode.equals(CurrentMode.TURRET)));
-          
-        // EnableTurret()
+        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
+        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
 
     // m_robotHood.setDefaultCommand(
     //    new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
@@ -245,6 +241,10 @@ public class RobotContainer {
      new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
          .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
+
+
+
+
     /* Operator Buttons */
 
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
@@ -255,6 +255,9 @@ public class RobotContainer {
   
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
+
+
+  
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
@@ -315,15 +318,14 @@ public class RobotContainer {
       .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
       .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-      .whenPressed(new InstantCommand(() -> this.currentMode = CurrentMode.CLIMBER))
-      .whenReleased(new InstantCommand(() -> this.currentMode = CurrentMode.TURRET));
-      // .whenReleased(EnableClimber()));
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+    //     .whileHeld(new TurretManual(m_robotTurret));
       
     // control turret manual mode
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
     //     .whileHeld(new RunCommand(() -> TurretManual.setManual(true)))
     //     .whenReleased(new RunCommand(() -> TurretManual.setManual(false)));
+
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
@@ -333,12 +335,6 @@ public class RobotContainer {
     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
     .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
   }
-
-  //EnableTurret()
-        //set turret default to joysticks, set climber default to null
-
-  //EnableClimber()
-        //set climber default to joysticks set turret defaults to null
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -460,35 +456,35 @@ public class RobotContainer {
    * @param watchKey The WatchKey that is being observed.
    */
   private void updateAutoChooser(WatchKey watchKey) {
-    // List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-    // if (!watchEvents.isEmpty()) {
-    //   List<WatchEvent<?>> pathWatchEvents = watchEvents.stream()
-    //       .filter(e -> e.kind().type().isAssignableFrom(Path.class)).collect(Collectors.toList());
-    //   for (WatchEvent<?> pathWatchEvent : pathWatchEvents) {
-    //     Path watchEventPath = (Path) pathWatchEvent.context();
-    //     File watchEventFile = watchEventPath.toFile();
-    //     String watchEventFileName = watchEventFile.getName();
-    //     if (watchEventFileName.endsWith(".path")) {
-    //       if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
-    //         LOGGER.log(Level.WARNING, "PathPlanner file {0} created. Options added to SendableChooser.",
-    //             watchEventFileName);
-    //         autoChooser.addOption(watchEventFile.getName(), watchEventFile);
-    //       } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
-    //         LOGGER.log(Level.WARNING, "PathPlanner file {0} modified.", watchEventFileName);
-    //         if (watchEventFileName.equals(autoChooser.getSelected().getName())) {
-    //           LOGGER.log(Level.SEVERE, "PathPlanner file {0} already selected. Reloading path.", watchEventFileName);
-    //           loadPath(watchEventFileName);
-    //         }
-    //       } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
-    //         LOGGER.log(Level.SEVERE,
-    //             "PathPlanner file {0} deleted. Removing options from SendableChooser not yet implemented.",
-    //             watchEventFileName);
-    //       }
-    //     }
-    //   }
-    // }
-    // if (!watchKey.reset())
-    //   LOGGER.severe("File watch key invalid.");
+    List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+    if (!watchEvents.isEmpty()) {
+      List<WatchEvent<?>> pathWatchEvents = watchEvents.stream()
+          .filter(e -> e.kind().type().isAssignableFrom(Path.class)).collect(Collectors.toList());
+      for (WatchEvent<?> pathWatchEvent : pathWatchEvents) {
+        Path watchEventPath = (Path) pathWatchEvent.context();
+        File watchEventFile = watchEventPath.toFile();
+        String watchEventFileName = watchEventFile.getName();
+        if (watchEventFileName.endsWith(".path")) {
+          if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+            LOGGER.log(Level.WARNING, "PathPlanner file {0} created. Options added to SendableChooser.",
+                watchEventFileName);
+            autoChooser.addOption(watchEventFile.getName(), watchEventFile);
+          } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+            LOGGER.log(Level.WARNING, "PathPlanner file {0} modified.", watchEventFileName);
+            if (watchEventFileName.equals(autoChooser.getSelected().getName())) {
+              LOGGER.log(Level.SEVERE, "PathPlanner file {0} already selected. Reloading path.", watchEventFileName);
+              loadPath(watchEventFileName);
+            }
+          } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
+            LOGGER.log(Level.SEVERE,
+                "PathPlanner file {0} deleted. Removing options from SendableChooser not yet implemented.",
+                watchEventFileName);
+          }
+        }
+      }
+    }
+    if (!watchKey.reset())
+      LOGGER.severe("File watch key invalid.");
   }
 
   private void loadPath(String pathName) {
@@ -500,22 +496,22 @@ public class RobotContainer {
   }
 
   private void saveRecording() {
-    // // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
-    // File outputFile = PATHPLANNER_DIRECTORY
-    //     .resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
-    // LOGGER.log(Level.WARNING, "Creating path {0}.", outputFile.getPath());
-    // if (!pathPoints.isEmpty() && Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
-    //   // TODO: Change to use measured maximum velocity and acceleration.
-    //   var path = createPath(null, null, false);
-    //   if (RobotBase.isReal())
-    //     path.write(outputFile);
-    //   StringWriter writer = new StringWriter();
-    //   path.write(writer);
-    //   recordingNetworkTable.getEntry(outputFile.getName()).setString(writer.toString());
-    //   autoChooser.setDefaultOption(outputFile.getName(), outputFile);
-    //   LOGGER.log(Level.INFO, "Recorded path to {0}.", outputFile.getPath());
-    // } else
-    //   LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
+    // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
+    File outputFile = PATHPLANNER_DIRECTORY
+        .resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
+    LOGGER.log(Level.WARNING, "Creating path {0}.", outputFile.getPath());
+    if (!pathPoints.isEmpty() && Boolean.TRUE.equals(Errors.log().getWithDefault(outputFile::createNewFile, false))) {
+      // TODO: Change to use measured maximum velocity and acceleration.
+      var path = createPath(null, null, false);
+      if (RobotBase.isReal())
+        path.write(outputFile);
+      StringWriter writer = new StringWriter();
+      path.write(writer);
+      recordingNetworkTable.getEntry(outputFile.getName()).setString(writer.toString());
+      autoChooser.setDefaultOption(outputFile.getName(), outputFile);
+      LOGGER.log(Level.INFO, "Recorded path to {0}.", outputFile.getPath());
+    } else
+      LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
   }
 
   public void recordPeriodic() {

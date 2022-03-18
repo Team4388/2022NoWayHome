@@ -129,8 +129,8 @@ public class ClimberRewrite extends SubsystemBase {
   }
 
   public void setMotors(double shoulderOutput, double elbowOutput) {
-    m_shoulder.set(shoulderOutput * ClimberConstants.INPUT_MULTIPLIER);
-    m_elbow.set(elbowOutput * ClimberConstants.INPUT_MULTIPLIER);
+    m_shoulder.set(shoulderOutput);
+    m_elbow.set(elbowOutput);
   }
 
   public double[] getJointAngles() {

@@ -173,8 +173,6 @@ public final class Constants {
     public static final int SHOULDER_ID = 30;
     public static final int ELBOW_ID = 31;
     public static final int GYRO_ID = 14;
-
-    public static final double INPUT_MULTIPLIER = 0.7;
   
     // TODO Update this stuff too
     public static final double UPPER_ARM_LENGTH = 26; // Units should be in cm
@@ -267,6 +265,7 @@ public final class Constants {
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;
     public static final int TURRET_MOTOR_ROTS_PER_ROT = 0;
     public static final double ENCODER_TICKS_PER_REV = 2048;
+    public static final double TURRET_CLIMBING_POS = -3.76;
 
     // Shoot Command Constants
     public static final Gains SHOOT_GAINS = new Gains(5.0, 0.0, 0.0, 0.0, 0, 1.0);
