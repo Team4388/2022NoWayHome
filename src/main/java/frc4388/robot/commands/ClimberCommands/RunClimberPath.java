@@ -23,7 +23,7 @@ public class RunClimberPath extends CommandBase {
   boolean endPath;
 
   /** Creates a new RunClimberPath. */
-  public RunClimberPath(Point[] _path, Climber _climber, Claws _claws) {
+  public RunClimberPath(Climber _climber, Claws _claws, Point[] _path) {
     path = _path;
     endPath = false;
 

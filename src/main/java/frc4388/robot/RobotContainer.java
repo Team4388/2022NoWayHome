@@ -38,6 +38,7 @@ import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import org.ejml.dense.row.decomposition.hessenberg.TridiagonalDecompositionHouseholderOrig_DDRM;
+import org.opencv.core.Point;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
@@ -69,6 +70,7 @@ import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
 import frc4388.robot.commands.ClimberCommands.RunClaw;
+import frc4388.robot.commands.ClimberCommands.RunClimberPath;
 // import frc4388.robot.commands.ButtonBoxCommands.TurretManual;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.AimToCenter;
@@ -149,8 +151,13 @@ public class RobotContainer {
       .compile(".path")::matcher).andThen(m -> m.replaceFirst(""));
   
   public static boolean softLimits = true;
-  public enum Mode {SHOOTER, CLIMBER};
-  public Mode currentMode = Mode.SHOOTER;
+
+  // mode switching
+  private enum ControlMode { SHOOTER, CLIMBER };
+  private ControlMode currentControlMode = ControlMode.SHOOTER;
+
+  private enum ClimberMode { MANUAL, AUTONOMOUS };
+  private ClimberMode currentClimberMode = ClimberMode.MANUAL;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -159,28 +166,22 @@ public class RobotContainer {
     configureButtonBindings();
     /* Default Commands */
 
-    // moves climber in xy space with two-axis input from the operator controller
-    // m_robotClimber.setDefaultCommand(
-    //   new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getRightX() * 0.7, -getOperatorController().getRightY() * 0.7), 
-    //   m_robotClimber));
-
-
     // IK command
     m_robotClimber.setDefaultCommand(
         new RunCommand(() -> m_robotClimber.controlJointsWithInput(getOperatorController().getLeftX(),
             getOperatorController().getRightY()), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
     
-      // Swerve Drive with Input
+    // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
             getDriverController().getLeftX(),
             getDriverController().getLeftY(),
-            //getDriverController().getRightX(),
             getDriverController().getRightX(),
             getDriverController().getRightY(),
             true),
             m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
-      // Intake with Triggers
+
+    // Intake with Triggers
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
             getOperatorController().getLeftTriggerAxis(), 
@@ -191,14 +192,12 @@ public class RobotContainer {
     //     new ManageStorage(m_robotStorage, 
     //                       m_robotBoomBoom, 
     //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
-    
-    // m_robotClimber.setDefaultCommand(
-    //   new RunCommand(() -> m_robotClimber.runBothMotorsWithInputs(getDriverController().getLeftY() * 0.1, getDriverController().getRightY() * 0.1), m_robotClimber)
-    // );
-      // Storage Management
-    /*m_robotStorage.setDefaultCommand(
+
+    // Storage Management
+    m_robotStorage.setDefaultCommand(
         new RunCommand(() -> m_robotStorage.manageStorage(), 
-        m_robotStorage).withName("Storage manageStorage defaultCommand"));*/
+        m_robotStorage).withName("Storage manageStorage defaultCommand"));
+
       // Serializer Management
     m_robotSerializer.setDefaultCommand(
         new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
@@ -260,10 +259,6 @@ public class RobotContainer {
      new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
          .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-
-
-
-
     /* Operator Buttons */
 
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
@@ -274,9 +269,6 @@ public class RobotContainer {
   
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
-
-
-  
 
     new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
         .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
@@ -298,7 +290,8 @@ public class RobotContainer {
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
     //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-    //   // Left Bumper > Storage Out (note: neccessary?)
+
+      // Left Bumper > Storage Out (note: necessary?)
     // new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
     //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
     //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
@@ -317,7 +310,6 @@ public class RobotContainer {
         .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
         // .whileHeld%
 
-  
     /* Button Box Buttons */
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
@@ -359,6 +351,11 @@ public class RobotContainer {
     //     .whileHeld(new RunCommand(() -> TurretManual.setManual(true)))
     //     .whenReleased(new RunCommand(() -> TurretManual.setManual(false)));
 
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+      .whenPressed(new InstantCommand(() -> this.currentClimberMode = ClimberMode.AUTONOMOUS))
+       // TODO: actual climber autonomous command goes here (next line)
+      .whenPressed(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}).until(() -> this.currentClimberMode.equals(ClimberMode.MANUAL)))
+      .whenReleased(new InstantCommand(() -> this.currentClimberMode = ClimberMode.MANUAL));
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
