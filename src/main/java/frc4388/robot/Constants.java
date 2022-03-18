@@ -185,7 +185,7 @@ public final class Constants {
     public static final double MAX_ARM_LENGTH = 53;
     public static final double MIN_ARM_LENGTH = 1;
     
-    public static final double MOVE_SPEED = .1; // cm per second
+    public static final double MOVE_SPEED = 30000; // ticks per second
 
     public static final double SHOULDER_RESTING_ANGLE = 0;
     public static final double ELBOW_RESTING_ANGLE = 0;
@@ -208,8 +208,8 @@ public final class Constants {
     public static final int ELBOW_SLOT_IDX = 0;
     public static final int ELBOW_PID_LOOP_IDX = 1;
 
-    public static final Gains SHOULDER_GAINS = new Gains(.4, 0.0, 0.0, 0.0, 0, 1.0);
-    public static final Gains ELBOW_GAINS = new Gains(.4, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOULDER_GAINS = new Gains(0.5, 0.0, 0.0, 0.0, 0, 0.2);
+    public static final Gains ELBOW_GAINS = new Gains(0.5, 0.0, 30.0, 0.0, 0, 1.0); //Prev P 1   d 0.4
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
 

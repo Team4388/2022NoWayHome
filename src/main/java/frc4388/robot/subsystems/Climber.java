@@ -4,6 +4,7 @@
 
 package frc4388.robot.subsystems;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
@@ -35,6 +36,7 @@ public class Climber extends SubsystemBase {
   private WPI_Pigeon2 m_gyro;
 
   private Point tPoint;
+  private double[] tJointAngles;
 
   private boolean groundRelative;
   private double shoulderSpeedLimiter;
@@ -50,7 +52,9 @@ public class Climber extends SubsystemBase {
     m_elbow.configFactoryDefault();
     m_elbow.setNeutralMode(NeutralMode.Brake);
 
-    // setClimberGains();
+    tJointAngles = new double[] {m_shoulder.getSelectedSensorPosition(), m_elbow.getSelectedSensorPosition()};
+
+    setClimberGains();
 
     // shoulderStartPosition = m_shoulder.getSelectedSensorPosition();
     // elbowStartPosition = m_elbow.getSelectedSensorPosition();
@@ -144,44 +148,53 @@ public class Climber extends SubsystemBase {
   }
 
   public void setJointAngles(double[] angles) {
-    System.out.println(angles);
+    System.out.println(Arrays.toString(angles));
     setJointAngles(angles[0], angles[1]);
   }
 
   public void setJointAngles(double shoulderAngle, double elbowAngle) {
-    shoulderAngle = shoulderAngle < ClimberConstants.SHOULDER_RESTING_ANGLE ? ClimberConstants.SHOULDER_RESTING_ANGLE : shoulderAngle;
-    elbowAngle = elbowAngle < ClimberConstants.ELBOW_RESTING_ANGLE ? ClimberConstants.ELBOW_RESTING_ANGLE : elbowAngle;
+    // shoulderAngle = shoulderAngle < ClimberConstants.SHOULDER_RESTING_ANGLE ? ClimberConstants.SHOULDER_RESTING_ANGLE : shoulderAngle;
+    // elbowAngle = elbowAngle < ClimberConstants.ELBOW_RESTING_ANGLE ? ClimberConstants.ELBOW_RESTING_ANGLE : elbowAngle;
 
-    shoulderAngle = shoulderAngle > ClimberConstants.SHOULDER_MAX_ANGLE ? ClimberConstants.SHOULDER_MAX_ANGLE : shoulderAngle;
-    elbowAngle = elbowAngle > ClimberConstants.ELBOW_MAX_ANGLE ? ClimberConstants.ELBOW_MAX_ANGLE : elbowAngle;
+    // shoulderAngle = shoulderAngle > ClimberConstants.SHOULDER_MAX_ANGLE ? ClimberConstants.SHOULDER_MAX_ANGLE : shoulderAngle;
+    // elbowAngle = elbowAngle > ClimberConstants.ELBOW_MAX_ANGLE ? ClimberConstants.ELBOW_MAX_ANGLE : elbowAngle;
 
-    // Convert radians to ticks
-    System.out.println("angles: " + shoulderAngle + ", " + elbowAngle);
+    // // Convert radians to ticks
+    SmartDashboard.putString("angles", shoulderAngle + ", " + elbowAngle);
 
-    double shoulderPosition = (shoulderAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
-    double elbowPosition = (elbowAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
+    // double shoulderPosition = (shoulderAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
+    // double elbowPosition = (elbowAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
 
-    shoulderPosition *= ClimberConstants.SHOULDER_GB_RATIO;
-    elbowPosition *= ClimberConstants.ELBOW_GB_RATIO;
+    // shoulderPosition *= ClimberConstants.SHOULDER_GB_RATIO;
+    // elbowPosition *= ClimberConstants.ELBOW_GB_RATIO;
 
     // shoulderPosition += m_shoulderOffset;
     // elbowPosition += m_elbowOffset;
 
-    m_shoulder.set(TalonFXControlMode.Position, shoulderPosition);
-    m_elbow.set(TalonFXControlMode.Position, elbowPosition);
+    m_shoulder.set(TalonFXControlMode.Position, shoulderAngle);
+    m_elbow.set(TalonFXControlMode.Position, elbowAngle);
   }
 
-  public void controlWithInput(double xInput, double yInput) {
+  public void controlPointWithInput(double xInput, double yInput) {
     tPoint.x += xInput * ClimberConstants.MOVE_SPEED * .02;
     tPoint.y += yInput * ClimberConstants.MOVE_SPEED * .02;
   }
 
+  public void controlJointsWithInput(double shoulderInput, double elbowInput) {
+    tJointAngles[0] += shoulderInput * ClimberConstants.MOVE_SPEED * .02;
+    tJointAngles[1] += elbowInput * ClimberConstants.MOVE_SPEED * .02;
+  }
+
+  int pCount = 0;
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elbow", m_elbow.getSelectedSensorPosition());
     SmartDashboard.putNumber("Shoulder", m_shoulder.getSelectedSensorPosition());
     // double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
-    // setJointAngles(jointAngles);
+    if(pCount % 1 == 0)
+      setJointAngles(tJointAngles);
+
+    pCount ++;
 
     // * speed limiting near ELBOW soft limits. tolerance (distance when ramping starts) is 20000 rotations. speed at hard limits is 0.2 (percent output).
     double currentElbowPos = this.m_elbow.getSelectedSensorPosition();
