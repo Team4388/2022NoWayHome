@@ -336,7 +336,7 @@ public class RobotContainer {
       .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
       .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
-    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
 
     //   .whenPressed(new InstantCommand(() -> m_robotTurret.setDefaultCommand(null)))
     //   .whenPressed(new InstantCommand(() -> m_robotHood.setDefaultCommand(null)))
@@ -349,8 +349,8 @@ public class RobotContainer {
     //   .whenReleased(new InstantCommand(() -> m_robotHood.setDefaultCommand(
     //     new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood))));
 
-      // .whenPressed(new InstantCommand(() -> this.currentMode = CurrentMode.CLIMBER))
-      // .whenReleased(new InstantCommand(() -> this.currentMode = CurrentMode.TURRET));
+      .whenPressed(new InstantCommand(() -> this.currentMode = Mode.CLIMBER))
+      .whenReleased(new InstantCommand(() -> this.currentMode = Mode.SHOOTER));
       // .whenReleased(EnableClimber()));
       
     // control turret manual mode
