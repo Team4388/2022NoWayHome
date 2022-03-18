@@ -128,8 +128,8 @@ public class ClimberRewrite extends SubsystemBase {
   }
 
   public void setMotors(double shoulderOutput, double elbowOutput) {
-    m_shoulder.set(shoulderOutput);
-    m_elbow.set(elbowOutput);
+    m_shoulder.set(shoulderOutput * ClimberConstants.INPUT_MULTIPLIER);
+    m_elbow.set(elbowOutput * ClimberConstants.INPUT_MULTIPLIER);
   }
 
   public double[] getJointAngles() {
@@ -281,5 +281,9 @@ public class ClimberRewrite extends SubsystemBase {
 
   public static Point getClimberPosition(double[] jointAngles) {
     return getClimberPosition(jointAngles[0], jointAngles[1]);
+  }
+
+  public double getCurrent() {
+    return (this.m_elbow.getSupplyCurrent() + this.m_shoulder.getSupplyCurrent());
   }
 }
