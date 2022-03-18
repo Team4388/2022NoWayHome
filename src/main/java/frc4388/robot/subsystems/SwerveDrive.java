@@ -122,7 +122,7 @@ public class SwerveDrive extends SubsystemBase {
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d(m_gyro.getRotation2d().getRadians() + (Math.PI/2)))
+            rot * SwerveDriveConstants.ROTATION_SPEED, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2)))
         : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * 8);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
         chassisSpeeds);

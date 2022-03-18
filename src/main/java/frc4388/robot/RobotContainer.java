@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
 import com.pathplanner.lib.PathPlanner;
@@ -114,9 +115,10 @@ public class RobotContainer {
   public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   public final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
-  private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(30);
-  private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(31);
-  public final Climber m_robotClimber = new Climber(testElbowMotor);
+
+  private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(30);
+  private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(31);
+  public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
 
   // Controllers
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -145,7 +147,6 @@ public class RobotContainer {
    */
   public RobotContainer() {
     configureButtonBindings();
-    // testShoulderMotor.setNeutralMode(NeutralMode.Brake);
     /* Default Commands */
 
       // Swerve Drive with Input
@@ -170,9 +171,9 @@ public class RobotContainer {
     //                       m_robotBoomBoom, 
     //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
     
-    // m_robotClimber.setDefaultCommand(
-    //   new RunCommand(() -> m_robotClimber.runWithInput(getOperatorController().getRightY() * 0.6), m_robotClimber)
-    // );
+    m_robotClimber.setDefaultCommand(
+      new RunCommand(() -> m_robotClimber.runBothMotorsWithInputs(getDriverController().getLeftY() * 0.1, getDriverController().getRightY() * 0.1), m_robotClimber)
+    );
       // Storage Management
     /*m_robotStorage.setDefaultCommand(
         new RunCommand(() -> m_robotStorage.manageStorage(), 
@@ -185,7 +186,6 @@ public class RobotContainer {
     m_robotTurret.setDefaultCommand(
         new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
         m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
-
 
     m_robotHood.setDefaultCommand(
        new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY()), m_robotHood));
@@ -215,11 +215,19 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
       .whenPressed(m_robotSwerveDrive::resetGyro);
       // Left Bumper > Shift Down
-    new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
-        .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
-      // Right Bumper > Shift Up
-    new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-        .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+    // new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
+    //     .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+    //   // Right Bumper > Shift Up
+    // new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
+    //     .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+
+    new JoystickButton(getDriverController(), XboxController.Axis.kLeftTrigger.value)
+      .whileHeld(new RunCommand(() -> m_robotClimber.runShoulderWithInput(0.1), m_robotClimber))
+      .whenReleased(new RunCommand(() -> m_robotClimber.runShoulderWithInput(0.0)));
+      
+      new JoystickButton(getDriverController(), XboxController.Axis.kRightTrigger.value)
+      .whileHeld(new RunCommand(() -> m_robotClimber.runShoulderWithInput(-0.1), m_robotClimber))
+      .whenReleased(new RunCommand(() -> m_robotClimber.runShoulderWithInput(0.0)));
     
     // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
     // .whenPressed(() -> m_robotBoomBoom.increaseSpeed(0.025));
@@ -237,6 +245,8 @@ public class RobotContainer {
     //     .whenPressed(() -> m_robotMap.rightFront.reset())
     //     .whenPressed(() -> m_robotMap.leftBack.reset())
     //     .whenPressed(() -> m_robotMap.rightBack.reset()); 
+
+
 
     /* Operator Buttons */
 
