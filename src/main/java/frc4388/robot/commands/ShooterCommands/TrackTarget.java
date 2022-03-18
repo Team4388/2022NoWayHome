@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.opencv.core.Point;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -40,6 +41,10 @@ public class TrackTarget extends CommandBase {
   Pose2d pos = new Pose2d();
   ArrayList<Point> points = new ArrayList<>();
 
+  private boolean targetLocked = false;
+  private double velocityTolerance = 100.0;
+  private double hoodTolerance = 5.0;
+
   double m=0;
   double b=0;
   boolean isExecuted = false;
@@ -67,61 +72,67 @@ public class TrackTarget extends CommandBase {
   @Override
   public void execute() {
     //m_targetAngle = angleToCenter(x, y, m_drive.getRegGyro().getDegrees());
+    SmartDashboard.putBoolean("Target Locked", this.targetLocked);
+    
     try {
       m_visionOdometry.setLEDs(true);
       points = m_visionOdometry.getTargetPoints();
-
+      
       Point average = VisionOdometry.averagePoint(points);
-
+      
       for(Point point : points) {
         Vector2D difference = new Vector2D(point);
         difference.subtract(new Vector2D(average));
 
         if(difference.magnitude() < VisionConstants.POINTS_THRESHOLD)
-          points.remove(point);
+        points.remove(point);
       }
-
+      
       average = VisionOdometry.averagePoint(points);
       DesmosServer.putPoint("average", average);
-
+      
       for(int i = 0; i < points.size(); i++) {
         DesmosServer.putPoint("Point" + i, points.get(i));
       }
-
+      
       output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
       output *= 4;
       // output *= 0.5;
       DesmosServer.putDouble("output", output);
       m_turret.runTurretWithInput(output);
-
+      
       double y_rot = average.y / VisionConstants.LIME_VIXELS;
       y_rot *= Math.toRadians(VisionConstants.V_FOV);
       y_rot -= Math.toRadians(VisionConstants.V_FOV) / 2;
       y_rot += Math.toRadians(VisionConstants.LIME_ANGLE);
-
+      
       double distance = (VisionConstants.TARGET_HEIGHT - VisionConstants.LIME_HEIGHT) / Math.tan(y_rot);
       DesmosServer.putDouble("distance", distance);
-
+      
       updateRegressionDesmos();
       double regressedDistance = distanceRegression(distance);
       regressedDistance += VisionConstants.EDGE_TO_CENTER + VisionConstants.LIMELIGHT_RADIUS;
       DesmosServer.putDouble("distanceReg", regressedDistance);
-
-      //Vision odemetry circle fit based pose estimate
+      
+      //Vision odometry circle fit based pose estimate
       // Point targetOffset = m_visionOdometry.getTargetOffset();
       // DesmosServer.putPoint("targetOff", targetOffset);
-
+      
       vel = m_boomBoom.getVelocity(regressedDistance + 30);
       hood = m_boomBoom.getHood(regressedDistance + 30);
       // m_boomBoom.runDrumShooter(vel);
       m_boomBoom.runDrumShooterVelocityPID(vel);
       m_hood.runAngleAdjustPID(hood);
+      
+      double currentDrumVel = this.m_boomBoom.m_shooterFalconLeft.getSelectedSensorVelocity();
+      double currentHood = this.m_hood.getEncoderPosition();
+  
+      this.targetLocked = (Math.abs(currentDrumVel - vel) < velocityTolerance) && (Math.abs(currentHood - hood) < hoodTolerance);
 
       SmartDashboard.putNumber("Regressed Distance", regressedDistance);
       SmartDashboard.putNumber("Distance", distance);
       SmartDashboard.putNumber("Hood Target Angle Track", hood);
       SmartDashboard.putNumber("Vel Target Track", vel);
-
 
       // isExecuted = true;
     }
