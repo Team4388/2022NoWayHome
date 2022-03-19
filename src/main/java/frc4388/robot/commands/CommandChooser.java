@@ -32,8 +32,6 @@ public class CommandChooser extends CommandBase {
     this.b1 = bs1.getAsBoolean();
     this.b2 = bs2.getAsBoolean();
 
-    this.chosen = getChosen();
-
     Set<Subsystem> allReqs = c1.getRequirements();
     allReqs.addAll(c2.getRequirements());
     addRequirements((Subsystem[]) allReqs.toArray());
@@ -50,6 +48,7 @@ public class CommandChooser extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    this.chosen = getChosen();
     this.chosen.initialize();
   }
 
