@@ -36,7 +36,9 @@ public class Climber extends SubsystemBase {
   private WPI_Pigeon2 m_gyro;
 
   private Point tPoint;
+
   private double[] tJointAngles;
+  private double[] tJointSpeeds;
 
   private boolean groundRelative;
   private double shoulderSpeedLimiter;
@@ -52,9 +54,10 @@ public class Climber extends SubsystemBase {
     m_elbow.configFactoryDefault();
     m_elbow.setNeutralMode(NeutralMode.Brake);
 
-    tJointAngles = new double[] {m_shoulder.getSelectedSensorPosition(), m_elbow.getSelectedSensorPosition()};
+    setClimberPositionGains();
+    setClimberVelocityGains();
 
-    setClimberGains();
+    tJointAngles = new double[] {m_shoulder.getSelectedSensorPosition(), m_elbow.getSelectedSensorPosition()};
 
     // shoulderStartPosition = m_shoulder.getSelectedSensorPosition();
     // elbowStartPosition = m_elbow.getSelectedSensorPosition();
@@ -87,53 +90,77 @@ public class Climber extends SubsystemBase {
     this.elbowSpeedLimiter = 1.0;
   }
 
-  public void setClimberGains() {
-    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
-    m_shoulder.config_kF(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kP(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kI(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kD(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  public void setClimberPositionGains() {
+    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
+    m_shoulder.config_kF(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kP(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kI(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kD(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
 
-    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
-    m_elbow.config_kF(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kP(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kI(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kD(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
+    m_elbow.config_kF(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kP(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kI(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kD(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
   }
 
-  public void setClimberFeedForward(double shoulderF, double elbowF) {
-    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
-    m_shoulder.config_kF(ClimberConstants.SHOULDER_SLOT_IDX, shoulderF, ClimberConstants.CLIMBER_TIMEOUT_MS);
-
-    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
-    m_elbow.config_kF(ClimberConstants.ELBOW_SLOT_IDX, elbowF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  public void usePositionGains() {
+    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
+    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
   }
 
-  public void compensateFeedForArmAngles() {
-    double shoulderPosition = m_shoulder.getSelectedSensorPosition();
-    double elbowPosition = m_elbow.getSelectedSensorPosition();
+  public void setClimberVelocityGains() {
+    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_VELOCITY_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
+    m_shoulder.config_kF(ClimberConstants.SHOULDER_VELOCITY_SLOT_IDX, ClimberConstants.SHOULDER_VELOCITY_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kP(ClimberConstants.SHOULDER_VELOCITY_SLOT_IDX, ClimberConstants.SHOULDER_VELOCITY_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kI(ClimberConstants.SHOULDER_VELOCITY_SLOT_IDX, ClimberConstants.SHOULDER_VELOCITY_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_shoulder.config_kD(ClimberConstants.SHOULDER_VELOCITY_SLOT_IDX, ClimberConstants.SHOULDER_VELOCITY_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
 
-    double shoulderFeed = 0;
-    double elbowFeed = 0;
-
-    for(int i = 1; i < shoulderFeedMap.length; i++) {
-      if(shoulderFeedMap[i][0] > shoulderPosition) {
-        double percentDifference = (shoulderPosition - shoulderFeedMap[i-1][0]) / (shoulderFeedMap[i][0] - shoulderFeedMap[i-1][0]);
-        double feedDifference = shoulderFeedMap[i][1] - shoulderFeedMap[i-1][1];
-        shoulderFeed = (percentDifference * feedDifference) + shoulderFeedMap[i-1][1];
-      }
-    }
-
-    for(int i = 1; i < elbowFeedMap.length; i++) {
-      if(elbowFeedMap[i][0] > elbowPosition) {
-        double percentDifference = (elbowPosition - elbowFeedMap[i-1][0]) / (elbowFeedMap[i][0] - elbowFeedMap[i-1][0]);
-        double feedDifference = elbowFeedMap[i][1] - elbowFeedMap[i-1][1];
-        elbowFeed = (percentDifference * feedDifference) + elbowFeedMap[i-1][1];
-      }
-    }
-
-    setClimberFeedForward(shoulderFeed, elbowFeed);
+    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_VELOCITY_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
+    m_elbow.config_kF(ClimberConstants.ELBOW_VELOCITY_SLOT_IDX, ClimberConstants.ELBOW_VELOCITY_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kP(ClimberConstants.ELBOW_VELOCITY_SLOT_IDX, ClimberConstants.ELBOW_VELOCITY_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kI(ClimberConstants.ELBOW_VELOCITY_SLOT_IDX, ClimberConstants.ELBOW_VELOCITY_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+    m_elbow.config_kD(ClimberConstants.ELBOW_VELOCITY_SLOT_IDX, ClimberConstants.ELBOW_VELOCITY_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
   }
+
+  public void useVelocityGains() {
+    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_VELOCITY_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
+    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_VELOCITY_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
+  }
+
+  // public void setClimberFeedForward(double shoulderF, double elbowF) {
+  //   m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
+  //   m_shoulder.config_kF(ClimberConstants.SHOULDER_SLOT_IDX, shoulderF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+
+  //   m_elbow.selectProfileSlot(ClimberConstants.ELBOW_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
+  //   m_elbow.config_kF(ClimberConstants.ELBOW_SLOT_IDX, elbowF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  // }
+
+  // public void compensateFeedForArmAngles() {
+  //   double shoulderPosition = m_shoulder.getSelectedSensorPosition();
+  //   double elbowPosition = m_elbow.getSelectedSensorPosition();
+
+  //   double shoulderFeed = 0;
+  //   double elbowFeed = 0;
+
+  //   for(int i = 1; i < shoulderFeedMap.length; i++) {
+  //     if(shoulderFeedMap[i][0] > shoulderPosition) {
+  //       double percentDifference = (shoulderPosition - shoulderFeedMap[i-1][0]) / (shoulderFeedMap[i][0] - shoulderFeedMap[i-1][0]);
+  //       double feedDifference = shoulderFeedMap[i][1] - shoulderFeedMap[i-1][1];
+  //       shoulderFeed = (percentDifference * feedDifference) + shoulderFeedMap[i-1][1];
+  //     }
+  //   }
+
+  //   for(int i = 1; i < elbowFeedMap.length; i++) {
+  //     if(elbowFeedMap[i][0] > elbowPosition) {
+  //       double percentDifference = (elbowPosition - elbowFeedMap[i-1][0]) / (elbowFeedMap[i][0] - elbowFeedMap[i-1][0]);
+  //       double feedDifference = elbowFeedMap[i][1] - elbowFeedMap[i-1][1];
+  //       elbowFeed = (percentDifference * feedDifference) + elbowFeedMap[i-1][1];
+  //     }
+  //   }
+
+  //   setClimberFeedForward(shoulderFeed, elbowFeed);
+  // }
 
   public void setMotors(double shoulderOutput, double elbowOutput) {
     m_shoulder.set(shoulderOutput * ClimberConstants.INPUT_MULTIPLIER * this.shoulderSpeedLimiter);
@@ -160,7 +187,7 @@ public class Climber extends SubsystemBase {
     // elbowAngle = elbowAngle > ClimberConstants.ELBOW_MAX_ANGLE ? ClimberConstants.ELBOW_MAX_ANGLE : elbowAngle;
 
     // // Convert radians to ticks
-    SmartDashboard.putString("angles", shoulderAngle + ", " + elbowAngle);
+    // System.out.println("angles: " + shoulderAngle + ", " + elbowAngle);
 
     // double shoulderPosition = (shoulderAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
     // double elbowPosition = (elbowAngle * (Constants.TICKS_PER_ROTATION_FX/2.d)) / Math.PI;
@@ -168,16 +195,43 @@ public class Climber extends SubsystemBase {
     // shoulderPosition *= ClimberConstants.SHOULDER_GB_RATIO;
     // elbowPosition *= ClimberConstants.ELBOW_GB_RATIO;
 
-    // shoulderPosition += m_shoulderOffset;
-    // elbowPosition += m_elbowOffset;
+    // // shoulderPosition += m_shoulderOffset;
+    // // elbowPosition += m_elbowOffset;
 
     m_shoulder.set(TalonFXControlMode.Position, shoulderAngle);
     m_elbow.set(TalonFXControlMode.Position, elbowAngle);
   }
 
-  public void controlPointWithInput(double xInput, double yInput) {
-    tPoint.x += xInput * ClimberConstants.MOVE_SPEED * .02;
-    tPoint.y += yInput * ClimberConstants.MOVE_SPEED * .02;
+  public void setJointSpeeds(double[] speeds) {
+    setJointSpeeds(speeds[0], speeds[1]);
+  }
+
+  public void setJointSpeeds(double shoulderSpeed, double elbowSpeed) {
+    m_shoulder.set(TalonFXControlMode.Velocity, shoulderSpeed);
+    m_elbow.set(TalonFXControlMode.Velocity, elbowSpeed);
+  }
+
+  boolean movingPrev = false;
+  public void controlWithInput(double xInput, double yInput) {
+    boolean moving = xInput != 0 && yInput != 0;
+
+    if(movingPrev != moving) {
+      if(moving) {
+        useVelocityGains();
+      } else {
+        usePositionGains();
+        tJointAngles = new double[] {m_shoulder.getSelectedSensorPosition(), m_elbow.getSelectedSensorPosition()};
+      }
+    }
+
+    if(moving) {
+      double[] jointSpeeds = new double[] {xInput * ClimberConstants.MOVE_SPEED, yInput * ClimberConstants.MOVE_SPEED};
+      setJointSpeeds(jointSpeeds);
+    } else {
+      setJointAngles(tJointAngles);
+    }
+
+    movingPrev = moving;
   }
 
   public void controlJointsWithInput(double shoulderInput, double elbowInput) {

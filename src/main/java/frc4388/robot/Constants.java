@@ -202,14 +202,19 @@ public final class Constants {
     public static final double ELBOW_REVERSE_SOFT_LIMIT = 0;
 
     // PID Constants
-    public static final int SHOULDER_SLOT_IDX = 0;
+    public static final int SHOULDER_POSITION_SLOT_IDX = 0;
+    public static final int SHOULDER_VELOCITY_SLOT_IDX = 1;
     public static final int SHOULDER_PID_LOOP_IDX = 1;
 
-    public static final int ELBOW_SLOT_IDX = 0;
+    public static final int ELBOW_POSITION_SLOT_IDX = 0;
+    public static final int ELBOW_VELOCITY_SLOT_IDX = 1;
     public static final int ELBOW_PID_LOOP_IDX = 1;
 
-    public static final Gains SHOULDER_GAINS = new Gains(0.5, 0.0, 0.0, 0.0, 0, 0.2);
-    public static final Gains ELBOW_GAINS = new Gains(0.5, 1.0, 20.0, 0.0, 0, 1.0); //Prev P 1   d 0.4
+    public static final Gains SHOULDER_POSITION_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
+    public static final Gains ELBOW_POSITION_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
+
+    public static final Gains SHOULDER_VELOCITY_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
+    public static final Gains ELBOW_VELOCITY_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
 
