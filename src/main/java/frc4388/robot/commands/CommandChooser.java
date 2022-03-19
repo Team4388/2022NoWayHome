@@ -4,69 +4,62 @@
 
 package frc4388.robot.commands;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class CommandChooser extends CommandBase {
 
-  private Command c1;
-  private Command c2;
-
-  private Boolean b1;
-  private Boolean b2;
+  private HashMap<Command, BooleanSupplier> commandMap;
   
-  private Command chosen;
+  // // private Command chosen;
 
   /** Creates a new CommandChooser. */
-  public CommandChooser(Command c1, Command c2, BooleanSupplier bs1, BooleanSupplier bs2) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  public CommandChooser(HashMap<Command, BooleanSupplier> commandMap) {
+    this.commandMap = commandMap;
 
-    this.c1 = c1;
-    this.c2 = c2;
+    Set<Subsystem> allReqs = Collections.emptySet();
 
-    this.b1 = bs1.getAsBoolean();
-    this.b2 = bs2.getAsBoolean();
+    for(Command command : commandMap.keySet())
+      allReqs.addAll(command.getRequirements());
 
-    Set<Subsystem> allReqs = c1.getRequirements();
-    allReqs.addAll(c2.getRequirements());
     addRequirements((Subsystem[]) allReqs.toArray());
-  }
-
-  public Command getChosen() {
-    if (this.b1) {
-      return this.c1;
-    } else {
-      return this.c2;
-    }
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.chosen = getChosen();
-    this.chosen.initialize();
+    for(Command command : commandMap.keySet())
+      if(commandMap.get(command).getAsBoolean()) command.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.chosen.execute();
+    for(Command command : commandMap.keySet())
+      if(commandMap.get(command).getAsBoolean()) command.execute();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.chosen.end(interrupted);
+    for(Command command : commandMap.keySet())
+      if(commandMap.get(command).getAsBoolean()) command.end(interrupted);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.chosen.isFinished();
+    boolean finished = true;
+
+    for(Command command : commandMap.keySet())
+      if(commandMap.get(command).getAsBoolean()) finished &= command.isFinished();
+    
+    return finished;
   }
 }

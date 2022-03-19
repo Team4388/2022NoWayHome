@@ -19,9 +19,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -379,10 +382,14 @@ public class RobotContainer {
       // .whenPressed(new RunTurretOrClimberAuto(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry, m_robotClimber, m_robotClaws))
 
       // * CommandChooser with BooleanSuppliers
-      .whenPressed(new CommandChooser(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), 
-                                      new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), 
-                                      () -> this.currentControlMode.equals(SubsystemMode.CLIMBER),
-                                      () -> this.currentControlMode.equals(SubsystemMode.SHOOTER)))
+      .whenPressed(new CommandChooser(new HashMap<Command, BooleanSupplier>() {{
+        put(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), () -> currentControlMode.equals(SubsystemMode.CLIMBER));
+        put(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), () -> currentControlMode.equals(SubsystemMode.SHOOTER));
+      }}))
+      // .whenPressed(new CommandChooser(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), 
+      //                                 new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), 
+      //                                 () -> this.currentControlMode.equals(SubsystemMode.CLIMBER),
+      //                                 () -> this.currentControlMode.equals(SubsystemMode.SHOOTER)))
 
       .whenReleased(new InstantCommand(() -> {
         if (this.currentControlMode.equals(SubsystemMode.SHOOTER)) { this.currentTurretMode = ControlMode.AUTONOMOUS; }
