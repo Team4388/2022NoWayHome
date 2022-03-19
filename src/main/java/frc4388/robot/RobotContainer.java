@@ -199,9 +199,9 @@ public class RobotContainer {
     //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
 
     // Storage Management
-    m_robotStorage.setDefaultCommand(
-        new RunCommand(() -> m_robotStorage.manageStorage(), 
-        m_robotStorage).withName("Storage manageStorage defaultCommand"));
+    // m_robotStorage.setDefaultCommand(
+    //     new RunCommand(() -> m_robotStorage.manageStorage(), 
+    //     m_robotStorage).withName("Storage manageStorage defaultCommand"));
 
       // Serializer Management
     m_robotSerializer.setDefaultCommand(

@@ -175,7 +175,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void setJointAngles(double[] angles) {
-    System.out.println(Arrays.toString(angles));
+    // System.out.println(Arrays.toString(angles));
     setJointAngles(angles[0], angles[1]);
   }
 

@@ -60,8 +60,8 @@ public class ManageStorage extends CommandBase {
   }
 
   private void checkColor() {
-    this.alliance = this.storage.getColor();
-    rightColor = this.alliance.equals(Robot.alliance);
+    // this.alliance = this.storage.getColor();
+    // rightColor = this.alliance.equals(Robot.alliance);
   }
 
   // Called once the command ends or is interrupted.
