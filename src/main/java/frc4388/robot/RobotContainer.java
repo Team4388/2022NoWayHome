@@ -68,6 +68,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.commands.CommandChooser;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
 import frc4388.robot.commands.ButtonBoxCommands.RunTurretOrClimberAuto;
 import frc4388.robot.commands.ClimberCommands.RunClaw;
@@ -154,8 +155,8 @@ public class RobotContainer {
   public static boolean softLimits = true;
 
   // control mode switching
-  private enum ControlMode { SHOOTER, CLIMBER };
-  private ControlMode currentControlMode = ControlMode.SHOOTER;
+  public static enum ControlMode { SHOOTER, CLIMBER };
+  public static ControlMode currentControlMode = ControlMode.SHOOTER;
 
   // turret mode switching
   private enum TurretMode { MANUAL, AUTONOMOUS };
@@ -362,19 +363,20 @@ public class RobotContainer {
       }))
 
       // * custom Command inside InstantCommand
-      .whenPressed(new InstantCommand(() -> {
-        if (this.currentControlMode.equals(ControlMode.SHOOTER)) { new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}); }
-        if (this.currentControlMode.equals(ControlMode.CLIMBER)) { new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry); }
-      })
-        .until(() -> this.currentClimberMode.equals(ClimberMode.MANUAL)))
+      // .whenPressed(new InstantCommand(() -> {
+      //   if (this.currentControlMode.equals(ControlMode.CLIMBER)) { new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}); }
+      //   if (this.currentControlMode.equals(ControlMode.SHOOTER)) { new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry); }
+      // })
+      //   .until(() -> this.currentClimberMode.equals(ClimberMode.MANUAL)))
       
       // * external RunTurretOrClimberAutos command, which runs either one (conditionally) based on currentControlMode
-      .whenPressed(new RunTurretOrClimberAuto(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry, m_robotClimber, m_robotClaws))
+      // .whenPressed(new RunTurretOrClimberAuto(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry, m_robotClimber, m_robotClaws))
 
       // * CommandChooser with BooleanSuppliers
-
-      // .whenPressed(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}).until(() -> this.currentClimberMode.equals(ClimberMode.MANUAL)))
-      // .whenPressed(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry).until(() -> this.currentTurretMode.equals(TurretMode.MANUAL)))
+      .whenPressed(new CommandChooser(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), 
+                                      new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), 
+                                      () -> this.currentControlMode.equals(ControlMode.CLIMBER),
+                                      () -> this.currentControlMode.equals(ControlMode.SHOOTER)))
 
       .whenReleased(new InstantCommand(() -> {
         if (this.currentControlMode.equals(ControlMode.SHOOTER)) { this.currentTurretMode = TurretMode.MANUAL; }
