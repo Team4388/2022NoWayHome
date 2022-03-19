@@ -173,8 +173,8 @@ public class RobotContainer {
 
     // IK command
     m_robotClimber.setDefaultCommand(
-        new RunCommand(() -> m_robotClimber.controlJointsWithInput(getOperatorController().getLeftX(),
-            getOperatorController().getRightY()), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
+        new RunCommand(() -> m_robotClimber.setJointSpeeds(getOperatorController().getLeftX() * 10000,
+            getOperatorController().getRightY() * 10000), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
     
     // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
@@ -226,11 +226,11 @@ public class RobotContainer {
     //     if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotHood.runHood(0); }
     //    }, m_robotHood));
 
-    m_robotClimber.setDefaultCommand(
-      // new RunCommand(() -> {
-      //   if (this.currentMode.equals(Mode.SHOOTER)) { m_robotClimber.setMotors(0, 0); }
-        /*if (this.currentMode.equals(Mode.CLIMBER)) {  */new RunCommand(() -> m_robotClimber.controlJointsWithInput(getOperatorController().getLeftX(),
-          getOperatorController().getRightY()), m_robotClimber).withName("Climber controlWithInput defaultCommand")); //}
+    // m_robotClimber.setDefaultCommand(
+    //   // new RunCommand(() -> {
+    //   //   if (this.currentMode.equals(Mode.SHOOTER)) { m_robotClimber.setMotors(0, 0); }
+    //     /*if (this.currentMode.equals(Mode.CLIMBER)) {  */new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getLeftX(),
+    //       getOperatorController().getRightY()), m_robotClimber).withName("Climber controlWithInput defaultCommand")); //}
       // }, m_robotClimber));
 
        // m_robotTurret.setDefaultCommand(

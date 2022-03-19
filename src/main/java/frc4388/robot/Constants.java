@@ -36,7 +36,7 @@ public final class Constants {
   public static final double TICKS_PER_ROTATION_FX = 2048;
 
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 4.0;
+    public static final double ROTATION_SPEED = 3.0;
     public static final double WIDTH = 23.5;
     public static final double HEIGHT = 23.5;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
@@ -203,18 +203,18 @@ public final class Constants {
 
     // PID Constants
     public static final int SHOULDER_POSITION_SLOT_IDX = 0;
-    public static final int SHOULDER_VELOCITY_SLOT_IDX = 1;
-    public static final int SHOULDER_PID_LOOP_IDX = 1;
+    public static final int SHOULDER_VELOCITY_SLOT_IDX = 0;
+    public static final int SHOULDER_PID_LOOP_IDX = 0;
 
     public static final int ELBOW_POSITION_SLOT_IDX = 0;
-    public static final int ELBOW_VELOCITY_SLOT_IDX = 1;
-    public static final int ELBOW_PID_LOOP_IDX = 1;
+    public static final int ELBOW_VELOCITY_SLOT_IDX = 0;
+    public static final int ELBOW_PID_LOOP_IDX = 0;
 
-    public static final Gains SHOULDER_POSITION_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
-    public static final Gains ELBOW_POSITION_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
+    public static final Gains SHOULDER_POSITION_GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0, 0.2);
+    public static final Gains ELBOW_POSITION_GAINS = new Gains(0.0, 0.0, 0.0, 0.0, 0, 0.2);
 
-    public static final Gains SHOULDER_VELOCITY_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
-    public static final Gains ELBOW_VELOCITY_GAINS = new Gains(1.0, 0.0, 0.1, 0.0, 0, 0.2);
+    public static final Gains SHOULDER_VELOCITY_GAINS = new Gains(0.2, 0.0, 5.0, 0.0, 0, 0.2);
+    public static final Gains ELBOW_VELOCITY_GAINS = new Gains(0.3, 0.005, 5.0, 0.0, 0, 1.0);
 
     public static final int CLIMBER_TIMEOUT_MS = 50;
 

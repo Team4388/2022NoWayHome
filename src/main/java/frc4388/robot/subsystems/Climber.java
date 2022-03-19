@@ -54,8 +54,9 @@ public class Climber extends SubsystemBase {
     m_elbow.configFactoryDefault();
     m_elbow.setNeutralMode(NeutralMode.Brake);
 
-    setClimberPositionGains();
+    // setClimberPositionGains();
     setClimberVelocityGains();
+    useVelocityGains();
 
     tJointAngles = new double[] {m_shoulder.getSelectedSensorPosition(), m_elbow.getSelectedSensorPosition()};
 
@@ -90,24 +91,24 @@ public class Climber extends SubsystemBase {
     this.elbowSpeedLimiter = 1.0;
   }
 
-  public void setClimberPositionGains() {
-    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
-    m_shoulder.config_kF(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kP(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kI(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_shoulder.config_kD(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  // public void setClimberPositionGains() {
+  //   m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
+  //   m_shoulder.config_kF(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  //   m_shoulder.config_kP(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  //   m_shoulder.config_kI(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  //   m_shoulder.config_kD(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_POSITION_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
 
-    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
-    m_elbow.config_kF(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kP(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kI(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
-    m_elbow.config_kD(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
-  }
+  //   m_elbow.selectProfileSlot(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
+  //   m_elbow.config_kF(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kF, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  //   m_elbow.config_kP(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kP, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  //   m_elbow.config_kI(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kI, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  //   m_elbow.config_kD(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_POSITION_GAINS.kD, ClimberConstants.CLIMBER_TIMEOUT_MS);
+  // }
 
-  public void usePositionGains() {
-    m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
-    m_elbow.selectProfileSlot(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
-  }
+  // public void usePositionGains() {
+  //   m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_POSITION_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
+  //   m_elbow.selectProfileSlot(ClimberConstants.ELBOW_POSITION_SLOT_IDX, ClimberConstants.ELBOW_PID_LOOP_IDX);
+  // }
 
   public void setClimberVelocityGains() {
     m_shoulder.selectProfileSlot(ClimberConstants.SHOULDER_VELOCITY_SLOT_IDX, ClimberConstants.SHOULDER_PID_LOOP_IDX);
@@ -198,8 +199,8 @@ public class Climber extends SubsystemBase {
     // // shoulderPosition += m_shoulderOffset;
     // // elbowPosition += m_elbowOffset;
 
-    m_shoulder.set(TalonFXControlMode.Position, shoulderAngle);
-    m_elbow.set(TalonFXControlMode.Position, elbowAngle);
+    // m_shoulder.set(TalonFXControlMode.Position, shoulderAngle);
+    // m_elbow.set(TalonFXControlMode.Position, elbowAngle);
   }
 
   public void setJointSpeeds(double[] speeds) {
@@ -212,15 +213,18 @@ public class Climber extends SubsystemBase {
   }
 
   boolean movingPrev = false;
+  boolean moving;
   public void controlWithInput(double xInput, double yInput) {
-    boolean moving = xInput != 0 && yInput != 0;
+    moving = xInput != 0 || yInput != 0;
 
     if(movingPrev != moving) {
       if(moving) {
         useVelocityGains();
+        SmartDashboard.putString("Climber Gains", "Velocity");
       } else {
-        usePositionGains();
+        // usePositionGains();
         tJointAngles = new double[] {m_shoulder.getSelectedSensorPosition(), m_elbow.getSelectedSensorPosition()};
+        SmartDashboard.putString("Climber Gains", "Position");
       }
     }
 
@@ -242,13 +246,15 @@ public class Climber extends SubsystemBase {
   int pCount = 0;
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("Moving", moving);
+    SmartDashboard.putBoolean("MovingPrev", movingPrev);
     SmartDashboard.putNumber("Elbow", m_elbow.getSelectedSensorPosition());
     SmartDashboard.putNumber("Shoulder", m_shoulder.getSelectedSensorPosition());
     // double[] jointAngles = getTargetJointAngles(tPoint, 0.d);
-    if(pCount % 1 == 0)
-      setJointAngles(tJointAngles);
+    // if(pCount % 1 == 0)
+    //   setJointAngles(tJointAngles);
 
-    pCount ++;
+    // pCount ++;
 
     // * speed limiting near ELBOW soft limits. tolerance (distance when ramping starts) is 20000 rotations. speed at hard limits is 0.2 (percent output).
     double currentElbowPos = this.m_elbow.getSelectedSensorPosition();

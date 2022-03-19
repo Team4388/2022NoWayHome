@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -116,7 +117,7 @@ public class SwerveDrive extends SubsystemBase {
     Translation2d speed = new Translation2d(leftX, leftY);
     speed = speed.times(speed.getNorm() * speedAdjust);
     if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightX, rightY);
+      rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0,1));
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
     double xSpeedMetersPerSecond = speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
@@ -199,9 +200,12 @@ public class SwerveDrive extends SubsystemBase {
    * 
    * @return Rotation2d object holding current gyro in radians
    */
-  public Rotation2d getRegGyro() {
-    double regCur = 0.6552670369 + m_gyro.getRotation2d().getDegrees() * 0.9926871527;
-    return new Rotation2d(regCur * Math.PI / 180);
+  public Rotation2d getRegGyro() { 
+    // * test chassis regression
+    // double regCur = 0.6552670369 + m_gyro.getRotation2d().getDegrees() * 0.9926871527;
+    // * new robot regression
+    double regCur = 0.2507023948 + m_gyro.getRotation2d().getDegrees() * 0.999034743;
+    return new Rotation2d(Math.toRadians(regCur));
   }
 
   /**
