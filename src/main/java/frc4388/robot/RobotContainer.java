@@ -69,7 +69,6 @@ import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
-import frc4388.robot.commands.ButtonBoxCommands.RunTurretOrClimberAuto;
 import frc4388.robot.commands.ClimberCommands.RunClaw;
 import frc4388.robot.commands.ClimberCommands.RunClimberPath;
 // import frc4388.robot.commands.ButtonBoxCommands.TurretManual;
