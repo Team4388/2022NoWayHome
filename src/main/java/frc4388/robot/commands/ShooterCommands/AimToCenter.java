@@ -42,7 +42,7 @@ public class AimToCenter extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_targetAngle = angleToCenter(x, y, m_drive.getRegGyro().getDegrees());
+    m_targetAngle = (aaravAngleToCenter(x, y, m_drive.getRegGyro().getDegrees())) % 360;
     System.out.println("Target Angle" + m_targetAngle);
     m_turret.runShooterRotatePID(m_targetAngle);
 
@@ -62,12 +62,13 @@ public class AimToCenter extends CommandBase {
   }
 
   public static double aaravAngleToCenter(double x, double y, double gyro) {
-    double exp = Math.toDegrees(Math.atan(y/x)) - gyro;
+    double yes = 360 - gyro;
+    double exp = Math.toDegrees(Math.atan(y/x)) - yes;
     if (x > 0) { return exp; }
     if (x < 0) { return (180 + exp); }
 
-    if (x == 0 && y > 0) { return (90 - gyro); }
-    if (x == 0 && y < 0) { return (-90 - gyro); }
+    if (x == 0 && y > 0) { return (90 - yes); }
+    if (x == 0 && y < 0) { return (-90 - yes); }
 
     System.out.println("Invalid case.");
     return 0;
