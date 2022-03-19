@@ -20,7 +20,7 @@ public class CommandChooser extends CommandBase {
   private Boolean b1;
   private Boolean b2;
   
-  private Command chosen;
+  private Command theChosenOne;
 
   /** Creates a new CommandChooser. */
   public CommandChooser(Command c1, Command c2, BooleanSupplier bs1, BooleanSupplier bs2) {
@@ -37,7 +37,7 @@ public class CommandChooser extends CommandBase {
     addRequirements((Subsystem[]) allReqs.toArray());
   }
 
-  public Command getChosen() {
+  public Command getTheChosenOne() {
     if (this.b1) {
       return this.c1;
     } else {
@@ -48,25 +48,25 @@ public class CommandChooser extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    this.chosen = getChosen();
-    this.chosen.initialize();
+    this.theChosenOne = getTheChosenOne();
+    this.theChosenOne.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.chosen.execute();
+    this.theChosenOne.execute();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    this.chosen.end(interrupted);
+    this.theChosenOne.end(interrupted);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.chosen.isFinished();
+    return this.theChosenOne.isFinished();
   }
 }
