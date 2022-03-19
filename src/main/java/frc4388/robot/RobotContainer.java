@@ -359,6 +359,10 @@ public class RobotContainer {
     // toggle manual mode and autonomous mode based on the current control mode
     new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
 
+    .whenPressed(new InstantCommand(() -> {
+      if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { m_robotTurret.gotoZero(); }
+    }, m_robotTurret))
+
       .whenPressed(new InstantCommand(() -> {
         if (this.currentControlMode.equals(SubsystemMode.SHOOTER)) { this.currentTurretMode = ControlMode.MANUAL; } 
         if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { this.currentClimberMode = ControlMode.AUTONOMOUS; }
