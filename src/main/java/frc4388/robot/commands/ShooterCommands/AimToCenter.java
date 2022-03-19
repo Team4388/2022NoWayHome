@@ -61,6 +61,18 @@ public class AimToCenter extends CommandBase {
     return (angle - 360);
   }
 
+  public static double aaravAngleToCenter(double x, double y, double gyro) {
+    double exp = Math.toDegrees(Math.atan(y/x)) - gyro;
+    if (x > 0) { return exp; }
+    if (x < 0) { return (180 + exp); }
+
+    if (x == 0 && y > 0) { return (90 - gyro); }
+    if (x == 0 && y < 0) { return (-90 - gyro); }
+
+    System.out.println("Invalid case.");
+    return 0;
+  }
+
   /**
    * Checks if in deadzone.
    * @param angle Angle to check.
