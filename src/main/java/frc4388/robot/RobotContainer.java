@@ -273,8 +273,10 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
         .whileHeld(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry))
         .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
-
     
+        new JoystickButton(getDriverController(), XboxController.Button.kY.value)
+        .whileHeld(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-45), m_robotTurret))
+        .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
 
     /* Operator Buttons */
 

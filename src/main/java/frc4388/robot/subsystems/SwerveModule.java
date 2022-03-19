@@ -79,6 +79,7 @@ public class SwerveModule extends SubsystemBase {
     // driveMotor.configAllSettings(driveTalonFXConfiguration);
 
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
+    canCoderConfiguration.sensorCoefficient = 0.087890625;
     canCoderConfiguration.magnetOffsetDegrees = offset;
     canCoderConfiguration.sensorDirection = true;
     canCoder.configAllSettings(canCoderConfiguration);
@@ -90,9 +91,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private Rotation2d getAngle() {
-    // Note: This assumes the CANCoders are setup with the default feedback
-    // coefficient
-    // and the sensor value reports degrees.
+    // ! Note: This assumes the CANCoders are setup with the default feedback coefficient and the sensor value reports degrees.
     return Rotation2d.fromDegrees(canCoder.getAbsolutePosition());
   }
 

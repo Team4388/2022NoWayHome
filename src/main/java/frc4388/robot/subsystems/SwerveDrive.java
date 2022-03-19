@@ -36,10 +36,10 @@ public class SwerveDrive extends SubsystemBase {
 
   public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
 
-  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(-halfWidth));
-  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfHeight), Units.inchesToMeters(halfWidth));
-  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(-halfWidth));
-  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfHeight), Units.inchesToMeters(halfWidth));
+  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfWidth), Units.inchesToMeters(-halfHeight));
+  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfWidth), Units.inchesToMeters(halfHeight));
+  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfWidth), Units.inchesToMeters(-halfHeight));
+  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfWidth), Units.inchesToMeters(halfHeight));
 
   public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation,
       m_backLeftLocation, m_backRightLocation);
@@ -48,7 +48,7 @@ public class SwerveDrive extends SubsystemBase {
   public WPI_Pigeon2 m_gyro;
 
   public SwerveDrivePoseEstimator m_poseEstimator;
-  public SwerveDriveOdometry m_odometry;
+  // public SwerveDriveOdometry m_odometry;
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
@@ -69,14 +69,14 @@ public class SwerveDrive extends SubsystemBase {
     modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
     
     m_poseEstimator = new SwerveDrivePoseEstimator(
-        m_gyro.getRotation2d(),
+        getRegGyro(),//m_gyro.getRotation2d(),
         new Pose2d(),
         m_kinematics,
         VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),  // TODO: tune
         VecBuilder.fill(Units.degreesToRadians(1)),            // TODO: tune
         VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
 
-    m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
+    // m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
 
     m_gyro.reset();
     SmartDashboard.putData("Field", m_field);
@@ -160,7 +160,7 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Yaw (0 to 360)", m_gyro.getYaw() % 360);
 
-    m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     super.periodic();
   }
 
@@ -172,9 +172,9 @@ public class SwerveDrive extends SubsystemBase {
 
     // chassis speeds
     // TODO: find the actual max velocity in m/s of the robot in fast mode to have accurate chassis speeds
-    // SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
-    // SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
   }
 
   /**

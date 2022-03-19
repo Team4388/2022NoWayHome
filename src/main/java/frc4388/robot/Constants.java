@@ -37,26 +37,26 @@ public final class Constants {
 
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 3.0;
-    public static final double WIDTH = 23.5;
-    public static final double HEIGHT = 23.5;
+    public static final double WIDTH = 23.75;
+    public static final double HEIGHT = 23.75;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
     public static final double MAX_SPEED_FEET_PER_SEC = 20; // TODO: redundant constant?
     public static final double SPEED_FEET_PER_SECOND_AT_FULL_POWER = 20; // TODO: redundant constant?
 
     // IDs
-    public static final int LEFT_FRONT_STEER_CAN_ID = 2; //
-    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3; //
-    public static final int RIGHT_FRONT_STEER_CAN_ID = 4; //
-    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5; //
-    public static final int LEFT_BACK_STEER_CAN_ID = 6; //
-    public static final int LEFT_BACK_WHEEL_CAN_ID = 7; //
-    public static final int RIGHT_BACK_STEER_CAN_ID = 8; //
-    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9; //
-    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10; //
-    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11; //
-    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;//
-    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13; //
+    public static final int LEFT_FRONT_STEER_CAN_ID = 2;           // *
+    public static final int LEFT_FRONT_WHEEL_CAN_ID = 3;           // *
+    public static final int RIGHT_FRONT_STEER_CAN_ID = 4;          // *
+    public static final int RIGHT_FRONT_WHEEL_CAN_ID = 5;          // *
+    public static final int LEFT_BACK_STEER_CAN_ID = 6;            // *
+    public static final int LEFT_BACK_WHEEL_CAN_ID = 7;            // *
+    public static final int RIGHT_BACK_STEER_CAN_ID = 8;           // *
+    public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;           // *
+    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;  // *
+    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11; // *
+    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;   // *
+    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;  // *
     public static final int GYRO_ID = 14;
 
     // offsets are in degrees

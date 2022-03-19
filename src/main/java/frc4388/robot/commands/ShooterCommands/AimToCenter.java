@@ -4,6 +4,7 @@
 
 package frc4388.robot.commands.ShooterCommands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.VisionConstants;
@@ -35,15 +36,18 @@ public class AimToCenter extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    x = m_drive.getOdometry().getX();
-    y = m_drive.getOdometry().getY();
+    x = -m_drive.getOdometry().getY();
+    y = -m_drive.getOdometry().getX();
+
+    SmartDashboard.putNumber("trans x", x);
+    SmartDashboard.putNumber("trans y", y);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_targetAngle = (aaravAngleToCenter(x, y, m_drive.getRegGyro().getDegrees())) % 360;
-    System.out.println("Target Angle" + m_targetAngle);
+    m_targetAngle = (aaravAngleToCenter(x, y, m_drive.getOdometry().getRotation().getDegrees())) % 360;
+    SmartDashboard.putNumber("Target Angle", m_targetAngle);
     m_turret.runShooterRotatePID(m_targetAngle);
 
     // Check if limelight is within range (comment out to disable vision odo)
@@ -62,15 +66,17 @@ public class AimToCenter extends CommandBase {
   }
 
   public static double aaravAngleToCenter(double x, double y, double gyro) {
-    double yes = 360 - gyro;
-    double exp = Math.toDegrees(Math.atan(y/x)) - yes;
-    if (x > 0) { return exp; }
-    if (x < 0) { return (180 + exp); }
+    
+    double actualGyro = -gyro + 90;
+    
+    double exp = Math.toDegrees(Math.atan(y/-x)) - actualGyro;
+    if (-x > 0) { return (180 + exp); }
+    if (-x < 0) { return (360 + exp); }
 
-    if (x == 0 && y > 0) { return (90 - yes); }
-    if (x == 0 && y < 0) { return (-90 - yes); }
+    if (x == 0 && y > 0) { return (270 - actualGyro); }
+    if (x == 0 && y < 0) { return (90 - actualGyro); }
 
-    System.out.println("Invalid case.");
+    System.err.println("Invalid case.");
     return 0;
   }
 

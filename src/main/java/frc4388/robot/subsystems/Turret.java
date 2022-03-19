@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.commands.ShooterCommands.Shoot;
+import frc4388.robot.subsystems.BoomBoom.ShooterTableEntry;
 import frc4388.utility.Gains;
 
 public class Turret extends SubsystemBase {
@@ -195,6 +196,15 @@ public class Turret extends SubsystemBase {
   }
 
   public void runShooterRotatePID(double targetAngle) {
+
+    double softMid = (ShooterConstants.TURRET_FORWARD_SOFT_LIMIT - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) / 2;
+
+    targetAngle = (targetAngle % 360);
+
+    if (targetAngle > softMid) {
+      targetAngle = targetAngle - 360;
+    }
+
     targetAngle = targetAngle / ShooterConstants.TURRET_DEGREES_PER_ROT;
     m_boomBoomRotatePIDController.setReference(targetAngle, ControlType.kPosition);
   }

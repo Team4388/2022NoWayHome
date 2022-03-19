@@ -262,7 +262,7 @@ public class Robot extends TimedRobot {
     if (selectedOdo == null) {
       selectedOdo = m_robotContainer.getOdometry();
     }
-    m_robotContainer.resetOdometry(selectedOdo);
+    // m_robotContainer.resetOdometry(selectedOdo);
 
 
     // This makes sure that the autonomous stops running when
