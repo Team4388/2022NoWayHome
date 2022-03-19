@@ -256,7 +256,7 @@ public class Robot extends TimedRobot {
 
     Robot.alliance = DriverStation.getAlliance();
 
-    m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
+    // m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
 
     selectedOdo = odoChooser.getSelected();
     if (selectedOdo == null) {

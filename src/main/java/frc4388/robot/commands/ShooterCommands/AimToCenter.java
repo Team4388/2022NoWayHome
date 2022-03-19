@@ -35,29 +35,30 @@ public class AimToCenter extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    x = 0;
-    y = 0;
+    x = m_drive.getOdometry().getX();
+    y = m_drive.getOdometry().getY();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     m_targetAngle = angleToCenter(x, y, m_drive.getRegGyro().getDegrees());
+    System.out.println("Target Angle" + m_targetAngle);
     m_turret.runShooterRotatePID(m_targetAngle);
 
     // Check if limelight is within range (comment out to disable vision odo)
     if (Math.abs(m_turret.getBoomBoomAngleDegrees() - m_targetAngle) < VisionConstants.RANGE){
-      m_visionOdometry.updateOdometryWithVision();
-      m_visionOdometry.setLEDs(true);
+      // m_visionOdometry.updateOdometryWithVision();
+      // m_visionOdometry.setLEDs(true);
     }
     else{
-      m_visionOdometry.setLEDs(false);
+      // m_visionOdometry.setLEDs(false);
     }
   }
 
   public static double angleToCenter(double x, double y, double gyro) {
-    double angle = ((Math.atan2(y, x) * (180./Math.PI) - gyro) + 180. + 360.) % 360.; // Finds the angle between the gyro of the robot and the target (positive x is gyro 0)
-    return angle;
+    double angle = ((Math.atan2(y, x) * (180./Math.PI) - gyro) + 180. + (360. * 4)) % 360.; // Finds the angle between the gyro of the robot and the target (positive x is gyro 0)
+    return (angle - 360);
   }
 
   /**
