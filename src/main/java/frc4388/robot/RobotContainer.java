@@ -155,8 +155,8 @@ public class RobotContainer {
   public static boolean softLimits = true;
 
   // control mode switching
-  public static enum ControlMode { SHOOTER, CLIMBER };
-  public static ControlMode currentControlMode = ControlMode.SHOOTER;
+  private enum ControlMode { SHOOTER, CLIMBER };
+  private ControlMode currentControlMode = ControlMode.SHOOTER;
 
   // turret mode switching
   private enum TurretMode { MANUAL, AUTONOMOUS };

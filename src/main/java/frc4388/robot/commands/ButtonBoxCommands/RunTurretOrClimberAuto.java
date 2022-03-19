@@ -45,12 +45,12 @@ public class RunTurretOrClimberAuto extends CommandBase {
   @Override
   public void execute() {
     // check control mode here. if shooter control mode, run turret auto command. if climber control mode, run climber auto command.
-    if (RobotContainer.currentControlMode.equals(RobotContainer.ControlMode.SHOOTER)) {
-      new AimToCenter(this.turret, this.swerveDrive, this.visionOdometry);
-    }
-    if (RobotContainer.currentControlMode.equals(RobotContainer.ControlMode.CLIMBER)) {
-      new RunClimberPath(this.climber, this.claws, new Point[] {new Point()});
-    }
+    // if (RobotContainer.currentControlMode.equals(RobotContainer.ControlMode.SHOOTER)) {
+    //   new AimToCenter(this.turret, this.swerveDrive, this.visionOdometry);
+    // }
+    // if (RobotContainer.currentControlMode.equals(RobotContainer.ControlMode.CLIMBER)) {
+    //   new RunClimberPath(this.climber, this.claws, new Point[] {new Point()});
+    // }
   }
 
   // Called once the command ends or is interrupted.
