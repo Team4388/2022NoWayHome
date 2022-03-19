@@ -20,40 +20,42 @@ import frc4388.utility.Gains;
 public class Shoot extends CommandBase {
 
   // subsystems
-  public SwerveDrive m_swerve;
-  public BoomBoom m_boomBoom;
-  public Turret m_turret;
-  public Hood m_hood;
+  private SwerveDrive m_swerve;
+  private BoomBoom m_boomBoom;
+  private Turret m_turret;
+  private Hood m_hood;
 
   // given
-  public double m_gyroAngle;
-  public double m_odoX;
-  public double m_odoY;
-  public double m_distance;
+  private double m_gyroAngle;
+  private double m_odoX;
+  private double m_odoY;
+  private double m_distance;
 
   // targets
-  public double m_targetVel;
-  public double m_targetHood;
-  public double m_targetAngle;
-  public Pose2d m_targetPoint;
+  private double m_targetVel;
+  private double m_targetHood;
+  private double m_targetAngle;
+  private Pose2d m_targetPoint;
 
   // pid
-  public double error;
-  public double prevError;
-  public Gains gains = ShooterConstants.SHOOT_GAINS;
-  public double kP, kI, kD;
-  public double proportional, integral, derivative;
-  public double time;
-  public double output;
-  public double normOutput;
-  public double tolerance;
-  public boolean isAimedInTolerance;
-  public int inverted;
+  private double error;
+  private double prevError;
+  private Gains gains = ShooterConstants.SHOOT_GAINS;
+  private double kP, kI, kD;
+  private double proportional, integral, derivative;
+  private double time;
+  private double output;
+  private double normOutput;
+  private double tolerance;
+
+  private boolean isAimedInTolerance;
+  private int inverted;
+  private double initialSwerveRotation;
 
   // testing
-  public boolean simMode = true;
-  public DummySensor driveDummy;
-  public DummySensor turretDummy;
+  private boolean simMode = true;
+  private DummySensor driveDummy;
+  private DummySensor turretDummy;
 
   /**
    * Creates a new shoot command, allowing the robot to aim and be ready to fire a ball
@@ -117,6 +119,7 @@ public class Shoot extends CommandBase {
     m_odoY = -1;//m_swerve.getOdometry().getY();
 
     m_gyroAngle = m_swerve.getRegGyro().getDegrees();
+    initialSwerveRotation = m_gyroAngle;
 
     // get targets (shooter tables)
     m_targetVel = m_boomBoom.getVelocity(m_distance);
@@ -182,7 +185,10 @@ public class Shoot extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    // return to initial swerve rotation
+    m_swerve.driveWithInput(0, 0, initialSwerveRotation, true);
+  }
 
   // Returns true when the command should end.
   @Override
