@@ -263,8 +263,12 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
          .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
       // Right Bumper > Shift Up
-     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+    new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
+        .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
+
+    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
+        .whileHeld(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 1.0, 0.0, true))
+        .whenReleased(() -> m_robotSwerveDrive.stopModules());
 
     /* Operator Buttons */
 
