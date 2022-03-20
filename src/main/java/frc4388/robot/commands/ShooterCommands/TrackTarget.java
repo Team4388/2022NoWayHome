@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-
+import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.VisionConstants;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
@@ -25,6 +25,7 @@ import frc4388.utility.desmos.DesmosServer;
 
 public class TrackTarget extends CommandBase {
   /** Creates a new TrackTarget. */
+  SwerveDrive m_swerve;
   Turret m_turret;
   VisionOdometry m_visionOdometry;
   BoomBoom m_boomBoom;
@@ -51,8 +52,9 @@ public class TrackTarget extends CommandBase {
 
   // public static Gains m_aimGains;
 
-  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
+  public TrackTarget (SwerveDrive swerve, Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
     // Use addRequirements() here to declare subsystem dependencies.
+    m_swerve = swerve;
     m_turret = turret;
     m_boomBoom = boomBoom;
     m_hood = hood;
@@ -96,10 +98,16 @@ public class TrackTarget extends CommandBase {
       }
       
       output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-      output *= 4;
-      // output *= 0.5;
-      DesmosServer.putDouble("output", output);
+      output *= 2;
+      // //output *= 0.5;
+      // //DesmosServer.putDouble("output", output);
       m_turret.runTurretWithInput(output);
+      double position = m_turret.m_boomBoomRotateEncoder.getPosition();
+
+      if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
+            Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
+        m_swerve.driveWithInput(0, 0, output, false);
+
       
       double y_rot = average.y / VisionConstants.LIME_VIXELS;
       y_rot *= Math.toRadians(VisionConstants.V_FOV);
