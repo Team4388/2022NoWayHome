@@ -53,7 +53,7 @@ public class Shoot extends CommandBase {
   private double initialSwerveRotation;
 
   // testing
-  private boolean simMode = true;
+  private boolean simMode = false;
   private DummySensor driveDummy;
   private DummySensor turretDummy;
 
@@ -99,10 +99,10 @@ public class Shoot extends CommandBase {
    */
   public void updateError() {
     m_targetPoint = SwerveDriveConstants.HUB_POSE;
-    m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, driveDummy.get());
-    // m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
-    error = (m_targetAngle - turretDummy.get() + 360) % 360;
-    // error = (m_targetAngle - m_turret.getBoomBoomAngleDegrees() + 360) % 360;
+    // m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, driveDummy.get());
+    m_targetAngle = AimToCenter.aaravAngleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
+    // error = (m_targetAngle - turretDummy.get() + 360) % 360;
+    error = (m_targetAngle - m_turret.getBoomBoomAngleDegrees() + 360) % 360;
     isAimedInTolerance = (Math.abs(error) <= tolerance);
 
     if (simMode) {
@@ -115,8 +115,11 @@ public class Shoot extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_odoX = 0;//m_swerve.getOdometry().getX();
-    m_odoY = -1;//m_swerve.getOdometry().getY();
+
+    m_turret.gotoMidpoint();
+
+    m_odoX = 0;//-m_swerve.getOdometry().getY();
+    m_odoY = -8;//-m_swerve.getOdometry().getX();
 
     m_gyroAngle = m_swerve.getRegGyro().getDegrees();
     initialSwerveRotation = m_gyroAngle;
@@ -125,14 +128,15 @@ public class Shoot extends CommandBase {
     m_targetVel = m_boomBoom.getVelocity(m_distance);
     m_targetHood = m_boomBoom.getHood(m_distance);
 
-    m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
+    m_targetAngle = AimToCenter.aaravAngleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
+    // m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
 
     // deadzone processing
     if (AimToCenter.isDeadzone(m_targetAngle)) {}
     
     // initial error
     updateError();
-    System.out.println("Error: " + error);
+    // System.out.println("Error: " + error);
     prevError = error;
   }
   /**
@@ -159,22 +163,28 @@ public class Shoot extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    
     if (simMode) {
       System.out.println("Normalized Output: " + normOutput);
     }
-      // custom pid
-    runPID();
-
+    // custom pid
+    
     if (simMode) {
       driveDummy.apply(normOutput);
       System.out.println("Drive Dummy: " + driveDummy.get());
     }
+    
+    runPID();
+    SmartDashboard.putNumber("Error", this.error);
+    SmartDashboard.putNumber("Shoot.java TargetAngle", this.m_targetAngle);
+    SmartDashboard.putNumber("Normalized Output", normOutput);
     m_swerve.driveWithInput(0, 0, normOutput, true); // i have no idea if this is how you rotate the
                                                  // entire swerve drive or its the line below
     // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
     
-    m_hood.runAngleAdjustPID(m_targetHood);
-    m_boomBoom.runDrumShooterVelocityPID(m_targetVel);
+    // m_hood.runAngleAdjustPID(m_targetHood);
+    // m_boomBoom.runDrumShooterVelocityPID(m_targetVel);
 
     if (simMode) {
       turretDummy.apply(normOutput);

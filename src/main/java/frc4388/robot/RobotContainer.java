@@ -112,7 +112,7 @@ public class RobotContainer {
   public final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  public final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+  // public final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
   public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
@@ -172,9 +172,9 @@ public class RobotContainer {
     /* Default Commands */
 
     // IK command
-    m_robotClimber.setDefaultCommand(
-        new RunCommand(() -> m_robotClimber.setJointSpeeds(getOperatorController().getLeftX() * 10000,
-            getOperatorController().getRightY() * 10000), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
+    // m_robotClimber.setDefaultCommand(
+    //     new RunCommand(() -> m_robotClimber.setJointSpeeds(getOperatorController().getLeftX() * 10000,
+    //         getOperatorController().getRightY() * 10000), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
     
     // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
@@ -208,17 +208,17 @@ public class RobotContainer {
         new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
       // Turret Manual
-    // m_robotTurret.setDefaultCommand(
-    //     new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-    //     m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
-
     m_robotTurret.setDefaultCommand(
-       new RunCommand(() -> {
-        if (this.currentControlMode.equals(ControlMode.SHOOTER)) { 
-          if (this.currentTurretMode.equals(TurretMode.MANUAL)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
-        }
-        if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotTurret.runTurretWithInput(0); }
-       }, m_robotTurret));
+        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
+        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+
+    // m_robotTurret.setDefaultCommand(
+    //    new RunCommand(() -> {
+    //     if (this.currentControlMode.equals(ControlMode.SHOOTER)) { 
+    //       if (this.currentTurretMode.equals(TurretMode.MANUAL)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
+    //     }
+    //     if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotTurret.runTurretWithInput(0); }
+    //    }, m_robotTurret));
 
     m_robotHood.setDefaultCommand(
        new RunCommand(() -> {
@@ -226,12 +226,12 @@ public class RobotContainer {
         if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotHood.runHood(0); }
        }, m_robotHood));
 
-    m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> {
-        if (this.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotClimber.setMotors(0, 0); }
-        if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotClimber.setJointSpeeds(getOperatorController().getLeftX() * 10000,
-          getOperatorController().getRightY() * 10000); }}
-      , m_robotClimber));
+    // m_robotClimber.setDefaultCommand(
+    //   new RunCommand(() -> {
+    //     if (this.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotClimber.setMotors(0, 0); }
+    //     if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotClimber.setJointSpeeds(getOperatorController().getLeftX() * 10000,
+    //       getOperatorController().getRightY() * 10000); }}
+    //   , m_robotClimber));
 
        // m_robotTurret.setDefaultCommand(
     //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
@@ -269,15 +269,22 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
         .whileHeld(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 1.0, 0.0, true))
         .whenReleased(() -> m_robotSwerveDrive.stopModules());
-    
+        
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
         .whileHeld(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry))
         .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
-    
-        new JoystickButton(getDriverController(), XboxController.Button.kY.value)
-        .whileHeld(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-45), m_robotTurret))
-        .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
+        
+    new JoystickButton(getDriverController(), XboxController.Button.kY.value)
+        .whileHeld(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood))
+        .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
+        .whenReleased(() -> m_robotSwerveDrive.stopModules());
 
+    new JoystickButton(getDriverController(), XboxController.Button.kX.value)
+        .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
+        .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
+        .whenReleased(new InstantCommand(() -> m_robotHood.runHood(0.0), m_robotHood))
+        .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
+        
     /* Operator Buttons */
 
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
@@ -335,18 +342,18 @@ public class RobotContainer {
       .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
       .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
       .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
-      .whenPressed(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(false), m_robotClimber))
+      // .whenPressed(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(false), m_robotClimber))
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
       .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
-      .whenReleased(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(true), m_robotClimber))
+      // .whenReleased(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(true), m_robotClimber))
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
       .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
-      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
-      .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
+      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender));
+      // .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
     new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
       .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))

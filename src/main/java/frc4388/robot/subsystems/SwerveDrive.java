@@ -127,6 +127,14 @@ public class SwerveDrive extends SubsystemBase {
         : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * speedAdjust);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
         chassisSpeeds);
+    if (ignoreAngles) {
+      SwerveModuleState[] lockedStates = new SwerveModuleState[states.length];
+      for (int i = 0; i < states.length; i ++) {
+        SwerveModuleState state = states[i];
+        lockedStates[i]= new SwerveModuleState(0, state.angle);
+      }
+      setModuleStates(lockedStates);
+    }
     setModuleStates(states);
     // SmartDashboard.putNumber("rot", rot);
     // SmartDashboard.putNumber("rotarget", rotTarget.getDegrees());

@@ -38,6 +38,9 @@ public class SwerveModule extends SubsystemBase {
   public double m_currentPos;
   public double m_lastPos;
 
+  public SwerveModuleState lastState = new SwerveModuleState();
+  public SwerveModuleState currentState;
+
   /** Creates a new SwerveModule. */
   public SwerveModule(WPI_TalonFX driveMotor, WPI_TalonFX angleMotor, CANCoder canCoder, double offset) {
     this.driveMotor = driveMotor;
@@ -181,10 +184,15 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    currentState = this.getState();
+
     Rotation2d currentRotation = getAngle();
     SmartDashboard.putNumber("Angle Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
     SmartDashboard.putNumber("Drive Motor " + driveMotor.getDeviceID(),
         ((driveMotor.getSelectedSensorPosition() / 2048) * 360) % 360);
+
+    lastState = currentState;
   }
 
   public void reset() {

@@ -140,13 +140,13 @@ public class RobotMap {
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 
     NeutralMode mode = NeutralMode.Coast;
-    leftFrontSteerMotor.setNeutralMode(mode);
+    leftFrontSteerMotor.setNeutralMode(NeutralMode.Brake);
     leftFrontWheelMotor.setNeutralMode(mode);// Coast
-    rightFrontSteerMotor.setNeutralMode(mode);
+    rightFrontSteerMotor.setNeutralMode(NeutralMode.Brake);
     rightFrontWheelMotor.setNeutralMode(mode);// Coast
-    leftBackSteerMotor.setNeutralMode(mode);
+    leftBackSteerMotor.setNeutralMode(NeutralMode.Brake);
     leftBackWheelMotor.setNeutralMode(mode);// Coast
-    rightBackSteerMotor.setNeutralMode(mode);
+    rightBackSteerMotor.setNeutralMode(NeutralMode.Brake);
     rightBackWheelMotor.setNeutralMode(mode);// Coast
 
     // current limits
@@ -196,8 +196,8 @@ public class RobotMap {
 }
 
   /* Climb Subsystem */
-  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
-  public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
+//   public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
+//   public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
 
   /* Hooks Subsystem */
 //   public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);

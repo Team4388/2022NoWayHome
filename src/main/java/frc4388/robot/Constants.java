@@ -277,7 +277,7 @@ public final class Constants {
     public static final double TURRET_CLIMBING_POS = -3.76;
 
     // Shoot Command Constants
-    public static final Gains SHOOT_GAINS = new Gains(5.0, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOT_GAINS = new Gains(0.5, 0.0, 0.0, 0.0, 0, 1.0);
 
     /* Turret Constants */
     // ID
