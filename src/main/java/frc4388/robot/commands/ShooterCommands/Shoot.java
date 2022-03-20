@@ -148,7 +148,7 @@ public class Shoot extends CommandBase {
     SmartDashboard.putNumber("Normalized Output", this.normOutput);
 
     this.turret.m_boomBoomRotateMotor.set(normOutput);
-    this.swerve.driveWithInput(0, 0, normOutput, true);
+    this.swerve.driveWithInput(0, 0, normOutput, false); // ? should the output be field relative
 
     if (this.toShoot) {
       this.hood.runAngleAdjustPID(this.targetHood);
@@ -164,7 +164,11 @@ public class Shoot extends CommandBase {
     // swerve.driveWithInput(0, 0, initialSwerveRotation, true);
 
     // this.swerve.driveWithInput(0.0, 0.0, 0.0, 0.0, true);
-    this.turret.m_boomBoomRotateMotor.set(0.0);
+    // this.turret.m_boomBoomRotateMotor.set(0.0);
+
+    // ? should stop the turret and the swerve
+    ////this.swerve.stopModules();
+    ////this.turret.runTurretWithInput(0);
 
     if (this.toShoot) {
       this.hood.runHood(0.0);

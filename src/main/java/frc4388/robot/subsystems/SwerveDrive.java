@@ -97,6 +97,7 @@ public class SwerveDrive extends SubsystemBase {
       ignoreAngles = true;
     else
       ignoreAngles = false;
+    
     Translation2d speed = new Translation2d(speedX, speedY);
     double mag = speed.getNorm();
     speed = speed.times(mag * speedAdjust);
@@ -111,6 +112,7 @@ public class SwerveDrive extends SubsystemBase {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
+
   // new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative) {
     ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
