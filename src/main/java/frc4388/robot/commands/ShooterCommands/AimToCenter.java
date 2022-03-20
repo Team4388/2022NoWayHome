@@ -4,6 +4,9 @@
 
 package frc4388.robot.commands.ShooterCommands;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ShooterConstants;
@@ -15,8 +18,10 @@ import frc4388.robot.subsystems.VisionOdometry;
 public class AimToCenter extends CommandBase {
   /** Creates a new AimWithOdometry. */
   Turret m_turret;
-  SwerveDrive m_drive;
   VisionOdometry m_visionOdometry;
+
+  Supplier<Pose2d> supplier;
+  Pose2d odo;
 
   // use odometry to find x and y later
   double x;
@@ -25,28 +30,35 @@ public class AimToCenter extends CommandBase {
 
   // public static Gains m_aimGains;
 
-  public AimToCenter(Turret turret, SwerveDrive drive, VisionOdometry visionOdometry) {
+  public AimToCenter(Turret turret, VisionOdometry visionOdometry, Supplier<Pose2d> supplier) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_turret = turret;
-    m_drive = drive;
     m_visionOdometry = visionOdometry;
-    addRequirements(m_turret, m_drive, m_visionOdometry);
+
+    this.supplier = supplier;
+
+    addRequirements(m_turret, m_visionOdometry);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    x = -m_drive.getOdometry().getY();
-    y = -m_drive.getOdometry().getX();
-
+    odo = this.supplier.get();
+    // ! Yes I realize this stupid, yes it works I promise, coordinate system is funky
+    x = -odo.getY();
+    y = -odo.getX();
+    
     SmartDashboard.putNumber("trans x", x);
     SmartDashboard.putNumber("trans y", y);
   }
-
+  
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_targetAngle = (aaravAngleToCenter(x, y, m_drive.getOdometry().getRotation().getDegrees())) % 360;
+    
+    odo = this.supplier.get(); // * update odometry using really cool supplier -aarav
+
+    m_targetAngle = (aaravAngleToCenter(x, y, odo.getRotation().getDegrees())) % 360;
     SmartDashboard.putNumber("Target Angle", m_targetAngle);
     m_turret.runShooterRotatePID(m_targetAngle);
 

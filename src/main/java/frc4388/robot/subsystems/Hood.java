@@ -35,6 +35,7 @@ public class Hood extends SubsystemBase {
   public double m_fireAngle;
   
   public double speedLimiter;
+  public double calibrationSpeed = 1.0;
 
   /** Creates a new Hood. */
   public Hood(CANSparkMax angleAdjusterMotor) {
@@ -63,21 +64,28 @@ public class Hood extends SubsystemBase {
     SmartDashboard.putNumber("Hood Angle", m_angleEncoder.getPosition());
 
     // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
-    double currentPos = this.getEncoderPosition();
-    double forwardDistance = Math.abs(currentPos - ShooterConstants.HOOD_FORWARD_SOFT_LIMIT);
-    double reverseDistance = Math.abs(currentPos - ShooterConstants.HOOD_REVERSE_SOFT_LIMIT);
 
-    if (forwardDistance < ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (forwardDistance * (1 / ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE));
-    }
+    if (areSoftLimitsEnabled()) {
+      double currentPos = this.getEncoderPosition();
+      double forwardDistance = Math.abs(currentPos - ShooterConstants.HOOD_FORWARD_SOFT_LIMIT);
+      double reverseDistance = Math.abs(currentPos - ShooterConstants.HOOD_REVERSE_SOFT_LIMIT);
 
-    if (reverseDistance < ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (reverseDistance * (1 / ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE));
-    }
+      if (forwardDistance < ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) {
+        this.speedLimiter = 0.2 + (forwardDistance * (1 / ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE));
+      }
 
-    if ((forwardDistance > ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) && (reverseDistance > ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE)) {
-      this.speedLimiter = 1.0;
+      if (reverseDistance < ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) {
+        this.speedLimiter = 0.2 + (reverseDistance * (1 / ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE));
+      }
+
+      if ((forwardDistance > ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE) && (reverseDistance > ShooterConstants.HOOD_SOFT_LIMIT_TOLERANCE)) {
+        this.speedLimiter = 1.0;
+      }
     }
+  }
+
+  public boolean areSoftLimitsEnabled() {
+    return this.m_angleAdjusterMotor.isSoftLimitEnabled(SoftLimitDirection.kForward) && this.m_angleAdjusterMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
   }
 
     /**
@@ -107,7 +115,7 @@ public class Hood extends SubsystemBase {
   * @param input value from -1.0 to 1.0, postive is upward (more horizontal shootijng angle)
   */
   public void runHood(double input) {
-    m_angleAdjusterMotor.set(input * this.speedLimiter);
+    m_angleAdjusterMotor.set(input * this.speedLimiter * this.calibrationSpeed);
   }
 
   /**

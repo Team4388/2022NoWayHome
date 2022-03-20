@@ -46,7 +46,8 @@ public class Turret extends SubsystemBase {
   long leftCurrentTime;
   long leftElapsedTime;
 
-  double speedLimiter;
+  public double speedLimiter;
+  public double calibrationSpeed = 1.0;
 
   public Turret(CANSparkMax boomBoomRotateMotor) {
 
@@ -148,21 +149,29 @@ public class Turret extends SubsystemBase {
   
   
     // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
-    double currentPos = this.getEncoderPosition();
-    double forwardDistance = Math.abs(currentPos - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT);
-    double reverseDistance = Math.abs(currentPos - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT);
 
-    if (forwardDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (forwardDistance * (1 / ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE));
-    }
+    if (areSoftLimitsEnabled()) {
 
-    if (reverseDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
-      this.speedLimiter = 0.2 + (reverseDistance * (1 / ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE));
-    }
+      double currentPos = this.getEncoderPosition();
+      double forwardDistance = Math.abs(currentPos - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT);
+      double reverseDistance = Math.abs(currentPos - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT);
 
-    if ((forwardDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) && (reverseDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE)) {
-      this.speedLimiter = 1.0;
+      if (forwardDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
+        this.speedLimiter = 0.2 + (forwardDistance * (1 / ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE));
+      }
+
+      if (reverseDistance < ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) {
+        this.speedLimiter = 0.2 + (reverseDistance * (1 / ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE));
+      }
+
+      if ((forwardDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE) && (reverseDistance > ShooterConstants.TURRET_SOFT_LIMIT_TOLERANCE)) {
+        this.speedLimiter = 1.0;
+      }
     }
+  }
+
+  public boolean areSoftLimitsEnabled() {
+    return this.m_boomBoomRotateMotor.isSoftLimitEnabled(SoftLimitDirection.kForward) && this.m_boomBoomRotateMotor.isSoftLimitEnabled(SoftLimitDirection.kReverse);
   }
 
   /**
@@ -192,7 +201,7 @@ public class Turret extends SubsystemBase {
    * @param input from -1.0 to 1.0, positive is clockwise
    */
   public void runTurretWithInput(double input) {
-    m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER * this.speedLimiter);
+    m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER * this.speedLimiter * this.calibrationSpeed);
   }
 
   public void runShooterRotatePID(double targetAngle) {
