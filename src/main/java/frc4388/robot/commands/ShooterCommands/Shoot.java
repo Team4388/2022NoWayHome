@@ -76,6 +76,7 @@ public class Shoot extends CommandBase {
     this.drum = drum;
     this.turret = turret;
     this.hood = hood;
+    this.visionOdometry = visionOdometry;
 
     this.toShoot = toShoot;
     this.endsWithLimelight = endsWithLimelight;
@@ -188,7 +189,7 @@ public class Shoot extends CommandBase {
 
     // ? should stop the turret and the swerve
     ////this.swerve.stopModules();
-    ////this.turret.runTurretWithInput(0);
+    this.turret.runTurretWithInput(0.0);
 
     if (this.toShoot) {
       this.hood.runHood(0.0);
