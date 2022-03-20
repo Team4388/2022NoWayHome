@@ -214,6 +214,12 @@ public class Climber extends SubsystemBase {
 
   boolean movingPrev = false;
   boolean moving;
+  /**
+   * 
+   * @param xInput Rate of change of X position of target point
+   * @param yInput Rate of change of Y position of target point
+   * @deprecated use controlJointsWithInput() instead
+   */
   public void controlWithInput(double xInput, double yInput) {
     moving = xInput != 0 || yInput != 0;
 
@@ -301,7 +307,10 @@ public class Climber extends SubsystemBase {
    * 
    * @param targetPoint Target xy point for the climber arm to go to
    * @param tiltAngle The tilt of the robot
-   * @return [shoulderAngle, elbowAngle] in radians */
+   * @return [shoulderAngle, elbowAngle] in radians 
+   * @deprecated
+   * */
+
    public static double[] getTargetJointAngles(Point targetPoint, double tiltAngle) {
     double [] angles = new double[2];
   
@@ -379,7 +388,12 @@ public class Climber extends SubsystemBase {
     angles[1] = elbowAngle;
     return angles;
   }
-
+  /**
+   * Forward kinematics for climber
+   * @param shoulderAngle in radians
+   * @param elbowAngle in radians
+   * @return Point in 2d of end effector
+   */
   public static Point getClimberPosition(double shoulderAngle, double elbowAngle) {
     Point climberPoint = new Point(0, 0);
 
