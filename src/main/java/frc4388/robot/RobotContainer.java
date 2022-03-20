@@ -271,7 +271,7 @@ public class RobotContainer {
         .whenReleased(() -> m_robotSwerveDrive.stopModules());
         
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
-        .whileHeld(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry))
+        .whileHeld(new AimToCenter(m_robotTurret, m_robotVisionOdometry, m_robotSwerveDrive::getOdometry))
         .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
         
     new JoystickButton(getDriverController(), XboxController.Button.kY.value)
@@ -340,12 +340,20 @@ public class RobotContainer {
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
       .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
+      .whenPressed(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret))
+      
       .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
+      .whenPressed(new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood))
+      
       .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
       // .whenPressed(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(false), m_robotClimber))
-
+      
       .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
+      .whenReleased(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret))
+      
       .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
+      .whenReleased(new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood))
+
       .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
       // .whenReleased(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(true), m_robotClimber))
 

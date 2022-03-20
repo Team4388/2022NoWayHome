@@ -20,22 +20,22 @@ import frc4388.utility.Gains;
 public class Shoot extends CommandBase {
 
   // subsystems
-  private SwerveDrive m_swerve;
-  private BoomBoom m_boomBoom;
-  private Turret m_turret;
-  private Hood m_hood;
+  private SwerveDrive swerve;
+  private BoomBoom drum;
+  private Turret turret;
+  private Hood hood;
 
   // given
-  private double m_gyroAngle;
-  private double m_odoX;
-  private double m_odoY;
-  private double m_distance;
+  private double gyroAngle;
+  private double odoX;
+  private double odoY;
+  private double distance;
 
   // targets
-  private double m_targetVel;
-  private double m_targetHood;
-  private double m_targetAngle;
-  private Pose2d m_targetPoint;
+  private double targetVel;
+  private double targetHood;
+  private double targetAngle;
+  private Pose2d targetPoint;
 
   // pid
   private double error;
@@ -59,20 +59,22 @@ public class Shoot extends CommandBase {
 
   /**
    * Creates a new shoot command, allowing the robot to aim and be ready to fire a ball
-   * TODO: Velocity Correction
-   * @param sDrive Drive Train
-   * @param sShooter Shooter Drum
-   * @param sTurret Shooter Turret
-   * @param sHood Shooter Hood
+   * 
+   * @param swerve Drive Train
+   * @param drum Shooter Drum
+   * @param turret Shooter Turret
+   * @param hood Shooter Hood
+   * 
+   * @author Aarav Shah
    */
-  public Shoot(SwerveDrive sDrive, BoomBoom sShooter, Turret sTurret, Hood sHood) {
+  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
     // Use addRequirements() here to declare subsystem dependencies.
-    m_swerve = sDrive;
-    m_boomBoom = sShooter;
-    m_turret = sTurret;
-    m_hood = sHood;
+    this.swerve = swerve;
+    this.drum = drum;
+    this.turret = turret;
+    this.hood = hood;
     
-    addRequirements(m_swerve, m_boomBoom, m_turret, m_hood);
+    addRequirements(this.swerve, this.drum, this.turret, this.hood);
 
     kP = gains.kP;
     kI = gains.kI;
@@ -98,16 +100,16 @@ public class Shoot extends CommandBase {
    * Updates error for custom PID.
    */
   public void updateError() {
-    m_targetPoint = SwerveDriveConstants.HUB_POSE;
+    targetPoint = SwerveDriveConstants.HUB_POSE;
     // m_targetAngle = AimToCenter.angleToCenter(m_odoX, m_odoY, driveDummy.get());
-    m_targetAngle = AimToCenter.aaravAngleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
+    targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
     // error = (m_targetAngle - turretDummy.get() + 360) % 360;
-    error = (m_targetAngle - m_turret.getBoomBoomAngleDegrees() + 360) % 360;
+    error = (targetAngle - turret.getBoomBoomAngleDegrees() + 360) % 360;
     isAimedInTolerance = (Math.abs(error) <= tolerance);
 
     if (simMode) {
       SmartDashboard.putBoolean("isAimed?", isAimedInTolerance);
-      System.out.println("Target Angle: " + m_targetAngle);
+      System.out.println("Target Angle: " + targetAngle);
       System.out.println("Error: " + error);
     }
   }
@@ -116,23 +118,23 @@ public class Shoot extends CommandBase {
   @Override
   public void initialize() {
 
-    m_turret.gotoMidpoint();
+    turret.gotoMidpoint();
 
-    m_odoX = 0;//-m_swerve.getOdometry().getY();
-    m_odoY = -8;//-m_swerve.getOdometry().getX();
+    odoX = 0;//-m_swerve.getOdometry().getY();
+    odoY = -8;//-m_swerve.getOdometry().getX();
 
-    m_gyroAngle = m_swerve.getRegGyro().getDegrees();
-    initialSwerveRotation = m_gyroAngle;
+    gyroAngle = swerve.getRegGyro().getDegrees();
+    initialSwerveRotation = gyroAngle;
 
     // get targets (shooter tables)
-    m_targetVel = m_boomBoom.getVelocity(m_distance);
-    m_targetHood = m_boomBoom.getHood(m_distance);
+    targetVel = drum.getVelocity(distance);
+    targetHood = drum.getHood(distance);
 
-    m_targetAngle = AimToCenter.aaravAngleToCenter(m_odoX, m_odoY, m_swerve.getRegGyro().getDegrees());
+    targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
     // m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
 
     // deadzone processing
-    if (AimToCenter.isDeadzone(m_targetAngle)) {}
+    if (AimToCenter.isDeadzone(targetAngle)) {}
     
     // initial error
     updateError();
@@ -174,12 +176,12 @@ public class Shoot extends CommandBase {
       driveDummy.apply(normOutput);
       System.out.println("Drive Dummy: " + driveDummy.get());
     }
-    
+
     runPID();
     SmartDashboard.putNumber("Error", this.error);
-    SmartDashboard.putNumber("Shoot.java TargetAngle", this.m_targetAngle);
+    SmartDashboard.putNumber("Shoot.java TargetAngle", this.targetAngle);
     SmartDashboard.putNumber("Normalized Output", normOutput);
-    m_swerve.driveWithInput(0, 0, normOutput, true); // i have no idea if this is how you rotate the
+    swerve.driveWithInput(0, 0, normOutput, true); // i have no idea if this is how you rotate the
                                                  // entire swerve drive or its the line below
     // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
     
@@ -190,14 +192,14 @@ public class Shoot extends CommandBase {
       turretDummy.apply(normOutput);
       System.out.println("Turret Dummy: " + turretDummy.get());
     }
-    m_turret.m_boomBoomRotateMotor.set(normOutput);
+    turret.m_boomBoomRotateMotor.set(normOutput);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     // return to initial swerve rotation
-    m_swerve.driveWithInput(0, 0, initialSwerveRotation, true);
+    swerve.driveWithInput(0, 0, initialSwerveRotation, true);
   }
 
   // Returns true when the command should end.
