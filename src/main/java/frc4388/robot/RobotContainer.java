@@ -112,7 +112,7 @@ public class RobotContainer {
   public final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  // public final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+  public final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
   public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
@@ -128,7 +128,7 @@ public class RobotContainer {
 
   private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(30);
   private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(31);
-  //public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
+  // public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
 
   // Controllers
   private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
@@ -200,7 +200,7 @@ public class RobotContainer {
             getOperatorController().getLeftTriggerAxis(), 
             getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
-    m_robotBoomBoom.setDefaultCommand(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.35), m_robotBoomBoom));
+    m_robotBoomBoom.setDefaultCommand(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
     
     // m_robotStorage.setDefaultCommand(
     //     new ManageStorage(m_robotStorage, 
@@ -235,15 +235,12 @@ public class RobotContainer {
         if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotHood.runHood(0); }
        }, m_robotHood));
 
-    // m_robotClimber.setDefaultCommand(
-    //   new RunCommand(() -> {
-    //     if (this.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotClimber.setMotors(0, 0); }
-    //     if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotClimber.setJointSpeeds(getOperatorController().getLeftX() * 10000,
-    //       getOperatorController().getRightY() * 10000); }}
-    //   , m_robotClimber));
+    m_robotClimber.setDefaultCommand(
+      new RunCommand(() -> m_robotClimber.setMotors(0.0, getOperatorController().getRightY() * 0.5)
+      , m_robotClimber));
 
-       // m_robotTurret.setDefaultCommand(
-    //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
+      //  m_robotTurret.setDefaultCommand(
+      //   new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
     //  m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED).withName("LED update defaultCommand"));
@@ -355,7 +352,7 @@ public class RobotContainer {
       .whenPressed(new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood))
       
       .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
-      // .whenPressed(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(false), m_robotClimber))
+      .whenPressed(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(false), m_robotClimber))
       
       .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret))
@@ -364,13 +361,13 @@ public class RobotContainer {
       .whenReleased(new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood))
 
       .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
-      // .whenReleased(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(true), m_robotClimber))
+      .whenReleased(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(true), m_robotClimber))
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
       .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
-      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender));
-      // .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
+      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
+      .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
     new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
       .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))
