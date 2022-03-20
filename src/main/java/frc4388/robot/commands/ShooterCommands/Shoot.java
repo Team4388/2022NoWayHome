@@ -25,6 +25,8 @@ public class Shoot extends CommandBase {
   private Turret turret;
   private Hood hood;
 
+  private boolean toShoot;
+
   // given
   private double gyroAngle;
   private double odoX;
@@ -67,13 +69,15 @@ public class Shoot extends CommandBase {
    * 
    * @author Aarav Shah
    */
-  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
+  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, boolean toShoot) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerve = swerve;
     this.drum = drum;
     this.turret = turret;
     this.hood = hood;
-    
+
+    this.toShoot = toShoot;
+
     addRequirements(this.swerve, this.drum, this.turret, this.hood);
 
     kP = gains.kP;
@@ -85,7 +89,7 @@ public class Shoot extends CommandBase {
     derivative = 0;
     time = 0.02;
 
-    tolerance = 5.0;
+    tolerance = 10.0;
     isAimedInTolerance = false;
 
     if (simMode) {
@@ -94,6 +98,10 @@ public class Shoot extends CommandBase {
 
       DummySensor.resetAll();
     }
+  }
+
+  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
+    this(swerve, drum, turret, hood, false);
   }
 
   /**
@@ -131,21 +139,19 @@ public class Shoot extends CommandBase {
     targetHood = drum.getHood(distance);
 
     targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
-    // m_targetAngle = ((Math.atan2(m_odoY, m_odoX) * (180./Math.PI) - m_gyroAngle) + 180. + 360.) % 360.;
 
     // deadzone processing
     if (AimToCenter.isDeadzone(targetAngle)) {}
     
     // initial error
     updateError();
-    // System.out.println("Error: " + error);
     prevError = error;
   }
   /**
    * Run custom PID.
    */
   public void runPID() {
-    if (error > 180){
+    if (error > 180) {
       error = 360 - error;
       inverted = -1;
     }
@@ -156,10 +162,10 @@ public class Shoot extends CommandBase {
     updateError();
     
     proportional = error;
-    integral = integral + error * time;
+    integral = integral + (error * time);
     derivative = (error - prevError) / time;
     output = kP * proportional + kI * integral + kD * derivative;
-    normOutput = output/360 * inverted;
+    normOutput = (output / 360) * inverted;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -178,28 +184,30 @@ public class Shoot extends CommandBase {
     }
 
     runPID();
+
     SmartDashboard.putNumber("Error", this.error);
     SmartDashboard.putNumber("Shoot.java TargetAngle", this.targetAngle);
     SmartDashboard.putNumber("Normalized Output", normOutput);
-    swerve.driveWithInput(0, 0, normOutput, true); // i have no idea if this is how you rotate the
-                                                 // entire swerve drive or its the line below
-    // m_swerve.driveWithInput(0, 0, Math.cos(output), Math.sin(output), true);
-    
-    // m_hood.runAngleAdjustPID(m_targetHood);
-    // m_boomBoom.runDrumShooterVelocityPID(m_targetVel);
+
+    swerve.driveWithInput(0, 0, normOutput, true);
+    turret.m_boomBoomRotateMotor.set(normOutput);
+
+    if (this.toShoot) {
+      this.hood.runAngleAdjustPID(this.targetHood);
+      this.drum.runDrumShooterVelocityPID(this.targetVel);
+    }
 
     if (simMode) {
       turretDummy.apply(normOutput);
       System.out.println("Turret Dummy: " + turretDummy.get());
     }
-    turret.m_boomBoomRotateMotor.set(normOutput);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     // return to initial swerve rotation
-    swerve.driveWithInput(0, 0, initialSwerveRotation, true);
+    // swerve.driveWithInput(0, 0, initialSwerveRotation, true);
   }
 
   // Returns true when the command should end.
