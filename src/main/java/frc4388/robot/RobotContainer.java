@@ -292,7 +292,7 @@ public class RobotContainer {
         /* Operator Buttons */
         
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false));
+        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //   .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
