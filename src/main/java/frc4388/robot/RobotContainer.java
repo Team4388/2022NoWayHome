@@ -179,19 +179,19 @@ public class RobotContainer {
     // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> {
-          if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) {
+          // if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) {
             m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
                                                getDriverController().getLeftY(),
                                                getDriverController().getRightX(),
                                                getDriverController().getRightY(),
-                                               true); }
-          if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) {
-            m_robotSwerveDrive.driveWithInput( 0, 
-                                               0,
-                                               0,
-                                               0,
-                                               true);
-          }}
+                                               true); //}
+          // if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) {
+          //   m_robotSwerveDrive.driveWithInput( 0, 
+          //                                      0,
+          //                                      0,
+          //                                      0,
+          //                                      true);
+          }//}
           , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
     // Intake with Triggers
@@ -278,24 +278,29 @@ public class RobotContainer {
         .whileHeld(new AimToCenter(m_robotTurret, m_robotVisionOdometry, m_robotSwerveDrive::getOdometry))
         .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
         
-    new JoystickButton(getDriverController(), XboxController.Button.kY.value)
-        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false));
-        //!.whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
-        //!.whenReleased(() -> m_robotSwerveDrive.stopModules());
-
-    new JoystickButton(getDriverController(), XboxController.Button.kX.value)
+    // new JoystickButton(getDriverController(), XboxController.Button.kY.value)
+    //     .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false));
+    //      .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
+    //      .whenReleased(() -> m_robotSwerveDrive.stopModules());
+        
+        new JoystickButton(getDriverController(), XboxController.Button.kX.value)
         .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
         .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
         .whenReleased(new InstantCommand(() -> m_robotHood.runHood(0.0), m_robotHood))
         .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
         
-    /* Operator Buttons */
-
+        /* Operator Buttons */
+        
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-      .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
+        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false));
+        //!.whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
+        //!.whenReleased(() -> m_robotSwerveDrive.stopModules());
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-      .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(false)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //   .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
+
+    // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+    //   .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(false)));
   
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));

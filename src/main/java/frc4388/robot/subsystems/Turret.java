@@ -206,6 +206,10 @@ public class Turret extends SubsystemBase {
     m_boomBoomRotateMotor.set(input * ShooterConstants.TURRET_SPEED_MULTIPLIER * this.speedLimiter * this.calibrationSpeed);
   }
 
+  public void runTurretWithCustomPID(double input) {
+    m_boomBoomRotateMotor.set(input * this.speedLimiter);
+  }
+
   public void runShooterRotatePID(double targetAngle) {
 
     double softMid = (ShooterConstants.TURRET_FORWARD_SOFT_LIMIT - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) / 2;

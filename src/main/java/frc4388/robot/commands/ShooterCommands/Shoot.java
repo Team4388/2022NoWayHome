@@ -37,13 +37,18 @@ public class Shoot extends CommandBase {
   private double targetAngle, targetVel, targetHood;
 
   // pid
-  private Gains gains = ShooterConstants.SHOOT_GAINS;
+  private Gains turretGains = ShooterConstants.TURRET_SHOOT_GAINS;
+  private Gains swerveGains = ShooterConstants.SWERVE_SHOOT_GAINS;
   private double error;
   private double prevError;
   private double kP, kI, kD;
   private double proportional, integral, derivative;
   private double output, normOutput;
   private double tolerance;
+  
+  boolean timerStarted;
+  long startTime;
+  private double timeTolerance;
 
   private boolean isAimedInTolerance;
   private int inverted;
@@ -67,88 +72,95 @@ public class Shoot extends CommandBase {
     this.hood = hood;
 
     this.toShoot = toShoot;
-
-    addRequirements(this.swerve, this.drum, this.turret, this.hood);
-
-    kP = gains.kP;
-    kI = gains.kI;
-    kD = gains.kD;
-
+    
+    kP = turretGains.kP;
+    kI = turretGains.kI;
+    kD = turretGains.kD;
+    
     proportional = 0;
     integral = 0;
     derivative = 0;
-
+    
     tolerance = 10.0;
+    timeTolerance = 500;
     isAimedInTolerance = false;
-  }
 
+    this.inverted = 1;
+    
+    addRequirements(this.swerve, this.drum, this.turret, this.hood);
+  }
+  
   // public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
-  //   this(swerve, drum, turret, hood, false);
-  // }
-
-  /**
-   * Updates error for custom PID.
-   */
-  public void updateError() {
-    targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
-    error = (targetAngle - turret.getBoomBoomAngleDegrees()) % 360;
-    if (error > 180) {
-      error = 360 - error;
-      this.inverted = -1; } else { this.inverted = 1; }
-    isAimedInTolerance = (Math.abs(error) <= tolerance);
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-
-    // this.turret.gotoMidpoint();
-
-    this.odoX = 0;//-m_swerve.getOdometry().getY();
-    this.odoY = -8;//-m_swerve.getOdometry().getX();
-
-    this.distance = Math.hypot(odoX, odoY);
-
-    this.gyroAngle = this.swerve.getRegGyro().getDegrees();
-    this.initialSwerveRotation = gyroAngle;
-
-    // get targets (shooter tables)
-    this.targetVel = drum.getVelocity(distance);
-    this.targetHood = drum.getHood(distance);
-
-    this.targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
+    //   this(swerve, drum, turret, hood, false);
+    // }
     
-    // initial error
-    updateError();
-    prevError = error;
-  }
-
-  /**
-   * Run custom PID.
-   */
-  public void runPID() {
-    prevError = error;
-    updateError();
+    /**
+     * Updates error for custom PID.
+     */
+    public void updateError() {
+      targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
+      
+      error = (targetAngle - turret.getBoomBoomAngleDegrees()) % 360;
+        // if (error > 180) {
+        //   error = 360 - error; // TODO: error - 360
+        //   this.inverted = -1; } else { this.inverted = 1; }
+        isAimedInTolerance = (Math.abs(error) <= tolerance);
+      }
+      
+      // Called when the command is initially scheduled.
+      @Override
+      public void initialize() {
+        timerStarted = false;
+        startTime = 0;
+        
+        // this.turret.gotoMidpoint();
+        
+        this.odoX = 0;//-m_swerve.getOdometry().getY();
+        this.odoY = -8;//-m_swerve.getOdometry().getX();
+        
+        this.distance = Math.hypot(odoX, odoY);
+        
+        this.gyroAngle = this.swerve.getRegGyro().getDegrees();
+        this.initialSwerveRotation = gyroAngle;
+        
+        // get targets (shooter tables)
+        this.targetVel = drum.getVelocity(distance);
+        this.targetHood = drum.getHood(distance);
+        
+        this.targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
+        
+        // initial error
+        updateError();
+        prevError = error;
+      }
+      
+      /**
+       * Run custom PID.
+       */
+      public void runPID() {
+        prevError = error;
+        updateError();
     
-    this.proportional = error;
-    this.integral = integral + (error * Constants.LOOP_TIME);
-    this.derivative = (error - prevError) / Constants.LOOP_TIME;
-    this.output = kP * proportional + kI * integral + kD * derivative;
-    this.normOutput = (output / 360) * inverted;
-  }
-
+        this.proportional = error;
+        this.integral = integral + (error * Constants.LOOP_TIME);
+        this.derivative = (error - prevError) / Constants.LOOP_TIME;
+        this.output = kP * proportional + kI * integral + kD * derivative;
+        this.normOutput = (output / 360) * inverted;
+      }
+  
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    
     runPID();
-
+    
     SmartDashboard.putNumber("Error", this.error);
     SmartDashboard.putNumber("Shoot.java TargetAngle", this.targetAngle);
     SmartDashboard.putNumber("Normalized Output", this.normOutput);
 
-    this.turret.m_boomBoomRotateMotor.set(normOutput);
-    this.swerve.driveWithInput(0, 0, normOutput, false); // ? should the output be field relative
+    this.turret.runTurretWithCustomPID(normOutput);
+    // this.turret.m_boomBoomRotateMotor.set(normOutput);
+    this.swerve.driveWithInput(0, 0, normOutput * (this.swerveGains.kP/this.turretGains.kP), false); // ? should the output be field relative
 
     if (this.toShoot) {
       this.hood.runAngleAdjustPID(this.targetHood);
@@ -160,6 +172,7 @@ public class Shoot extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     
+    System.err.println("SHOOT IS FINISHED: " + Boolean.toString(interrupted).toUpperCase());
     // ? return to initial swerve rotation
     // swerve.driveWithInput(0, 0, initialSwerveRotation, true);
 
@@ -179,7 +192,12 @@ public class Shoot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    SmartDashboard.putBoolean("isAimedInTolerance", isAimedInTolerance);
-    return isAimedInTolerance;
+    
+    if (isAimedInTolerance && !timerStarted) {
+      timerStarted = true;
+      startTime = System.currentTimeMillis();
+    }
+    SmartDashboard.putBoolean("isDone", isAimedInTolerance && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+    return (isAimedInTolerance && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
   }
 }

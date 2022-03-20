@@ -82,10 +82,9 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
   }
 
-  // https://github.com/ZachOrr/MK3-Swerve-Example
   /**
    * Method to drive the robot using joystick info.
-   *
+   * @link https://github.com/ZachOrr/MK3-Swerve-Example
    * @param speeds[0]     Speed of the robot in the x direction (forward).
    * @param speeds[1]     Speed of the robot in the y direction (sideways).
    * @param rot           Angular rate of the robot.
@@ -93,10 +92,7 @@ public class SwerveDrive extends SubsystemBase {
    *                      field.
    */
   public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative) {
-    if (speedX == 0 && speedY == 0 && rot == 0)
-      ignoreAngles = true;
-    else
-      ignoreAngles = false;
+    ignoreAngles = (speedX == 0) && (speedY == 0) && (rot == 0);
     
     Translation2d speed = new Translation2d(speedX, speedY);
     double mag = speed.getNorm();

@@ -85,7 +85,7 @@ public class AimToCenter extends CommandBase {
     if (-x > 0) { return (180 + exp); }
     if (-x < 0) { return (360 + exp); }
 
-    if (x == 0 && y > 0) { return (270 - actualGyro); }
+    if (x == 0 && y > 0) { return (270 - actualGyro); } // TODO: try putting these two lines before exp is calculated
     if (x == 0 && y < 0) { return (90 - actualGyro); }
 
     System.err.println("Invalid case.");
