@@ -283,8 +283,8 @@ public class RobotContainer {
     //      .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
     //      .whenReleased(() -> m_robotSwerveDrive.stopModules());
         
-        // new JoystickButton(getDriverController(), XboxController.Button.kX.value)
-        // .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
+        new JoystickButton(getDriverController(), XboxController.Button.kX.value)
+        .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
         // .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
         // .whenReleased(new InstantCommand(() -> m_robotHood.runHood(0.0), m_robotHood))
         // .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
