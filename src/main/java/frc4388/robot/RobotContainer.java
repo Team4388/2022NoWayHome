@@ -223,9 +223,7 @@ public class RobotContainer {
 
     m_robotTurret.setDefaultCommand(
        new RunCommand(() -> {
-        if (this.currentControlMode.equals(ControlMode.SHOOTER)) { 
-          if (this.currentTurretMode.equals(TurretMode.MANUAL)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
-        }
+        if (this.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
         if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotTurret.runTurretWithInput(0); }
        }, m_robotTurret));
 
