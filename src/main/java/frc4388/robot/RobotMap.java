@@ -196,8 +196,8 @@ public class RobotMap {
 }
 
   /* Climb Subsystem */
-//   public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
-//   public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
+  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
+  public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
 
   /* Hooks Subsystem */
 //   public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);

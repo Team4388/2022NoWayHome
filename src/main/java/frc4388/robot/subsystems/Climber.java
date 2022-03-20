@@ -164,8 +164,8 @@ public class Climber extends SubsystemBase {
   // }
 
   public void setMotors(double shoulderOutput, double elbowOutput) {
-    m_shoulder.set(shoulderOutput * ClimberConstants.INPUT_MULTIPLIER * this.shoulderSpeedLimiter);
-    m_elbow.set(elbowOutput * ClimberConstants.INPUT_MULTIPLIER * this.elbowSpeedLimiter);
+    m_shoulder.set(shoulderOutput * ClimberConstants.INPUT_MULTIPLIER );//* this.shoulderSpeedLimiter);
+    m_elbow.set(elbowOutput * ClimberConstants.INPUT_MULTIPLIER);// * this.elbowSpeedLimiter);
   }
 
   public double[] getJointAngles() {
@@ -206,7 +206,11 @@ public class Climber extends SubsystemBase {
   public void setJointSpeeds(double[] speeds) {
     setJointSpeeds(speeds[0], speeds[1]);
   }
-
+  /**
+   * Velocity PID set for joints
+   * @param shoulderSpeed
+   * @param elbowSpeed
+   */
   public void setJointSpeeds(double shoulderSpeed, double elbowSpeed) {
     m_shoulder.set(TalonFXControlMode.Velocity, shoulderSpeed);
     m_elbow.set(TalonFXControlMode.Velocity, elbowSpeed);
@@ -220,6 +224,7 @@ public class Climber extends SubsystemBase {
    * @param yInput Rate of change of Y position of target point
    * @deprecated use controlJointsWithInput() instead
    */
+  @Deprecated
   public void controlWithInput(double xInput, double yInput) {
     moving = xInput != 0 || yInput != 0;
 
@@ -310,7 +315,7 @@ public class Climber extends SubsystemBase {
    * @return [shoulderAngle, elbowAngle] in radians 
    * @deprecated
    * */
-
+    @Deprecated
    public static double[] getTargetJointAngles(Point targetPoint, double tiltAngle) {
     double [] angles = new double[2];
   
