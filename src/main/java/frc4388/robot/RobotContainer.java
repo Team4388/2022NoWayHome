@@ -293,8 +293,8 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
       .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
-    // new JoystickButton(getDriverController(), XboxController.Button.kX.value)
-    //   .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+      .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
       .whileHeld(new Seek(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry));
@@ -317,8 +317,8 @@ public class RobotContainer {
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
 
         //Toggles extender in and out
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
     //     .whileHeld(new RunCommand(() -> m_robotTurret.gotoZero(), m_robotTurret))
