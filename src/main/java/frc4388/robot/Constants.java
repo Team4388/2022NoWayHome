@@ -289,7 +289,7 @@ public final class Constants {
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 0.7);
 
     public static final double TURRET_FORWARD_HARD_LIMIT = 18.429;
-    public static final double TURRET_REVERSE_HARD_LIMIT = -106.454;
+    public static final double TURRET_REVERSE_HARD_LIMIT = -117.8;
 
     public static final double TURRET_FORWARD_SOFT_LIMIT = TURRET_FORWARD_HARD_LIMIT - 5;
     public static final double TURRET_REVERSE_SOFT_LIMIT = TURRET_REVERSE_HARD_LIMIT + 2;

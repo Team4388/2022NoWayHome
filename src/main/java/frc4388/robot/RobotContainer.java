@@ -192,6 +192,7 @@ public class RobotContainer {
             getOperatorController().getLeftTriggerAxis(), 
             getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
+    m_robotBoomBoom.setDefaultCommand(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.35), m_robotBoomBoom));
     
     // m_robotStorage.setDefaultCommand(
     //     new ManageStorage(m_robotStorage, 
