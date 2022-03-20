@@ -147,9 +147,11 @@ public class Turret extends SubsystemBase {
 
     leftPrevState = leftState; // * Update the state of the left limit switch.
   
-  
     // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
+    runVelocityRamping();
+  }
 
+  public void runVelocityRamping() {
     if (areSoftLimitsEnabled()) {
 
       double currentPos = this.getEncoderPosition();

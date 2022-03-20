@@ -64,7 +64,10 @@ public class Hood extends SubsystemBase {
     SmartDashboard.putNumber("Hood Angle", m_angleEncoder.getPosition());
 
     // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
+    runVelocityRamping();
+  }
 
+  public void runVelocityRamping() {
     if (areSoftLimitsEnabled()) {
       double currentPos = this.getEncoderPosition();
       double forwardDistance = Math.abs(currentPos - ShooterConstants.HOOD_FORWARD_SOFT_LIMIT);

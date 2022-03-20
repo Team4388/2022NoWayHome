@@ -214,6 +214,7 @@ public class Shoot extends CommandBase {
   @Override
   public boolean isFinished() {
     // if (simMode) {
+    SmartDashboard.putBoolean("isAimedInTolerance", isAimedInTolerance);
     return isAimedInTolerance;
     // }
     // return false;
