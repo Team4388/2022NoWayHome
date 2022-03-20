@@ -265,7 +265,7 @@ public class RobotContainer {
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-        .whileHeld(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 1.0, 0.0, true))
+        .whileHeld(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.2, true))
         .whenReleased(() -> m_robotSwerveDrive.stopModules());
         
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
@@ -273,7 +273,7 @@ public class RobotContainer {
         .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
         
     new JoystickButton(getDriverController(), XboxController.Button.kY.value)
-        .whileHeld(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood))
+        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false))
         .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
         .whenReleased(() -> m_robotSwerveDrive.stopModules());
 
@@ -306,9 +306,9 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
         .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whileHeld(new RunCommand(() -> m_robotTurret.gotoZero(), m_robotTurret))
-        .whenReleased(new RunCommand(() -> m_robotTurret.m_boomBoomRotateMotor.set(0), m_robotTurret));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     .whileHeld(new RunCommand(() -> m_robotTurret.gotoZero(), m_robotTurret))
+    //     .whenReleased(new RunCommand(() -> m_robotTurret.m_boomBoomRotateMotor.set(0), m_robotTurret));
 
       // Right Bumper > Storage In
     // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)

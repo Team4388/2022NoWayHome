@@ -82,16 +82,19 @@ public class Shoot extends CommandBase {
     isAimedInTolerance = false;
   }
 
-  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
-    this(swerve, drum, turret, hood, false);
-  }
+  // public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
+  //   this(swerve, drum, turret, hood, false);
+  // }
 
   /**
    * Updates error for custom PID.
    */
   public void updateError() {
     targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
-    error = (targetAngle - turret.getBoomBoomAngleDegrees() + 360) % 360;
+    error = (targetAngle - turret.getBoomBoomAngleDegrees()) % 360;
+    if (error > 180) {
+      error = 360 - error;
+      this.inverted = -1; } else { this.inverted = 1; }
     isAimedInTolerance = (Math.abs(error) <= tolerance);
   }
 
@@ -99,7 +102,7 @@ public class Shoot extends CommandBase {
   @Override
   public void initialize() {
 
-    this.turret.gotoMidpoint();
+    // this.turret.gotoMidpoint();
 
     this.odoX = 0;//-m_swerve.getOdometry().getY();
     this.odoY = -8;//-m_swerve.getOdometry().getX();
@@ -124,13 +127,6 @@ public class Shoot extends CommandBase {
    * Run custom PID.
    */
   public void runPID() {
-    if (error > 180) {
-      error = 360 - error;
-      this.inverted = -1;
-    }
-    else{
-      this.inverted = 1;
-    }
     prevError = error;
     updateError();
     
@@ -151,8 +147,8 @@ public class Shoot extends CommandBase {
     SmartDashboard.putNumber("Shoot.java TargetAngle", this.targetAngle);
     SmartDashboard.putNumber("Normalized Output", this.normOutput);
 
-    this.swerve.driveWithInput(0, 0, normOutput, true);
     this.turret.m_boomBoomRotateMotor.set(normOutput);
+    this.swerve.driveWithInput(0, 0, normOutput, true);
 
     if (this.toShoot) {
       this.hood.runAngleAdjustPID(this.targetHood);
@@ -167,7 +163,7 @@ public class Shoot extends CommandBase {
     // ? return to initial swerve rotation
     // swerve.driveWithInput(0, 0, initialSwerveRotation, true);
 
-    this.swerve.driveWithInput(0.0, 0.0, 0.0, 0.0, true);
+    // this.swerve.driveWithInput(0.0, 0.0, 0.0, 0.0, true);
     this.turret.m_boomBoomRotateMotor.set(0.0);
 
     if (this.toShoot) {

@@ -37,7 +37,7 @@ public final class Constants {
   public static final double LOOP_TIME = 0.02;
 
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 3.0;
+    public static final double ROTATION_SPEED = 2.0;
     public static final double WIDTH = 23.75;
     public static final double HEIGHT = 23.75;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
@@ -278,7 +278,7 @@ public final class Constants {
     public static final double TURRET_CLIMBING_POS = -3.76;
 
     // Shoot Command Constants
-    public static final Gains SHOOT_GAINS = new Gains(0.5, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SHOOT_GAINS = new Gains(3.0, 0.0, 0.0, 0.0, 0, 1.0);
 
     /* Turret Constants */
     // ID
