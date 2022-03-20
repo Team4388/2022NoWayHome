@@ -17,6 +17,7 @@ import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
+import frc4388.robot.subsystems.VisionOdometry;
 import frc4388.utility.DummySensor;
 import frc4388.utility.Gains;
 
@@ -27,6 +28,7 @@ public class Shoot extends CommandBase {
   private Turret turret;
   private BoomBoom drum;
   private Hood hood;
+  private VisionOdometry visionOdometry;
 
   private boolean toShoot;
 
@@ -56,6 +58,8 @@ public class Shoot extends CommandBase {
   private int inverted;
   private double initialSwerveRotation;
 
+  private boolean endsWithLimelight;
+
   /**
    * Creates a new shoot command, allowing the robot to aim and be ready to fire a ball
    * 
@@ -66,7 +70,7 @@ public class Shoot extends CommandBase {
    * 
    * @author Aarav Shah
    */
-  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, boolean toShoot) {
+  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry, boolean toShoot, boolean endsWithLimelight) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.swerve = swerve;
     this.drum = drum;
@@ -74,6 +78,7 @@ public class Shoot extends CommandBase {
     this.hood = hood;
 
     this.toShoot = toShoot;
+    this.endsWithLimelight = endsWithLimelight;
     
     kP = turretGains.kP;
     kI = turretGains.kI;
@@ -89,7 +94,7 @@ public class Shoot extends CommandBase {
 
     this.inverted = 1;
     
-    addRequirements(this.swerve, this.drum, this.turret, this.hood);
+    addRequirements(this.swerve, this.drum, this.turret, this.hood, this.visionOdometry);
   }
   
   // public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
@@ -194,12 +199,15 @@ public class Shoot extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    
-    if (isAimedInTolerance && !timerStarted) {
-      timerStarted = true;
-      startTime = System.currentTimeMillis();
+    if (!endsWithLimelight) {
+      if (isAimedInTolerance && !timerStarted) {
+        timerStarted = true;
+        startTime = System.currentTimeMillis();
+      }
+      SmartDashboard.putBoolean("isDone", isAimedInTolerance && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+      return (isAimedInTolerance && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+    } else {
+      return this.visionOdometry.m_camera.getLatestResult().hasTargets();
     }
-    SmartDashboard.putBoolean("isDone", isAimedInTolerance && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
-    return (isAimedInTolerance && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
   }
 }

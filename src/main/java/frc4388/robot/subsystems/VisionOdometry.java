@@ -31,7 +31,7 @@ import frc4388.utility.VisionObscuredException;
  */
 public class VisionOdometry extends SubsystemBase {
   // roborio ip & port: 10.43.88.2:1735
-  private PhotonCamera m_camera;
+  public PhotonCamera m_camera;
 
   private SwerveDrive m_drive;
   private Turret m_shooter;
