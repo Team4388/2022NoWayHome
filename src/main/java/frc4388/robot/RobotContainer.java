@@ -178,13 +178,21 @@ public class RobotContainer {
     
     // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
-            getDriverController().getLeftX(),
-            getDriverController().getLeftY(),
-            getDriverController().getRightX(),
-            getDriverController().getRightY(),
-            true),
-            m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
+        new RunCommand(() -> {
+          if (this.currentControlMode.equals(ControlMode.SHOOTER)) {
+            m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
+                                               getDriverController().getLeftY(),
+                                               getDriverController().getRightX(),
+                                               getDriverController().getRightY(),
+                                               true); }
+          if (this.currentControlMode.equals(ControlMode.CLIMBER)) {
+            m_robotSwerveDrive.driveWithInput( 0, 
+                                               0,
+                                               0,
+                                               0,
+                                               true);
+          }}
+          , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
     // Intake with Triggers
     m_robotIntake.setDefaultCommand(
@@ -209,17 +217,17 @@ public class RobotContainer {
         new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
       // Turret Manual
-    m_robotTurret.setDefaultCommand(
-        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
-
     // m_robotTurret.setDefaultCommand(
-    //    new RunCommand(() -> {
-    //     if (this.currentControlMode.equals(ControlMode.SHOOTER)) { 
-    //       if (this.currentTurretMode.equals(TurretMode.MANUAL)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
-    //     }
-    //     if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotTurret.runTurretWithInput(0); }
-    //    }, m_robotTurret));
+    //     new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
+    //     m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
+
+    m_robotTurret.setDefaultCommand(
+       new RunCommand(() -> {
+        if (this.currentControlMode.equals(ControlMode.SHOOTER)) { 
+          if (this.currentTurretMode.equals(TurretMode.MANUAL)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
+        }
+        if (this.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotTurret.runTurretWithInput(0); }
+       }, m_robotTurret));
 
     m_robotHood.setDefaultCommand(
        new RunCommand(() -> {
