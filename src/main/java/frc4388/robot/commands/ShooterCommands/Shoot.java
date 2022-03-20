@@ -114,9 +114,6 @@ public class Shoot extends CommandBase {
     this.targetHood = drum.getHood(distance);
 
     this.targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
-
-    // deadzone processing
-    if (AimToCenter.isDeadzone(targetAngle)) {}
     
     // initial error
     updateError();
@@ -166,8 +163,17 @@ public class Shoot extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // return to initial swerve rotation
+    
+    // ? return to initial swerve rotation
     // swerve.driveWithInput(0, 0, initialSwerveRotation, true);
+
+    this.swerve.driveWithInput(0.0, 0.0, 0.0, 0.0, true);
+    this.turret.m_boomBoomRotateMotor.set(0.0);
+
+    if (this.toShoot) {
+      this.hood.runHood(0.0);
+      this.drum.runDrumShooter(0.0);
+    }
   }
 
   // Returns true when the command should end.
