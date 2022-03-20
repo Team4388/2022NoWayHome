@@ -170,9 +170,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
     // SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
     // odo chooser stuff
-    addOdoChoices(new Pose2d(1, 1, new Rotation2d(Math.PI/6)), 
-                  new Pose2d(1, 2, new Rotation2d(Math.PI/3)),
-                  new Pose2d(1, 3, new Rotation2d(Math.PI/4)));
+    addOdoChoices(new Pose2d(3.2766, -0.9398, new Rotation2d(0)));
     updateOdoChooser();
     SmartDashboard.putData("Odometry Chooser", odoChooser);
   }
@@ -185,7 +183,7 @@ public class Robot extends TimedRobot {
 
   public void addOdoChoices(Pose2d... points) {
     for (Pose2d point : points) {
-      String key = "(" + point.getX() + ", " + point.getY() + ", " + point.getRotation().getDegrees() + "°)";
+      String key = "(" + point.getX() + ", " + point.getY() + ", " + point.getRotation().getDegrees() + ")";
       odoChoices.put(key, point);
     }
   }
@@ -253,17 +251,13 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     LOGGER.fine("teleopInit()");
 
-
     Robot.alliance = DriverStation.getAlliance();
-
-    // m_robotContainer.m_robotSwerveDrive.m_gyro.addYaw(-1 * m_robotContainer.m_robotSwerveDrive.m_gyro.getYaw());
 
     selectedOdo = odoChooser.getSelected();
     if (selectedOdo == null) {
       selectedOdo = m_robotContainer.getOdometry();
     }
-    // m_robotContainer.resetOdometry(selectedOdo);
-
+    m_robotContainer.resetOdometry(selectedOdo);
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

@@ -153,8 +153,8 @@ public class Claws extends SubsystemBase {
 
   // @Override
   public void periodic() {
-    SmartDashboard.putNumber("Servo Left Pos", m_leftClaw.getRaw());
-    SmartDashboard.putNumber("Servo Right Pos", m_rightClaw.getRaw());
+    // SmartDashboard.putNumber("Servo Left Pos", m_leftClaw.getRaw());
+    // SmartDashboard.putNumber("Servo Right Pos", m_rightClaw.getRaw());
   //   if (fullyOpen() || fullyClosed()) {
   //     m_leftClaw.setSpeed(0.0);
   //     m_rightClaw.setSpeed(0.0);

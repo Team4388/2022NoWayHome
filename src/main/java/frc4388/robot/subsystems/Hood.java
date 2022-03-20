@@ -61,7 +61,7 @@ public class Hood extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Hood Angle", m_angleEncoder.getPosition());
+    // SmartDashboard.putNumber("Hood Angle", m_angleEncoder.getPosition());
 
     // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
     runVelocityRamping();
