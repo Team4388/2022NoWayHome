@@ -131,8 +131,8 @@ public class RobotContainer {
   // public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
 
   // Controllers
-  private final XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
-  private final XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
+  private final static XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
+  private final static XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
   private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
 
   // Autonomous
@@ -270,31 +270,29 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-        .whileHeld(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.2, true))
-        .whenReleased(() -> m_robotSwerveDrive.stopModules());
+    // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
+    //     .whileHeld(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.2, true))
+    //     .whenReleased(() -> m_robotSwerveDrive.stopModules());
         
-    new JoystickButton(getDriverController(), XboxController.Button.kB.value)
-        .whileHeld(new AimToCenter(m_robotTurret, m_robotVisionOdometry, m_robotSwerveDrive::getOdometry))
-        .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
+    // new JoystickButton(getDriverController(), XboxController.Button.kB.value)
+    //     .whileHeld(new AimToCenter(m_robotTurret, m_robotVisionOdometry, m_robotSwerveDrive::getOdometry))
+    //     .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
         
     // new JoystickButton(getDriverController(), XboxController.Button.kY.value)
     //     .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false));
     //      .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
     //      .whenReleased(() -> m_robotSwerveDrive.stopModules());
         
-        new JoystickButton(getDriverController(), XboxController.Button.kX.value)
-        .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
-        .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
-        .whenReleased(new InstantCommand(() -> m_robotHood.runHood(0.0), m_robotHood))
-        .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
+        // new JoystickButton(getDriverController(), XboxController.Button.kX.value)
+        // .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
+        // .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
+        // .whenReleased(new InstantCommand(() -> m_robotHood.runHood(0.0), m_robotHood))
+        // .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
         
         /* Operator Buttons */
         
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
         .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false));
-        //!.whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
-        //!.whenReleased(() -> m_robotSwerveDrive.stopModules());
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //   .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
@@ -340,9 +338,10 @@ public class RobotContainer {
 
        //B > Shoot with Lime
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
-        .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(0)));
+        // .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
+        // .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)))
+        .whenPressed(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
+        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
         // .whileHeld%
 
     /* Button Box Buttons */
@@ -414,11 +413,11 @@ public class RobotContainer {
     return null;
   }
 
-  public XboxController getDriverController() {
+  public static XboxController getDriverController() {
     return m_driverXbox;
   }
 
-  public XboxController getOperatorController() {
+  public static XboxController getOperatorController() {
     return m_operatorXbox;
   }
 

@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants;
+import frc4388.robot.Robot;
+import frc4388.robot.RobotContainer;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.subsystems.BoomBoom;
@@ -160,7 +162,7 @@ public class Shoot extends CommandBase {
 
     this.turret.runTurretWithCustomPID(normOutput);
     // this.turret.m_boomBoomRotateMotor.set(normOutput);
-    this.swerve.driveWithInput(0, 0, normOutput * (this.swerveGains.kP/this.turretGains.kP), false); // ? should the output be field relative
+    this.swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), normOutput * (this.swerveGains.kP/this.turretGains.kP), true); // ? should the output be field relative
 
     if (this.toShoot) {
       this.hood.runAngleAdjustPID(this.targetHood);

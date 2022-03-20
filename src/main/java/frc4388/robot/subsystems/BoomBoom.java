@@ -189,7 +189,8 @@ public class BoomBoom extends SubsystemBase {
    * @param speed percent output form -1.0 to 1.0
    */
   public void runDrumShooter(double speed) {
-    m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed + speed2);
+    // m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed + speed2);
+    m_shooterFalconLeft.set(speed);
     SmartDashboard.putNumber("BoomBoom percent speed", speed + speed2);
     SmartDashboard.putNumber("BoomBoom current stator", m_shooterFalconLeft.getStatorCurrent());
     SmartDashboard.putNumber("BoomBoom current supply", m_shooterFalconLeft.getSupplyCurrent());

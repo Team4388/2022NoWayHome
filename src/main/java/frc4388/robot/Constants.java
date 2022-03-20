@@ -279,7 +279,7 @@ public final class Constants {
 
     // Shoot Command Constants
     public static final Gains TURRET_SHOOT_GAINS = new Gains(3.0, 0.0, 0.0, 0.0, 0, 1.0);
-    public static final Gains SWERVE_SHOOT_GAINS = new Gains(4.0, 0.0, 0.0, 0.0, 0, 1.0);
+    public static final Gains SWERVE_SHOOT_GAINS = new Gains(6.0, 0.0, 0.0, 0.0, 0, 1.0);
 
     /* Turret Constants */
     // ID
