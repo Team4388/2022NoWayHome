@@ -71,7 +71,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import frc4388.robot.commands.CommandChooser;
+import frc4388.robot.commands.ComplexCommandChooser;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
 import frc4388.robot.commands.ButtonBoxCommands.RunTurretOrClimberAuto;
 import frc4388.robot.commands.ClimberCommands.RunClaw;
@@ -362,14 +362,14 @@ public class RobotContainer {
     // toggle manual mode and autonomous mode based on the current control mode
     new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
 
-    .whenPressed(new InstantCommand(() -> {
-      if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { m_robotTurret.gotoZero(); }
-    }, m_robotTurret))
+    // .whenPressed(new InstantCommand(() -> {
+    //   if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { m_robotTurret.gotoZero(); }
+    // }, m_robotTurret))
 
-      .whenPressed(new InstantCommand(() -> {
-        if (this.currentControlMode.equals(SubsystemMode.SHOOTER)) { this.currentTurretMode = ControlMode.MANUAL; } 
-        if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { this.currentClimberMode = ControlMode.AUTONOMOUS; }
-      }))
+    //   .whenPressed(new InstantCommand(() -> {
+    //     if (this.currentControlMode.equals(SubsystemMode.SHOOTER)) { this.currentTurretMode = ControlMode.MANUAL; } 
+    //     if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { this.currentClimberMode = ControlMode.AUTONOMOUS; }
+    //   }))
 
       // * custom Command inside InstantCommand
       // .whenPressed(new InstantCommand(() -> {
@@ -382,19 +382,19 @@ public class RobotContainer {
       // .whenPressed(new RunTurretOrClimberAuto(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry, m_robotClimber, m_robotClaws))
 
       // * CommandChooser with BooleanSuppliers
-      .whenPressed(new CommandChooser(new HashMap<Command, BooleanSupplier>() {{
+      .whenPressed(new ComplexCommandChooser(new HashMap<Command, BooleanSupplier>() {{
         put(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), () -> currentControlMode.equals(SubsystemMode.CLIMBER));
         put(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), () -> currentControlMode.equals(SubsystemMode.SHOOTER));
-      }}))
+      }}));
       // .whenPressed(new CommandChooser(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), 
       //                                 new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), 
       //                                 () -> this.currentControlMode.equals(SubsystemMode.CLIMBER),
       //                                 () -> this.currentControlMode.equals(SubsystemMode.SHOOTER)))
 
-      .whenReleased(new InstantCommand(() -> {
-        if (this.currentControlMode.equals(SubsystemMode.SHOOTER)) { this.currentTurretMode = ControlMode.AUTONOMOUS; }
-        if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { this.currentClimberMode = ControlMode.MANUAL; }
-      }));
+      // .whenReleased(new InstantCommand(() -> {
+      //   if (this.currentControlMode.equals(SubsystemMode.SHOOTER)) { this.currentTurretMode = ControlMode.AUTONOMOUS; }
+      //   if (this.currentControlMode.equals(SubsystemMode.CLIMBER)) { this.currentClimberMode = ControlMode.MANUAL; }
+      // }));
 
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
     .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))

@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class CommandChooser extends CommandBase {
+public class ComplexCommandChooser extends CommandBase {
 
   private HashMap<Command, BooleanSupplier> commandMap;
   
@@ -24,7 +24,7 @@ public class CommandChooser extends CommandBase {
    * @author Aarav Shah
    * @author Daniel Thomas McGrath
   */
-  public CommandChooser(HashMap<Command, BooleanSupplier> commandMap) {
+  public ComplexCommandChooser(HashMap<Command, BooleanSupplier> commandMap) {
     this.commandMap = commandMap;
 
     Set<Subsystem> allReqs = Collections.emptySet();
