@@ -391,6 +391,53 @@ public class RobotContainer {
   }
 
   /**
+   * Generate autonomous
+   * @param maxVel max velocity for the path (null to override default value of 5.0)
+   * @param maxAccel max acceleration for the path (null to override default value of 5.0)
+   * @param inputs strings (paths) or commands you want to run (in order)
+   * @return array of commands
+   */
+  public Command[] buildAuto(Double maxVel, Double maxAccel, Object... inputs) {
+    maxVel = Objects.requireNonNullElse(maxVel, SwerveDriveConstants.PATH_MAX_VELOCITY);
+    maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.PATH_MAX_ACCELERATION);
+
+    ArrayList<Command> commands = new ArrayList<Command>();
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
+
+    PIDController xController = SwerveDriveConstants.X_CONTROLLER;
+    PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
+    ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    // parse input
+    for (int i=0; i<inputs.length; i++) {
+      if (inputs[i] instanceof String) {
+
+        PathPlannerTrajectory traj = PathPlanner.loadPath(inputs[i].toString(), maxVel, maxAccel);
+        PathPlannerState initState = (PathPlannerState) traj.sample(0);
+        commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(initState.poseMeters.getTranslation(), initState.holonomicRotation))));
+        commands.add(new PPSwerveControllerCommand(
+                          traj,
+                          m_robotSwerveDrive::getOdometry,
+                          m_robotSwerveDrive.m_kinematics,
+                          xController,
+                          yController,
+                          thetaController,
+                          m_robotSwerveDrive::setModuleStates,
+                          m_robotSwerveDrive));
+      }
+      if (inputs[i] instanceof Command) {
+        commands.add((Command) inputs[i]);
+      }
+    }
+    
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.stopModules()));
+    Command[] ret = new Command[commands.size()];
+    ret = commands.toArray(ret);
+    return ret;
+  }
+
+  /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
@@ -416,7 +463,17 @@ public class RobotContainer {
     //   return new RunCommand(() -> {
     //   }).withName("No Autonomous Path");
     // }
-    return null;
+
+    // ! this will run each of the specified PathPlanner paths in sequence.
+    // * return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3"));
+
+    // ! this will run each of the specified PathPlanner paths in sequence, while simultaneously running the intake throughout all the paths.
+    // * return new ParallelCommandGroup(buildAuto(null,
+    // *                                           null,
+    // *                                           new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3")),
+    // *                                           new RunCommand(() -> m_robotIntake.runAtOutput(0.5))));
+
+   return null;
   }
 
   public static XboxController getDriverController() {
