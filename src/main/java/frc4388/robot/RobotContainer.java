@@ -402,7 +402,6 @@ public class RobotContainer {
     maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.PATH_MAX_ACCELERATION);
 
     ArrayList<Command> commands = new ArrayList<Command>();
-    commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
 
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
@@ -473,7 +472,7 @@ public class RobotContainer {
     // *                                           new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3")),
     // *                                           new RunCommand(() -> m_robotIntake.runAtOutput(0.5))));
 
-   return null;
+    return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Move Forward")); // test command
   }
 
   public static XboxController getDriverController() {
