@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -71,42 +72,33 @@ public class RobotContainer {
     configureButtonBindings();
     /* Default Commands */
 
-      // Swerve Drive with Input
+    // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> m_robotSwerveDrive.driveWithInput(
             getDriverController().getLeftX(),
             getDriverController().getLeftY(),
-            //getDriverController().getRightX(),
             getDriverController().getRightX(),
-             getDriverController().getRightY(),
+            getDriverController().getRightY(),
             true),
-            m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
-      // Intake with Triggers
+          m_robotSwerveDrive));
+    // Intake with Triggers
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
             getOperatorController().getLeftTriggerAxis(), 
             getOperatorController().getRightTriggerAxis()),
-            m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
-      // Storage Management
-    /*m_robotStorage.setDefaultCommand(
-        new RunCommand(() -> m_robotStorage.manageStorage(), 
-        m_robotStorage).withName("Storage manageStorage defaultCommand"));*/
-      // Serializer Management
-    // m_robotSerializer.setDefaultCommand(
-    //     new RunCommand(() -> m_robotSerializer.setSerializer(0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
-    //     m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
-      // Turret Manual
-    m_robotTurret.setDefaultCommand(
-        new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-        m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
-    m_robotHood.setDefaultCommand(
-       new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY() * 0.1), m_robotHood));
-    // m_robotTurret.setDefaultCommand(
-    //     new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
+            m_robotIntake));
+    // Storage Management
+    // m_robotStorage.setDefaultCommand(new RunCommand(() -> m_robotStorage.manageStorage(), m_robotStorage).withName("Storage manageStorage defaultCommand"));
+    // Serializer Management
+    // m_robotSerializer.setDefaultCommand(new RunCommand(() -> m_robotSerializer.setSerializer(0.8),//m_robotSerializer.setSerializerStateWithBeam(), m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
+    // Turret Manual
+    m_robotTurret.setDefaultCommand(new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), m_robotTurret));
+    m_robotHood.setDefaultCommand(new RunCommand(() -> m_robotHood.runHood(getOperatorController().getRightY() * 0.1), m_robotHood));
+    // m_robotTurret.setDefaultCommand(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
 
     // continually sends updates to the Blinkin LED controller to keep the lights on
-    
     // m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED).withName("LED update defaultCommand"));
+
     // Creates a button on the SmartDashboard that will record the path of the robot.
     SmartDashboard.putData("Path Recording", m_pathChooser);
   }
@@ -118,6 +110,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    // Iterate over all Xbox controller buttons.
     for (XboxController.Button binding : XboxController.Button.values()) {
       /* ------------------------------------ Driver ------------------------------------ */
       JoystickButton button = new JoystickButton(getDriverController(), binding.value);
@@ -126,13 +119,13 @@ public class RobotContainer {
       else if (binding == XboxController.Button.kRightBumper)
         /* Right Bumper > Shift Up */ button.whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
       else if (binding == XboxController.Button.kLeftStick)
-        /* Left Stick > Unbound */ {/* No Commands */}
+        /* Left Stick > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kRightStick)
-        /* Right Stick > Unbound */ {/* No Commands */}
+        /* Right Stick > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kA)
-        /* A > Unbound */ {/* No Commands */}
+        /* A > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kB)
-        /* B > Unbound */ {/* No Commands */}
+        /* B > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kX)
         /* X > TEMP */ button.whenPressed(() -> {
           m_robotMap.leftFront.reset();
@@ -141,45 +134,37 @@ public class RobotContainer {
           m_robotMap.rightBack.reset();
         });
       else if (binding == XboxController.Button.kY)
-        /* Y > Unbound */ {/* No Commands */}
+        /* Y > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kBack)
-        /* Start > Reset Odometry */ button.whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+        /* Back > Reset Odometry */ button.whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
       else if (binding == XboxController.Button.kStart)
         /* Start > Reset Gyro */ button.whenPressed(m_robotSwerveDrive::resetGyro);
 
       /* ------------------------------------ Operator ------------------------------------ */
       button = new JoystickButton(getDriverController(), binding.value);
       if (binding == XboxController.Button.kLeftBumper)
-        /* Left Bumper > Storage Out */ button
-          .whileHeld(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED), m_robotStorage)
-          .whenReleased(() -> m_robotStorage.runStorage(0.0), m_robotStorage);
+        /* Left Bumper > Storage Out */ button.whileHeld(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED), m_robotStorage)
+                                              .whenReleased(() -> m_robotStorage.runStorage(0.0), m_robotStorage);
       else if (binding == XboxController.Button.kRightBumper)
-        /* Right Bumper > Storage In */ button
-          .whileHeld(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
-          .whenReleased(() -> m_robotStorage.runStorage(0.0), m_robotStorage);
+        /* Right Bumper > Storage In */ button.whileHeld(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
+                                              .whenReleased(() -> m_robotStorage.runStorage(0.0), m_robotStorage);
       else if (binding == XboxController.Button.kLeftStick)
-        /* Left Stick > Unbound */ {/* No Commands */}
+        /* Left Stick > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kRightStick)
-        /* Right Stick > Unbound */ {/* No Commands */}
+        /* Right Stick > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kA)
-        // /* A > Shoot with Odo */ // button.whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood))
-        /* A > Unbound */ {/* No Commands */}
+        /* A > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kB)
-        // /* B > Shoot with Lime */ // button.whenPressed(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotSwerveDrive, m_robotVisionOdometry))
-        /* B > Reset Hood*/
-        button.whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));
+        /* B > Reset Hood*/ button.whenPressed(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0)));
       else if (binding == XboxController.Button.kX)
-        // /* X > Extend Intake */ // button.whenPressed(() -> m_robotIntake.runExtender(true))
-        /* X > Run Shooter */ button
-          .whileHeld(() -> m_robotBoomBoom.runDrumShooter(0.3))
-          .whenReleased(() -> m_robotBoomBoom.runDrumShooter(0.0));
+        /* X > Run Shooter */ button.whileHeld(() -> m_robotBoomBoom.runDrumShooter(0.3))
+                                    .whenReleased(() -> m_robotBoomBoom.runDrumShooter(0.0));
       else if (binding == XboxController.Button.kY)
-        // /* Y >  Retract Intake */ // operatorButton.whenPressed(() -> m_robotIntake.runExtender(false))
-        /* Y > Unbound */ {/* No Commands */}
+        /* Y > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kBack)
-        /* Back > Unbound */ {/* No Commands */}
+        /* Back > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
       else if (binding == XboxController.Button.kStart)
-        /* Start > Unbound */ {/* No Commands */}
+        /* Start > Unbound */ button.whenPressed(new PrintCommand("Unbound"));
     }
   }
 
@@ -215,6 +200,10 @@ public class RobotContainer {
     return m_driverXbox;
   }
 
+  public XboxController getOperatorController() {
+    return m_operatorXbox;
+  }
+
   /**
    * Get odometry.
    * 
@@ -231,9 +220,5 @@ public class RobotContainer {
    */
   public void resetOdometry(Pose2d pose) {
     m_robotSwerveDrive.resetOdometry(pose);
-  }
-
-  public XboxController getOperatorController() {
-    return m_operatorXbox;
   }
 }
