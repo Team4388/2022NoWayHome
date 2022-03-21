@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -17,6 +18,7 @@ import java.util.stream.IntStream;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.diffplug.common.base.Errors;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.CSV;
 import frc4388.utility.Gains;
+import frc4388.utility.NumericData;
 
 public class BoomBoom extends SubsystemBase {
   private static final Logger LOGGER = Logger.getLogger(BoomBoom.class.getSimpleName());
@@ -56,108 +59,23 @@ public class BoomBoom extends SubsystemBase {
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
     m_shooterFalconLeft = shooterFalconLeft;
     m_shooterFalconRight = shooterFalconRight;
-
-    try {
-      // This is a helper class that allows us to read a CSV file into a Java array.
-      CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
-        // This is a regular expression that removes all parentheses from the header of the CSV file.
-        private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
-
-        /**
-         * Removes the parentheses from the CSV header
-         * 
-         * @param header The header to be sanitized.
-         * @return The headerSanitizer method is overriding the headerSanitizer method in the parent class.
-         *         The parentheses.matcher(header) is matching the header with the parentheses regular
-         *         expression. The replaceAll method is replacing all of the parentheses with an empty
-         *         string. The super.headerSanitizer(parentheses.matcher(header).replaceAll("")) is calling
-         *         the parent sanitizer.
-         */
-        @Override
-        protected String headerSanitizer(final String header) {
-          return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
-        }
-      };
-      // This is reading the CSV file into a Java array.
-      m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
-      // This is a running a helper method that is logging the contents of the table to the console on a new thread.
-      new Thread(() -> LOGGER.fine(() -> CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
-    } catch (final IOException exception) {
-      ShooterTableEntry dummyEntry = new ShooterTableEntry();
-      dummyEntry.distance = 0.0;
-      dummyEntry.hoodExt = 0.0;
-      dummyEntry.drumVelocity = 0.0;
-      m_shooterTable = new ShooterTableEntry[] { dummyEntry };
-      LOGGER.log(Level.SEVERE, "Exception while reading shooter CSV table.", exception);
-    }
+    m_shooterTable = readShooterTable();
+    // Run a helper method that logs the contents of the table on a new thread.
+    new Thread(() -> LOGGER.fine(() -> CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
   }
 
-  public Double getVelocity(final Double distance) {
+  public Double getVelocity(Double distance) {
     // This is a function that takes a value (distance) and returns a value (drumVelocity) that is a
     // linear interpolation of the two values (drumVelocity) at the two closest points in the table
     // (m_shooterTable) to the given value (distance).
-    return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
+    return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
   }
 
-  public Double getHood(final Double distance) {
+  public Double getHood(Double distance) {
     // This is a function that takes a value (distance) and returns a value (hoodExt) that is a linear
     // interpolation of the two values (hoodExt) at the two closest points in the table (m_shooterTable)
     // to the given value (distance).
-    return linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
-  }
-
-  /**
-   * Using the given lookup value (x) and lookup getter function, locates the nearest entries in the
-   * given table to be used as the lower (x0) and upper (x1) bounds for interpolation. Returns the
-   * interpolation (y) between the two values (y0 and y1) accquired by applying the target getter
-   * function to the lower and upper bounds entries.
-   * 
-   * @param table An array of entries to search through.
-   * @param lookupValue The value to lookup in the table.
-   * @param lookupGetter A function that takes an entry from the table and returns .
-   * @param targetGetter A function that takes an E and returns a Number.
-   * @return The interpolated value.
-   */
-  private static <E> Number linearInterpolate(final E[] table, final Number lookupValue, final Function<E, Number> lookupGetter, final Function<E, Number> targetGetter) {
-    final Map.Entry<Integer, E> closestEntry = lookup(table, lookupValue.doubleValue(), lookupGetter, false).orElse(Map.entry(table.length - 1, table[table.length - 1]));
-    final E closestRecord = closestEntry.getValue();
-    final int closestRecordIndex = closestEntry.getKey();
-    final E neighborRecord = table[lookupValue.doubleValue() <= lookupGetter.apply(closestRecord).doubleValue() ? Math.max(closestRecordIndex == 0 ? 1 : 0, closestRecordIndex - 1) : Math.min(closestRecordIndex + 1, table.length - (closestRecordIndex == table.length - 1 ? 2 : 1))];
-    return lerp2(lookupValue, lookupGetter.apply(closestRecord), targetGetter.apply(closestRecord), lookupGetter.apply(neighborRecord), targetGetter.apply(neighborRecord));
-  }
-
-  /**
-   * If the value is in the table, return the entry. Otherwise, return the entry with the closest
-   * value
-   * 
-   * @param table The array of values to search.
-   * @param value The value to search for.
-   * @param valueGetter A function that takes an element of the table and returns a Number to compare
-   *        with the given value.
-   * @param exactMatch If true, the lookup will only return a match if the value is exactly equal to
-   *        the value of the entry. If false, the lookup will return a match with a value closest to
-   *        the given value.
-   * @return The entry with the closest value to the given value.
-   */
-  private static <E> Optional<Map.Entry<Integer, E>> lookup(final E[] table, final Number value, final Function<E, Number> valueGetter, final boolean exactMatch) {
-    final Optional<Map.Entry<Integer, E>> match = IntStream.range(0, table.length).mapToObj(i -> Map.entry(i, table[i])).min(Comparator.comparingDouble(e -> Math.abs(valueGetter.apply(e.getValue()).doubleValue() - value.doubleValue())));
-    return !exactMatch || match.map(e -> valueGetter.apply(e.getValue()).equals(value)).orElse(false) ? match : Optional.empty();
-  }
-
-  /**
-   * Given a value x, and two values x0 and x1, and two values y0 and y1, return a value y that is a
-   * linear interpolation of the two values y0 and y1
-   * 
-   * @param x The value to interpolate.
-   * @param x0 the x coordinate of the lower bound to interpolate to
-   * @param y0 The value at x0.
-   * @param x1 the x-coordinate of the upper bound to interpolate to
-   * @param y1 The value at x1.
-   * @return The interpolation between y0 and y1 at x.
-   */
-  private static Number lerp2(final Number x, final Number x0, final Number y0, final Number x1, final Number y1) {
-    final Number f = (x.doubleValue() - x0.doubleValue()) / (x1.doubleValue() - x0.doubleValue());
-    return (1.0 - f.doubleValue()) * y0.doubleValue() + f.doubleValue() * y1.doubleValue();
+    return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
   }
 
   @Override
@@ -198,5 +116,39 @@ public class BoomBoom extends SubsystemBase {
     // m_shooterFalconLeft.set(controller.calculate(encoder.getRate(), targetVel) + 0.9 *
     // feedforward.calculate(targetVel));
     // m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
+  }
+
+  private static ShooterTableEntry[] readShooterTable() {
+    try {
+      // This is a helper class that allows us to read a CSV file into a Java array.
+      CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
+        // This is a regular expression that removes all parentheses from the header of the CSV file.
+        private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
+
+        /**
+         * Removes the parentheses from the CSV header
+         * 
+         * @param header The header to be sanitized.
+         * @return The headerSanitizer method is overriding the headerSanitizer method in the parent class.
+         *         The parentheses.matcher(header) is matching the header with the parentheses regular
+         *         expression. The replaceAll method is replacing all of the parentheses with an empty
+         *         string. The super.headerSanitizer(parentheses.matcher(header).replaceAll("")) is calling
+         *         the parent sanitizer.
+         */
+        @Override
+        protected String headerSanitizer(String header) {
+          return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
+        }
+      };
+      // This is reading the CSV file into a Java array.
+      return csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
+    } catch (IOException exception) {
+      ShooterTableEntry dummyEntry = new ShooterTableEntry();
+      dummyEntry.distance = 0.0;
+      dummyEntry.hoodExt = 0.0;
+      dummyEntry.drumVelocity = 0.0;
+      LOGGER.log(Level.SEVERE, "Exception while reading shooter CSV table.", exception);
+      return new ShooterTableEntry[] { dummyEntry };
+    }
   }
 }

@@ -30,7 +30,6 @@ public final class Main {
    */
   public static void main(String... args) {
     AnsiLogging.systemInstall();
-    DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
     RobotBase.startRobot(Robot::new);
   }
 }

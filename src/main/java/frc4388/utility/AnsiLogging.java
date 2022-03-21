@@ -19,6 +19,9 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
+import com.diffplug.common.base.DurianPlugins;
+import com.diffplug.common.base.Errors;
+
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.Ansi.Color;
 import org.fusesource.jansi.AnsiConsole;
@@ -47,6 +50,8 @@ public class AnsiLogging {
       System.setOut(printStreamLogger(Logger.getGlobal(), "out", Level.INFO));
       // Sends standard error output stream messages through a logger.
       System.setErr(printStreamLogger(Logger.getGlobal(), "err", Level.SEVERE));
+      // This is registering a plugin that will log Durian errors to the console using a logger.
+      DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }

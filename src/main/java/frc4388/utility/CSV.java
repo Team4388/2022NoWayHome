@@ -1,3 +1,9 @@
+/*
+ * Copyright 2021 nathanrsxtn
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package frc4388.utility;
 
 import java.awt.Color;
@@ -29,6 +35,9 @@ import java.util.stream.Stream;
 
 /**
  * Reads and parses a CSV file and returns an array of records.
+ * 
+ * This copy is abbreviated to exclude functions that are not essential to this project.
+ * @author nathanrsxtn
  */
 public class CSV<R> {
   private static final Pattern SANITIZER = Pattern.compile("[^$\\w,]");
@@ -55,9 +64,9 @@ public class CSV<R> {
    * Creates a new {@code CSV} instance and prepares for populating the fields of objects created by
    * the given generator. Private fields and fields of primitive types are not supported.
    * @param generator a parameterless supplier which produces a new object with any number of fields
-   *                  corresponding to header names from a CSV file. The first character of the names
-   *                  from the header in the CSV file will be made lowercase and invalid characters
-   *                  will be removed to match Java naming conventions.
+   *        corresponding to header names from a CSV file. The first character of the names from the
+   *        header in the CSV file will be made lowercase and invalid characters will be removed to
+   *        match Java naming conventions.
    * @see #read(Path)
    */
   @SuppressWarnings("unchecked")
@@ -69,14 +78,13 @@ public class CSV<R> {
     this.setters = new HashMap<>();
     for (final Field field : clazz.getFields()) {
       final Function<String, ?> parser = Modifier.isStatic(field.getModifiers()) ? null : fieldParsers.computeIfAbsent(field.getType(), CSV::getTypeParser);
-      if (parser != null)
-        this.setters.put(field.getName(), (final R obj, final String rawValue) -> {
-          try {
-            field.set(obj, rawValue.isEmpty() ? null : parser.apply(rawValue));
-          } catch (final IllegalAccessException e) {
-            throw new RuntimeException(e);
-          }
-        });
+      if (parser != null) this.setters.put(field.getName(), (final R obj, final String rawValue) -> {
+        try {
+          field.set(obj, rawValue.isEmpty() ? null : parser.apply(rawValue));
+        } catch (final IllegalAccessException e) {
+          throw new RuntimeException(e);
+        }
+      });
     }
   }
 
@@ -93,7 +101,7 @@ public class CSV<R> {
     try (final BufferedReader reader = Files.newBufferedReader(path)) {
       final BiConsumer<R, String>[] fieldSetters = Stream.of(headerSanitizer(reader.readLine()).split(",")).map(this::nameProcessor).map(setters::get).toArray(BiConsumer[]::new);
       final Stream<String> lines = reader.lines();
-      return lines.filter(Predicate.not(String::isBlank)).map(line -> deserializeRecordString(line, fieldSetters, generator.get())).toArray(this.arrayGenerator);
+      return lines.filter(Predicate.not(String::isBlank)).map(line -> deserializeRecordString(line, fieldSetters, generator.get())).toArray(arrayGenerator);
     }
   }
 
@@ -117,12 +125,10 @@ public class CSV<R> {
         if (countTrailing(field, '"') % 2 == 0) {
           tryFieldEndFromIndex = tryFieldEndIndex + 1;
           continue;
-        } else
-          field = field.substring(1, fieldLength - 1).replace("\"\"", "\"");
+        } else field = field.substring(1, fieldLength - 1).replace("\"\"", "\"");
       }
       final BiConsumer<R, String> setter = fieldParseSetters[i];
-      if (setter != null)
-        setter.accept(object, field);
+      if (setter != null) setter.accept(object, field);
       tryFieldEndFromIndex = fieldBeginIndex = tryFieldEndIndex + 1;
       i++;
     }
@@ -144,11 +150,10 @@ public class CSV<R> {
       rows.add(Stream.of(fields).map(ReflectionTable::new).collect(Collectors.toList()));
       rows.addAll(Stream.of(objects).map(obj -> Stream.of(fields).map(field -> new ReflectionTable(obj, field)).collect(Collectors.toList())).collect(Collectors.toList()));
       final int[] columnWidths = rows.stream().map(row -> row.stream().map(cell -> cell.string).mapToInt(String::length).toArray()).reduce(new int[fields.length], (result, row) -> IntStream.range(0, row.length).map(i -> Math.max(result[i], row[i])).toArray());
-      if (colored)
-        IntStream.range(0, fields.length).forEach(i -> {
-          final var columnSummaryStatistics = rows.stream().skip(1).mapToDouble(row -> row.get(i).getValue().doubleValue()).summaryStatistics();
-          rows.stream().skip(1).forEach(row -> row.get(i).colorByValue(columnSummaryStatistics.getMin(), columnSummaryStatistics.getMax()));
-        });
+      if (colored) IntStream.range(0, fields.length).forEach(i -> {
+        final var columnSummaryStatistics = rows.stream().skip(1).mapToDouble(row -> row.get(i).getValue().doubleValue()).summaryStatistics();
+        rows.stream().skip(1).forEach(row -> row.get(i).colorByValue(columnSummaryStatistics.getMin(), columnSummaryStatistics.getMax()));
+      });
       MessageFormat formatFormat = new MessageFormat(colored ? "{2} %{0}{1}s {3}" : " %{0}{1}s ");
       return rows.stream().map(row -> IntStream.range(0, row.size()).mapToObj(i -> String.format(formatFormat.format(new Object[] { row.get(i).padRight ? "-" : "", columnWidths[i], row.get(i).escape, RESET_STYLE }), row.get(i).string)).collect(Collectors.joining("|"))).collect(Collectors.joining(LF));
     }
