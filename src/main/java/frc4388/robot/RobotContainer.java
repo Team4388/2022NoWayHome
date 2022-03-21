@@ -264,7 +264,7 @@ public class RobotContainer {
 
       // B > Toggle claws
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-        .whenPressed(new RunCommand(() -> m_robotClaws.toggleClaws(), m_robotClaws));
+        .whenPressed(new InstantCommand(() -> m_robotClaws.toggleClaws(), m_robotClaws));
 
       // X > Toggles extender in and out
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
@@ -272,7 +272,7 @@ public class RobotContainer {
 
       // A > Spit Out Ball
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whenPressed(new RunCommand(() -> m_robotTurret.gotoMidpoint(), m_robotTurret))
+        .whileHeld(new RunCommand(() -> m_robotTurret.gotoMidpoint(), m_robotTurret))
         .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)));
 
       // Y > Full aim command
