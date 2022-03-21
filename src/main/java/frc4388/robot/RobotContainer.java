@@ -113,7 +113,7 @@ public class RobotContainer {
   public final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
-  public final Climber m_robotClimber = new Climber(m_robotMap.shoulder, m_robotMap.elbow, m_robotMap.gyro, false);
+  public final Climber m_robotClimber = new Climber(m_robotMap.elbow);
   public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
   public final Serializer m_robotSerializer = new Serializer(m_robotMap.serializerBelt, /*m_robotMap.serializerShooterBelt,*/ m_robotMap.serializerBeam);
@@ -235,7 +235,7 @@ public class RobotContainer {
        }, m_robotHood));
 
     m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> m_robotClimber.setMotors(0.0, getOperatorController().getRightY() * 0.5)
+      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getRightY() * 0.5)
       , m_robotClimber));
 
       //  m_robotTurret.setDefaultCommand(
@@ -293,8 +293,11 @@ public class RobotContainer {
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
       .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //   .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+
     new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-      .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+      .whileHeld(new AimToCenter(m_robotTurret, m_robotVisionOdometry, m_robotSwerveDrive::getOdometry));
 
     new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
       .whileHeld(new Seek(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry));
@@ -359,7 +362,6 @@ public class RobotContainer {
       .whenPressed(new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood))
       
       .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
-      .whenPressed(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(false), m_robotClimber))
       
       .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret))
@@ -368,7 +370,6 @@ public class RobotContainer {
       .whenReleased(new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood))
 
       .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
-      .whenReleased(new InstantCommand(() -> m_robotClimber.setClimberSoftLimits(true), m_robotClimber))
 
       .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
       .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))

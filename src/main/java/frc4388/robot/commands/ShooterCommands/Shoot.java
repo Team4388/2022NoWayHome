@@ -106,8 +106,8 @@ public class Shoot extends CommandBase {
      * Updates error for custom PID.
      */
     public void updateError() {
-      targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
-      
+      // targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
+      targetAngle = 0;
       error = (targetAngle - turret.getBoomBoomAngleDegrees()) % 360;
         // if (error > 180) {
         //   error = 360 - error; // TODO: error - 360

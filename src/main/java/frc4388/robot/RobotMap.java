@@ -49,6 +49,7 @@ public class RobotMap {
     configureExtenderMotors();
     configureSerializerMotors();
     configureStorageMotors();
+    configureClimberMotors();
   }
 
   /* LED Subsystem */
@@ -56,29 +57,30 @@ public class RobotMap {
 
 //   void configureLEDMotorControllers() {}
 
-  /* Swerve Subsystem */
-  public final WPI_TalonFX leftFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
-  public final WPI_TalonFX leftFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_WHEEL_CAN_ID);
-  public final WPI_TalonFX rightFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ID);
-  public final WPI_TalonFX rightFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_FRONT_WHEEL_CAN_ID);
-  public final WPI_TalonFX leftBackSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ID);
-  public final WPI_TalonFX leftBackWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_BACK_WHEEL_CAN_ID);
-  public final WPI_TalonFX rightBackSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ID);
-  public final WPI_TalonFX rightBackWheelMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_BACK_WHEEL_CAN_ID);
-  public final CANCoder leftFrontEncoder = new CANCoder(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ENCODER_ID);
-  public final CANCoder rightFrontEncoder = new CANCoder(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ENCODER_ID);
-  public final CANCoder leftBackEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
-  public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
 
-  public final WPI_Pigeon2 gyro = new WPI_Pigeon2(SwerveDriveConstants.GYRO_ID);
+/* Swerve Subsystem */
+public final WPI_TalonFX leftFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ID);
+public final WPI_TalonFX leftFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_FRONT_WHEEL_CAN_ID);
+public final WPI_TalonFX rightFrontSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ID);
+public final WPI_TalonFX rightFrontWheelMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_FRONT_WHEEL_CAN_ID);
+public final WPI_TalonFX leftBackSteerMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ID);
+public final WPI_TalonFX leftBackWheelMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_BACK_WHEEL_CAN_ID);
+public final WPI_TalonFX rightBackSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ID);
+public final WPI_TalonFX rightBackWheelMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_BACK_WHEEL_CAN_ID);
+public final CANCoder leftFrontEncoder = new CANCoder(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ENCODER_ID);
+public final CANCoder rightFrontEncoder = new CANCoder(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ENCODER_ID);
+public final CANCoder leftBackEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
+public final CANCoder rightBackEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
 
-  public SwerveModule leftFront;
-  public SwerveModule leftBack;
-  public SwerveModule rightFront;
-  public SwerveModule rightBack;
+public final WPI_Pigeon2 gyro = new WPI_Pigeon2(SwerveDriveConstants.GYRO_ID);
 
-  void configureSwerveMotorControllers() {
+public SwerveModule leftFront;
+public SwerveModule leftBack;
+public SwerveModule rightFront;
+public SwerveModule rightBack;
 
+void configureSwerveMotorControllers() {
+    
     leftFrontSteerMotor.configFactoryDefault();
     leftFrontWheelMotor.configFactoryDefault();
     rightFrontSteerMotor.configFactoryDefault();
@@ -87,58 +89,58 @@ public class RobotMap {
     leftBackWheelMotor.configFactoryDefault();
     rightBackSteerMotor.configFactoryDefault();
     rightBackWheelMotor.configFactoryDefault();
-
+    
     leftFrontSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     leftFrontWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    rightFrontSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        rightFrontSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    rightFrontWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        rightFrontWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    leftBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        leftBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    leftBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        leftBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    rightBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        rightBackSteerMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    rightBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        rightBackWheelMotor.configOpenloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-
-    leftFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        
+        leftFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    leftFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        leftFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    rightFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        rightFrontSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-    rightFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
+        rightFrontWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
         SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     leftBackSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     leftBackWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackSteerMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackWheelMotor.configClosedloopRamp(SwerveDriveConstants.OPEN_LOOP_RAMP_RATE,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    
     leftFrontWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     leftFrontSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightFrontSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightFrontWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     leftBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     leftBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackSteerMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackWheelMotor.configNeutralDeadband(SwerveDriveConstants.NEUTRAL_DEADBAND,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
-
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    
     NeutralMode mode = NeutralMode.Coast;
     leftFrontSteerMotor.setNeutralMode(NeutralMode.Brake);
     leftFrontWheelMotor.setNeutralMode(mode);// Coast
@@ -148,7 +150,7 @@ public class RobotMap {
     leftBackWheelMotor.setNeutralMode(mode);// Coast
     rightBackSteerMotor.setNeutralMode(NeutralMode.Brake);
     rightBackWheelMotor.setNeutralMode(mode);// Coast
-
+    
     // current limits
     
     leftFrontSteerMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_STEER);
@@ -160,7 +162,7 @@ public class RobotMap {
     rightFrontWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
     leftBackWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
     rightBackWheelMotor.configSupplyCurrentLimit(SwerveDriveConstants.SUPPLY_CURRENT_LIMIT_CONFIG_WHEEL);
-
+    
     leftFrontSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
     rightFrontSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
     leftBackSteerMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_STEER);
@@ -170,55 +172,56 @@ public class RobotMap {
     rightFrontWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
     leftBackWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
     rightBackWheelMotor.configStatorCurrentLimit(SwerveDriveConstants.STATOR_CURRENT_LIMIT_CONFIG_WHEEL);
-
+    
     leftFront = new SwerveModule(leftFrontWheelMotor, leftFrontSteerMotor, leftFrontEncoder,
-        SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
+    SwerveDriveConstants.LEFT_FRONT_ENCODER_OFFSET);
     leftBack = new SwerveModule(leftBackWheelMotor, leftBackSteerMotor, leftBackEncoder,
-        SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
+    SwerveDriveConstants.LEFT_BACK_ENCODER_OFFSET);
     rightFront = new SwerveModule(rightFrontWheelMotor, rightFrontSteerMotor, rightFrontEncoder,
-        SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
+    SwerveDriveConstants.RIGHT_FRONT_ENCODER_OFFSET);
     rightBack = new SwerveModule(rightBackWheelMotor, rightBackSteerMotor, rightBackEncoder,
-        SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
-
+    SwerveDriveConstants.RIGHT_BACK_ENCODER_OFFSET);
+    
     // config cancoder as remote encoder for swerve steer motors
     leftFrontSteerMotor.configRemoteFeedbackFilter(leftFrontEncoder.getDeviceID(),
-        RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     leftBackSteerMotor.configRemoteFeedbackFilter(leftBackEncoder.getDeviceID(),
-        RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightFrontSteerMotor.configRemoteFeedbackFilter(rightFrontEncoder.getDeviceID(),
-        RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
     rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(),
-        RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
-        SwerveDriveConstants.SWERVE_TIMEOUT_MS);
+    RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0,
+    SwerveDriveConstants.SWERVE_TIMEOUT_MS);
 }
 
-  /* Climb Subsystem */
-  public final WPI_TalonFX shoulder = new WPI_TalonFX(ClimberConstants.SHOULDER_ID); // TODO
-  public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
+/* Climb Subsystem */
+public final WPI_TalonFX elbow = new WPI_TalonFX(ClimberConstants.ELBOW_ID); // TODO
 
-  /* Hooks Subsystem */
-//   public final CANSparkMax leftClaw = new CANSparkMax(ClawConstants.LEFT_CLAW_ID, MotorType.kBrushless);
-//   public final CANSparkMax rightClaw = new CANSparkMax(ClawConstants.RIGHT_CLAW_ID, MotorType.kBrushless);
-  public final Servo leftClaw = new Servo(1);  // TODO: find actual channel
-  public final Servo rightClaw = new Servo(2); // TODO: find actual channel
+private void configureClimberMotors() {
+    elbow.configFactoryDefault();
+    elbow.setNeutralMode(NeutralMode.Brake);
+}
+/* Hooks Subsystem */
+public final Servo leftClaw = new Servo(1);
+public final Servo rightClaw = new Servo(2);
 
-  // Shooter Config
-  /* Boom Boom Subsystem */
-  public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
-  public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
+// Shooter Config
+/* Boom Boom Subsystem */
+public final WPI_TalonFX shooterFalconLeft = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_LEFT_CAN_ID);
+public final WPI_TalonFX shooterFalconRight = new WPI_TalonFX(ShooterConstants.SHOOTER_FALCON_RIGHT_CAN_ID);
 
-  // turret subsystem
-  public final CANSparkMax shooterTurret = new CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
+// turret subsystem
+public final CANSparkMax shooterTurret = new CANSparkMax(ShooterConstants.TURRET_MOTOR_CAN_ID, MotorType.kBrushless);
 
-  // hood subsystem
-  public final CANSparkMax angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
+// hood subsystem
+public final CANSparkMax angleAdjusterMotor = new CANSparkMax(ShooterConstants.SHOOTER_ANGLE_ADJUST_ID, MotorType.kBrushless);
 
-  // Create motor CANSparkMax
-  void configureShooterMotorControllers() {
-
+// Create motor CANSparkMax
+void configureShooterMotorControllers() {
+    
     // LEFT FALCON
     shooterFalconLeft.configFactoryDefault();
     shooterFalconLeft.setNeutralMode(NeutralMode.Coast);
@@ -227,14 +230,14 @@ public class RobotMap {
     shooterFalconLeft.configClosedloopRamp(0.75, ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configPeakOutputReverse(0, ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconLeft.configStatorCurrentLimit(ShooterConstants.STATOR_CURRENT_LIMIT_CONFIG_SHOOTER,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
-
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
+    
     // RIGHT FALCON
     shooterFalconRight.configFactoryDefault();
     shooterFalconRight.setNeutralMode(NeutralMode.Coast);
@@ -244,59 +247,59 @@ public class RobotMap {
     // m_shooterFalconRight.configPeakOutputForward(0,
     // ShooterConstants.SHOOTER_TIMEOUT_MS);(comment it in if necessary)
     shooterFalconRight.setSelectedSensorPosition(0, ShooterConstants.SHOOTER_PID_LOOP_IDX,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configClosedLoopPeriod(0, ShooterConstants.CLOSED_LOOP_TIME_MS,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
     shooterFalconRight.configStatorCurrentLimit(ShooterConstants.STATOR_CURRENT_LIMIT_CONFIG_SHOOTER,
-        ShooterConstants.SHOOTER_TIMEOUT_MS);
-
+    ShooterConstants.SHOOTER_TIMEOUT_MS);
+    
     shooterFalconRight.follow(shooterFalconLeft);
-
+    
     // turret
     shooterTurret.restoreFactoryDefaults();
     shooterTurret.setIdleMode(IdleMode.kBrake);
     shooterTurret.setInverted(true);
-
+    
     // hood subsystem
     angleAdjusterMotor.restoreFactoryDefaults();
     angleAdjusterMotor.setIdleMode(IdleMode.kBrake);
     angleAdjusterMotor.setInverted(true);
-  }
+}
 
-  /* Serializer Subsystem */
-  public final CANSparkMax serializerBelt = new CANSparkMax(SerializerConstants.SERIALIZER_BELT, MotorType.kBrushless);
-  public final DigitalInput serializerBeam = new DigitalInput(SerializerConstants.SERIALIZER_BELT_BEAM);
-  
-  /* Intake Subsystem */
-  public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
-  public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
+/* Serializer Subsystem */
+public final CANSparkMax serializerBelt = new CANSparkMax(SerializerConstants.SERIALIZER_BELT, MotorType.kBrushless);
+public final DigitalInput serializerBeam = new DigitalInput(SerializerConstants.SERIALIZER_BELT_BEAM);
 
-  void configureIntakeMotors() {
+/* Intake Subsystem */
+public final WPI_TalonFX intakeMotor = new WPI_TalonFX(IntakeConstants.INTAKE_MOTOR);
+public final CANSparkMax extenderMotor = new CANSparkMax(IntakeConstants.EXTENDER_MOTOR, MotorType.kBrushless);
+
+void configureIntakeMotors() {
     intakeMotor.configFactoryDefault();
     intakeMotor.setInverted(false);
     intakeMotor.setNeutralMode(NeutralMode.Coast);
-
+    
     intakeMotor.configSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT_CONFIG_INTAKE);
     intakeMotor.configStatorCurrentLimit(IntakeConstants.STATOR_CURRENT_LIMIT_CONFIG_INTAKE);
-  }
+}
 
-  void configureExtenderMotors() {
-      extenderMotor.restoreFactoryDefaults();
-      extenderMotor.setInverted(true);
-      extenderMotor.setIdleMode(IdleMode.kBrake);
+void configureExtenderMotors() {
+    extenderMotor.restoreFactoryDefaults();
+    extenderMotor.setInverted(true);
+    extenderMotor.setIdleMode(IdleMode.kBrake);
   }
-
+  
   void configureSerializerMotors() {
       serializerBelt.restoreFactoryDefaults();
-  }
+    }
 
     /* Storage Subsystem */
     public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
-
+    
     void configureStorageMotors() {
         storageMotor.restoreFactoryDefaults();
     }
-
+    
 }
