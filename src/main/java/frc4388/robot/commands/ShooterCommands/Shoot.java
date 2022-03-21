@@ -127,8 +127,8 @@ public class Shoot extends CommandBase {
         timerStarted = false;
         startTime = 0;
         
-        this.odoX = 0.9398;//-this.swerve.getOdometry().getY(); // 3.2766
-        this.odoY = -3.2766;//-this.swerve.getOdometry().getX(); // -0.9398
+        this.odoX = -this.swerve.getOdometry().getY(); // 3.2766
+        this.odoY = -this.swerve.getOdometry().getX(); // -0.9398
         
         this.distance = Math.hypot(odoX, odoY);
         

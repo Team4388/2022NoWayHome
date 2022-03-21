@@ -267,8 +267,8 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> m_robotClaws.toggleClaws(), m_robotClaws));
 
       // X > Toggles extender in and out
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-        .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+    //     .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
 
       // A > Spit Out Ball
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
@@ -276,14 +276,16 @@ public class RobotContainer {
         .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)));
 
       // Y > Full aim command
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-        .whileHeld(new Seek(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry));
-    
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-    //  .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
+    //     .whileHeld(new Seek(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry));
+    
+
+      //! Test Buttons
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+     .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //  .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+     .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //  .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
@@ -423,7 +425,7 @@ public class RobotContainer {
     // *                                           new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3")),
     // *                                           new RunCommand(() -> m_robotIntake.runAtOutput(0.5))));
 
-    return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Move Forward")); // test command
+    return new SequentialCommandGroup(buildAuto(1.0, 1.0, new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()), "Move Forward")); // test command
   }
 
   public static XboxController getDriverController() {

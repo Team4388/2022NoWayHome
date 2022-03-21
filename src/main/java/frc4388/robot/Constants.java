@@ -175,7 +175,7 @@ public final class Constants {
     public static final int ELBOW_ID = 31;
     public static final int GYRO_ID = 14;
 
-    public static final double INPUT_MULTIPLIER = 0.4;
+    public static final double INPUT_MULTIPLIER = 1.0;
     public static final double ELBOW_SOFT_LIMIT_TOLERANCE = 20000.0;
     public static final double SHOULDER_SOFT_LIMIT_TOLERANCE = 12000.0;
   
