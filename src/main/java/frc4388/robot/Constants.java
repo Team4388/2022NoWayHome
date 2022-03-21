@@ -175,7 +175,7 @@ public final class Constants {
     public static final int ELBOW_ID = 31;
     public static final int GYRO_ID = 14;
 
-    public static final double INPUT_MULTIPLIER = 0.7;
+    public static final double INPUT_MULTIPLIER = 0.4;
     public static final double ELBOW_SOFT_LIMIT_TOLERANCE = 20000.0;
     public static final double SHOULDER_SOFT_LIMIT_TOLERANCE = 12000.0;
   
@@ -269,7 +269,7 @@ public final class Constants {
         true, 27, 0, 0);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;
     public static final int SHOOTER_FALCON_RIGHT_CAN_ID = 22;
-    public static final double TURRET_SPEED_MULTIPLIER = 0.8;
+    public static final double TURRET_SPEED_MULTIPLIER = 0.4;
     public static final double TURRET_CALIBRATION_MULTIPLIER = 0.5;
     public static final double TURRET_DEGREES_PER_ROT = 180.0/105.45445251464844;
     public static final int TURRET_MOTOR_POS_AT_ZERO_ROT = 0;

@@ -127,10 +127,6 @@ public class RobotContainer {
   public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
   public final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
 
-  private final WPI_TalonFX testShoulderMotor = new WPI_TalonFX(30);
-  private final WPI_TalonFX testElbowMotor = new WPI_TalonFX(31);
-  // public final Climber m_robotClimber = new Climber(testShoulderMotor, testElbowMotor);
-
   // Controllers
   private final static XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final static XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -171,79 +167,57 @@ public class RobotContainer {
   public RobotContainer() {
     configureButtonBindings();
     /* Default Commands */
-
-    // IK command
-    // m_robotClimber.setDefaultCommand(
-    //     new RunCommand(() -> m_robotClimber.setJointSpeeds(getOperatorController().getLeftX() * 10000,
-    //         getOperatorController().getRightY() * 10000), m_robotClimber).withName("Climber controlWithInput defaultCommand"));
-    
-    // Swerve Drive with Input
+      // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> {
-          // if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) {
+          if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) {
             m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
                                                getDriverController().getLeftY(),
                                                getDriverController().getRightX(),
                                                getDriverController().getRightY(),
-                                               true); //}
-          // if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) {
-          //   m_robotSwerveDrive.driveWithInput( 0, 
-          //                                      0,
-          //                                      0,
-          //                                      0,
-          //                                      true);
-          }//}
+                                               true); }
+          if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) {
+            m_robotSwerveDrive.driveWithInput( 0, 
+                                               0,
+                                               0,
+                                               0,
+                                               true);
+         }}
           , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
-    // Intake with Triggers
+      // Intake with Triggers
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
             getOperatorController().getLeftTriggerAxis(), 
             getOperatorController().getRightTriggerAxis()),
             m_robotIntake).withName("Intake runWithTriggers defaultCommand"));
     m_robotBoomBoom.setDefaultCommand(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
-    
-    // m_robotStorage.setDefaultCommand(
-    //     new ManageStorage(m_robotStorage, 
-    //                       m_robotBoomBoom, 
-    //                       m_robotTurret).withName("Storage ManageStorage defaultCommand"));
 
-    // Storage Management
-    // m_robotStorage.setDefaultCommand(
-    //     new RunCommand(() -> m_robotStorage.manageStorage(), 
-    //     m_robotStorage).withName("Storage manageStorage defaultCommand"));
-
-      // Serializer Management
+      // Serializer Manual
     m_robotSerializer.setDefaultCommand(
         new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8),//m_robotSerializer.setSerializerStateWithBeam(), 
         m_robotSerializer).withName("Serializer setSerializerStateWithBeam defaultCommand"));
-      // Turret Manual
-    // m_robotTurret.setDefaultCommand(
-    //     new RunCommand(() -> m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()), 
-    //     m_robotTurret).withName("Turret runTurretWithInput defaultCommand"));
 
+      // Turret Manual
     m_robotTurret.setDefaultCommand(
        new RunCommand(() -> {
         if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotTurret.runTurretWithInput(getOperatorController().getLeftX()); }
         if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotTurret.runTurretWithInput(0); }
        }, m_robotTurret));
 
+      // Hood Manual
     m_robotHood.setDefaultCommand(
        new RunCommand(() -> {
         if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotHood.runHood(getOperatorController().getRightY()); }
         if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotHood.runHood(0); }
        }, m_robotHood));
 
+       //Climber Manual
     m_robotClimber.setDefaultCommand(
-      new RunCommand(() -> m_robotClimber.setMotors(getOperatorController().getRightY() * 0.5)
-      , m_robotClimber));
-
-      //  m_robotTurret.setDefaultCommand(
-      //   new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry));
-
-    // continually sends updates to the Blinkin LED controller to keep the lights on
-    //  m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED).withName("LED update defaultCommand"));
-
+      new RunCommand(() -> {
+        if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotClimber.setMotors(0.0); }
+        if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotClimber.setMotors(getOperatorController().getRightY()); }
+       }, m_robotClimber));
     //  autoInit();
     //  recordInit();
   }
@@ -256,138 +230,115 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     
-    /* Driver Buttons */
+    //! Driver Buttons
 
       // Start > Calibrate Odometry
     new JoystickButton(getDriverController(), XboxController.Button.kBack.value)
         .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-        // Start > Calibrate Odometry
+
+      // Start > Calibrate Odometry
     new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
-      .whenPressed(m_robotSwerveDrive::resetGyro);
+        .whenPressed(m_robotSwerveDrive::resetGyro);
+
       // Left Bumper > Shift Down
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
          .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+
       // Right Bumper > Shift Up
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-    // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-    //     .whileHeld(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.2, true))
-    //     .whenReleased(() -> m_robotSwerveDrive.stopModules());
-        
-    // new JoystickButton(getDriverController(), XboxController.Button.kB.value)
-    //     .whileHeld(new AimToCenter(m_robotTurret, m_robotVisionOdometry, m_robotSwerveDrive::getOdometry))
-    //     .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret));
-        
-    // new JoystickButton(getDriverController(), XboxController.Button.kY.value)
-    //     .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, false));
-    //      .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
-    //      .whenReleased(() -> m_robotSwerveDrive.stopModules());
-        
-    // .whenReleased(new InstantCommand(() -> m_robotTurret.runTurretWithInput(0.0), m_robotTurret))
-    // .whenReleased(new InstantCommand(() -> m_robotHood.runHood(0.0), m_robotHood))
-    // .whenReleased(new InstantCommand(() -> m_robotBoomBoom.runDrumShooter(0.0), m_robotBoomBoom));
-    
-    /* Operator Buttons */
-    
+
+
+    //! Operator Buttons
+
+      // Right Bumper > Storage Out
+    new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
+        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
+
+      // Left Bumper > Storage In
+    new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
+        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
+
+      // B > Toggle claws
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
+        .whenPressed(new RunCommand(() -> m_robotClaws.toggleClaws(), m_robotClaws));
+
+      // X > Toggles extender in and out
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+        .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
+
+      // A > Spit Out Ball
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+        .whenPressed(new RunCommand(() -> m_robotTurret.gotoMidpoint(), m_robotTurret))
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)));
+
+      // Y > Full aim command
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-      .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
+        .whileHeld(new Seek(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry));
+    
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //  .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
     // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //   .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+    //  .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-      .whileHeld(new AimToCenter(m_robotTurret, m_robotVisionOdometry, m_robotSwerveDrive::getOdometry));
-
-    new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-      .whileHeld(new Seek(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry));
-
-      // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-    //   .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //  .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kB.value)
-    //   .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(false)));
-  
-    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-    //     .whenPressed(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false), m_robotVisionOdometry));
+    //  .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(false)));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-        .whenPressed(new RunCommand(() -> m_robotStorage.runStorage(0.9), m_robotStorage))
-        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+    //  .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));
 
-    new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
-        .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-0.9), m_robotStorage))
-        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
+    //     .whenPressed(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
+    //     .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
 
-        //Toggles extender in and out
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
 
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     .whileHeld(new RunCommand(() -> m_robotTurret.gotoZero(), m_robotTurret))
-    //     .whenReleased(new RunCommand(() -> m_robotTurret.m_boomBoomRotateMotor.set(0), m_robotTurret));
 
-      // Right Bumper > Storage In
-    // new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value)
-    //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
-    //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-
-      // Left Bumper > Storage Out (note: necessary?)
-    // new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value)
-    //     .whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
-    //     .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-
-      // A > Shoot with Odo
-    /*new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood));*/
-      
-      // new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-      //     .whileHeld(new RunCommand(() -> m_robotTurret.gotoMidpoint(), m_robotTurret));
-
-       //B > Shoot with Lime
-    new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
-        // .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry))
-        // .whenReleased(new InstantCommand(() -> m_robotVisionOdometry.setLEDs(false)))
-        .whenPressed(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)))
-        .whenReleased(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.0)));
-        // .whileHeld%
-
-    /* Button Box Buttons */
-
+    //! Button Box Buttons
+      // Left Switch > Disables soft limits on press, release resets encoders (all for turret, hood, climber, and extender)
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
-      .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
-      .whenPressed(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret))
+        .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
+        .whenPressed(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret))
       
-      .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
-      .whenPressed(new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood))
+        .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
+        .whenPressed(new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood))
       
-      .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
+        .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
       
-      .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
-      .whenReleased(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret))
+        .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
+        .whenReleased(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret))
       
-      .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
-      .whenReleased(new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood))
+        .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
+        .whenReleased(new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood))
 
-      .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
+        .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
 
-      .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
-      .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
-      .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
-      .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
-      .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
+        .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
+        .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
+        .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
+        .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
+        .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
+      // Middle Switch > Climber and Shooter mode switching
     new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-      .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))
-      .whenReleased(new InstantCommand(() -> this.currentControlMode = ControlMode.SHOOTER));
+        .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))
+        .whenReleased(new InstantCommand(() -> this.currentControlMode = ControlMode.SHOOTER));
 
+      // Left Button > Extender In
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
-    .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
-    .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
+      // Left Button > Extender Out
     new JoystickButton(getButtonBox(), ButtonBox.Button.kRightButton.value)
-    .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
-    .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
   }
 
   /**
@@ -402,7 +353,6 @@ public class RobotContainer {
     maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.PATH_MAX_ACCELERATION);
 
     ArrayList<Command> commands = new ArrayList<Command>();
-    commands.add(new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()));
 
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
@@ -473,7 +423,7 @@ public class RobotContainer {
     // *                                           new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3")),
     // *                                           new RunCommand(() -> m_robotIntake.runAtOutput(0.5))));
 
-   return null;
+    return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Move Forward")); // test command
   }
 
   public static XboxController getDriverController() {
