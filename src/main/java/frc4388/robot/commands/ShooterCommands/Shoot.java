@@ -106,12 +106,18 @@ public class Shoot extends CommandBase {
      * Updates error for custom PID.
      */
     public void updateError() {
-      // targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
-      targetAngle = 0;
+      targetAngle = AimToCenter.aaravAngleToCenter(odoX, odoY, swerve.getRegGyro().getDegrees());
+
       error = (targetAngle - turret.getBoomBoomAngleDegrees()) % 360;
+
         // if (error > 180) {
-        //   error = 360 - error; // TODO: error - 360
-        //   this.inverted = -1; } else { this.inverted = 1; }
+        //   error = error - 360; 
+        //   this.inverted = -1; 
+        // } else { 
+        //   this.inverted = 1; 
+        // }
+        if (error > 180) { error = error - 360; }
+
         isAimedInTolerance = (Math.abs(error) <= tolerance);
       }
       
@@ -122,7 +128,7 @@ public class Shoot extends CommandBase {
         startTime = 0;
         
         this.odoX = 0.9398;//-this.swerve.getOdometry().getY(); // 3.2766
-        this.odoY = -3.2766;//-this.swerve.getOdometry().getX(); // 0.9398
+        this.odoY = -3.2766;//-this.swerve.getOdometry().getX(); // -0.9398
         
         this.distance = Math.hypot(odoX, odoY);
         
@@ -151,7 +157,7 @@ public class Shoot extends CommandBase {
         this.integral = integral + (error * Constants.LOOP_TIME);
         this.derivative = (error - prevError) / Constants.LOOP_TIME;
         this.output = kP * proportional + kI * integral + kD * derivative;
-        this.normOutput = (output / 360) * inverted;
+        this.normOutput = (output / 360); // inverted;
       }
   
   // Called every time the scheduler runs while the command is scheduled.
@@ -165,7 +171,6 @@ public class Shoot extends CommandBase {
     SmartDashboard.putNumber("Normalized Output", this.normOutput);
 
     this.turret.runTurretWithCustomPID(normOutput);
-    // this.turret.m_boomBoomRotateMotor.set(normOutput);
     this.swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), normOutput * (this.swerveGains.kP/this.turretGains.kP), true); // ? should the output be field relative
 
     if (this.toShoot) {
