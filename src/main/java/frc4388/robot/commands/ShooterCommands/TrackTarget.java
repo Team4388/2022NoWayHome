@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc4388.robot.RobotContainer;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.VisionConstants;
 import frc4388.robot.subsystems.BoomBoom;
@@ -34,29 +35,18 @@ public class TrackTarget extends CommandBase {
   BoomBoom m_boomBoom;
   Hood m_hood;
 
-  // use odometry to find x and y later
-  double x;
-  double y;
-  double distance;
-  double vel;
-  double hood;
-  double average;
-  double output;
-  Pose2d pos = new Pose2d();
+  static double velocity;
+  static double hoodPosition;
+
   ArrayList<Point> points = new ArrayList<>();
 
   private boolean targetLocked = false;
   private double velocityTolerance = 100.0;
   private double hoodTolerance = 5.0;
 
-  double m=0;
-  double b=0;
   boolean isExecuted = false;
 
-  // public static Gains m_aimGains;
-
   public TrackTarget (SwerveDrive swerve, Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
-    // Use addRequirements() here to declare subsystem dependencies.
     m_swerve = swerve;
     m_turret = turret;
     m_boomBoom = boomBoom;
@@ -69,81 +59,57 @@ public class TrackTarget extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    x = 0;
-    y = 0;
+    velocity = 0;
+    hoodPosition = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    //m_targetAngle = angleToCenter(x, y, m_drive.getRegGyro().getDegrees());
-    SmartDashboard.putBoolean("Target Locked", this.targetLocked);
-    
+  public void execute() {    
     try {
       m_visionOdometry.setLEDs(true);
+
       points = m_visionOdometry.getTargetPoints();
-      
       points = filterPoints(points);
-      
       Point average = VisionOdometry.averagePoint(points);
-      DesmosServer.putPoint("average", average);
       
-      for(int i = 0; i < points.size(); i++) {
-        DesmosServer.putPoint("Point" + i, points.get(i));
-      }
-      
-      output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
+      double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
       output *= 2;
-      // //output *= 0.5;
-      // //DesmosServer.putDouble("output", output);
+      
       m_turret.runTurretWithInput(output);
       double position = m_turret.m_boomBoomRotateEncoder.getPosition();
 
       if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
             Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
-        m_swerve.driveWithInput(0, 0, output, false);
+        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
+      else
+        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
+                                RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
+                                true);
 
       
-      double y_rot = average.y / VisionConstants.LIME_VIXELS;
-      y_rot *= Math.toRadians(VisionConstants.V_FOV);
-      y_rot -= Math.toRadians(VisionConstants.V_FOV) / 2;
-      y_rot += Math.toRadians(VisionConstants.LIME_ANGLE);
+      double regressedDistance = getDistance(average.y);
       
-      double distance = (VisionConstants.TARGET_HEIGHT - VisionConstants.LIME_HEIGHT) / Math.tan(y_rot);
-      DesmosServer.putDouble("distance", distance);
+      // ! add 30 to the distance to get in target. May need to be adjusted
+      velocity = m_boomBoom.getVelocity(regressedDistance + 30);
+      hoodPosition = m_boomBoom.getHood(regressedDistance + 30);
       
-      updateRegressionDesmos();
-      double regressedDistance = distanceRegression(distance);
-      regressedDistance += VisionConstants.EDGE_TO_CENTER + VisionConstants.LIMELIGHT_RADIUS;
-      DesmosServer.putDouble("distanceReg", regressedDistance);
-      
-      //Vision odometry circle fit based pose estimate
-      // Point targetOffset = m_visionOdometry.getTargetOffset();
-      // DesmosServer.putPoint("targetOff", targetOffset);
-      
-      vel = m_boomBoom.getVelocity(regressedDistance + 30);
-      hood = m_boomBoom.getHood(regressedDistance + 30);
-      // m_boomBoom.runDrumShooter(vel);
-      m_boomBoom.runDrumShooterVelocityPID(vel);
-      m_hood.runAngleAdjustPID(hood);
+      m_boomBoom.runDrumShooterVelocityPID(velocity);
+      m_hood.runAngleAdjustPID(hoodPosition);
       
       double currentDrumVel = this.m_boomBoom.m_shooterFalconLeft.getSelectedSensorVelocity();
       double currentHood = this.m_hood.getEncoderPosition();
   
-      this.targetLocked = (Math.abs(currentDrumVel - vel) < velocityTolerance) && (Math.abs(currentHood - hood) < hoodTolerance);
+      targetLocked = (Math.abs(currentDrumVel - velocity) < velocityTolerance) && (Math.abs(currentHood - hoodPosition) < hoodTolerance);
 
       SmartDashboard.putNumber("Regressed Distance", regressedDistance);
-      SmartDashboard.putNumber("Distance", distance);
-      SmartDashboard.putNumber("Hood Target Angle Track", hood);
-      SmartDashboard.putNumber("Vel Target Track", vel);
-
-      // isExecuted = true;
-    }
-    catch (Exception e){
+      // SmartDashboard.putNumber("Distance", distance);
+      SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
+      SmartDashboard.putNumber("Vel Target Track", velocity);
+      SmartDashboard.putBoolean("Target Locked", targetLocked);
+    } catch (Exception e){
       e.printStackTrace();
-      // System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
-    // m_turret.runshooterRotatePID(m_targetAngle);
   }
 
   public ArrayList<Point> filterPoints(ArrayList<Point> points) {
@@ -166,15 +132,22 @@ public class TrackTarget extends CommandBase {
     return (ArrayList<Point>) pointDistances.keySet().stream().filter(p -> pointDistances.get(p) < 2 * averageDist).collect(Collectors.toList());
   }
 
-  public final double distanceRegression(double distance) {
-    return (79.6078 * Math.pow(1.01343, distance) - 56.6671);
+  public final double getDistance(double averageY) {
+    double y_rot = averageY / VisionConstants.LIME_VIXELS;
+    y_rot *= Math.toRadians(VisionConstants.V_FOV);
+    y_rot -= Math.toRadians(VisionConstants.V_FOV) / 2;
+    y_rot += Math.toRadians(VisionConstants.LIME_ANGLE);
+    
+    double distance = (VisionConstants.TARGET_HEIGHT - VisionConstants.LIME_HEIGHT) / Math.tan(y_rot);
+    
+    double regressedDistance = distanceRegression(distance);
+    regressedDistance += VisionConstants.EDGE_TO_CENTER + VisionConstants.LIMELIGHT_RADIUS;
+
+    return regressedDistance;
   }
 
-  public void updateRegressionDesmos() {
-    m = DesmosServer.readDouble("m");
-    b = DesmosServer.readDouble("b");
-
-    DesmosServer.putArray("MB", m, b);
+  public final double distanceRegression(double distance) {
+    return (79.6078 * Math.pow(1.01343, distance) - 56.6671);
   }
 
   // Called once the command ends or is interrupted.
