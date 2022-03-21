@@ -42,10 +42,7 @@ public class Robot extends TimedRobot {
 
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
-
-  private SendableChooser<Pose2d> odoChooser = new SendableChooser<Pose2d>();
-  private HashMap<String, Pose2d> odoChoices = new HashMap<>();
-  private Pose2d selectedOdo;
+  
   private double current;
 
   private static DesmosServer desmosServer = new DesmosServer(8000);
@@ -140,8 +137,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
-    // SmartDashboard.putNumber("Turret", m_robotContainer.m_robotMap.shooterTurret.getEncoder().getPosition());
-    // SmartDashboard.putNumber("Hood", m_robotContainer.m_robotMap.angleAdjusterMotor.getEncoder().getPosition());
     // current = 
       // m_robotContainer.m_robotBoomBoom.getCurrent() +
       // m_robotContainer.m_robotClimber.getCurrent(); //+
@@ -154,7 +149,7 @@ public class Robot extends TimedRobot {
       // m_robotContainer.m_robotTurret.getCurrent();
     // SmartDashboard.putNumber("Total Robot Current Draw", current);
     // SmartDashboard.putNumber("Drive Train Voltage", m_robotContainer.m_robotSwerveDrive.getVoltage());
-    SmartDashboard.putNumber("Drive Train Current", m_robotContainer.m_robotSwerveDrive.getCurrent());
+    // SmartDashboard.putNumber("Drive Train Current", m_robotContainer.m_robotSwerveDrive.getCurrent());
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or
@@ -166,26 +161,6 @@ public class Robot extends TimedRobot {
 
     // print odometry data to smart dashboard for debugging (if causing timeout
     // errors, you can comment it)
-    // SmartDashboard.putNumber("Odometry X", m_robotContainer.getOdometry().getX());
-    // SmartDashboard.putNumber("Odometry Y", m_robotContainer.getOdometry().getY());
-    // SmartDashboard.putNumber("Odometry Theta", m_robotContainer.getOdometry().getRotation().getDegrees());
-    // odo chooser stuff
-    addOdoChoices(new Pose2d(3.2766, -0.9398, new Rotation2d(0)));
-    updateOdoChooser();
-    SmartDashboard.putData("Odometry Chooser", odoChooser);
-  }
-
-  public void updateOdoChooser() {    
-    for (Map.Entry<String,Pose2d> entry : odoChoices.entrySet()) {
-      odoChooser.addOption(entry.getKey(), entry.getValue());
-    }
-  }
-
-  public void addOdoChoices(Pose2d... points) {
-    for (Pose2d point : points) {
-      String key = "(" + point.getX() + ", " + point.getY() + ", " + point.getRotation().getDegrees() + ")";
-      odoChoices.put(key, point);
-    }
   }
 
   /**
@@ -225,12 +200,6 @@ public class Robot extends TimedRobot {
 
     Robot.alliance = DriverStation.getAlliance();
 
-    selectedOdo = odoChooser.getSelected();
-    if (selectedOdo == null) {
-      selectedOdo = m_robotContainer.getOdometry();
-    }
-    m_robotContainer.resetOdometry(selectedOdo);
-
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -252,12 +221,6 @@ public class Robot extends TimedRobot {
     LOGGER.fine("teleopInit()");
 
     Robot.alliance = DriverStation.getAlliance();
-
-    selectedOdo = odoChooser.getSelected();
-    if (selectedOdo == null) {
-      selectedOdo = m_robotContainer.getOdometry();
-    }
-    // m_robotContainer.resetOdometry(selectedOdo);
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
