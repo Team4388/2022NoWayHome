@@ -5,6 +5,9 @@
 package frc4388.robot.commands.ShooterCommands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.opencv.core.Point;
 
@@ -80,17 +83,9 @@ public class TrackTarget extends CommandBase {
       m_visionOdometry.setLEDs(true);
       points = m_visionOdometry.getTargetPoints();
       
+      points = filterPoints(points);
+      
       Point average = VisionOdometry.averagePoint(points);
-      
-      for(Point point : points) {
-        Vector2D difference = new Vector2D(point);
-        difference.subtract(new Vector2D(average));
-
-        if(difference.magnitude() < VisionConstants.POINTS_THRESHOLD)
-        points.remove(point);
-      }
-      
-      average = VisionOdometry.averagePoint(points);
       DesmosServer.putPoint("average", average);
       
       for(int i = 0; i < points.size(); i++) {
@@ -149,6 +144,26 @@ public class TrackTarget extends CommandBase {
       // System.err.println("Exception: " + e.toString() + ", Line 78 at TrackTarget.java");
     }
     // m_turret.runshooterRotatePID(m_targetAngle);
+  }
+
+  public ArrayList<Point> filterPoints(ArrayList<Point> points) {
+    Point average = VisionOdometry.averagePoint(points);
+      
+    HashMap<Point, Double> pointDistances = new HashMap<>();
+    double distanceSum = 0;
+
+    for(Point point : points) {
+      Vector2D difference = new Vector2D(point);
+      difference.subtract(new Vector2D(average));
+
+      double mag = difference.magnitude();
+      distanceSum += mag;
+
+      pointDistances.put(point, mag);
+    }
+
+    final double averageDist = distanceSum / points.size();
+    return (ArrayList<Point>) pointDistances.keySet().stream().filter(p -> pointDistances.get(p) < 2 * averageDist).collect(Collectors.toList());
   }
 
   public final double distanceRegression(double distance) {
