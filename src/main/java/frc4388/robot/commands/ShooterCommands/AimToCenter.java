@@ -74,6 +74,7 @@ public class AimToCenter extends CommandBase {
 
   public static double angleToCenter(double x, double y, double gyro) {
     double angle = ((Math.atan2(y, x) * (180./Math.PI) - gyro) + 180. + (360. * 4)) % 360.; // Finds the angle between the gyro of the robot and the target (positive x is gyro 0)
+    // double angle = Math.toDegrees(Math.atan2(y, -x) - gyro);
     return (angle - 360);
   }
 
