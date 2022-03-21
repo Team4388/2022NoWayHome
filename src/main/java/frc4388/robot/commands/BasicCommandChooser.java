@@ -30,7 +30,7 @@ public class BasicCommandChooser extends CommandBase {
     Set<Subsystem> allReqs = c1.getRequirements();
     allReqs.addAll(c2.getRequirements());
 
-    addRequirements((Subsystem[]) allReqs.toArray());
+    addRequirements(allReqs.toArray(Subsystem[]::new));
   }
 
   public Command getTheChosenOne() {

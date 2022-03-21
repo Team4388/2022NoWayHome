@@ -32,7 +32,7 @@ public class ComplexCommandChooser extends CommandBase {
     for(Command command : commandMap.keySet())
       allReqs.addAll(command.getRequirements());
 
-    addRequirements((Subsystem[]) allReqs.toArray());
+    addRequirements(allReqs.toArray(Subsystem[]::new));
   }
 
   /**

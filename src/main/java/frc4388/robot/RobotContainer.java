@@ -383,8 +383,8 @@ public class RobotContainer {
 
       // * CommandChooser with BooleanSuppliers
       .whenPressed(new ComplexCommandChooser(new HashMap<Command, BooleanSupplier>() {{
-        put(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), () -> currentControlMode.equals(SubsystemMode.CLIMBER));
-        put(new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), () -> currentControlMode.equals(SubsystemMode.SHOOTER));
+        put(new InstantCommand(() -> System.out.println("true")), () -> true);
+        put(new InstantCommand(() -> System.out.println("false")), () -> false);
       }}));
       // .whenPressed(new CommandChooser(new RunClimberPath(m_robotClimber, m_robotClaws, new Point[] {new Point()}), 
       //                                 new AimToCenter(m_robotTurret, m_robotSwerveDrive, m_robotVisionOdometry), 
