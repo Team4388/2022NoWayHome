@@ -97,22 +97,22 @@ public class TrackTarget extends CommandBase {
       output *= 2.0;
       
       m_turret.runTurretWithInput(output);
-      double position = m_turret.m_boomBoomRotateEncoder.getPosition();
+      // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
 
-      if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
-            Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
-        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
-      else
-        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
-                                RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
-                                true);
+      // if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
+      //       Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
+      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
+      // else
+      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
+      //                           RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
+      //                           true);
 
       
       double regressedDistance = getDistance(average.y);
       
       // ! no longer a +30 lol -aarav
-      velocity = m_boomBoom.getVelocity(regressedDistance + 30);
-      hoodPosition = m_boomBoom.getHood(regressedDistance + 30);
+      velocity = m_boomBoom.getVelocity(regressedDistance);
+      hoodPosition = m_boomBoom.getHood(regressedDistance);
       
       m_boomBoom.runDrumShooterVelocityPID(velocity);
       m_hood.runAngleAdjustPID(hoodPosition);
