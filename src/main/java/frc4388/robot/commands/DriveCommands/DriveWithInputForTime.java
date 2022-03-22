@@ -29,7 +29,7 @@ public class DriveWithInputForTime extends CommandBase {
 
     this.swerve = swerve;
     this.inputs = inputs;
-    this.duration = duration;
+    this.duration = duration * 1000; // ! convert seconds to milliseconds, duh
 
     addRequirements(this.swerve);
   }

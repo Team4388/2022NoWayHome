@@ -31,7 +31,7 @@ public class RunCommandForTime extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.command = command;
-    this.duration = duration;
+    this.duration = duration * 1000; // ! convert seconds to milliseconds, duh
     this.override = override;
 
     addRequirements(this.command.getRequirements().toArray(Subsystem[]::new));
