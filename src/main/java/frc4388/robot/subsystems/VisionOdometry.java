@@ -47,6 +47,9 @@ public class VisionOdometry extends SubsystemBase {
     m_camera = new PhotonCamera(VisionConstants.NAME);
     m_drive = drive;
     m_shooter = shooter;
+
+    setLEDs(false);
+    setDriverMode(true);
   }
 
   /** Gets the vision points from the limelight
@@ -91,6 +94,10 @@ public class VisionOdometry extends SubsystemBase {
    */
   public void setLEDs(boolean on) {
     m_camera.setLED(on ? VisionLEDMode.kOn : VisionLEDMode.kOff);
+  }
+
+  public void setDriverMode(boolean driverMode) {
+    m_camera.setDriverMode(driverMode);
   }
 
   public Point getTargetOffset() throws VisionObscuredException {

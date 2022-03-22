@@ -67,6 +67,7 @@ public class TrackTarget extends CommandBase {
   @Override
   public void execute() {    
     try {
+      m_visionOdometry.setDriverMode(false);
       m_visionOdometry.setLEDs(true);
 
       points = m_visionOdometry.getTargetPoints();
@@ -153,6 +154,8 @@ public class TrackTarget extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_visionOdometry.setLEDs(false);
+    m_visionOdometry.setDriverMode(true);
   }
 
   // Returns true when the command should end.
