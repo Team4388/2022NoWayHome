@@ -451,10 +451,16 @@ public class RobotContainer {
     //                                                       new InstantCommand(() -> m_robotSwerveDrive.setModuleRotationsToAngle(0.0), m_robotSwerveDrive), 
     //                                                       "Diamond"));
 
+    // * assume turret is already pointed towards target.
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
                                        new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
-                                       new RotateUntilTarget(m_robotSwerveDrive, m_robotVisionOdometry, 0.5),
                                        new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+
+    // * aim with RotateUntilTarget
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
+    //                                    new RotateUntilTarget(m_robotSwerveDrive, m_robotVisionOdometry, 0.5),
+    //                                    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
   }
 
   public static XboxController getDriverController() {

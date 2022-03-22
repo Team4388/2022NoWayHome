@@ -4,9 +4,12 @@
 
 package frc4388.robot.commands.DriveCommands;
 
+import javax.swing.plaf.basic.BasicTreeUI.TreeCancelEditingAction;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.VisionOdometry;
+import frc4388.utility.VisionObscuredException;
 
 public class RotateUntilTarget extends CommandBase {
 
@@ -47,6 +50,10 @@ public class RotateUntilTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return this.visionOdometry.m_camera.getLatestResult().hasTargets();
+
+    try { this.visionOdometry.getTargetPoints(); } catch (VisionObscuredException voe) { return false; }
+
+    return true;
+    // return this.visionOdometry.m_camera.getLatestResult().hasTargets();
   }
 }
