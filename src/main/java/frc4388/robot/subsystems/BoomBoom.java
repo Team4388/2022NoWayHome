@@ -94,9 +94,9 @@ public class BoomBoom extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     // speed2 = SmartDashboard.getNumber("Shooter Offset", 0.0);
-    SmartDashboard.putNumber("Shooter Current", getCurrent());
-    SmartDashboard.putNumber("Shooter Voltage",  m_shooterFalconLeft.getMotorOutputVoltage());
-    SmartDashboard.putNumber("Shooter Actual Velocity", m_shooterFalconLeft.getSelectedSensorVelocity());
+    // SmartDashboard.putNumber("Shooter Current", getCurrent());
+    // SmartDashboard.putNumber("Shooter Voltage",  m_shooterFalconLeft.getMotorOutputVoltage());
+    // SmartDashboard.putNumber("Shooter Actual Velocity", m_shooterFalconLeft.getSelectedSensorVelocity());
   }
 
   public void passRequiredSubsystem(Hood subsystem0, Turret subsystem1) {
@@ -111,9 +111,9 @@ public class BoomBoom extends SubsystemBase {
   public void runDrumShooter(double speed) {
     // m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed + speed2);
     m_shooterFalconLeft.set(speed);
-    SmartDashboard.putNumber("BoomBoom percent speed", speed + speed2);
-    SmartDashboard.putNumber("BoomBoom current stator", m_shooterFalconLeft.getStatorCurrent());
-    SmartDashboard.putNumber("BoomBoom current supply", m_shooterFalconLeft.getSupplyCurrent());
+    // SmartDashboard.putNumber("BoomBoom percent speed", speed + speed2);
+    // SmartDashboard.putNumber("BoomBoom current stator", m_shooterFalconLeft.getStatorCurrent());
+    // SmartDashboard.putNumber("BoomBoom current supply", m_shooterFalconLeft.getSupplyCurrent());
 
   }
 

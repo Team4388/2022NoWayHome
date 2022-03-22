@@ -35,6 +35,8 @@ public class TrackTarget extends CommandBase {
   BoomBoom m_boomBoom;
   Hood m_hood;
 
+  boolean isAuto;
+
   static double velocity;
   static double hoodPosition;
 
@@ -46,19 +48,35 @@ public class TrackTarget extends CommandBase {
 
   boolean isExecuted = false;
 
-  public TrackTarget (SwerveDrive swerve, Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
-    m_swerve = swerve;
+  // timing
+  boolean isAimed;
+
+  boolean timerStarted;
+  long startTime;
+  private double timeTolerance;
+
+  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry, boolean isAuto) {
     m_turret = turret;
     m_boomBoom = boomBoom;
     m_hood = hood;
     m_visionOdometry = visionOdometry;
 
+    this.isAuto = isAuto;
+    this.timeTolerance = 1000;
+
     addRequirements(m_turret, m_boomBoom, m_hood, m_visionOdometry);
+  }
+
+  public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
+    this(turret, boomBoom, hood, visionOdometry, false);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timerStarted = false;
+    startTime = 0;
+
     velocity = 0;
     hoodPosition = 0;
   }
@@ -67,32 +85,34 @@ public class TrackTarget extends CommandBase {
   @Override
   public void execute() {    
     try {
+      m_visionOdometry.setDriverMode(false);
       m_visionOdometry.setLEDs(true);
 
       points = m_visionOdometry.getTargetPoints();
-      points = filterPoints(points);
+      // points = getFakePoints();
+      //// points = filterPoints(points);
       Point average = VisionOdometry.averagePoint(points);
       
       double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-      output *= 2;
+      output *= 2.0;
       
       m_turret.runTurretWithInput(output);
-      double position = m_turret.m_boomBoomRotateEncoder.getPosition();
+      // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
 
-      if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
-            Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
-        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
-      else
-        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
-                                RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
-                                true);
+      // if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
+      //       Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
+      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
+      // else
+      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
+      //                           RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
+      //                           true);
 
       
       double regressedDistance = getDistance(average.y);
       
-      // ! add 30 to the distance to get in target. May need to be adjusted
-      velocity = m_boomBoom.getVelocity(regressedDistance + 30);
-      hoodPosition = m_boomBoom.getHood(regressedDistance + 30);
+      // ! no longer a +30 lol -aarav
+      velocity = m_boomBoom.getVelocity(regressedDistance);
+      hoodPosition = m_boomBoom.getHood(regressedDistance);
       
       m_boomBoom.runDrumShooterVelocityPID(velocity);
       m_hood.runAngleAdjustPID(hoodPosition);
@@ -110,6 +130,9 @@ public class TrackTarget extends CommandBase {
     } catch (Exception e){
       e.printStackTrace();
     }
+
+    // run storage
+    
   }
 
   public ArrayList<Point> filterPoints(ArrayList<Point> points) {
@@ -129,7 +152,18 @@ public class TrackTarget extends CommandBase {
     }
 
     final double averageDist = distanceSum / points.size();
-    return (ArrayList<Point>) pointDistances.keySet().stream().filter(p -> pointDistances.get(p) < 2 * averageDist).collect(Collectors.toList());
+    return (ArrayList<Point>) pointDistances.keySet().stream().filter(p -> pointDistances.get(p) < 1.3 * averageDist).collect(Collectors.toList());
+  }
+
+  public final ArrayList<Point> getFakePoints() {
+    ArrayList<Point> fakePoints = new ArrayList<>();
+
+    for(int i = 0; i < 10; i++) {
+      Point p = new Point((Math.random() * 20) - 10 + (VisionConstants.LIME_HIXELS/2), (Math.random() * 20) - 10 + (VisionConstants.LIME_VIXELS/2));
+      fakePoints.add(p);
+    }
+
+    return fakePoints;
   }
 
   public final double getDistance(double averageY) {
@@ -142,7 +176,8 @@ public class TrackTarget extends CommandBase {
     
     double regressedDistance = distanceRegression(distance);
     regressedDistance += VisionConstants.EDGE_TO_CENTER + VisionConstants.LIMELIGHT_RADIUS;
-
+    SmartDashboard.putNumber("Distance from Lime 123", distance);
+    SmartDashboard.putNumber("Regressed Distance from Lime 123", regressedDistance);
     return regressedDistance;
   }
 
@@ -153,12 +188,25 @@ public class TrackTarget extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_visionOdometry.setLEDs(false);
+    m_visionOdometry.setDriverMode(true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+  ////   if (this.isAuto) {
+  ////     if (targetLocked& !timerStarted) {
+  ////       timerStarted = true;
+  ////       startTime = System.currentTimeMillis();
+  ////     }
+  ////     return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+  ////   } else {
+  ////     return false;
+  ////   }
+  //   // return isExecuted && Math.abs(output) < .1;
+  //// }
+
     return false;
-    // return isExecuted && Math.abs(output) < .1;
   }
 }
