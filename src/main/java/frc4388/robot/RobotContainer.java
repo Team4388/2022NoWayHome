@@ -46,6 +46,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -57,8 +59,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.*;
 import frc4388.robot.subsystems.Claws;
@@ -71,7 +75,8 @@ import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
 import frc4388.robot.commands.ClimberCommands.RunClaw;
 import frc4388.robot.commands.ClimberCommands.RunClimberPath;
-// import frc4388.robot.commands.ButtonBoxCommands.TurretManual;
+import frc4388.robot.commands.DriveCommands.DriveWithInputForTime;
+import frc4388.robot.commands.DriveCommands.RotateUntilTarget;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.AimToCenter;
 import frc4388.robot.commands.ShooterCommands.Seek;
@@ -97,6 +102,7 @@ import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.Vector2D;
 import frc4388.utility.PathPlannerUtil.Path.Waypoint;
 import frc4388.utility.controller.ButtonBox;
+import frc4388.utility.controller.DeadbandedRawXboxController;
 import frc4388.utility.controller.DeadbandedXboxController;
 
 /**
@@ -128,8 +134,8 @@ public class RobotContainer {
   public final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
 
   // Controllers
-  private final static XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
-  private final static XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
+  private final static XboxController m_driverXbox = new DeadbandedRawXboxController(OIConstants.XBOX_DRIVER_ID);
+  private final static XboxController m_operatorXbox = new DeadbandedRawXboxController(OIConstants.XBOX_OPERATOR_ID);
   private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
 
   // Autonomous
@@ -218,6 +224,11 @@ public class RobotContainer {
         if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotClimber.setMotors(0.0); }
         if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotClimber.setMotors(getOperatorController().getRightY()); }
        }, m_robotClimber));
+    
+    m_robotBoomBoom.setDefaultCommand(
+      new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.45))
+      );
+
     //  autoInit();
     //  recordInit();
   }
@@ -267,8 +278,8 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> m_robotClaws.toggleClaws(), m_robotClaws));
 
       // X > Toggles extender in and out
-    // new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-    //     .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
+        .whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
 
       // A > Spit Out Ball
     new JoystickButton(getOperatorController(), XboxController.Button.kA.value)
@@ -281,11 +292,11 @@ public class RobotContainer {
     
 
       //! Test Buttons
-    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-     .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //  .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
-    new JoystickButton(getOperatorController(), XboxController.Button.kX.value)
-     .whileHeld(new TrackTarget(m_robotSwerveDrive, m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+     .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //  .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
@@ -366,8 +377,11 @@ public class RobotContainer {
       if (inputs[i] instanceof String) {
 
         PathPlannerTrajectory traj = PathPlanner.loadPath(inputs[i].toString(), maxVel, maxAccel);
-        PathPlannerState initState = (PathPlannerState) traj.sample(0);
-        commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(new Pose2d(initState.poseMeters.getTranslation(), initState.holonomicRotation))));
+        PathPlannerState initState = traj.getInitialState();
+
+        Pose2d initPose = new Pose2d(initState.poseMeters.getTranslation(), initState.holonomicRotation);
+
+        commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(initPose), m_robotSwerveDrive));
         commands.add(new PPSwerveControllerCommand(
                           traj,
                           m_robotSwerveDrive::getOdometry,
@@ -378,12 +392,13 @@ public class RobotContainer {
                           m_robotSwerveDrive::setModuleStates,
                           m_robotSwerveDrive));
       }
+
       if (inputs[i] instanceof Command) {
         commands.add((Command) inputs[i]);
       }
     }
     
-    commands.add(new InstantCommand(() -> m_robotSwerveDrive.stopModules()));
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, true), m_robotSwerveDrive));
     Command[] ret = new Command[commands.size()];
     ret = commands.toArray(ret);
     return ret;
@@ -416,6 +431,13 @@ public class RobotContainer {
     //   }).withName("No Autonomous Path");
     // }
 
+    PIDController xController = SwerveDriveConstants.X_CONTROLLER;
+    PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
+    ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
+    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    loadPath("Move Forward");
+
     // ! this will run each of the specified PathPlanner paths in sequence.
     // * return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3"));
 
@@ -424,8 +446,30 @@ public class RobotContainer {
     // *                                           null,
     // *                                           new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3")),
     // *                                           new RunCommand(() -> m_robotIntake.runAtOutput(0.5))));
+    
+    // return new SequentialCommandGroup(buildAuto(1.0, 1.0, new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset(), m_robotSwerveDrive),
+    //                                                       // new InstantCommand(() -> this.resetOdometry(new Pose2d())),
+    //                                                       new InstantCommand(() -> m_robotSwerveDrive.setModuleRotationsToAngle(0.0), m_robotSwerveDrive), 
+    //                                                       "Diamond"));
 
-    return new SequentialCommandGroup(buildAuto(1.0, 1.0, new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset()), "Move Forward")); // test command
+    // * assume turret is already pointed towards target.
+    return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
+                                       new ParallelRaceGroup(
+                                         new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                         new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
+                                       ));
+
+    // TODO: we should test TrackTarget timing with my RunCommandForTime thing at some point, same with DriveWithInput timing
+
+    // * aim with RotateUntilTarget
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
+    //                                    new RotateUntilTarget(m_robotSwerveDrive, m_robotVisionOdometry, 0.5),
+    //                                    new ParallelRaceGroup(
+    //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+    //                                      new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
+    //                                    ));
   }
 
   public static XboxController getDriverController() {
@@ -558,7 +602,7 @@ public class RobotContainer {
   }
 
   private void saveRecording() {
-    // IMPORTANT: Had to chown the pathplanner folder in order to save autos.
+    // ! IMPORTANT: Had to chown the pathplanner folder in order to save autos.
     File outputFile = PATHPLANNER_DIRECTORY
         .resolve(ZonedDateTime.now(SYSTEM_CLOCK).format(RECORDING_FILE_NAME_FORMATTER)).toFile();
     LOGGER.log(Level.WARNING, "Creating path {0}.", outputFile.getPath());
@@ -579,8 +623,7 @@ public class RobotContainer {
   public void recordPeriodic() {
     Translation2d position = m_robotSwerveDrive.m_poseEstimator.getEstimatedPosition().getTranslation();
     Rotation2d rotation = m_robotSwerveDrive.m_gyro.getRotation2d();
-    // FIXME: Chassis speeds are created from joystick inputs and do not reflect
-    // actual robot velocity.
+    // * FIXME: Chassis speeds are created from joystick inputs and do not reflect actual robot velocity
     Translation2d velocity = new Translation2d(m_robotSwerveDrive.getChassisSpeeds()[0],
         m_robotSwerveDrive.getChassisSpeeds()[1]);
     Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false,
