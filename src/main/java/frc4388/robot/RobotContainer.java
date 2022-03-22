@@ -297,7 +297,7 @@ public class RobotContainer {
     //  .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-     .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+     .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, false));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //  .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
