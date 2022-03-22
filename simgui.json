@@ -22,6 +22,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/BoomBoom": "Subsystem",
+      "/LiveWindow/Claws": "Subsystem",
       "/LiveWindow/Climber": "Subsystem",
       "/LiveWindow/Extender": "Subsystem",
       "/LiveWindow/Hood": "Subsystem",

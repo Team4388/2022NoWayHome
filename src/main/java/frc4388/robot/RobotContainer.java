@@ -72,6 +72,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.commands.RunCommandForTime;
 import frc4388.robot.commands.ButtonBoxCommands.RunMiddleSwitch;
 import frc4388.robot.commands.ClimberCommands.RunClaw;
 import frc4388.robot.commands.ClimberCommands.RunClimberPath;
@@ -431,13 +432,6 @@ public class RobotContainer {
     //   }).withName("No Autonomous Path");
     // }
 
-    PIDController xController = SwerveDriveConstants.X_CONTROLLER;
-    PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
-    ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
-    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    loadPath("Move Forward");
-
     // ! this will run each of the specified PathPlanner paths in sequence.
     // * return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3"));
 
@@ -453,14 +447,22 @@ public class RobotContainer {
     //                                                       "Diamond"));
 
     // * assume turret is already pointed towards target.
-    return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
-                                       new ParallelRaceGroup(
-                                         new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-                                         new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
-                                       ));
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
+    //                                    new ParallelRaceGroup(
+    //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+    //                                      new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
+    //                                    ));
 
-    // TODO: we should test TrackTarget timing with my RunCommandForTime thing at some point, same with DriveWithInput timing
+    // return new RunCommandForTime(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, true), m_robotSwerveDrive), 1.0, true);
+
+    return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.3, 0.0, 0.0}, 1.0));//,
+                                      //  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                      //  new ParallelCommandGroup(
+                                      //    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                      //    new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0)
+                                       //));
 
     // * aim with RotateUntilTarget
     // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
