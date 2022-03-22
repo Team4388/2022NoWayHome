@@ -88,8 +88,8 @@ public class TrackTarget extends CommandBase {
       m_visionOdometry.setDriverMode(false);
       m_visionOdometry.setLEDs(true);
 
-      //// points = m_visionOdometry.getTargetPoints();
-      points = getFakePoints();
+      points = m_visionOdometry.getTargetPoints();
+      // points = getFakePoints();
       //// points = filterPoints(points);
       Point average = VisionOdometry.averagePoint(points);
       
