@@ -70,9 +70,9 @@ public class RunCommandForTime extends CommandBase {
   @Override
   public boolean isFinished() {
     if (this.override) {
-      return (((long) this.duration) >= (this.elapsed - this.start));
+      return (this.elapsed >= this.duration);
     } else {
-      return (this.command.isFinished() && (((long) this.duration) >= (this.elapsed - this.start)));
+      return (this.command.isFinished() && (this.elapsed >= this.duration));
     }
   }
 }
