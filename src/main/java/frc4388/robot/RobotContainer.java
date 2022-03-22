@@ -59,6 +59,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -454,13 +455,19 @@ public class RobotContainer {
     // * assume turret is already pointed towards target.
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
                                        new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
-                                       new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true));
+                                       new ParallelRaceGroup(
+                                         new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                         new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
+                                       ));
 
     // * aim with RotateUntilTarget
     // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
     //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
     //                                    new RotateUntilTarget(m_robotSwerveDrive, m_robotVisionOdometry, 0.5),
-    //                                    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+    //                                    new ParallelRaceGroup(
+    //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+    //                                      new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
+    //                                    ));
   }
 
   public static XboxController getDriverController() {
