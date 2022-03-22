@@ -86,10 +86,10 @@ public void track(){
 
 public void checkFinished(){
   if (xAngle < 0.5 && xAngle > -0.5 && target == 1){
-    m_turret.m_isAimReady = true;
+    // m_turret.m_isAimReady = true;
   }
   else{
-    m_turret.m_isAimReady = false;
+    // m_turret.m_isAimReady = false;
   }
 }
 

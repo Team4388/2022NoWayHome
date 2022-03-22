@@ -38,6 +38,9 @@ public class SwerveModule extends SubsystemBase {
   public double m_currentPos;
   public double m_lastPos;
 
+  public SwerveModuleState lastState = new SwerveModuleState();
+  public SwerveModuleState currentState;
+
   /** Creates a new SwerveModule. */
   public SwerveModule(WPI_TalonFX driveMotor, WPI_TalonFX angleMotor, CANCoder canCoder, double offset) {
     this.driveMotor = driveMotor;
@@ -79,6 +82,7 @@ public class SwerveModule extends SubsystemBase {
     // driveMotor.configAllSettings(driveTalonFXConfiguration);
 
     CANCoderConfiguration canCoderConfiguration = new CANCoderConfiguration();
+    canCoderConfiguration.sensorCoefficient = 0.087890625;
     canCoderConfiguration.magnetOffsetDegrees = offset;
     canCoderConfiguration.sensorDirection = true;
     canCoder.configAllSettings(canCoderConfiguration);
@@ -90,9 +94,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private Rotation2d getAngle() {
-    // Note: This assumes the CANCoders are setup with the default feedback
-    // coefficient
-    // and the sensor value reports degrees.
+    // ! Note: This assumes the CANCoders are setup with the default feedback coefficient and the sensor value reports degrees.
     return Rotation2d.fromDegrees(canCoder.getAbsolutePosition());
   }
 
@@ -120,6 +122,7 @@ public class SwerveModule extends SubsystemBase {
     double desiredTicks = currentTicks + deltaTicks;
 
     if (!ignoreAngle) {
+
       angleMotor.set(TalonFXControlMode.Position, desiredTicks);
     }
 
@@ -181,15 +184,26 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+    currentState = this.getState();
+
     Rotation2d currentRotation = getAngle();
     SmartDashboard.putNumber("Angle Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
     SmartDashboard.putNumber("Drive Motor " + driveMotor.getDeviceID(),
         ((driveMotor.getSelectedSensorPosition() / 2048) * 360) % 360);
+
+    lastState = currentState;
   }
 
   public void reset() {
     canCoder.setPositionToAbsolute();
     // canCoder.configSensorInitializationStrategy(initializationStrategy)
   }
+  public double getCurrent(){
+    return angleMotor.getSupplyCurrent() + driveMotor.getSupplyCurrent();
+  }
 
+  public double getVoltage(){
+    return (Math.abs(angleMotor.getMotorOutputVoltage()) + Math.abs(driveMotor.getMotorOutputVoltage()));
+  }
 }

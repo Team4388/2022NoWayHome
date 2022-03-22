@@ -20,8 +20,10 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.utility.CSV;
@@ -34,9 +36,11 @@ public class BoomBoom extends SubsystemBase {
   public WPI_TalonFX m_shooterFalconRight;
   public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
   public static BoomBoom m_boomBoom;
+  double speed2;
 
   double velP;
   double input;
+  public double pidOffset = 0;
 
   public boolean m_isDrumReady = false;
   public double m_fireVel;
@@ -52,48 +56,64 @@ public class BoomBoom extends SubsystemBase {
 
   private ShooterTableEntry[] m_shooterTable;
 
-  /*
-  * Creates new BoomBoom subsystem, has drum shooter and angle adjuster
-  */
-  /** Creates a new BoomBoom. */
+  /** Creates a new BoomBoom, which has a drum shooter and angle adjuster. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
     m_shooterFalconLeft = shooterFalconLeft;
     m_shooterFalconRight = shooterFalconRight;
+
+    setShooterGains();
+
     m_shooterTable = readShooterTable();
     // Run a helper method that logs the contents of the table on a new thread.
     new Thread(() -> LOGGER.fine(() -> CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
   }
 
-  public Double getVelocity(Double distance) {
-    // This is a function that takes a value (distance) and returns a value (drumVelocity) that is a
-    // linear interpolation of the two values (drumVelocity) at the two closest points in the table
-    // (m_shooterTable) to the given value (distance).
+  /**
+   * This is a function that takes a value (distance) and returns a value (drumVelocity) that is a
+   * linear interpolation of the two values (drumVelocity) at the two closest points in the table
+   * (m_shooterTable) to the given value (distance). 
+   * @param distance Distance in shooter table
+   * @return Drum Velocity in units per 100 ms
+   */
+  public Double getVelocity(final Double distance) {
     return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
   }
 
-  public Double getHood(Double distance) {
-    // This is a function that takes a value (distance) and returns a value (hoodExt) that is a linear
-    // interpolation of the two values (hoodExt) at the two closest points in the table (m_shooterTable)
-    // to the given value (distance).
+  /**
+   * This is a function that takes a value (distance) and returns a value (hoodExt) that is a linear
+   * interpolation of the two values (hoodExt) at the two closest points in the table (m_shooterTable)
+   * to the given value (distance).
+   * @param distance Distance in shooter table
+   * @return Hood extension in units
+   */
+  public Double getHood(final Double distance) {
     return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    // speed2 = SmartDashboard.getNumber("Shooter Offset", 0.0);
+    SmartDashboard.putNumber("Shooter Current", getCurrent());
+    SmartDashboard.putNumber("Shooter Voltage",  m_shooterFalconLeft.getMotorOutputVoltage());
+    SmartDashboard.putNumber("Shooter Actual Velocity", m_shooterFalconLeft.getSelectedSensorVelocity());
   }
 
   public void passRequiredSubsystem(Hood subsystem0, Turret subsystem1) {
     m_hoodSubsystem = subsystem0;
     m_turretSubsystem = subsystem1;
-  }
+  } 
 
   /**
    * Runs the Drum motor at a given speed
    * @param speed percent output form -1.0 to 1.0
    */
   public void runDrumShooter(double speed) {
-    m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed);
+    // m_shooterFalconLeft.set(TalonFXControlMode.PercentOutput, speed + speed2);
+    m_shooterFalconLeft.set(speed);
+    SmartDashboard.putNumber("BoomBoom percent speed", speed + speed2);
+    SmartDashboard.putNumber("BoomBoom current stator", m_shooterFalconLeft.getStatorCurrent());
+    SmartDashboard.putNumber("BoomBoom current supply", m_shooterFalconLeft.getSupplyCurrent());
 
   }
 
@@ -106,6 +126,7 @@ public class BoomBoom extends SubsystemBase {
   }
 
   public void runDrumShooterVelocityPID(double targetVel) {
+    SmartDashboard.putNumber("Target Drum Velocity", 10000 + pidOffset);
     m_shooterFalconLeft.set(TalonFXControlMode.Velocity, targetVel); // Init
     
     // New BoomBoom controller stuff
@@ -150,5 +171,18 @@ public class BoomBoom extends SubsystemBase {
       LOGGER.log(Level.SEVERE, "Exception while reading shooter CSV table.", exception);
       return new ShooterTableEntry[] { dummyEntry };
     }
+  }
+
+  public void updateOffset(double change) {
+    pidOffset = pidOffset + change;
+  }
+
+  public void increaseSpeed(double amount)
+  {
+    speed2 = speed2 + amount;
+  }
+
+  public double getCurrent(){
+    return m_shooterFalconLeft.getSupplyCurrent() + m_shooterFalconRight.getSupplyCurrent();
   }
 }

@@ -2,14 +2,19 @@ package frc4388.commands;
 
 import org.junit.Test;
 
-import frc4388.robot.commands.AimToCenter;
+import frc4388.robot.commands.ShooterCommands.AimToCenter;
+
 import org.junit.Assert;
 
 public class AimToCenterTest {
 
     private static final double DELTA = 1e-15;
 
-    @Test
+    /**
+     * Unit tests the isDeadzone function in AimToCenter.java
+     * @author Ryan Manley
+     * @link www.hoohle.com
+     */
     public void givenAngle_whenTestIfDeadzone_thenReturnIfInDeadzone() {
         boolean output;
 
