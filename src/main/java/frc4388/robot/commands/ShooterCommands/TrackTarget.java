@@ -35,6 +35,8 @@ public class TrackTarget extends CommandBase {
   BoomBoom m_boomBoom;
   Hood m_hood;
 
+  boolean isAuto;
+
   static double velocity;
   static double hoodPosition;
 
@@ -46,18 +48,35 @@ public class TrackTarget extends CommandBase {
 
   boolean isExecuted = false;
 
-  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
+  // timing
+  boolean isAimed;
+
+  boolean timerStarted;
+  long startTime;
+  private double timeTolerance;
+
+  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry, boolean isAuto) {
     m_turret = turret;
     m_boomBoom = boomBoom;
     m_hood = hood;
     m_visionOdometry = visionOdometry;
 
+    this.isAuto = isAuto;
+    this.timeTolerance = 1000;
+
     addRequirements(m_turret, m_boomBoom, m_hood, m_visionOdometry);
+  }
+
+  public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
+    this(turret, boomBoom, hood, visionOdometry, false);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    timerStarted = false;
+    startTime = 0;
+
     velocity = 0;
     hoodPosition = 0;
   }
@@ -110,6 +129,8 @@ public class TrackTarget extends CommandBase {
     } catch (Exception e){
       e.printStackTrace();
     }
+
+    // timing
   }
 
   // public ArrayList<Point> filterPoints(ArrayList<Point> points) {
@@ -161,7 +182,15 @@ public class TrackTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (this.isAuto) {
+      if (targetLocked& !timerStarted) {
+        timerStarted = true;
+        startTime = System.currentTimeMillis();
+      }
+      return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+    } else {
+      return false;
+    }
     // return isExecuted && Math.abs(output) < .1;
   }
 }
