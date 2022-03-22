@@ -191,10 +191,10 @@ public class SwerveModule extends SubsystemBase {
 
     currentState = this.getState();
 
-    Rotation2d currentRotation = getAngle();
-    SmartDashboard.putNumber("Angle Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
-    SmartDashboard.putNumber("Drive Motor " + driveMotor.getDeviceID(),
-        ((driveMotor.getSelectedSensorPosition() / 2048) * 360) % 360);
+    // Rotation2d currentRotation = getAngle();
+    // SmartDashboard.putNumber("Angle Motor " + angleMotor.getDeviceID(), currentRotation.getDegrees());
+    // SmartDashboard.putNumber("Drive Motor " + driveMotor.getDeviceID(),
+    //     ((driveMotor.getSelectedSensorPosition() / 2048) * 360) % 360);
 
     lastState = currentState;
   }

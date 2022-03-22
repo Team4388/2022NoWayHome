@@ -260,8 +260,6 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-
-
     //! Operator Buttons
 
       // Right Bumper > Storage Out
@@ -456,13 +454,15 @@ public class RobotContainer {
 
     // return new RunCommandForTime(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, true), m_robotSwerveDrive), 1.0, true);
 
-    return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.3, 0.0, 0.0}, 1.0));//,
+    return new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -1.0, 0.0, 0.0}, 1.0);
+    // System.out.println("AUTOS DONE");
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -1.0, 0.0, 0.0}, 1.0));//,
                                       //  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
                                       //  new ParallelCommandGroup(
                                       //    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
                                       //    new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0)
-                                       //));
+                                      //  ));
 
     // * aim with RotateUntilTarget
     // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
