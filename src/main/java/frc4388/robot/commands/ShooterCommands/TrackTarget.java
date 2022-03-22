@@ -88,8 +88,9 @@ public class TrackTarget extends CommandBase {
       m_visionOdometry.setDriverMode(false);
       m_visionOdometry.setLEDs(true);
 
-      points = m_visionOdometry.getTargetPoints();
-      // points = filterPoints(points);
+      //// points = m_visionOdometry.getTargetPoints();
+      points = getFakePoints();
+      //// points = filterPoints(points);
       Point average = VisionOdometry.averagePoint(points);
       
       double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
@@ -153,6 +154,17 @@ public class TrackTarget extends CommandBase {
   //   final double averageDist = distanceSum / points.size();
   //   return (ArrayList<Point>) pointDistances.keySet().stream().filter(p -> pointDistances.get(p) < 2 * averageDist).collect(Collectors.toList());
   // }
+
+  public final ArrayList<Point> getFakePoints() {
+    ArrayList<Point> fakePoints = new ArrayList<>();
+
+    for(int i = 0; i < 10; i++) {
+      Point p = new Point((Math.random() * 20) - 10 + (VisionConstants.LIME_HIXELS/2), (Math.random() * 20) - 10 + (VisionConstants.LIME_VIXELS/2));
+      fakePoints.add(p);
+    }
+
+    return fakePoints;
+  }
 
   public final double getDistance(double averageY) {
     double y_rot = averageY / VisionConstants.LIME_VIXELS;

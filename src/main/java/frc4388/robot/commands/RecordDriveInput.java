@@ -92,7 +92,7 @@ public class RecordDriveInput extends CommandBase {
       for(long millis : timedInput.keySet())
         writer.println(millis + "," + timedInput.get(millis)[0] + "," + timedInput.get(millis)[1] + "," + timedInput.get(millis)[2]);
 
-      writer.println((millis + 1) + ",0,0,0");
+      //// writer.println(( + 1) + ",0,0,0");
       writer.close();
     } catch(Exception e) {
       e.printStackTrace();
