@@ -89,29 +89,29 @@ public class TrackTarget extends CommandBase {
       m_visionOdometry.setLEDs(true);
 
       points = m_visionOdometry.getTargetPoints();
-      // points = filterPoints(points);
+      points = filterPoints(points);
       Point average = VisionOdometry.averagePoint(points);
       
       double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-      output *= 2;
+      output *= 2.0;
       
       m_turret.runTurretWithInput(output);
-      // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
+      double position = m_turret.m_boomBoomRotateEncoder.getPosition();
 
-      // if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
-      //       Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
-      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
-      // else
-      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
-      //                           RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
-      //                           true);
+      if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
+            Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
+        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
+      else
+        m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
+                                RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
+                                true);
 
       
       double regressedDistance = getDistance(average.y);
       
       // ! no longer a +30 lol -aarav
-      velocity = m_boomBoom.getVelocity(regressedDistance);
-      hoodPosition = m_boomBoom.getHood(regressedDistance);
+      velocity = m_boomBoom.getVelocity(regressedDistance + 30);
+      hoodPosition = m_boomBoom.getHood(regressedDistance + 30);
       
       m_boomBoom.runDrumShooterVelocityPID(velocity);
       m_hood.runAngleAdjustPID(hoodPosition);
@@ -134,25 +134,25 @@ public class TrackTarget extends CommandBase {
     
   }
 
-  // public ArrayList<Point> filterPoints(ArrayList<Point> points) {
-  //   Point average = VisionOdometry.averagePoint(points);
+  public ArrayList<Point> filterPoints(ArrayList<Point> points) {
+    Point average = VisionOdometry.averagePoint(points);
       
-  //   HashMap<Point, Double> pointDistances = new HashMap<>();
-  //   double distanceSum = 0;
+    HashMap<Point, Double> pointDistances = new HashMap<>();
+    double distanceSum = 0;
 
-  //   for(Point point : points) {
-  //     Vector2D difference = new Vector2D(point);
-  //     difference.subtract(new Vector2D(average));
+    for(Point point : points) {
+      Vector2D difference = new Vector2D(point);
+      difference.subtract(new Vector2D(average));
 
-  //     double mag = difference.magnitude();
-  //     distanceSum += mag;
+      double mag = difference.magnitude();
+      distanceSum += mag;
 
-  //     pointDistances.put(point, mag);
-  //   }
+      pointDistances.put(point, mag);
+    }
 
-  //   final double averageDist = distanceSum / points.size();
-  //   return (ArrayList<Point>) pointDistances.keySet().stream().filter(p -> pointDistances.get(p) < 2 * averageDist).collect(Collectors.toList());
-  // }
+    final double averageDist = distanceSum / points.size();
+    return (ArrayList<Point>) pointDistances.keySet().stream().filter(p -> pointDistances.get(p) < 1.3 * averageDist).collect(Collectors.toList());
+  }
 
   public final double getDistance(double averageY) {
     double y_rot = averageY / VisionConstants.LIME_VIXELS;
