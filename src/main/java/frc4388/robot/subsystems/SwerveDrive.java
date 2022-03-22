@@ -158,6 +158,13 @@ public class SwerveDrive extends SubsystemBase {
     // modules[0].setDesiredState(desiredStates[0], false);
   }
 
+  public void setModuleRotationsToAngle(double angle) {
+    for (int i = 0; i < modules.length; i++) {
+      SwerveModule module = modules[i];
+      module.rotateToAngle(angle);
+    }
+  }
+
   @Override
   public void periodic() {
 
@@ -228,10 +235,16 @@ public class SwerveDrive extends SubsystemBase {
    * Updates the field relative position of the robot.
    */
   public void updateOdometry() {
-    m_poseEstimator.update( getRegGyro(),
-                            modules[0].getState(), 
-                            modules[1].getState(), 
-                            modules[2].getState(), 
+    Rotation2d actualDWI = new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI/2));
+    Rotation2d actual =  new Rotation2d(-1 * m_gyro.getRotation2d().getRadians());
+
+    SmartDashboard.putNumber("AUTO ACTUAL GYRO", actual.getDegrees());
+    SmartDashboard.putNumber("AUTO DWI GYRO", actual.getDegrees());
+
+    m_poseEstimator.update( actualDWI,//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
+                            modules[0].getState(),
+                            modules[1].getState(),
+                            modules[2].getState(),
                             modules[3].getState());
   }
   

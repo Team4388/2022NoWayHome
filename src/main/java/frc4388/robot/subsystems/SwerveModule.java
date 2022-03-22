@@ -182,6 +182,10 @@ public class SwerveModule extends SubsystemBase {
     angleMotor.set(0);
   }
 
+  public void rotateToAngle(double angle) {
+    this.angleMotor.set(TalonFXControlMode.Position, angle);
+  }
+
   @Override
   public void periodic() {
 
