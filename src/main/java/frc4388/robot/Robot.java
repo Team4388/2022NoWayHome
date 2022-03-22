@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
   
   private double current;
 
-  private static DesmosServer desmosServer = new DesmosServer(8000);
+  // private static DesmosServer desmosServer = new DesmosServer(8000);
 
   public static Alliance alliance;
 
@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
       }
     });
 
-    desmosServer.start();
+    // desmosServer.start();
     m_robotContainer.m_robotVisionOdometry.setLEDs(false);
     // DesmosServer.putTable("table", "x1", new double[] {44}, "y1", new double[] {0});
   }
