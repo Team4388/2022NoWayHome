@@ -74,7 +74,7 @@ public class TrackTarget extends CommandBase {
       Point average = VisionOdometry.averagePoint(points);
       
       double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-      output *= 2;
+      output *= 1.3;
       
       m_turret.runTurretWithInput(output);
       double position = m_turret.m_boomBoomRotateEncoder.getPosition();

@@ -85,7 +85,7 @@ public final class Constants {
     // swerve auto constants
     public static final PIDController X_CONTROLLER = new PIDController(0.5, 0.0, 0.0);
     public static final PIDController Y_CONTROLLER = new PIDController(2.0, 0.0, 0.0);
-    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(15.0, 0.1, 0.3,
+    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(1.0, 0.0, 0.0,
         new TrapezoidProfile.Constraints(Math.PI, Math.PI));
     public static final boolean PATH_RECORD_VELOCITY = true;
     public static final double PATH_MAX_VELOCITY = 5.0;
@@ -326,8 +326,8 @@ public final class Constants {
     public static final double TARGET_RADIUS = 4*12; //TODO: Convert to metric (does this still need to be converted?)
     public static final double H_FOV = 59.6;
     public static final double V_FOV = 45.7;
-    public static final double LIME_HIXELS = 920;
-    public static final double LIME_VIXELS = 720;
+    public static final double LIME_HIXELS = 640;
+    public static final double LIME_VIXELS = 480;
     public static final double TURRET_kP = 0.1;
 
     public static final double POINTS_THRESHOLD = 400;
