@@ -43,6 +43,7 @@ public class DriveWithInputForTime extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("RUNNING");
     elapsed = System.currentTimeMillis() - start;
     this.swerve.driveWithInput(inputs[0], inputs[1], inputs[2], inputs[3], true);
   }
@@ -54,6 +55,9 @@ public class DriveWithInputForTime extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (elapsed >= duration);
+    System.out.println("Duration: " + duration);
+    System.out.println("Elapsed: " + elapsed);
+
+    return ((double) elapsed >= duration);
   }
 }
