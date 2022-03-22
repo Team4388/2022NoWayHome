@@ -90,9 +90,9 @@ public class TrackTarget extends CommandBase {
       
       double regressedDistance = getDistance(average.y);
       
-      // ! add 30 to the distance to get in target. May need to be adjusted
-      velocity = m_boomBoom.getVelocity(regressedDistance + 30);
-      hoodPosition = m_boomBoom.getHood(regressedDistance + 30);
+      // ! no longer a +30 lol -aarav
+      velocity = m_boomBoom.getVelocity(regressedDistance);
+      hoodPosition = m_boomBoom.getHood(regressedDistance);
       
       m_boomBoom.runDrumShooterVelocityPID(velocity);
       m_hood.runAngleAdjustPID(hoodPosition);
