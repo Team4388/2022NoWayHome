@@ -92,9 +92,11 @@ public class TrackTarget extends CommandBase {
       // points = getFakePoints();
       //// points = filterPoints(points);
       Point average = VisionOdometry.averagePoint(points);
+      System.out.println("Average Point: " + average.toString());
       
       double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
       output *= 2.0;
+      System.out.println("Output: " + output);
       
       m_turret.runTurretWithInput(output);
       // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
