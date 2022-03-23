@@ -146,15 +146,15 @@ public class VisionOdometry extends SubsystemBase {
     return m_camera.getLEDMode() != VisionLEDMode.kOff;
   }
 
-  public void updateOdometryWithVision(){
-    try {
-      m_drive.m_poseEstimator.addVisionMeasurement(
-              getVisionOdometry(),
-              Timer.getFPGATimestamp() - getLatency());
-    } catch (VisionObscuredException err) {
-      err.printStackTrace();
-    } 
-  }
+  // public void updateOdometryWithVision(){
+  //   try {
+  //     m_drive.m_poseEstimator.addVisionMeasurement(
+  //             getVisionOdometry(),
+  //             Timer.getFPGATimestamp() - getLatency());
+  //   } catch (VisionObscuredException err) {
+  //     err.printStackTrace();
+  //   } 
+  // }
 
   /** Reverse 3d projects target points from screen coordinates to 3d space
    * <p>

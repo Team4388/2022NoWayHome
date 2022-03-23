@@ -105,7 +105,7 @@ public class PathRecorder extends CommandBase {
    */
   @Override
   public void execute() {
-    Translation2d position = m_swerveDrive.m_poseEstimator.getEstimatedPosition().getTranslation();
+    Translation2d position = m_swerveDrive.m_odometry.getPoseMeters().getTranslation();
     Rotation2d rotation = m_swerveDrive.m_gyro.getRotation2d();
     // FIXME: Chassis speeds are created from joystick inputs and do not reflect actual robot velocity.
     Translation2d velocity = new Translation2d(m_swerveDrive.getChassisSpeeds().vxMetersPerSecond, m_swerveDrive.getChassisSpeeds().vyMetersPerSecond);

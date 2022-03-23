@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -45,7 +46,7 @@ public class SwerveDrive extends SubsystemBase {
   public SwerveModule[] modules;
   public WPI_Pigeon2 m_gyro;
 
-  public SwerveDrivePoseEstimator m_poseEstimator;
+  public SwerveDriveOdometry m_odometry;
   // public SwerveDriveOdometry m_odometry;
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
@@ -66,13 +67,18 @@ public class SwerveDrive extends SubsystemBase {
 
     modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
     
-    m_poseEstimator = new SwerveDrivePoseEstimator(
-        getRegGyro(),//m_gyro.getRotation2d(),
-        new Pose2d(),
+    // m_poseEstimator = new SwerveDrivePoseEstimator(
+    //     getRegGyro(),//m_gyro.getRotation2d(),
+    //     new Pose2d(),
+    //     m_kinematics,
+    //     VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),  // TODO: tune
+    //     VecBuilder.fill(Units.degreesToRadians(1)),            // TODO: tune
+    //     VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
+    
+    m_odometry = new SwerveDriveOdometry(
         m_kinematics,
-        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),  // TODO: tune
-        VecBuilder.fill(Units.degreesToRadians(1)),            // TODO: tune
-        VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
+        getRegGyro(),//m_gyro.getRotation2d(),
+        new Pose2d()); // TODO: tune
 
     // m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
 
@@ -206,7 +212,8 @@ public class SwerveDrive extends SubsystemBase {
    */
   public Pose2d getOdometry() {
     // return m_odometry.getPoseMeters();
-    return m_poseEstimator.getEstimatedPosition();
+    return m_odometry.getPoseMeters();
+    // return m_poseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -226,7 +233,7 @@ public class SwerveDrive extends SubsystemBase {
    * Resets the odometry of the robot to the given pose.
    */
   public void resetOdometry(Pose2d pose) {
-    m_poseEstimator.resetPosition(pose, m_gyro.getRotation2d());
+    m_odometry.resetPosition(pose, m_gyro.getRotation2d());
   }
 
   /**
@@ -239,7 +246,7 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("AUTO ACTUAL GYRO", actual.getDegrees());
     SmartDashboard.putNumber("AUTO DWI GYRO", actual.getDegrees());
 
-    m_poseEstimator.update( actualDWI,//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
+    m_odometry.update( actualDWI,//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
                             modules[0].getState(),
                             modules[1].getState(),
                             modules[2].getState(),
