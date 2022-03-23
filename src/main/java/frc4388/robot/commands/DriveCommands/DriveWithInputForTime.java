@@ -45,7 +45,7 @@ public class DriveWithInputForTime extends CommandBase {
   public void execute() {
     System.out.println("RUNNING");
     elapsed = System.currentTimeMillis() - start;
-    this.swerve.driveWithInput(inputs[0], inputs[1], inputs[2], inputs[3], true);
+    this.swerve.driveWithInput(inputs[0], inputs[1], inputs[2], inputs[3], false);
   }
 
   // Called once the command ends or is interrupted.

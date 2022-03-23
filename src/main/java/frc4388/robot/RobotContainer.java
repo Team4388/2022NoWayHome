@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -47,6 +48,7 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.PathRecorder;
+import frc4388.robot.commands.RunCommandForTime;
 import frc4388.robot.commands.DriveCommands.DriveWithInputForTime;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.TrackTarget;
@@ -399,9 +401,30 @@ public class RobotContainer {
     //                                    ));
 
     // return new RunCommandForTime(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, true), m_robotSwerveDrive), 1.0, true);
+    // return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Diamond"));
 
+    // ! 3 ball auto
+    // return new SequentialCommandGroup(new RunCommandForTime(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.0, 0.0, false), m_robotSwerveDrive), 0.0));
+// ! 134 inches: 1.0 input, 1 second
+// ! 48 inches: 0.75, 1 second
+    // * TEST #1
+    // return new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -1.0, 0.0, 0.0}, 1.0)
+    //   .andThen(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, false), m_robotSwerveDrive));
+    // * TEST #2
+    // return new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -0.75, 0.0, 0.0}, 1.0)
+    //   .andThen(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, false), m_robotSwerveDrive));
+    // * TEST #3
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.3, 0.0, 0.0}, 1.0));//,
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, 1.0),
+                                       new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, -1.0, 0, false), m_robotSwerveDrive),
+                                       new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                       new ParallelCommandGroup(
+                                         new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                         new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0))
+                                       );
+    
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.3, 0.0, 0.0}, 1.0));//,
                                       //  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
                                       //  new ParallelCommandGroup(
                                       //    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
