@@ -74,6 +74,9 @@ public class TrackTarget extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_visionOdometry.setDriverMode(false);
+    m_visionOdometry.setLEDs(true);
+    
     timerStarted = false;
     startTime = 0;
 
@@ -85,9 +88,6 @@ public class TrackTarget extends CommandBase {
   @Override
   public void execute() {    
     try {
-      m_visionOdometry.setDriverMode(false);
-      m_visionOdometry.setLEDs(true);
-
       points = m_visionOdometry.getTargetPoints();
       // points = getFakePoints();
       //// points = filterPoints(points);
