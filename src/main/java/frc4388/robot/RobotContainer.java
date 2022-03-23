@@ -357,88 +357,31 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // if (loadedPathTrajectory != null) {
-    //   PIDController xController = SwerveDriveConstants.X_CONTROLLER;
-    //   PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
-    //   ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
-    //   thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    //   PathPlannerState initialState = loadedPathTrajectory.getInitialState();
-    //   Pose2d initialPosition = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
-    //   return new SequentialCommandGroup(
-    //       new InstantCommand(m_robotSwerveDrive.m_gyro::reset),
-    //       new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(initialPosition)),
-    //       new PPSwerveControllerCommand(loadedPathTrajectory, m_robotSwerveDrive::getOdometry,
-    //           m_robotSwerveDrive.m_kinematics, xController, yController, thetaController,
-    //           m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive),
-    //       new InstantCommand(m_robotSwerveDrive::stopModules)).withName("Run Autonomous Path");
-    // } else {
-    //   LOGGER.severe("No auto selected.");
-    //   return new RunCommand(() -> {
-    //   }).withName("No Autonomous Path");
-    // }
+    // ! ways to not coast
+    // * 1. try zero joystick input: new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.0, 0.0, false), m_robotSwerveDrive);
+    // * 2. try opposite joystick input: new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, false), m_robotSwerveDrive);
+    // * 3a. try permanently setting drive motors to brake, not coast, in RobotMap.java, and ask the driver how it feels.
+    // * 3b. try to only set the drive motors to brake if in auto mode.
 
-    // ! this will run each of the specified PathPlanner paths in sequence.
-    // * return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3"));
 
-    // ! this will run each of the specified PathPlanner paths in sequence, while simultaneously running the intake throughout all the paths.
-    // * return new ParallelCommandGroup(buildAuto(null,
-    // *                                           null,
-    // *                                           new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3")),
-    // *                                           new RunCommand(() -> m_robotIntake.runAtOutput(0.5))));
-    
-    // return new SequentialCommandGroup(buildAuto(1.0, 1.0, new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset(), m_robotSwerveDrive),
-    //                                                       // new InstantCommand(() -> this.resetOdometry(new Pose2d())),
-    //                                                       new InstantCommand(() -> m_robotSwerveDrive.setModuleRotationsToAngle(0.0), m_robotSwerveDrive), 
-    //                                                       "Diamond"));
-
-    // * assume turret is already pointed towards target.
-    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
-    //                                    new ParallelRaceGroup(
-    //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-    //                                      new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
-    //                                    ));
-
-    // return new RunCommandForTime(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, true), m_robotSwerveDrive), 1.0, true);
-    // return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Diamond"));
-
-    // ! 3 ball auto
-    // return new SequentialCommandGroup(new RunCommandForTime(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.0, 0.0, false), m_robotSwerveDrive), 0.0));
-// ! 134 inches: 1.0 input, 1 second
-// ! 48 inches: 0.75, 1 second
-    // * TEST #1
-    // return new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -1.0, 0.0, 0.0}, 1.0)
-    //   .andThen(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, false), m_robotSwerveDrive));
-    // * TEST #2
-    // return new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -0.75, 0.0, 0.0}, 1.0)
-    //   .andThen(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, false), m_robotSwerveDrive));
-    // * TEST #3
+    // ! 134 inches: 1.0 input, 1 second
+    // ! 48 inches: 0.75, 1 second
+    // ? positive leftY went left, negative leftY went right.
+  
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+
                                        new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, 1.0),
-                                       new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, -1.0, 0, false), m_robotSwerveDrive),
+                                       new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, false), m_robotSwerveDrive),
+                                       
                                        new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+
                                        new ParallelCommandGroup(
                                          new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
                                          new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0))
-                                       );
-    
-    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.3, 0.0, 0.0}, 1.0));//,
-                                      //  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-                                      //  new ParallelCommandGroup(
-                                      //    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-                                      //    new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0)
-                                       //));
 
-    // * aim with RotateUntilTarget
-    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
-    //                                    new RotateUntilTarget(m_robotSwerveDrive, m_robotVisionOdometry, 0.5),
-    //                                    new ParallelRaceGroup(
-    //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-    //                                      new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
-    //                                    ));
+                                       );
+
   }
 
   public static XboxController getDriverController() {
