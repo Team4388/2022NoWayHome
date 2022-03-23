@@ -64,6 +64,7 @@ import frc4388.robot.subsystems.VisionOdometry;
 import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.controller.ButtonBox;
 import frc4388.utility.controller.DeadbandedRawXboxController;
+import frc4388.utility.controller.DeadbandedXboxController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -96,8 +97,8 @@ public class RobotContainer {
   /* Autonomous */
   private final PathRecorder m_pathChooser = new PathRecorder(m_robotSwerveDrive);
   // Controllers
-  private final static XboxController m_driverXbox = new DeadbandedRawXboxController(OIConstants.XBOX_DRIVER_ID);
-  private final static XboxController m_operatorXbox = new DeadbandedRawXboxController(OIConstants.XBOX_OPERATOR_ID);
+  private final static XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
+  private final static XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
   private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
   
   public static boolean softLimits = true;

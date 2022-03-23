@@ -64,9 +64,6 @@ public class Robot extends TimedRobot {
     LOGGER.log(Level.FINE, "Logging Test 6/8");
     LOGGER.log(Level.FINER, "Logging Test 7/8");
     LOGGER.log(Level.FINEST, "Logging Test 8/8");
-    Errors.log().run(() -> {
-      throw new Throwable("Exception Test");
-    });
 
     // var path =
     // PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move
