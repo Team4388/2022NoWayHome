@@ -140,6 +140,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
+    System.out.println((180.0 / Math.PI) * Math.atan2(-(219.25 / 2.00) - 40.44 + 10.00, -(82.83 / 2.00) + 15.56));
     // current = 
       // m_robotContainer.m_robotBoomBoom.getCurrent() +
       // m_robotContainer.m_robotClimber.getCurrent(); //+
