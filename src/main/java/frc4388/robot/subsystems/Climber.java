@@ -17,11 +17,11 @@ public class Climber extends SubsystemBase {
   /** Creates a new Climber */
   public Climber(WPI_TalonFX elbow) {
     this.elbow = elbow;
-    elbow.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    elbow.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     elbow.overrideLimitSwitchesEnable(true);
     
-    elbow.configForwardSoftLimitThreshold(ClimberConstants.ELBOW_FORWARD_SOFT_LIMIT);
-    elbow.configForwardSoftLimitEnable(true);
+    elbow.configReverseSoftLimitThreshold(ClimberConstants.ELBOW_FORWARD_SOFT_LIMIT); // Tune
+    elbow.configReverseSoftLimitEnable(false);
   }
 
   public void setEncoders(double value) {
