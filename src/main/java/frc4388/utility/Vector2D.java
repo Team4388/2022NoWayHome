@@ -155,4 +155,8 @@ public class Vector2D extends Vector2d {
   public String toString() {
     return "<" + this.x + ", " + this.y + ">";
   }
+
+  public double[] toDoubleArray() {
+    return new double[] {this.x, this.y};
+  }
 }
