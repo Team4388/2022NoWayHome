@@ -111,7 +111,7 @@ public class TrackTarget extends CommandBase {
       double regressedDistance = getDistance(average.y);
       
       // ! no longer a +30 lol -aarav
-      double distAdj = SmartDashboard.getNumber("Distance Adjust", 20);
+      double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
       velocity = m_boomBoom.getVelocity(regressedDistance + distAdj);
       hoodPosition = m_boomBoom.getHood(regressedDistance + distAdj);
       
@@ -190,7 +190,6 @@ public class TrackTarget extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_visionOdometry.setLEDs(false);
-    m_visionOdometry.setDriverMode(true);
   }
 
   // Returns true when the command should end.

@@ -49,7 +49,7 @@ public class VisionOdometry extends SubsystemBase {
     m_shooter = shooter;
 
     setLEDs(false);
-    setDriverMode(true);
+    setDriverMode(false);
   }
 
   /** Gets the vision points from the limelight

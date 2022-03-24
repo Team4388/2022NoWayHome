@@ -103,8 +103,7 @@ public class RobotContainer {
   private enum ClimberMode { MANUAL, AUTONOMOUS };
   private ClimberMode currentClimberMode = ClimberMode.MANUAL;
 
-  private Map<String, SequentialCommandGroup> autoChoices;
-  private SendableChooser<String> quickAutoChooser = new SendableChooser<>();
+  private SendableChooser<SequentialCommandGroup> quickAutoChooser = new SendableChooser<>();
 
 /**
  * SmartDash
@@ -129,8 +128,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
-
 
     double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
 
@@ -200,14 +197,12 @@ public class RobotContainer {
     )));
 
 
-    autoChoices = Map.of(
-      "justShoot", justShoot,
-      "offTheLine", offTheLine,
-      "twoBall", twoBall,
-      "threeBall", threeBall
-    );
+    quickAutoChooser.setDefaultOption("justShoot", justShoot);
+    quickAutoChooser.addOption("offTheLine", offTheLine);
+    quickAutoChooser.addOption("twoBall", twoBall);
+    quickAutoChooser.addOption("threeBall", threeBall);
 
-    SmartDashboard.putData(quickAutoChooser);
+    SmartDashboard.putData("__QUICK AUTO CHOOSE__", quickAutoChooser);
 
     
 
@@ -466,10 +461,25 @@ public class RobotContainer {
     // ! 0.75 input, 1 second: 48 inches
     // ? positive leftY went left, negative leftY went right?
     // TODO: if line 372 is true, switch joystick inputs accordingly
-    String selection = quickAutoChooser.getSelected();
-    if (selection == null)
-      return new PrintCommand("---------- NO AUTO SELECTED --------------");
-    return autoChoices.get(quickAutoChooser.getSelected());
+
+    return Objects.requireNonNullElseGet(quickAutoChooser.getSelected(), () -> new PrintCommand("---------- NO AUTO SELECTED --------------"));
+
+    // double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
+
+    // double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
+    // double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
+
+    // Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
+    // Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
+    // Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition); // * vector from first ball to second ball, used to calculate emulated joystick inputs.
+
+    // return new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                    makeTheWeirdGroup(), // * shoot
+    //                                    new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+
+    //         new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                     new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, 0.25))); // * drive off line
+
 
   }
 
