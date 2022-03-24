@@ -43,8 +43,10 @@ public class Robot extends TimedRobot {
 
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
+
+  private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
   
-  private double current;
+  // private double current;
 
   // private static DesmosServer desmosServer = new DesmosServer(8000);
 
@@ -70,6 +72,9 @@ public class Robot extends TimedRobot {
     // Forward.path").toFile());
     // LOGGER.finest(path::toString);
     LOGGER.fine("robotInit()");
+
+
+
     // LOGGER.fine("Sssssssssh.");
     // DriverStation.silenceJoystickConnectionWarning(true);
     // Instantiate our RobotContainer. This will perform all our button bindings,
