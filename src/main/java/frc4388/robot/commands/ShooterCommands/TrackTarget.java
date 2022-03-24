@@ -65,6 +65,7 @@ public class TrackTarget extends CommandBase {
     this.timeTolerance = 1000;
 
     addRequirements(m_turret, m_boomBoom, m_hood, m_visionOdometry);
+    SmartDashboard.putNumber("Distance Adjust", 20);
   }
 
   public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
@@ -110,8 +111,9 @@ public class TrackTarget extends CommandBase {
       double regressedDistance = getDistance(average.y);
       
       // ! no longer a +30 lol -aarav
-      velocity = m_boomBoom.getVelocity(regressedDistance + 20);
-      hoodPosition = m_boomBoom.getHood(regressedDistance + 20);
+      double distAdj = SmartDashboard.getNumber("Distance Adjust", 20);
+      velocity = m_boomBoom.getVelocity(regressedDistance + distAdj);
+      hoodPosition = m_boomBoom.getHood(regressedDistance + distAdj);
       
       m_boomBoom.runDrumShooterVelocityPID(velocity);
       m_hood.runAngleAdjustPID(hoodPosition);
