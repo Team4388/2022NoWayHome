@@ -119,6 +119,17 @@ public class RobotContainer {
   private enum ClimberMode { MANUAL, AUTONOMOUS };
   private ClimberMode currentClimberMode = ClimberMode.MANUAL;
 
+/**
+ * SmartDash
+ * - Limelight cam X
+ * - Limit switches X
+ * - Shooter RPM X
+ * - Distance to target x
+ * - target locked
+ * - claws boolean
+ * - field
+ */
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */

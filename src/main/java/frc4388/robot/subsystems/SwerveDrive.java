@@ -180,7 +180,7 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     SmartDashboard.putNumber("Pigeon Yaw (0 to 360)", m_gyro.getYaw() % 360);
 
-    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    m_field.setRobotPose(m_odometry.getPoseMeters());
     super.periodic();
   }
 

@@ -39,7 +39,6 @@ public class Claws extends SubsystemBase {
     m_open = false;
     clawsOpen = false;
   }
-
   /**
    * Sets the state of both hooks
    * @param open The state of the hooks

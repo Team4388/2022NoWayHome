@@ -96,7 +96,7 @@ public class BoomBoom extends SubsystemBase {
     // speed2 = SmartDashboard.getNumber("Shooter Offset", 0.0);
     // SmartDashboard.putNumber("Shooter Current", getCurrent());
     // SmartDashboard.putNumber("Shooter Voltage",  m_shooterFalconLeft.getMotorOutputVoltage());
-    // SmartDashboard.putNumber("Shooter Actual Velocity", m_shooterFalconLeft.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Shooter RPM", (m_shooterFalconLeft.getSelectedSensorVelocity() * 10) / 2048);
   }
 
   public void passRequiredSubsystem(Hood subsystem0, Turret subsystem1) {

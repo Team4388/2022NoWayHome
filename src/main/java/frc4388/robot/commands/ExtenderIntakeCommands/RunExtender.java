@@ -42,7 +42,7 @@ public class RunExtender extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("RunExtender is working");
+    //System.out.println("RunExtender is working");
     this.extender.runExtender(ExtenderIntakeGroup.direction * 1.0);
     updateError();
   }

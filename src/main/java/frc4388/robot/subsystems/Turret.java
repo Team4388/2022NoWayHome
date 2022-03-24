@@ -116,8 +116,8 @@ public class Turret extends SubsystemBase {
     
     SmartDashboard.putNumber("Turret Angle Rotations", m_boomBoomRotateEncoder.getPosition());
     SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
-    SmartDashboard.putBoolean("Left Limit Switch Pressed", m_boomBoomLeftLimit.isPressed());
-    SmartDashboard.putBoolean("Right Limit Switch Pressed", m_boomBoomRightLimit.isPressed());
+    SmartDashboard.putBoolean("Turret Left Limit", m_boomBoomLeftLimit.isPressed());
+    SmartDashboard.putBoolean("Turret Right Limit", m_boomBoomRightLimit.isPressed());
 
     // limit switch annoying time thing but actually worked first try wtf
     leftState = m_boomBoomLeftLimit.isPressed(); // * Get the state of the left limit switch (true for pressed).

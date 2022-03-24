@@ -43,7 +43,7 @@ public class TrackTarget extends CommandBase {
   ArrayList<Point> points = new ArrayList<>();
 
   private boolean targetLocked = false;
-  private double velocityTolerance = 100.0;
+  private double velocityTolerance = 300.0;
   private double hoodTolerance = 5.0;
 
   boolean isExecuted = false;
@@ -110,21 +110,21 @@ public class TrackTarget extends CommandBase {
       double regressedDistance = getDistance(average.y);
       
       // ! no longer a +30 lol -aarav
-      velocity = m_boomBoom.getVelocity(regressedDistance);
-      hoodPosition = m_boomBoom.getHood(regressedDistance);
+      velocity = m_boomBoom.getVelocity(regressedDistance + 20);
+      hoodPosition = m_boomBoom.getHood(regressedDistance + 20);
       
-      m_boomBoom.runDrumShooterVelocityPID(velocity + 20);
-      m_hood.runAngleAdjustPID(hoodPosition + 20);
+      m_boomBoom.runDrumShooterVelocityPID(velocity);
+      m_hood.runAngleAdjustPID(hoodPosition);
       
       double currentDrumVel = this.m_boomBoom.m_shooterFalconLeft.getSelectedSensorVelocity();
       double currentHood = this.m_hood.getEncoderPosition();
   
-      targetLocked = (Math.abs(currentDrumVel - velocity) < velocityTolerance) && (Math.abs(currentHood - hoodPosition) < hoodTolerance);
+      targetLocked = (Math.abs(currentDrumVel - velocity) < velocityTolerance) && (Math.abs(currentHood - hoodPosition) < hoodTolerance) && (output < 0.2);
 
-      SmartDashboard.putNumber("Regressed Distance", regressedDistance);
+      SmartDashboard.putNumber("Distance to Target", regressedDistance);
       // SmartDashboard.putNumber("Distance", distance);
-      SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
-      SmartDashboard.putNumber("Vel Target Track", velocity);
+      // SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
+      // SmartDashboard.putNumber("Vel Target Track", velocity);
       SmartDashboard.putBoolean("Target Locked", targetLocked);
     } catch (Exception e){
       e.printStackTrace();
@@ -195,7 +195,7 @@ public class TrackTarget extends CommandBase {
   @Override
   public boolean isFinished() {
     if (this.isAuto) {
-      if (targetLocked& !timerStarted) {
+      if (targetLocked && !timerStarted) {
         timerStarted = true;
         startTime = System.currentTimeMillis();
       }
@@ -203,9 +203,5 @@ public class TrackTarget extends CommandBase {
     } else {
       return false;
     }
-    // return isExecuted && Math.abs(output) < .1;
-  // }
-
-    // return false;
   }
 }
