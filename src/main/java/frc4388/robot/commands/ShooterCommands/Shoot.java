@@ -4,8 +4,11 @@
 
 package frc4388.robot.commands.ShooterCommands;
 
+import java.util.Objects;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants;
@@ -60,6 +63,8 @@ public class Shoot extends CommandBase {
 
   private boolean endsWithLimelight;
 
+  private double[] fakeOdo;
+
   /**
    * Creates a new shoot command, allowing the robot to aim and be ready to fire a ball
    * 
@@ -94,13 +99,23 @@ public class Shoot extends CommandBase {
     isAimedInTolerance = false;
 
     this.inverted = 1;
+
+    this.fakeOdo = null;
     
     addRequirements(this.swerve, this.drum, this.turret, this.hood, this.visionOdometry);
   }
   
-  // public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood) {
-    //   this(swerve, drum, turret, hood, false);
-    // }
+  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry, double[] fakeOdo, boolean toShoot, boolean endsWithLime) {
+    this(swerve, drum, turret, hood, visionOdometry, toShoot, endsWithLime);
+    if (fakeOdo.length != 2) {
+      throw new IllegalArgumentException();
+    }
+    this.fakeOdo = fakeOdo;
+  }
+
+  public Shoot(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry, double[] fakeOdo) {
+    this(swerve, drum, turret, hood, visionOdometry, false, false);
+  }
     
     /**
      * Updates error for custom PID.
@@ -127,8 +142,8 @@ public class Shoot extends CommandBase {
         timerStarted = false;
         startTime = 0;
         
-        this.odoX = -this.swerve.getOdometry().getY(); // 3.2766
-        this.odoY = -this.swerve.getOdometry().getX(); // -0.9398
+        this.odoX = Objects.requireNonNullElse(Units.inchesToMeters(this.fakeOdo[0]), -this.swerve.getOdometry().getY());
+        this.odoY = Objects.requireNonNullElse(Units.inchesToMeters(this.fakeOdo[1]), -this.swerve.getOdometry().getX());
         
         this.distance = Math.hypot(odoX, odoY);
         

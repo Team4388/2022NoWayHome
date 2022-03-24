@@ -27,6 +27,10 @@ public class DriveWithInputForTime extends CommandBase {
   public DriveWithInputForTime(SwerveDrive swerve, double[] inputs, double duration) {
     // Use addRequirements() here to declare subsystem dependencies.
 
+    if (inputs.length != 4) {
+      throw new IllegalArgumentException();
+    }
+
     this.swerve = swerve;
     this.inputs = inputs;
     this.duration = duration * 1000; // ! convert seconds to milliseconds, duh

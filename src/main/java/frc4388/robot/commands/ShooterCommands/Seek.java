@@ -26,4 +26,15 @@ public class Seek extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new Shoot(swerve, drum, turret, hood, visionOdometry, false, false), new TrackTarget(turret, drum, hood, visionOdometry));
   }
+  
+  /** Seeks. 
+   * Seeking -> Sought
+   * @author Aarav Shah
+   * @blame Aarav Shah (thomas did this)
+  */
+  public Seek(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry, double[] fakeOdo) {
+    // Add your commands in the addCommands() call, e.g.
+    // addCommands(new FooCommand(), new BarCommand());
+    addCommands(new Shoot(swerve, drum, turret, hood, visionOdometry, fakeOdo, false, false), new TrackTarget(turret, drum, hood, visionOdometry));
+  }
 }

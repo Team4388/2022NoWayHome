@@ -30,12 +30,14 @@ public class Claws extends SubsystemBase {
   private double m_rightOffset;
 
   private boolean m_open;
+  private boolean clawsOpen;
   public static enum ClawType {LEFT, RIGHT}
 
   public Claws(Servo leftClaw, Servo rightClaw) {
     m_leftClaw = leftClaw;
     m_rightClaw = rightClaw;
     m_open = false;
+    clawsOpen = false;
   }
 
   /**
@@ -46,11 +48,11 @@ public class Claws extends SubsystemBase {
     if(open) {
       m_leftClaw.setRaw(ClawConstants.BOTTOM_LIMIT - 900);
       m_rightClaw.setRaw(ClawConstants.TOP_LIMIT + 100);
-      SmartDashboard.putBoolean("Claws Closed", false);
+      clawsOpen = false;
     } else {
       m_leftClaw.setRaw(ClawConstants.TOP_LIMIT - 400);
       m_rightClaw.setRaw(ClawConstants.BOTTOM_LIMIT - 400);
-      SmartDashboard.putBoolean("Claws Closed", true);
+      clawsOpen = true;
     }
   }
 
@@ -62,5 +64,6 @@ public class Claws extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("Claws Closed", clawsOpen);
   }
 }

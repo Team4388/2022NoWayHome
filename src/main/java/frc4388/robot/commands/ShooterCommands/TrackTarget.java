@@ -79,15 +79,14 @@ public class TrackTarget extends CommandBase {
 
     velocity = 0;
     hoodPosition = 0;
+    m_visionOdometry.setDriverMode(false);
+    m_visionOdometry.setLEDs(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {    
     try {
-      m_visionOdometry.setDriverMode(false);
-      m_visionOdometry.setLEDs(true);
-
       points = m_visionOdometry.getTargetPoints();
       // points = getFakePoints();
       //// points = filterPoints(points);
@@ -114,8 +113,8 @@ public class TrackTarget extends CommandBase {
       velocity = m_boomBoom.getVelocity(regressedDistance);
       hoodPosition = m_boomBoom.getHood(regressedDistance);
       
-      m_boomBoom.runDrumShooterVelocityPID(velocity);
-      m_hood.runAngleAdjustPID(hoodPosition);
+      m_boomBoom.runDrumShooterVelocityPID(velocity + 20);
+      m_hood.runAngleAdjustPID(hoodPosition + 20);
       
       double currentDrumVel = this.m_boomBoom.m_shooterFalconLeft.getSelectedSensorVelocity();
       double currentHood = this.m_hood.getEncoderPosition();
@@ -195,18 +194,18 @@ public class TrackTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-  ////   if (this.isAuto) {
-  ////     if (targetLocked& !timerStarted) {
-  ////       timerStarted = true;
-  ////       startTime = System.currentTimeMillis();
-  ////     }
-  ////     return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
-  ////   } else {
-  ////     return false;
-  ////   }
-  //   // return isExecuted && Math.abs(output) < .1;
-  //// }
+    if (this.isAuto) {
+      if (targetLocked& !timerStarted) {
+        timerStarted = true;
+        startTime = System.currentTimeMillis();
+      }
+      return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+    } else {
+      return false;
+    }
+    // return isExecuted && Math.abs(output) < .1;
+  // }
 
-    return false;
+    // return false;
   }
 }

@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -47,8 +48,10 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.PathRecorder;
+import frc4388.robot.commands.RunCommandForTime;
 import frc4388.robot.commands.DriveCommands.DriveWithInputForTime;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
+import frc4388.robot.commands.ShooterCommands.Shoot;
 import frc4388.robot.commands.ShooterCommands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Claws;
@@ -62,8 +65,10 @@ import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.VisionOdometry;
 import frc4388.utility.PathPlannerUtil;
+import frc4388.utility.Vector2D;
 import frc4388.utility.controller.ButtonBox;
 import frc4388.utility.controller.DeadbandedRawXboxController;
+import frc4388.utility.controller.DeadbandedXboxController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -96,8 +101,8 @@ public class RobotContainer {
   /* Autonomous */
   private final PathRecorder m_pathChooser = new PathRecorder(m_robotSwerveDrive);
   // Controllers
-  private final static XboxController m_driverXbox = new DeadbandedRawXboxController(OIConstants.XBOX_DRIVER_ID);
-  private final static XboxController m_operatorXbox = new DeadbandedRawXboxController(OIConstants.XBOX_OPERATOR_ID);
+  private final static XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
+  private final static XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
   private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
   
   public static boolean softLimits = true;
@@ -354,67 +359,74 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // if (loadedPathTrajectory != null) {
-    //   PIDController xController = SwerveDriveConstants.X_CONTROLLER;
-    //   PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
-    //   ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
-    //   thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    //   PathPlannerState initialState = loadedPathTrajectory.getInitialState();
-    //   Pose2d initialPosition = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
-    //   return new SequentialCommandGroup(
-    //       new InstantCommand(m_robotSwerveDrive.m_gyro::reset),
-    //       new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(initialPosition)),
-    //       new PPSwerveControllerCommand(loadedPathTrajectory, m_robotSwerveDrive::getOdometry,
-    //           m_robotSwerveDrive.m_kinematics, xController, yController, thetaController,
-    //           m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive),
-    //       new InstantCommand(m_robotSwerveDrive::stopModules)).withName("Run Autonomous Path");
-    // } else {
-    //   LOGGER.severe("No auto selected.");
-    //   return new RunCommand(() -> {
-    //   }).withName("No Autonomous Path");
-    // }
+    // ! ways to not coast
+    // // * 1. try zero joystick input: new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.0, 0.0, false), m_robotSwerveDrive);
+    // * 2. try opposite joystick input: new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, false), m_robotSwerveDrive);
+    // * 3a. try permanently setting drive motors to brake, not coast, in RobotMap.java, and ask the driver how it feels.
+    // * 3b. try to only set the drive motors to brake if in auto mode.
 
-    // ! this will run each of the specified PathPlanner paths in sequence.
-    // * return new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3"));
+    // ! 1.0 input, 1 second: 134 inches
+    // ! 0.75 input, 1 second: 48 inches
+    // ? positive leftY went left, negative leftY went right?
+    // TODO: if line 372 is true, switch joystick inputs accordingly
 
-    // ! this will run each of the specified PathPlanner paths in sequence, while simultaneously running the intake throughout all the paths.
-    // * return new ParallelCommandGroup(buildAuto(null,
-    // *                                           null,
-    // *                                           new SequentialCommandGroup(buildAuto(5.0, 5.0, "Path1", "Path2", "Path3")),
-    // *                                           new RunCommand(() -> m_robotIntake.runAtOutput(0.5))));
-    
-    // return new SequentialCommandGroup(buildAuto(1.0, 1.0, new InstantCommand(() -> m_robotSwerveDrive.m_gyro.reset(), m_robotSwerveDrive),
-    //                                                       // new InstantCommand(() -> this.resetOdometry(new Pose2d())),
-    //                                                       new InstantCommand(() -> m_robotSwerveDrive.setModuleRotationsToAngle(0.0), m_robotSwerveDrive), 
-    //                                                       "Diamond"));
+    double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
 
-    // * assume turret is already pointed towards target.
+    double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
+    double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
+
+    Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
+    Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
+    Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition); // * vector from first ball to second ball, used to calculate emulated joystick inputs.
+
+    SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                                                               new ParallelCommandGroup(
+                                                                                 new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                                                                 new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0)
+                                                                               )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
+  
+    // ! THREE BALL AUTO (HOPEFULLY)
+    return new SequentialCommandGroup( new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), // * aim with turret to target
+                                       weirdAutoShootingGroup, // * shoot
+                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+
+                                       new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
+
+            new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
+
+              new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+
+                                          new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
+                                          new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 363)
+
+                                          new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(firstBallPosition.y, firstBallPosition.x)), m_robotTurret), // * aim with turret to target
+                                          weirdAutoShootingGroup, // * shoot
+                                          new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+
+                                          new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, -firstToSecond.unit().x, -firstToSecond.unit().y, true), m_robotSwerveDrive), // * rotate so intake points towards second ball
+                                          new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-firstToSecond.unit().x, -firstToSecond.unit().y, 0.0, 0.0}, (firstToSecond.magnitude() - offset) / distancePerSecond), // * drive to second ball
+                                          new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(firstToSecond.unit().x, firstToSecond.unit().y, 0.0, 0.0, true)), // * brake (see line 363)
+
+                                          new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, secondBallPosition.toDoubleArray()), // * aim to target
+                                          weirdAutoShootingGroup, // * shoot
+                                          new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
+
+    )));
+ 
     // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
-    //                                    new ParallelRaceGroup(
+
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, 1.0),
+    //                                    new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, false), m_robotSwerveDrive),
+
+    //                                    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+
+    //                                    new ParallelCommandGroup(
     //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-    //                                      new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
-    //                                    ));
+    //                                      new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0))
 
-    // return new RunCommandForTime(new RunCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, true), m_robotSwerveDrive), 1.0, true);
+    //                                    );
 
-    return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.3, 0.0, 0.0}, 1.0));//,
-                                      //  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-                                      //  new ParallelCommandGroup(
-                                      //    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-                                      //    new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0)
-                                       //));
-
-    // * aim with RotateUntilTarget
-    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
-    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0.5, 0.0, 0.0}, 1.0),
-    //                                    new RotateUntilTarget(m_robotSwerveDrive, m_robotVisionOdometry, 0.5),
-    //                                    new ParallelRaceGroup(
-    //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-    //                                      new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage)
-    //                                    ));
   }
 
   public static XboxController getDriverController() {
