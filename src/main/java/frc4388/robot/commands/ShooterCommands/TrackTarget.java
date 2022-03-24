@@ -35,7 +35,7 @@ public class TrackTarget extends CommandBase {
   BoomBoom m_boomBoom;
   Hood m_hood;
 
-  boolean isAuto;
+  // boolean isAuto;
 
   static double velocity;
   static double hoodPosition;
@@ -55,22 +55,22 @@ public class TrackTarget extends CommandBase {
   long startTime;
   private double timeTolerance;
 
-  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry, boolean isAuto) {
+  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry/*, boolean isAuto*/) {
     m_turret = turret;
     m_boomBoom = boomBoom;
     m_hood = hood;
     m_visionOdometry = visionOdometry;
 
-    this.isAuto = isAuto;
+    // this.isAuto = isAuto;
     this.timeTolerance = 1000;
 
     addRequirements(m_turret, m_boomBoom, m_hood, m_visionOdometry);
-    SmartDashboard.putNumber("Distance Adjust", 20);
+    SmartDashboard.putNumber("Distance Adjust", -35);
   }
 
-  public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
-    this(turret, boomBoom, hood, visionOdometry, false);
-  }
+  // public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
+  //   this(turret, boomBoom, hood, visionOdometry, false);
+  // }
 
   // Called when the command is initially scheduled.
   @Override
@@ -111,7 +111,7 @@ public class TrackTarget extends CommandBase {
       double regressedDistance = getDistance(average.y);
       
       // ! no longer a +30 lol -aarav
-      double distAdj = SmartDashboard.getNumber("Distance Adjust", 20);
+      double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
       velocity = m_boomBoom.getVelocity(regressedDistance + distAdj);
       hoodPosition = m_boomBoom.getHood(regressedDistance + distAdj);
       
@@ -196,14 +196,14 @@ public class TrackTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (this.isAuto) {
-      if (targetLocked && !timerStarted) {
-        timerStarted = true;
-        startTime = System.currentTimeMillis();
-      }
-      return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
-    } else {
+    // if (this.isAuto) {
+    //   if (targetLocked && !timerStarted) {
+    //     timerStarted = true;
+    //     startTime = System.currentTimeMillis();
+    //   }
+    //   return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+    // } else {
       return false;
-    }
+    // }
   }
 }

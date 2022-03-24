@@ -117,14 +117,14 @@ public class RobotContainer {
  * - field
  */
 
- private SequentialCommandGroup makeTheWeirdGroup() {
-  SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-  new ParallelCommandGroup(
-    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-    new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.0)
-  )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
-   return weirdAutoShootingGroup;
- }
+//  private SequentialCommandGroup makeTheWeirdGroup() {
+//   SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+//   new ParallelCommandGroup(
+//     new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+//     new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.0)
+//   )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
+//    return weirdAutoShootingGroup;
+//  }
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -132,82 +132,82 @@ public class RobotContainer {
 
 
 
-    double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
+    // double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
 
-    double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
-    double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
+    // double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
+    // double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
 
-    Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
-    Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
-    Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition); // * vector from first ball to second ball, used to calculate emulated joystick inputs.
+    // Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
+    // Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
+    // Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition); // * vector from first ball to second ball, used to calculate emulated joystick inputs.
 
-    var justShoot = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                        makeTheWeirdGroup(), // * shoot
-                                        new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)); // * stop running storage
-    // ! SHOOT FIRST BALL, THEN DRIVE OFF LINE (HOPEFULLY)
-    var offTheLine = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                        makeTheWeirdGroup(), // * shoot
-                                        new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+    // var justShoot = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                     makeTheWeirdGroup(), // * shoot
+    //                                     new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)); // * stop running storage
+    // // ! SHOOT FIRST BALL, THEN DRIVE OFF LINE (HOPEFULLY)
+    // var offTheLine = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                     makeTheWeirdGroup(), // * shoot
+    //                                     new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
 
-            new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                        new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, 0.25))); // * drive off line
+    //         new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                     new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, 0.25))); // * drive off line
 
-    // ! TWO BALL AUTO (HOPEFULLY)
-    var twoBall = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                        makeTheWeirdGroup(), // * shoot
-                                        new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+    // // ! TWO BALL AUTO (HOPEFULLY)
+    // var twoBall = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                     makeTheWeirdGroup(), // * shoot
+    //                                     new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
 
-                                        new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
+    //                                     new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
 
-            new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
+    //         new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
 
-              new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                          new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
-                                          // new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 376),
-                                          new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
+    //           new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
+    //                                       // new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 376),
+    //                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
 
-                                          new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(firstBallPosition.y, firstBallPosition.x)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                          makeTheWeirdGroup(), // * shoot
-                                          new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)))); // * stop running storage
+    //                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(firstBallPosition.y, firstBallPosition.x)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                       makeTheWeirdGroup(), // * shoot
+    //                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)))); // * stop running storage
 
-    // ! THREE BALL AUTO (HOPEFULLY)
-    var threeBall = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                       makeTheWeirdGroup(), // * shoot
-                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+    // // ! THREE BALL AUTO (HOPEFULLY)
+    // var threeBall = new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                    makeTheWeirdGroup(), // * shoot
+    //                                    new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
 
-                                       new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
+    //                                    new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
 
-            new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
+    //         new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
 
-              new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                          new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
-                                          //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 363)
-                                          new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
-                                          new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(firstBallPosition.y, firstBallPosition.x)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                          makeTheWeirdGroup(), // * shoot
-                                          new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+    //           new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
+    //                                       //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 363)
+    //                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
+    //                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(firstBallPosition.y, firstBallPosition.x)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                       makeTheWeirdGroup(), // * shoot
+    //                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
 
-                                          //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, -firstToSecond.unit().x, -firstToSecond.unit().y, true), m_robotSwerveDrive), // * rotate so intake points towards second ball
-                                          new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.0, -firstToSecond.unit().x, -firstToSecond.unit().y}, 0.5d),
-                                          new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-firstToSecond.unit().x, -firstToSecond.unit().y, 0.0, 0.0}, (firstToSecond.magnitude() - offset) / distancePerSecond), // * drive to second ball
-                                          //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(firstToSecond.unit().x, firstToSecond.unit().y, 0.0, 0.0, true)), // * brake (see line 363)
-                                          new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
+    //                                       //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, -firstToSecond.unit().x, -firstToSecond.unit().y, true), m_robotSwerveDrive), // * rotate so intake points towards second ball
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.0, -firstToSecond.unit().x, -firstToSecond.unit().y}, 0.5d),
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-firstToSecond.unit().x, -firstToSecond.unit().y, 0.0, 0.0}, (firstToSecond.magnitude() - offset) / distancePerSecond), // * drive to second ball
+    //                                       //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(firstToSecond.unit().x, firstToSecond.unit().y, 0.0, 0.0, true)), // * brake (see line 363)
+    //                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
 
-                                          new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, secondBallPosition.toDoubleArray()), // * aim to target
-                                          makeTheWeirdGroup(), // * shoot
-                                          new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
+    //                                       new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, secondBallPosition.toDoubleArray()), // * aim to target
+    //                                       makeTheWeirdGroup(), // * shoot
+    //                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
 
-    )));
+    // )));
 
 
-    autoChoices = Map.of(
-      "justShoot", justShoot,
-      "offTheLine", offTheLine,
-      "twoBall", twoBall,
-      "threeBall", threeBall
-    );
+    // autoChoices = Map.of(
+    //   "justShoot", justShoot,
+    //   "offTheLine", offTheLine,
+    //   "twoBall", twoBall,
+    //   "threeBall", threeBall
+    // );
 
-    SmartDashboard.putData(quickAutoChooser);
+    // SmartDashboard.putData(quickAutoChooser);
 
     
 
@@ -334,7 +334,7 @@ public class RobotContainer {
     //  .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-     .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, false));
+     .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //  .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
@@ -466,10 +466,92 @@ public class RobotContainer {
     // ! 0.75 input, 1 second: 48 inches
     // ? positive leftY went left, negative leftY went right?
     // TODO: if line 372 is true, switch joystick inputs accordingly
-    String selection = quickAutoChooser.getSelected();
-    if (selection == null)
-      return new PrintCommand("---------- NO AUTO SELECTED --------------");
-    return autoChoices.get(quickAutoChooser.getSelected());
+
+    double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
+
+    double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
+    double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
+
+    Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
+    Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
+    Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition); // * vector from first ball to second ball, used to calculate emulated joystick inputs.
+
+    // SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+    //                                                                            new ParallelCommandGroup(
+    //                                                                              new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+    //                                                                              new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.0)
+    //                                                                            )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
+
+                                                                              //  return new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+                                                                              //                                      weirdAutoShootingGroup, // * shoot
+                                                                              //                                      new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)); // * stop running storage
+    // ! SHOOT FIRST BALL, THEN DRIVE OFF LINE (HOPEFULLY)
+    return new SequentialCommandGroup( //new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+                                        // weirdAutoShootingGroup, // * shoot
+                                        // new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+
+            new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+                                        new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.6, 0.0, 0.0}, 0.5))); // * drive off line
+
+    // ! TWO BALL AUTO (HOPEFULLY)
+    // return new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                     weirdAutoShootingGroup, // * shoot
+    //                                     new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+
+    //                                     new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
+
+    //         new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
+
+    //           new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
+    //                                       // new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 376),
+    //                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
+
+    //                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(firstBallPosition.y, firstBallPosition.x)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                       weirdAutoShootingGroup, // * shoot
+    //                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)))); // * stop running storage
+
+    // ! THREE BALL AUTO (HOPEFULLY)
+    // return new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                    weirdAutoShootingGroup, // * shoot
+    //                                    new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+
+    //                                    new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
+
+    //         new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
+
+    //           new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
+    //                                       //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 363)
+    //                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
+    //                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(firstBallPosition.y, firstBallPosition.x)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                       weirdAutoShootingGroup, // * shoot
+    //                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), // * stop running storage
+
+    //                                       //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, -firstToSecond.unit().x, -firstToSecond.unit().y, true), m_robotSwerveDrive), // * rotate so intake points towards second ball
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.0, -firstToSecond.unit().x, -firstToSecond.unit().y}, 0.5d),
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-firstToSecond.unit().x, -firstToSecond.unit().y, 0.0, 0.0}, (firstToSecond.magnitude() - offset) / distancePerSecond), // * drive to second ball
+    //                                       //new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(firstToSecond.unit().x, firstToSecond.unit().y, 0.0, 0.0, true)), // * brake (see line 363)
+    //                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
+
+    //                                       new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, secondBallPosition.toDoubleArray()), // * aim to target
+    //                                       weirdAutoShootingGroup, // * shoot
+    //                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
+
+    // )));
+ 
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive),
+
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, 1.0),
+    //                                    new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, false), m_robotSwerveDrive),
+
+    //                                    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+
+    //                                    new ParallelCommandGroup(
+    //                                      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+    //                                      new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0))
+
+    //                                    );
 
   }
 
