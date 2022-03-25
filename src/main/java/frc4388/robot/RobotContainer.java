@@ -523,7 +523,13 @@ public class RobotContainer {
   
     // ! DRIVE OFF LINE, THEN SHOOT BALL (HOPEFULLY)
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.6, 0, 0.0, 0.0}, 0.5), // * drive out of tarmac
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-0.5, 0, 0.0, 0.0}, 1.0), // * drive out of tarmac
+                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0, 0.0, 0.0}, 1.0), // * drive out of tarmac
+                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
+                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
                                        new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive)); // * brake
 
                                       //  new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
