@@ -5,32 +5,20 @@
 package frc4388.robot;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
 
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.Vector2d;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
 import frc4388.utility.Vector2D;
-import frc4388.utility.VelocityCorrection;
-import frc4388.utility.desmos.DesmosServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -85,45 +73,6 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     // addPeriodic(m_robotContainer::recordPeriodic, kDefaultPeriod);
     SmartDashboard.putData(CommandScheduler.getInstance());
-    SmartDashboard.putData("JVM Memory", new RunCommand(() -> {
-    }) {
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-
-      @Override
-      public String getName() {
-        if (isScheduled()) {
-          Runtime runtime = Runtime.getRuntime();
-          long totalMemory = runtime.totalMemory() / 1_000_000;
-          long freeMemory = runtime.freeMemory() / 1_000_000;
-          long maxMemory = runtime.maxMemory() / 1_000_000;
-          return totalMemory - freeMemory + " MB / " + totalMemory + " MB / " + maxMemory + " MB";
-        }
-        return "Not Running";
-      }
-    });
-    SmartDashboard.putData("Usable Deploy Space", new RunCommand(() -> {
-    }) {
-      @Override
-      public boolean runsWhenDisabled() {
-        return true;
-      }
-
-      @Override
-      public String getName() {
-        if (isScheduled()) {
-          File deploy = Filesystem.getDeployDirectory();
-          long usedSpace = Errors.suppress().getWithDefault(
-              () -> Files.walk(deploy.toPath()).map(Path::toFile).filter(File::isFile).mapToLong(File::length).sum(),
-              0l) / 1_000_000;
-          long usableSpace = deploy.getUsableSpace() / 1_000_000;
-          return usedSpace + " MB / " + usableSpace + " MB";
-        }
-        return "Not Running";
-      }
-    });
 
     // desmosServer.start();
     m_robotContainer.m_robotVisionOdometry.setLEDs(true);

@@ -4,12 +4,15 @@
 
 package frc4388.robot;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import com.diffplug.common.base.Errors;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -19,14 +22,19 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -37,7 +45,6 @@ import frc4388.robot.commands.PathRecorder;
 import frc4388.robot.commands.RunCommandForTime;
 import frc4388.robot.commands.DriveCommands.DriveWithInputForTime;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
-import frc4388.robot.commands.ShooterCommands.Shoot;
 import frc4388.robot.commands.ShooterCommands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Claws;
@@ -269,6 +276,39 @@ public class RobotContainer {
     m_robotBoomBoom.setDefaultCommand(
       new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.45), m_robotBoomBoom)
       );
+
+
+    if (m_robotBoomBoom.readManualData) {
+      var tab = Shuffleboard.getTab("Manual Shooter Data");
+      var manual = tab.getLayout("Manual Shooter Data", BuiltInLayouts.kList).withSize(2, 3);
+      manual.add("Manual Shooter Data", new Sendable() {
+        private double manualHoodExt;
+        private double manualDrumVel;
+
+        @Override
+        public void initSendable(SendableBuilder builder) {
+          builder.setSmartDashboardType("RobotPreferences");
+          builder.addBooleanProperty("Disable CSV", () -> m_robotBoomBoom.readManualData, b -> m_robotBoomBoom.readManualData = b);
+          builder.addDoubleProperty("Drum Velocity", () -> manualDrumVel, d -> manualDrumVel = d);
+          builder.addDoubleProperty("Hood Extension", () -> manualHoodExt, d -> manualHoodExt = d);
+          builder.addDoubleProperty("Measured Distance", () -> SmartDashboard.getNumber("Distance to Target", -1), System.out::println);
+        }
+      });
+      manual.add("Shooter Table Appender", new InstantCommand(() -> Errors.log().run(() -> Files.write(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath(), String.format("%s,%s,%s%n", SmartDashboard.getNumber("Manual Shooter Data/Distance to Target", -1), SmartDashboard.getNumber("Manual Shooter Data/Hood Extension", -1), SmartDashboard.getNumber("Manual Shooter Data/Drum Velocity", -1)).getBytes(), StandardOpenOption.WRITE, StandardOpenOption.APPEND))) {
+        @Override
+        public boolean runsWhenDisabled() {
+          return true;
+        }
+      }.withName("Append"));
+      var csv = tab.getLayout("Shooter Data", BuiltInLayouts.kList).withPosition(2,0).withSize(4, 3);
+      csv.add("Initial Shooter Data", builder -> Arrays.stream(m_robotBoomBoom.m_shooterTable).forEach(e -> builder.addDoubleArrayProperty(Double.toString(e.distance), () -> new double[] {e.hoodExt, e.drumVelocity}, a -> {})));
+      csv.add("Reload Data", new InstantCommand(m_robotBoomBoom::updateShooterTable) {
+        @Override
+        public boolean runsWhenDisabled() {
+          return true;
+        }
+      }.withName("Reload"));
+    }
 
   }
 
