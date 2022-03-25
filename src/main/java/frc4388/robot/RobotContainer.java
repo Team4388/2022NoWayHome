@@ -489,7 +489,7 @@ public class RobotContainer {
   
     // ! DRIVE BACKWARDS AND SHOOT (HOPEFULLY)
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (3.0 * 12) / distancePerSecond),//0.269), // * go backwards three feet
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (4.0 * 12) / distancePerSecond),//0.269), // * go backwards three feet
                                        new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
                                        
                                        weirdAutoShootingGroup, // * shoot
