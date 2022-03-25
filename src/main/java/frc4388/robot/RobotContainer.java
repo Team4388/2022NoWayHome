@@ -374,7 +374,7 @@ public class RobotContainer {
     //! Button Box Buttons
       // Left Switch > Disables soft limits on press, release resets encoders (all for turret, hood, climber, and extender)
 
-    SmartDashboard.putData("BB LEFT ON", new ParallelCommandGroup(
+    SmartDashboard.putData("BB LEFT ON", new SequentialCommandGroup(
       new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret),
       new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret),
     
@@ -384,7 +384,7 @@ public class RobotContainer {
       new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender)
     ));
     
-    SmartDashboard.putData("BB LEFT OFF", new ParallelCommandGroup(
+    SmartDashboard.putData("BB LEFT OFF", new SequentialCommandGroup(
       new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret),
       new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret),
     
@@ -400,40 +400,40 @@ public class RobotContainer {
       new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber)
     ));
 
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
-        .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
-        .whenPressed(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret))
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
+    //     .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
+    //     .whenPressed(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret))
       
-        .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
-        .whenPressed(new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood))
+    //     .whenPressed(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood))
+    //     .whenPressed(new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood))
       
-        .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
+    //     .whenPressed(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender))
       
-        .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
-        .whenReleased(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret))
+    //     .whenReleased(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret))
+    //     .whenReleased(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret))
       
-        .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
-        .whenReleased(new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood))
+    //     .whenReleased(new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood))
+    //     .whenReleased(new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood))
 
-        .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
+    //     .whenReleased(new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender))
 
-        .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
-        .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
-        .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
-        .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
-        .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
+    //     .whenReleased(new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret))
+    //     .whenReleased(new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood))
+    //     .whenReleased(new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender))
+    //     .whenReleased(new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender))
+    //     .whenReleased(new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber));
     
       // Middle Switch > Climber and Shooter mode switching
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-        .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.CLIMBER))
-        .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
-        // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        // .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.))
-        // .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
+    //     .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.CLIMBER))
+    //     .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
+    //     // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+    //     // .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.))
+    //     // .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
     
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
-        .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+    //     .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
+    //     .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
 
       // Left Button > Extender In
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
