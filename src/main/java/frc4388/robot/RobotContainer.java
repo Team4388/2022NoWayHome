@@ -227,21 +227,11 @@ public class RobotContainer {
     /* Default Commands */
       // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> {
-          if (currentDriveMode.equals(DriveMode.ON)) {
-            m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
-                                               getDriverController().getLeftY(),
-                                               getDriverController().getRightX(),
-                                               getDriverController().getRightY(),
-                                               true); }
-          if (currentDriveMode.equals(DriveMode.OFF)) {
-            m_robotSwerveDrive.driveWithInput( 0, 
-                                               0,
-                                               0,
-                                               0,
-                                               false);
-         }}
-          , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
+        new RunCommand(() -> m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
+                                                                getDriverController().getLeftY(),
+                                                                getDriverController().getRightX(),
+                                                                getDriverController().getRightY(),
+                                                                true), m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
       // Intake with Triggers
     m_robotIntake.setDefaultCommand(
@@ -398,9 +388,9 @@ public class RobotContainer {
         .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.CLIMBER))
         .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
     
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
-        .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
+    // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+    //     .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
+    //     .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
 
       // Left Button > Extender In
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
