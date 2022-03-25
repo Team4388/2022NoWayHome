@@ -311,11 +311,11 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
-    new JoystickButton(getDriverController(), XboxController.Axis.kLeftTrigger.value)
+    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
         .whenPressed(new InstantCommand(() -> switchControlMode()))
         .whenReleased(new InstantCommand(() -> switchControlMode()));
 
-    new JoystickButton(getDriverController(), XboxController.Axis.kRightTrigger.value)
+    new JoystickButton(getDriverController(), XboxController.Button.kB.value)
         .whenPressed(new InstantCommand(() -> switchDriveMode()))
         .whenReleased(new InstantCommand(() -> switchDriveMode()));
 
