@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -109,9 +108,6 @@ public class RobotContainer {
   // climber mode switching
   private enum ClimberMode { MANUAL, AUTONOMOUS };
   private ClimberMode currentClimberMode = ClimberMode.MANUAL;
-
-  private enum DriveMode { ON, OFF };
-  private DriveMode currentDriveMode = DriveMode.ON;
 
   private SendableChooser<SequentialCommandGroup> quickAutoChooser = new SendableChooser<>();
 
@@ -224,13 +220,13 @@ public class RobotContainer {
       // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> {
-          if (currentDriveMode.equals(DriveMode.ON)) {
+          if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) {
             m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
                                                getDriverController().getLeftY(),
                                                getDriverController().getRightX(),
                                                getDriverController().getRightY(),
                                                true); }
-          if (currentDriveMode.equals(DriveMode.OFF)) {
+          if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) {
             m_robotSwerveDrive.driveWithInput( 0, 
                                                0,
                                                0,
@@ -309,7 +305,7 @@ public class RobotContainer {
         }
       }.withName("Reload"));
     }
-
+  
   }
 
   /**
@@ -418,13 +414,15 @@ public class RobotContainer {
     
       // Middle Switch > Climber and Shooter mode switching
     new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-        .whenPressed(new InstantCommand(() -> RobotContainer.currentControlMode = ControlMode.CLIMBER))
-        .whenReleased(new InstantCommand(() -> RobotContainer.currentControlMode = ControlMode.SHOOTER));
-
-      // Right Switch > Drive On vs Off mode switching
+        .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))
+        .whenReleased(new InstantCommand(() -> this.currentControlMode = ControlMode.SHOOTER));
+        new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+        .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))
+        .whenReleased(new InstantCommand(() -> this.currentControlMode = ControlMode.SHOOTER));
+    
     new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
-        .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
+        .whileHeld(new InstantCommand(() -> m_robotExtender.invertExtender(-1.0)))
+        .whenReleased(new InstantCommand(() -> m_robotExtender.invertExtender(1.0)));
 
       // Left Button > Extender In
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
@@ -511,7 +509,7 @@ public class RobotContainer {
     double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
     double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
 
-    // ! ball positions are unit tested
+    // ! ball positions are "unit tested"
     Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
     Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
     Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition); // * vector from first ball to second ball, used to calculate emulated joystick inputs.
