@@ -3,15 +3,13 @@ package frc4388.robot.commands;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileOwnerAttributeView;
-import java.nio.file.attribute.UserPrincipal;
-import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
 
@@ -22,66 +20,86 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc4388.robot.Robot;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.BoomBoom.ShooterTableEntry;
 
 public class ShooterTuner extends CommandBase {
+  private static final Logger LOGGER = Logger.getLogger(ShooterTuner.class.getSimpleName());
+  private static final Path PATH = new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath();
   private final BoomBoom m_boomBoom;
-  private final Sendable m_shotEditor;
-  private final Sendable m_shotCsvAppender;
-  private final Sendable m_shooterTableView;
-  // private final Sendable m_shooterTableUpdater;
-  private OutputStream csvOutputStream;
+  private final ShotEditor m_shotEditor;
+  private final CSVAppender m_shotCsvAppender;
+  private final DistanceReader m_distanceReader;
+  private final ShooterTableEditor m_shooterTableEditor;
+  private final DisabledInstantCommand m_shooterTableUpdater;
+  private final DisabledInstantCommand m_printCsvFile;
+  private final ShooterTableEntry tableOverrideEntry;
 
   public ShooterTuner(BoomBoom boomBoom) {
     m_boomBoom = boomBoom;
-    addRequirements(boomBoom);
-    setName("Enable");
     m_shotEditor = new ShotEditor();
-    m_shotCsvAppender = new PersistentInstantCommand(this::appendCsv).withName("Append");
-    m_shooterTableView = new ShooterTableEditor();
-    // m_shooterTableUpdater = new
-    // PersistentInstantCommand(m_boomBoom::loadShooterTable).withName("Reload");
+    m_shotCsvAppender = new CSVAppender();
+    m_distanceReader = new DistanceReader();
+    m_shooterTableEditor = new ShooterTableEditor();
+    m_printCsvFile = new DisabledInstantCommand(() -> LOGGER.info(Errors.log().wrapWithDefault(() -> Files.readString(PATH), "Failed to read CSV")), "Print");
+    m_shooterTableUpdater = new DisabledInstantCommand(m_boomBoom::loadShooterTable, "Load CSV");
+    tableOverrideEntry = new ShooterTableEntry();
+    setName("Shooter Data Mode");
   }
 
-  private OutputStream getCsvOutputStream() {
-    if (csvOutputStream == null) {
-      Path path = new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath();
-      if (RobotBase.isReal())
-        Errors.log().run(() -> Files.getFileAttributeView(path, FileOwnerAttributeView.class).setOwner(FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName("admin")));
-      csvOutputStream = Errors.rethrow().get(() -> Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.APPEND));
+  @Override
+  public void initialize() {
+    var tab = Shuffleboard.getTab("Shooter Tuner");
+    if (tab.getComponents().isEmpty()) {
+      var manual = tab.getLayout("Manual Shooter Data", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3);
+      manual.add("Distance Reader", m_distanceReader);
+      manual.add("Manual Shooter Data", m_shotEditor);
+      manual.add("Shooter Table Appender", m_shotCsvAppender);
+      var csv = tab.getLayout("Shooter Data", BuiltInLayouts.kList).withPosition(2, 0).withSize(4, 3);
+      csv.addBoolean("Is Shooter Data Overridden", this::isOverridden);
+      csv.add("Shooter Data (Broken)", m_shooterTableEditor);
+      csv.add("Shooter CSV Loader", m_shooterTableUpdater);
+      csv.add("Print CSV File", m_printCsvFile);
     }
-    return csvOutputStream;
+    tableOverrideEntry.distance = 0.0;
+    tableOverrideEntry.hoodExt = 0.0;
+    tableOverrideEntry.drumVelocity = 0.0;
+    m_boomBoom.m_shooterTable = new ShooterTableEntry[] { tableOverrideEntry };
+    Shuffleboard.selectTab("Shooter Tuner");
   }
 
-  private class ShotEditor implements Sendable {
-    @Override
-    public void initSendable(SendableBuilder builder) {
-      builder.setSmartDashboardType("RobotPreferences");
-      builder.addBooleanProperty("[Enabled]", ShooterTuner.this::isScheduled, b -> {
-        if (!b) cancel();
-      });
-      builder.addDoubleProperty("Drum Velocity", () -> m_boomBoom.m_shooterTable[0].drumVelocity, d -> m_boomBoom.m_shooterTable[0].drumVelocity = d);
-      builder.addDoubleProperty("Hood Extension", () -> m_boomBoom.m_shooterTable[0].hoodExt, d -> m_boomBoom.m_shooterTable[0].hoodExt = d);
-      builder.addDoubleProperty("Measured Distance", () -> SmartDashboard.getNumber("Distance to Target", -1), System.out::println);
-    }
+  @Override
+  public final boolean isFinished() {
+    return true;
   }
 
-  private class ShooterTableEditor implements Sendable {
-    @Override
-    public void initSendable(SendableBuilder builder) {
-      Arrays.stream(m_boomBoom.m_shooterTable).forEach(e -> builder.addDoubleArrayProperty(Double.toString(e.distance), () -> new double[] { e.hoodExt, e.drumVelocity }, a -> {
-      }));
-    }
+  @Override
+  public String getName() {
+    return isOverridden() ? "Tuner Override" : "CSV File";
   }
 
-  private class PersistentInstantCommand extends InstantCommand {
-    public PersistentInstantCommand(Runnable toRun, Subsystem... requirements) {
+  private boolean isOverridden() {
+    return m_boomBoom.m_shooterTable.length == 1 && m_boomBoom.m_shooterTable[0].equals(tableOverrideEntry);
+  }
+
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
+  }
+
+  private static void setReadOnlyProperty(Object o) {
+    System.err.println("Unable to set read-only property.");
+  }
+
+  private class DisabledInstantCommand extends InstantCommand {
+    public DisabledInstantCommand(Runnable toRun, String name, Subsystem... requirements) {
       super(toRun, requirements);
+      setName(name);
     }
 
     @Override
@@ -90,43 +108,65 @@ public class ShooterTuner extends CommandBase {
     }
   }
 
-  private void appendCsv() {
-    String s = String.format("%s,%s,%s%n", m_boomBoom.m_shooterTable[0].distance, m_boomBoom.m_shooterTable[0].hoodExt, m_boomBoom.m_shooterTable[0].drumVelocity);
-    byte[] b = s.getBytes();
-    Errors.log().run(() -> getCsvOutputStream().write(b));
+  private class DistanceReader extends CommandBase {
+    @Override
+    public void execute() {
+      tableOverrideEntry.distance = SmartDashboard.getNumber("Distance to Target", -1);
+    }
+
+    @Override
+    public String getName() {
+      return isScheduled() ? "Reading" : "Enable";
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+      return true;
+    }
   }
 
-  @Override
-  public void initialize() {
-    setName("Disable");
-    var tab = Shuffleboard.getTab("Shooter Tuner");
-    var manual = tab.getLayout("Manual Shooter Data", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 3);
-    manual.add("Manual Shooter Data", m_shotEditor);
-    manual.add("Shooter Table Appender", m_shotCsvAppender);
-    var csv = tab.getLayout("Shooter Data", BuiltInLayouts.kList).withPosition(2, 0).withSize(4, 3);
-    csv.add("Initial Shooter Data", m_shooterTableView);
-    // csv.add("Reload Data", m_shooterTableUpdater);
-    ShooterTableEntry dummyEntry = new ShooterTableEntry();
-    dummyEntry.distance = 0.0;
-    dummyEntry.hoodExt = 0.0;
-    dummyEntry.drumVelocity = 0.0;
-    m_boomBoom.m_shooterTable = new ShooterTableEntry[] { dummyEntry };
-    Shuffleboard.selectTab("Shooter Tuner");
+  private class ShotEditor implements Sendable {
+    @Override
+    public void initSendable(SendableBuilder builder) {
+      builder.setSmartDashboardType("RobotPreferences");
+      builder.addDoubleProperty("Drum Velocity", () -> tableOverrideEntry.drumVelocity, d -> tableOverrideEntry.drumVelocity = d);
+      builder.addDoubleProperty("Hood Extension", () -> tableOverrideEntry.hoodExt, d -> tableOverrideEntry.hoodExt = d);
+      builder.addDoubleProperty("Measured Distance", () -> tableOverrideEntry.distance, ShooterTuner::setReadOnlyProperty);
+    }
   }
 
-  @Override
-  public void execute() {
-    m_boomBoom.m_shooterTable[0].distance = SmartDashboard.getNumber("Distance to Target", -1);
+  private class CSVAppender extends CommandBase {
+    @Override
+    public void initialize() {
+      if (RobotBase.isReal()) Errors.log().run(() -> Files.getFileAttributeView(PATH, FileOwnerAttributeView.class).setOwner(FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName("admin")));
+      try (OutputStream csvOutputStream = Files.newOutputStream(PATH, StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
+        csvOutputStream.write(String.format("%s,%s,%s%n", tableOverrideEntry.distance, tableOverrideEntry.hoodExt, tableOverrideEntry.drumVelocity).getBytes());
+      } catch (IOException e) {
+        System.out.println(e);
+      }
+    }
+
+    @Override
+    public String getName() {
+      return isScheduled() ? "Appending" : "Append";
+    }
+
+    @Override
+    public final boolean isFinished() {
+      return true;
+    }
+
+    @Override
+    public boolean runsWhenDisabled() {
+      return true;
+    }
   }
 
-  @Override
-  public void end(boolean interrupted) {
-    Errors.log().run(getCsvOutputStream()::close);
-    m_boomBoom.loadShooterTable();
-  }
-
-  @Override
-  public boolean runsWhenDisabled() {
-    return true;
+  private class ShooterTableEditor implements Sendable {
+    @Override
+    public void initSendable(SendableBuilder builder) {
+      builder.addStringArrayProperty("distance", () -> new String[] { "hoodExt", "drumVelocity" }, ShooterTuner::setReadOnlyProperty);
+      Arrays.stream(m_boomBoom.m_shooterTable).forEach(e -> builder.addDoubleArrayProperty(Double.toString(e.distance), () -> new double[] { e.hoodExt, e.drumVelocity }, ShooterTuner::setReadOnlyProperty));
+    }
   }
 }
