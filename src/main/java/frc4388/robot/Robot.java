@@ -147,9 +147,9 @@ public class Robot extends TimedRobot {
     Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
     Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition);
 
-    System.out.println("First Ball (FEET): " + Vector2D.divide(firstBallPosition, 12).toString());
-    System.out.println("Second Ball (FEET): " + Vector2D.divide(secondBallPosition, 12).toString());
-    System.out.println("First To Second (FEET): " + Vector2D.divide(firstToSecond, 12).toString());
+    // System.out.println("First Ball (FEET): " + Vector2D.divide(firstBallPosition, 12).toString());
+    // System.out.println("Second Ball (FEET): " + Vector2D.divide(secondBallPosition, 12).toString());
+    // System.out.println("First To Second (FEET): " + Vector2D.divide(firstToSecond, 12).toString());
 
     // current = 
       // m_robotContainer.m_robotBoomBoom.getCurrent() +

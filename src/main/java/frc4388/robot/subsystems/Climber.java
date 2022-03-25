@@ -18,7 +18,7 @@ public class Climber extends SubsystemBase {
   /** Creates a new Climber */
   public Climber(WPI_TalonFX elbow) {
     this.elbow = elbow;
-    elbow.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+    elbow.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
     elbow.overrideLimitSwitchesEnable(true); //Check
     
     elbow.configReverseSoftLimitThreshold(ClimberConstants.ELBOW_FORWARD_SOFT_LIMIT); // Tune
@@ -40,6 +40,6 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Elbow Angle", elbow.getSelectedSensorPosition());
-    SmartDashboard.putBoolean("Climber Folded", (elbow.isRevLimitSwitchClosed() == 1));
+    SmartDashboard.putBoolean("Climber Folded", (elbow.isFwdLimitSwitchClosed() == 1));
   }
 }
