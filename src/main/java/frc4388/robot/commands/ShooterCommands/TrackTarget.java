@@ -66,6 +66,7 @@ public class TrackTarget extends CommandBase {
 
     addRequirements(m_turret, m_boomBoom, m_hood, m_visionOdometry);
     SmartDashboard.putNumber("Distance Adjust", -35);
+    SmartDashboard.putBoolean("Target Locked", false);
   }
 
   public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
@@ -190,6 +191,7 @@ public class TrackTarget extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_visionOdometry.setLEDs(false);
+    SmartDashboard.putBoolean("Target Locked", false);
   }
 
   // Returns true when the command should end.
