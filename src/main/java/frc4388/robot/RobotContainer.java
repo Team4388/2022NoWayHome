@@ -42,6 +42,7 @@ import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.PathRecorder;
 import frc4388.robot.commands.RunCommandForTime;
+import frc4388.robot.commands.ShooterTuner;
 import frc4388.robot.commands.DriveCommands.DriveWithInputForTime;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.TrackTarget;
@@ -90,6 +91,8 @@ public class RobotContainer {
 
   /* Autonomous */
   private final PathRecorder m_pathChooser = new PathRecorder(m_robotSwerveDrive);
+
+  private final ShooterTuner m_shooterTuner = new ShooterTuner(m_robotBoomBoom);
   // Controllers
   private final static XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final static XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -275,39 +278,7 @@ public class RobotContainer {
       new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.45), m_robotBoomBoom)
       );
 
-
-    if (m_robotBoomBoom.readManualData) {
-      var tab = Shuffleboard.getTab("Manual Shooter Data");
-      var manual = tab.getLayout("Manual Shooter Data", BuiltInLayouts.kList).withSize(2, 3);
-      manual.add("Manual Shooter Data", new Sendable() {
-        private double manualHoodExt;
-        private double manualDrumVel;
-
-        @Override
-        public void initSendable(SendableBuilder builder) {
-          builder.setSmartDashboardType("RobotPreferences");
-          builder.addBooleanProperty("Disable CSV", () -> m_robotBoomBoom.readManualData, b -> m_robotBoomBoom.readManualData = b);
-          builder.addDoubleProperty("Drum Velocity", () -> manualDrumVel, d -> manualDrumVel = d);
-          builder.addDoubleProperty("Hood Extension", () -> manualHoodExt, d -> manualHoodExt = d);
-          builder.addDoubleProperty("Measured Distance", () -> SmartDashboard.getNumber("Distance to Target", -1), System.out::println);
-        }
-      });
-      manual.add("Shooter Table Appender", new InstantCommand(() -> Errors.log().run(() -> Files.write(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath(), String.format("%s,%s,%s%n", SmartDashboard.getNumber("Manual Shooter Data/Distance to Target", -1), SmartDashboard.getNumber("Manual Shooter Data/Hood Extension", -1), SmartDashboard.getNumber("Manual Shooter Data/Drum Velocity", -1)).getBytes(), StandardOpenOption.WRITE, StandardOpenOption.APPEND))) {
-        @Override
-        public boolean runsWhenDisabled() {
-          return true;
-        }
-      }.withName("Append"));
-      var csv = tab.getLayout("Shooter Data", BuiltInLayouts.kList).withPosition(2,0).withSize(4, 3);
-      csv.add("Initial Shooter Data", builder -> Arrays.stream(m_robotBoomBoom.m_shooterTable).forEach(e -> builder.addDoubleArrayProperty(Double.toString(e.distance), () -> new double[] {e.hoodExt, e.drumVelocity}, a -> {})));
-      csv.add("Reload Data", new InstantCommand(m_robotBoomBoom::updateShooterTable) {
-        @Override
-        public boolean runsWhenDisabled() {
-          return true;
-        }
-      }.withName("Reload"));
-    }
-  
+    SmartDashboard.putData("Shooter Tuner", m_shooterTuner);
   }
 
   /**
