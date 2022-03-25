@@ -22,20 +22,12 @@ public class Camera extends SubsystemBase {
    * @param height Resolution height.
    * @param brightness Percent brightness of the stream.
    */
-
-   public UsbCamera test;
-
   public Camera(String name, int id, int width, int height, int brightness) {
     try{
       UsbCamera cam = CameraServer.startAutomaticCapture();//new UsbCamera(name, id);
       cam.setResolution(width, height);
       cam.setBrightness(brightness);
       cam.setFPS(10);
-      SmartDashboard.putBoolean("cam enabled", cam.isEnabled());
-      SmartDashboard.putBoolean("cam connected", cam.isConnected());
-      // VideoSource camera = cam;
-      // CameraServer.addCamera(camera);
-      // CameraServer.startAutomaticCapture(camera);
     } 
     catch(Exception e) {
       System.err.println("Camera broken, pls nerf");
