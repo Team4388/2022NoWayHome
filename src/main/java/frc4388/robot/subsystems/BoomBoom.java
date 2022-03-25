@@ -31,6 +31,7 @@ import frc4388.utility.Gains;
 import frc4388.utility.NumericData;
 
 public class BoomBoom extends SubsystemBase {
+  public boolean readManualData = true;
   private static final Logger LOGGER = Logger.getLogger(BoomBoom.class.getSimpleName());
   public WPI_TalonFX m_shooterFalconLeft;
   public WPI_TalonFX m_shooterFalconRight;
@@ -54,7 +55,7 @@ public class BoomBoom extends SubsystemBase {
     public Double distance, hoodExt, drumVelocity;
   }
 
-  private ShooterTableEntry[] m_shooterTable;
+  public ShooterTableEntry[] m_shooterTable;
 
   /** Creates a new BoomBoom, which has a drum shooter and angle adjuster. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
@@ -63,7 +64,7 @@ public class BoomBoom extends SubsystemBase {
 
     setShooterGains();
 
-    m_shooterTable = readShooterTable();
+    updateShooterTable();
     // Run a helper method that logs the contents of the table on a new thread.
     new Thread(() -> LOGGER.fine(() -> CSV.ReflectionTable.create(m_shooterTable, RobotBase.isSimulation()))).start();
   }
@@ -76,7 +77,7 @@ public class BoomBoom extends SubsystemBase {
    * @return Drum Velocity in units per 100 ms
    */
   public Double getVelocity(final Double distance) {
-    return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
+    return readManualData ? SmartDashboard.getNumber("Manual Shooter Data/Drum Velocity", 0) : NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.drumVelocity).doubleValue();
   }
 
   /**
@@ -87,7 +88,7 @@ public class BoomBoom extends SubsystemBase {
    * @return Hood extension in units
    */
   public Double getHood(final Double distance) {
-    return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
+    return readManualData ? SmartDashboard.getNumber("Manual Shooter Data/Hood Extension", 0) : NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
   }
 
   @Override
@@ -139,7 +140,8 @@ public class BoomBoom extends SubsystemBase {
     // m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
   }
 
-  private static ShooterTableEntry[] readShooterTable() {
+  public void updateShooterTable() {
+
     try {
       // This is a helper class that allows us to read a CSV file into a Java array.
       CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
@@ -162,14 +164,14 @@ public class BoomBoom extends SubsystemBase {
         }
       };
       // This is reading the CSV file into a Java array.
-      return csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
+      m_shooterTable = csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath());
     } catch (IOException exception) {
       ShooterTableEntry dummyEntry = new ShooterTableEntry();
       dummyEntry.distance = 0.0;
       dummyEntry.hoodExt = 0.0;
       dummyEntry.drumVelocity = 0.0;
       LOGGER.log(Level.SEVERE, "Exception while reading shooter CSV table.", exception);
-      return new ShooterTableEntry[] { dummyEntry };
+      m_shooterTable = new ShooterTableEntry[] { dummyEntry };
     }
   }
 
