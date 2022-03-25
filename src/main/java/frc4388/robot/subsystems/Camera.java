@@ -8,6 +8,7 @@
 package frc4388.robot.subsystems;
 
 import edu.wpi.first.cscore.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -23,12 +24,10 @@ public class Camera extends SubsystemBase {
    */
   public Camera(String name, int id, int width, int height, int brightness) {
     try{
-      UsbCamera cam = new UsbCamera(name, id);
+      UsbCamera cam = CameraServer.startAutomaticCapture();//new UsbCamera(name, id);
       cam.setResolution(width, height);
       cam.setBrightness(brightness);
       cam.setFPS(10);
-      VideoSource camera = cam;
-      CameraServer.startAutomaticCapture(camera);
     } 
     catch(Exception e) {
       System.err.println("Camera broken, pls nerf");
