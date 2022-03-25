@@ -151,7 +151,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // System.out.println((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00));
+    System.out.println((40.44 - 10.0) / 134.0);
   }
 
   /**
