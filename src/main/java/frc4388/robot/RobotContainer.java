@@ -103,6 +103,9 @@ public class RobotContainer {
   private enum ClimberMode { MANUAL, AUTONOMOUS };
   private ClimberMode currentClimberMode = ClimberMode.MANUAL;
 
+  private enum DriveMode { ON, OFF };
+  private DriveMode currentDriveMode = DriveMode.ON;
+
   private SendableChooser<SequentialCommandGroup> quickAutoChooser = new SendableChooser<>();
 
 /**
@@ -214,18 +217,18 @@ public class RobotContainer {
       // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> {
-          if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) {
+          if (currentDriveMode.equals(DriveMode.ON)) {
             m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
                                                getDriverController().getLeftY(),
                                                getDriverController().getRightX(),
                                                getDriverController().getRightY(),
                                                true); }
-          if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) {
+          if (currentDriveMode.equals(DriveMode.OFF)) {
             m_robotSwerveDrive.driveWithInput( 0, 
                                                0,
                                                0,
                                                0,
-                                               true);
+                                               false);
          }}
           , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
@@ -375,15 +378,13 @@ public class RobotContainer {
     
       // Middle Switch > Climber and Shooter mode switching
     new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
-        .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))
-        .whenReleased(new InstantCommand(() -> this.currentControlMode = ControlMode.SHOOTER));
-        new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        .whenPressed(new InstantCommand(() -> this.currentControlMode = ControlMode.CLIMBER))
-        .whenReleased(new InstantCommand(() -> this.currentControlMode = ControlMode.SHOOTER));
-    
+        .whenPressed(new InstantCommand(() -> RobotContainer.currentControlMode = ControlMode.CLIMBER))
+        .whenReleased(new InstantCommand(() -> RobotContainer.currentControlMode = ControlMode.SHOOTER));
+
+      // Right Switch > Drive On vs Off mode switching
     new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        .whileHeld(new InstantCommand(() -> m_robotExtender.invertExtender(-1.0)))
-        .whenReleased(new InstantCommand(() -> m_robotExtender.invertExtender(1.0)));
+        .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
+        .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
 
       // Left Button > Extender In
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
