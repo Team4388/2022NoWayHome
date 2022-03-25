@@ -47,6 +47,7 @@ import frc4388.robot.commands.DriveCommands.DriveWithInputForTime;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ShooterCommands.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
+import frc4388.robot.subsystems.Camera;
 import frc4388.robot.subsystems.Claws;
 import frc4388.robot.subsystems.Climber;
 import frc4388.robot.subsystems.Extender;
@@ -75,6 +76,7 @@ public class RobotContainer {
   public final RobotMap m_robotMap = new RobotMap();
 
   /* Subsystems */
+  public final Camera m_robotCamera = new Camera("driver", 0, 160, 120, 40);
   public final Climber m_robotClimber = new Climber(m_robotMap.elbow);
   public final Claws m_robotClaws = new Claws(m_robotMap.leftClaw, m_robotMap.rightClaw); 
   public final SwerveDrive m_robotSwerveDrive = new SwerveDrive(m_robotMap.leftFront, m_robotMap.leftBack, m_robotMap.rightFront, m_robotMap.rightBack, m_robotMap.gyro);
@@ -83,7 +85,7 @@ public class RobotContainer {
   public final Extender m_robotExtender = new Extender(m_robotMap.extenderMotor);
   
   public final Storage m_robotStorage = new Storage(m_robotMap.storageMotor);
-  // private final LED m_robotLED = new LED(m_robotMap.LEDController);
+  // private final LED m_robotLED = new LED(m_robotMap.LEDController); // ! no LED makes aarav sad 
   public final BoomBoom m_robotBoomBoom = new BoomBoom(m_robotMap.shooterFalconLeft, m_robotMap.shooterFalconRight);
   public final Hood m_robotHood = new Hood(m_robotMap.angleAdjusterMotor);
   public final Turret m_robotTurret = new Turret(m_robotMap.shooterTurret);
@@ -137,7 +139,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
     // double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
 
     // double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
