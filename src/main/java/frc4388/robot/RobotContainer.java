@@ -301,7 +301,13 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
+    new JoystickButton(getDriverController(), XboxController.Axis.kLeftTrigger.value)
+        .whenPressed(new InstantCommand(() -> switchControlMode()))
+        .whenReleased(new InstantCommand(() -> switchControlMode()));
 
+    new JoystickButton(getDriverController(), XboxController.Axis.kRightTrigger.value)
+        .whenPressed(new InstantCommand(() -> switchDriveMode()))
+        .whenReleased(new InstantCommand(() -> switchDriveMode()));
 
     //! Operator Buttons
 
@@ -357,6 +363,33 @@ public class RobotContainer {
 
     //! Button Box Buttons
       // Left Switch > Disables soft limits on press, release resets encoders (all for turret, hood, climber, and extender)
+
+    SmartDashboard.putData("BB LEFT ON", new ParallelCommandGroup(
+      new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret),
+      new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret),
+    
+      new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood),
+      new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood),
+    
+      new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender)
+    ));
+    
+    SmartDashboard.putData("BB LEFT OFF", new ParallelCommandGroup(
+      new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret),
+      new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret),
+    
+      new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood),
+      new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood),
+
+      new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender),
+
+      new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret),
+      new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood),
+      new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender),
+      new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender),
+      new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber)
+    ));
+
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
         .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
         .whenPressed(new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret))
@@ -494,7 +527,6 @@ public class RobotContainer {
                                        
                                        weirdAutoShootingGroup, // * shoot
                                        new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5)); // * stop running storage
-    //);
 
     // ! TWO BALL AUTO (HOPEFULLY)
     // return new SequentialCommandGroup(  new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
@@ -508,7 +540,7 @@ public class RobotContainer {
 
     //                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
     //                                       weirdAutoShootingGroup, // * shoot
-    //                                       new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5)); // * stop running storage
+    //                                       new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5)))); // * stop running storage
 
     // ! DRIVE OFF LINE, THEN SHOOT BALL (HOPEFULLY)
     // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
@@ -568,6 +600,22 @@ public class RobotContainer {
 
     //                                    );
 
+  }
+
+  public void switchControlMode() {
+    if (currentControlMode == ControlMode.SHOOTER) {
+      currentControlMode = ControlMode.CLIMBER;
+    } else {
+      currentControlMode = ControlMode.SHOOTER;
+    }
+  }
+
+  public void switchDriveMode() {
+    if (currentDriveMode == DriveMode.ON) {
+      currentDriveMode = DriveMode.OFF;
+    } else {
+      currentDriveMode = DriveMode.ON;
+    }
   }
 
   public static XboxController getDriverController() {
