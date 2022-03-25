@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.diffplug.common.base.Errors;
 
@@ -36,8 +37,10 @@ public class ShooterTuner extends CommandBase {
     m_shotCsvAppender = new PersistentInstantCommand(this::appendCsv).withName("Append");
     m_shooterTableView = new ShooterTableEditor();
     // m_shooterTableUpdater = new PersistentInstantCommand(m_boomBoom::loadShooterTable).withName("Reload");
+  }
 
-    csvOutputStream = Errors.rethrow().get(() -> Files.newOutputStream(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath(), StandardOpenOption.WRITE, StandardOpenOption.APPEND));
+  private OutputStream getCsvOutputStream() {
+    return Objects.requireNonNullElseGet(csvOutputStream, () -> Errors.rethrow().get(() -> Files.newOutputStream(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath(), StandardOpenOption.WRITE, StandardOpenOption.APPEND)));
   }
 
   private class ShotEditor implements Sendable {
@@ -79,7 +82,7 @@ public class ShooterTuner extends CommandBase {
       m_boomBoom.m_shooterTable[0].drumVelocity
     );
     byte[] b = s.getBytes();
-    Errors.log().run(() -> csvOutputStream.write(b));
+    Errors.log().run(() -> getCsvOutputStream().write(b));
   }
 
   @Override
@@ -107,7 +110,7 @@ public class ShooterTuner extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    Errors.log().run(csvOutputStream::close);
+    Errors.log().run(getCsvOutputStream()::close);
     m_boomBoom.loadShooterTable();
   }
   @Override
