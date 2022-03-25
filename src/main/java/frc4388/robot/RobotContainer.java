@@ -508,7 +508,7 @@ public class RobotContainer {
 
     //                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
     //                                       weirdAutoShootingGroup, // * shoot
-    //                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)))); // * stop running storage
+    //                                       new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5)); // * stop running storage
 
     // ! DRIVE OFF LINE, THEN SHOOT BALL (HOPEFULLY)
     // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
