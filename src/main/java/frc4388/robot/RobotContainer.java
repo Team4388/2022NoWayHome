@@ -458,6 +458,7 @@ public class RobotContainer {
     // * 2. try opposite joystick input: new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, false), m_robotSwerveDrive);
     // * 3a. try permanently setting drive motors to brake, not coast, in RobotMap.java, and ask the driver how it feels.
     // * 3b. try to only set the drive motors to brake if in auto mode.
+    // * 4. try new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive);
 
     // ! 1.0 input, 1 second: 134 inches
     // ! 0.75 input, 1 second: 48 inches
@@ -469,6 +470,7 @@ public class RobotContainer {
     double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
     double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
 
+    // ! ball positions are unit tested
     Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
     Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
     Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition); // * vector from first ball to second ball, used to calculate emulated joystick inputs.
@@ -479,14 +481,11 @@ public class RobotContainer {
                                                                                  new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.0)
                                                                                )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
 
-                                                                              //  return new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                                                              //                                      weirdAutoShootingGroup, // * shoot
-                                                                              //                                      new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage)); // * stop running storage
     // ! DRIVE OFF LINE, THEN SHOOT BALL (HOPEFULLY)
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.5, 0.0, 0.0}, 0.5), // * drive out of tarmac
                                        new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
-                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2(-(219.25 / 2.00) - turretDistanceFromFront, -(82.83 / 2.00) + 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target
+                                       new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
                                        weirdAutoShootingGroup, // * shoot
                                        new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
                                       );

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc4388.utility.RobotTime;
+import frc4388.utility.Vector2D;
 import frc4388.utility.VelocityCorrection;
 import frc4388.utility.desmos.DesmosServer;
 
@@ -140,7 +142,15 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
-    System.out.println((180.0 / Math.PI) * Math.atan2(-(219.25 / 2.00) - 40.44 + 10.00, -(82.83 / 2.00) + 15.56));
+
+    Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00);
+    Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
+    Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition);
+
+    System.out.println("First Ball (FEET): " + Vector2D.divide(firstBallPosition, 12).toString());
+    System.out.println("Second Ball (FEET): " + Vector2D.divide(secondBallPosition, 12).toString());
+    System.out.println("First To Second (FEET): " + Vector2D.divide(firstToSecond, 12).toString());
+
     // current = 
       // m_robotContainer.m_robotBoomBoom.getCurrent() +
       // m_robotContainer.m_robotClimber.getCurrent(); //+
