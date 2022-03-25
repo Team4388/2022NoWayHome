@@ -521,16 +521,25 @@ public class RobotContainer {
                                                                                )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
     // ! POSITIVE Y IS LEFT, POSITIVE X IS BACKWARDS
   
-    // ! DRIVE OFF LINE, THEN SHOOT BALL (HOPEFULLY)
+    // ! DRIVE BACKWARDS AND SHOOT
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-0.5, 0, 0.0, 0.0}, 1.0), // * drive out of tarmac
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, 0.269), // * go backwards three feet
                                        new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0, 0.0, 0.0}, 1.0), // * drive out of tarmac
-                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
-                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
-                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive)); // * brake
+
+                                       weirdAutoShootingGroup, // * shoot
+                                       new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
+    );
+
+    // ! DRIVE OFF LINE, THEN SHOOT BALL (HOPEFULLY)
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-0.5, 0, 0.0, 0.0}, 1.0), // * drive out of tarmac
+    //                                    new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.5, 0, 0.0, 0.0}, 1.0), // * drive out of tarmac
+    //                                    new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
+    //                                    new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
+    //                                    new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive)); // * brake
 
                                       //  new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
                                       //  weirdAutoShootingGroup, // * shoot
