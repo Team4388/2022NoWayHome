@@ -1,25 +1,33 @@
 package frc4388.robot.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileOwnerAttributeView;
+import java.nio.file.attribute.UserPrincipal;
+import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.Arrays;
-import java.util.Objects;
 
 import com.diffplug.common.base.Errors;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc4388.robot.Robot;
 import frc4388.robot.subsystems.BoomBoom;
-import static frc4388.robot.subsystems.BoomBoom.ShooterTableEntry;
+import frc4388.robot.subsystems.BoomBoom.ShooterTableEntry;
 
 public class ShooterTuner extends CommandBase {
   private final BoomBoom m_boomBoom;
@@ -36,11 +44,18 @@ public class ShooterTuner extends CommandBase {
     m_shotEditor = new ShotEditor();
     m_shotCsvAppender = new PersistentInstantCommand(this::appendCsv).withName("Append");
     m_shooterTableView = new ShooterTableEditor();
-    // m_shooterTableUpdater = new PersistentInstantCommand(m_boomBoom::loadShooterTable).withName("Reload");
+    // m_shooterTableUpdater = new
+    // PersistentInstantCommand(m_boomBoom::loadShooterTable).withName("Reload");
   }
 
   private OutputStream getCsvOutputStream() {
-    return Objects.requireNonNullElseGet(csvOutputStream, () -> Errors.rethrow().get(() -> Files.newOutputStream(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath(), StandardOpenOption.WRITE, StandardOpenOption.APPEND)));
+    if (csvOutputStream == null) {
+      Path path = new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath();
+      if (RobotBase.isReal())
+        Errors.log().run(() -> Files.getFileAttributeView(path, FileOwnerAttributeView.class).setOwner(FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName("admin")));
+      csvOutputStream = Errors.rethrow().get(() -> Files.newOutputStream(path, StandardOpenOption.WRITE, StandardOpenOption.APPEND));
+    }
+    return csvOutputStream;
   }
 
   private class ShotEditor implements Sendable {
@@ -76,11 +91,7 @@ public class ShooterTuner extends CommandBase {
   }
 
   private void appendCsv() {
-    String s = String.format("%s,%s,%s%n", 
-      m_boomBoom.m_shooterTable[0].distance, 
-      m_boomBoom.m_shooterTable[0].hoodExt, 
-      m_boomBoom.m_shooterTable[0].drumVelocity
-    );
+    String s = String.format("%s,%s,%s%n", m_boomBoom.m_shooterTable[0].distance, m_boomBoom.m_shooterTable[0].hoodExt, m_boomBoom.m_shooterTable[0].drumVelocity);
     byte[] b = s.getBytes();
     Errors.log().run(() -> getCsvOutputStream().write(b));
   }
@@ -113,6 +124,7 @@ public class ShooterTuner extends CommandBase {
     Errors.log().run(getCsvOutputStream()::close);
     m_boomBoom.loadShooterTable();
   }
+
   @Override
   public boolean runsWhenDisabled() {
     return true;

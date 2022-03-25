@@ -141,7 +141,6 @@ public class BoomBoom extends SubsystemBase {
   }
 
   public void loadShooterTable() {
-
     try {
       // This is a helper class that allows us to read a CSV file into a Java array.
       CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
