@@ -225,7 +225,7 @@ public class RobotContainer {
                                                0,
                                                0,
                                                0,
-                                               true);
+                                               false);
          }}
           , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
