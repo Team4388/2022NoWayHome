@@ -132,6 +132,8 @@ public final class Constants {
     // misc
     public static final int SMARTDASHBOARD_UPDATE_FRAME = 2;
     public static final Pose2d HUB_POSE = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
+
+    public static final double AUTO_INCHES_PER_SECOND_AT_FULL_POWER = 134.0;
   }
 
   public static final class SerializerConstants {

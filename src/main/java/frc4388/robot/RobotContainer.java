@@ -262,12 +262,14 @@ public class RobotContainer {
         if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotHood.runHood(0); }
        }, m_robotHood));
 
-       //Climber Manual
+    //    //Climber Manual
     m_robotClimber.setDefaultCommand(
       new RunCommand(() -> {
         if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotClimber.setMotors(0.0); }
         if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotClimber.setMotors(-getOperatorController().getRightY()); }
        }, m_robotClimber));
+    // m_robotClimber.setDefaultCommand(
+    //   new RunCommand(() -> m_robotClimber.setMotors(-getOperatorController().getRightY()), m_robotClimber));
     
     m_robotBoomBoom.setDefaultCommand(
       new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.45), m_robotBoomBoom)
@@ -498,17 +500,16 @@ public class RobotContainer {
     // * 3a. try permanently setting drive motors to brake, not coast, in RobotMap.java, and ask the driver how it feels.
     // * 3b. try to only set the drive motors to brake if in auto mode.
     // * 4. try new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive);
-
-    // ! 1.0 input, 1 second: 134 inches
-    // ! 0.75 input, 1 second: 48 inches
-    // ? positive leftY went left, negative leftY went right?
-    // TODO: if line 372 is true, switch joystick inputs accordingly
+    
+    // ? 1.0 input, 1 second: 134 inches
+    // ? 0.75 input, 1 second: 48 inches
+    // ! POSITIVE Y IS LEFT, POSITIVE X IS BACKWARDS
 
     double turretDistanceFromFront = 10.0; // * distance of turret from the front of the robot in inches. might need to be somewhat accurate.
-
+    
     double distancePerSecond = 134.0; // * assuming emulated joystick input magnitude is 1.0
     double offset = 10.0; // * distance (in inches) from ball that we actually want to stop
-
+    
     // ! ball positions are "unit tested"
     Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00); // * position of first ball, relative to hub.
     Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
@@ -519,13 +520,12 @@ public class RobotContainer {
                                                                                  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
                                                                                  new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.0)
                                                                                )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
-    // ! POSITIVE Y IS LEFT, POSITIVE X IS BACKWARDS
   
     // ! DRIVE BACKWARDS AND SHOOT
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, 0.269), // * go backwards three feet
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (3.0 * 12) / SwerveDriveConstants.AUTO_INCHES_PER_SECOND_AT_FULL_POWER),//0.269), // * go backwards three feet
                                        new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
-
+                                       
                                        weirdAutoShootingGroup, // * shoot
                                        new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
     );
@@ -552,7 +552,7 @@ public class RobotContainer {
     //         new ParallelCommandGroup( new RunCommand(() -> m_robotIntake.runAtOutput(1.0), m_robotIntake), // * run intake all throughout path
 
     //           new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, 1.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
+    //                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {-1.0, 0.0, 0.0, 0.0}, (40.44 - offset) / distancePerSecond), // * drive to first ball
     //                                       // new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, -1.0, 0.0, 0.0, true)), // * brake (see line 376),
     //                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive),
 
