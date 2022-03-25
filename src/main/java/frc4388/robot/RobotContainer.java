@@ -226,12 +226,22 @@ public class RobotContainer {
     configureButtonBindings();
     /* Default Commands */
       // Swerve Drive with Input
-    m_robotSwerveDrive.setDefaultCommand(
-        new RunCommand(() -> m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
-                                                                getDriverController().getLeftY(),
-                                                                getDriverController().getRightX(),
-                                                                getDriverController().getRightY(),
-                                                                true), m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
+      m_robotSwerveDrive.setDefaultCommand(
+        new RunCommand(() -> {
+          if (currentDriveMode.equals(DriveMode.ON)) {
+            m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
+                                               getDriverController().getLeftY(),
+                                               getDriverController().getRightX(),
+                                               getDriverController().getRightY(),
+                                               true); }
+          if (currentDriveMode.equals(DriveMode.OFF)) {
+            m_robotSwerveDrive.driveWithInput( 0, 
+                                               0,
+                                               0,
+                                               0,
+                                               false);
+         }}
+          , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
       // Intake with Triggers
     m_robotIntake.setDefaultCommand(
@@ -256,7 +266,7 @@ public class RobotContainer {
       // Hood Manual
     m_robotHood.setDefaultCommand(
        new RunCommand(() -> {
-        if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotHood.runHood(getOperatorController().getRightY()); }
+        if (RobotContainer.currentControlMode.equals(ControlMode.SHOOTER)) { m_robotHood.runHood(getOperatorController().getLeftY()); }
         if (RobotContainer.currentControlMode.equals(ControlMode.CLIMBER)) { m_robotHood.runHood(0); }
        }, m_robotHood));
 
@@ -417,13 +427,13 @@ public class RobotContainer {
     new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value)
         .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.CLIMBER))
         .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
-        new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-        .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.CLIMBER))
-        .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
+        // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+        // .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.))
+        // .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
     
-    // new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
-    //     .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
-    //     .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value)
+        .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
+        .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
 
       // Left Button > Extender In
     new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
@@ -522,7 +532,7 @@ public class RobotContainer {
   
     // ! DRIVE BACKWARDS AND SHOOT (HOPEFULLY)
     return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (4.0 * 12) / distancePerSecond),//0.269), // * go backwards three feet
+                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (5.0 * 12) / distancePerSecond),//0.269), // * go backwards three feet
                                        new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
                                        
                                        weirdAutoShootingGroup, // * shoot

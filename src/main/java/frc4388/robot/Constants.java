@@ -37,7 +37,7 @@ public final class Constants {
   public static final double LOOP_TIME = 0.02;
 
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 2.0;
+    public static final double ROTATION_SPEED = 2.3;
     public static final double WIDTH = 23.75;
     public static final double HEIGHT = 23.75;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
