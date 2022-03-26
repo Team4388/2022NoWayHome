@@ -374,31 +374,31 @@ public class RobotContainer {
     //! Button Box Buttons
       // Left Switch > Disables soft limits on press, release resets encoders (all for turret, hood, climber, and extender)
 
-    SmartDashboard.putData("BB LEFT ON", new SequentialCommandGroup(
-      new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret),
-      new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret),
+    // SmartDashboard.putData("BB LEFT ON", new SequentialCommandGroup(
+    //   new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret),
+    //   new InstantCommand(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret),
     
-      new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood),
-      new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood),
+    //   new InstantCommand(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood),
+    //   new InstantCommand(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood),
     
-      new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender)
-    ));
+    //   new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender)
+    // ));
     
-    SmartDashboard.putData("BB LEFT OFF", new SequentialCommandGroup(
-      new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret),
-      new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret),
+    // SmartDashboard.putData("BB LEFT OFF", new SequentialCommandGroup(
+    //   new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret),
+    //   new InstantCommand(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret),
     
-      new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood),
-      new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood),
+    //   new InstantCommand(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood),
+    //   new InstantCommand(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood),
 
-      new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender),
+    //   new InstantCommand(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender),
 
-      new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret),
-      new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood),
-      new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender),
-      new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender),
-      new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber)
-    ));
+    //   new InstantCommand(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret),
+    //   new InstantCommand(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood),
+    //   new InstantCommand(() -> m_robotExtender.setEncoder(0), m_robotExtender),
+    //   new InstantCommand(() -> ExtenderIntakeGroup.setDirectionToOut(), m_robotIntake, m_robotExtender),
+    //   new InstantCommand(() -> m_robotClimber.setEncoders(0), m_robotClimber)
+    // ));
 
     // new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value)
     //     .whenPressed(new InstantCommand(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret))
@@ -435,13 +435,13 @@ public class RobotContainer {
     //     .whileHeld(new InstantCommand(() -> currentDriveMode = DriveMode.OFF))
     //     .whenReleased(new InstantCommand(() -> currentDriveMode = DriveMode.ON));
 
-      // Left Button > Extender In
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value)
+    //   // Left Button > Extender In
+    new JoystickButton(getDriverController(), XboxController.Button.kX.value)
         .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
         .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
 
-      // Left Button > Extender Out
-    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightButton.value)
+      // Left Button > Extender Out 
+    new JoystickButton(getDriverController(), XboxController.Button.kY.value)
         .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
         .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
   }
@@ -563,10 +563,10 @@ public class RobotContainer {
     //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {0.0, -0.5, 0.0, 0.0}, 1.0), // * drive out of tarmac
     //                                    new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive)); // * brake
 
-                                      //  new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
-                                      //  weirdAutoShootingGroup, // * shoot
-                                      //  new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
-                                     // );
+    //                                    new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
+    //                                    weirdAutoShootingGroup, // * shoot
+    //                                    new InstantCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage) // * stop running storage
+    //                                  );
 
     // ! THREE BALL AUTO (HOPEFULLY)
     // return new SequentialCommandGroup( new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - turretDistanceFromFront, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0, true), // * aim with turret to target

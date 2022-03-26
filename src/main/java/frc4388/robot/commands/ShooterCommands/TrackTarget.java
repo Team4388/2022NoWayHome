@@ -95,7 +95,7 @@ public class TrackTarget extends CommandBase {
       Point average = VisionOdometry.averagePoint(points);
       
       double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-      output *= 2.0;
+      output *= 2.1;
       
       m_turret.runTurretWithInput(output);
       // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
@@ -124,10 +124,10 @@ public class TrackTarget extends CommandBase {
   
       targetLocked = (Math.abs(currentDrumVel - velocity) < velocityTolerance) && (Math.abs(currentHood - hoodPosition) < hoodTolerance) && (output < 0.2);
 
-      SmartDashboard.putNumber("Distance to Target", regressedDistance);
-      // SmartDashboard.putNumber("Distance", distance);
-      // SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
-      // SmartDashboard.putNumber("Vel Target Track", velocity);
+
+      SmartDashboard.putNumber("Distance", regressedDistance - 35);
+      SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
+      SmartDashboard.putNumber("Vel Target Track", velocity);
       SmartDashboard.putBoolean("Target Locked", targetLocked);
     } catch (Exception e){
       e.printStackTrace();
