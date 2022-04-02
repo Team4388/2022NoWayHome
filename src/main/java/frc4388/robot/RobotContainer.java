@@ -458,6 +458,7 @@ public class RobotContainer {
     maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.PATH_MAX_ACCELERATION);
 
     ArrayList<Command> commands = new ArrayList<Command>();
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive));
 
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
@@ -531,12 +532,12 @@ public class RobotContainer {
                                                                                )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
   
     // ! DRIVE BACKWARDS AND SHOOT (HOPEFULLY)
-    return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
-                                       new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (5.0 * 12) / distancePerSecond),//0.269), // * go backwards three feet
-                                       new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
+    // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
+    //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (5.0 * 12) / distancePerSecond),//0.269), // * go backwards three feet
+    //                                    new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive), // * brake
                                        
-                                       weirdAutoShootingGroup, // * shoot
-                                       new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5)); // * stop running storage
+    //                                    weirdAutoShootingGroup, // * shoot
+    //                                    new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5)); // * stop running storage
 
     // ! TWO BALL AUTO (HOPEFULLY)
     // return new SequentialCommandGroup(  new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), // * extend out, in preparation of running intake
@@ -609,7 +610,9 @@ public class RobotContainer {
     //                                      new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0))
 
     //                                    );
-
+    // ! PathPlanner Testing
+    return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Move Forward"));
+    // return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Diamond"));
   }
 
   public void switchControlMode() {

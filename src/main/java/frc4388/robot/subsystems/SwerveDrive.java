@@ -75,12 +75,7 @@ public class SwerveDrive extends SubsystemBase {
     //     VecBuilder.fill(Units.degreesToRadians(1)),            // TODO: tune
     //     VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
     
-    m_odometry = new SwerveDriveOdometry(
-        m_kinematics,
-        getRegGyro(),//m_gyro.getRotation2d(),
-        new Pose2d()); // TODO: tune
-
-    // m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
+    m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
 
     m_gyro.reset();
     SmartDashboard.putData("Field", m_field);
@@ -192,9 +187,9 @@ public class SwerveDrive extends SubsystemBase {
 
     // chassis speeds
     // TODO: find the actual max velocity in m/s of the robot in fast mode to have accurate chassis speeds
-    SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
+    // SmartDashboard.putNumber("Chassis Vel: X", chassisSpeeds.vxMetersPerSecond);
+    // SmartDashboard.putNumber("Chassis Vel: Y", chassisSpeeds.vyMetersPerSecond);
+    // SmartDashboard.putNumber("Chassis Vel: ω", chassisSpeeds.omegaRadiansPerSecond);
   }
 
   /**
@@ -246,11 +241,11 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putNumber("AUTO ACTUAL GYRO", actual.getDegrees());
     SmartDashboard.putNumber("AUTO DWI GYRO", actual.getDegrees());
 
-    m_odometry.update( actualDWI,//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
-                            modules[0].getState(),
-                            modules[1].getState(),
-                            modules[2].getState(),
-                            modules[3].getState());
+    m_odometry.update( m_gyro.getRotation2d(),//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
+                       modules[0].getState(),
+                       modules[1].getState(),
+                       modules[2].getState(),
+                       modules[3].getState());
   }
   
   
