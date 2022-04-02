@@ -458,6 +458,7 @@ public class RobotContainer {
     maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.PATH_MAX_ACCELERATION);
 
     ArrayList<Command> commands = new ArrayList<Command>();
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive));
 
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
@@ -502,6 +503,15 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+
+    // ! PathPlanner Testing
+    if (!this.currentClimberMode.equals(null)) {
+      return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Drive Forward"));
+    }
+
+    if (!this.currentClimberMode.equals(null)) {
+      return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Diamond"));
+    }
 
     // ! ways to not coast
     // // * 1. try zero joystick input: new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0.0, 0.0, 0.0, 0.0, false), m_robotSwerveDrive);
