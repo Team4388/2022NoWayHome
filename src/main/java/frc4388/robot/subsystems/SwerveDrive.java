@@ -106,9 +106,9 @@ public class SwerveDrive extends SubsystemBase {
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            -rot * SwerveDriveConstants.ROTATION_SPEED * speedAdjust, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
+            -rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
         : new ChassisSpeeds(ySpeedMetersPerSecond, -xSpeedMetersPerSecond,
-            -rot * SwerveDriveConstants.ROTATION_SPEED * speedAdjust);
+            -rot * SwerveDriveConstants.ROTATION_SPEED * 2);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
@@ -128,8 +128,8 @@ public class SwerveDrive extends SubsystemBase {
     double ySpeedMetersPerSecond = speed.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED * speedAdjust, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
-        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * speedAdjust);
+            rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
+        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * 2);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
         chassisSpeeds);
     // if (ignoreAngles) {
@@ -173,12 +173,12 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
 
     updateOdometry();
-    updateSmartDash();
+    // updateSmartDash();
 
-    SmartDashboard.putNumber("Pigeon getRotation2d", m_gyro.getRotation2d().getDegrees());
-    SmartDashboard.putNumber("Pigeon getAngle", m_gyro.getAngle());
-    SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
-    SmartDashboard.putNumber("Pigeon Yaw (0 to 360)", m_gyro.getYaw() % 360);
+    // SmartDashboard.putNumber("Pigeon getRotation2d", m_gyro.getRotation2d().getDegrees());
+    // SmartDashboard.putNumber("Pigeon getAngle", m_gyro.getAngle());
+    // SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
+    // SmartDashboard.putNumber("Pigeon Yaw (0 to 360)", m_gyro.getYaw() % 360);
 
     m_field.setRobotPose(m_odometry.getPoseMeters());
     super.periodic();

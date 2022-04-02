@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(CommandScheduler.getInstance());
 
     // desmosServer.start();
-    m_robotContainer.m_robotVisionOdometry.setLEDs(true);
+    m_robotContainer.m_robotVisionOdometry.setLEDs(false);
     // DesmosServer.putTable("table", "x1", new double[] {44}, "y1", new double[] {0});
   }
 
@@ -146,11 +146,13 @@ public class Robot extends TimedRobot {
         LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
     }
 
-    m_robotContainer.m_robotVisionOdometry.setLEDs(true);
+    m_robotContainer.m_robotVisionOdometry.setLEDs(false);
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // m_robotContainer.m_robotVisionOdometry.setLEDs(false);
+  }
 
   /**
    * This autonomous runs the autonomous command selected by your

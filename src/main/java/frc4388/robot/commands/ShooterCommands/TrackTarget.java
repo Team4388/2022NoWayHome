@@ -94,7 +94,7 @@ public class TrackTarget extends CommandBase {
       //// points = filterPoints(points);
       Point average = VisionOdometry.averagePoint(points);
       
-      double output = (average.x - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
+      double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
       output *= 2.1;
       
       m_turret.runTurretWithInput(output);
@@ -132,8 +132,6 @@ public class TrackTarget extends CommandBase {
     } catch (Exception e){
       e.printStackTrace();
     }
-
-    // run storage
     
   }
 
@@ -197,14 +195,14 @@ public class TrackTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (this.isAuto) {
-      if (targetLocked && !timerStarted) {
-        timerStarted = true;
-        startTime = System.currentTimeMillis();
-      }
-      return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
-    } else {
+    // if (this.isAuto) {
+    //   if (targetLocked && !timerStarted) {
+    //     timerStarted = true;
+    //     startTime = System.currentTimeMillis();
+    //   }
+    //   return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+    // } else {
       return false;
-    }
+    // }
   }
 }

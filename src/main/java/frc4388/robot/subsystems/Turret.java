@@ -114,41 +114,41 @@ public class Turret extends SubsystemBase {
     // SmartDashboard.putBoolean("Right Limit Switch Enabled", m_boomBoomRightLimit.isLimitSwitchEnabled());
     // SmartDashboard.putBoolean("Left Limit Switch Enabled", m_boomBoomLeftLimit.isLimitSwitchEnabled());
     
-    SmartDashboard.putNumber("Turret Angle Rotations", m_boomBoomRotateEncoder.getPosition());
-    SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
-    SmartDashboard.putBoolean("Turret Left Limit", m_boomBoomLeftLimit.isPressed());
-    SmartDashboard.putBoolean("Turret Right Limit", m_boomBoomRightLimit.isPressed());
+    // SmartDashboard.putNumber("Turret Angle Rotations", m_boomBoomRotateEncoder.getPosition());
+    // SmartDashboard.putNumber("Turret Angle Degrees", m_boomBoomRotateEncoder.getPosition() * ShooterConstants.TURRET_DEGREES_PER_ROT);
+    // SmartDashboard.putBoolean("Turret Left Limit", m_boomBoomLeftLimit.isPressed());
+    // SmartDashboard.putBoolean("Turret Right Limit", m_boomBoomRightLimit.isPressed());
 
     // limit switch annoying time thing but actually worked first try wtf
-    leftState = m_boomBoomLeftLimit.isPressed(); // * Get the state of the left limit switch (true for pressed).
+    // leftState = m_boomBoomLeftLimit.isPressed(); // * Get the state of the left limit switch (true for pressed).
 
-    hasLeftSwitchChanged = (leftState != leftPrevState); // * Get whether the state of the left limit switch has changed, based on its previous state.
+    // hasLeftSwitchChanged = (leftState != leftPrevState); // * Get whether the state of the left limit switch has changed, based on its previous state.
 
-    if (leftState && hasLeftSwitchChanged) { // * If the left limit switch is pressed, and it recently changed, start the time.
-      leftCurrentTime = System.currentTimeMillis();
-      leftElapsedTime = 0;
-    }
+    // if (leftState && hasLeftSwitchChanged) { // * If the left limit switch is pressed, and it recently changed, start the time.
+    //   leftCurrentTime = System.currentTimeMillis();
+    //   leftElapsedTime = 0;
+    // }
 
-    if (!m_boomBoomRightLimit.isPressed()) recentlyPressed = false;
+    // if (!m_boomBoomRightLimit.isPressed()) recentlyPressed = false;
 
-    if(m_boomBoomRightLimit.isPressed() && !recentlyPressed){
-        recentlyPressed = true;
-        m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_FORWARD_HARD_LIMIT);// 0/*ShooterConstants.TURRET_REVERSE_LIMIT + 2*/);
-    }
-     SmartDashboard.putBoolean("Recently Pressed", recentlyPressed);
+    // if(m_boomBoomRightLimit.isPressed() && !recentlyPressed){
+    //     recentlyPressed = true;
+    //     m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_FORWARD_HARD_LIMIT);// 0/*ShooterConstants.TURRET_REVERSE_LIMIT + 2*/);
+    // }
+    // //  SmartDashboard.putBoolean("Recently Pressed", recentlyPressed);
 
-    if (leftState && !hasLeftSwitchChanged) { // * If the left limit switch is still pressed, but the state hasn't changed, then calculate elapsed time.
-      leftElapsedTime = System.currentTimeMillis() - leftCurrentTime;
-    }
+    // if (leftState && !hasLeftSwitchChanged) { // * If the left limit switch is still pressed, but the state hasn't changed, then calculate elapsed time.
+    //   leftElapsedTime = System.currentTimeMillis() - leftCurrentTime;
+    // }
     
-    if (leftState && (leftElapsedTime > 500)) { // * If the left limit switch is pressed for more than half a second, update the encoder position.
-      m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_HARD_LIMIT);
-    }
+    // if (leftState && (leftElapsedTime > 500)) { // * If the left limit switch is pressed for more than half a second, update the encoder position.
+    //   m_boomBoomRotateEncoder.setPosition(ShooterConstants.TURRET_REVERSE_HARD_LIMIT);
+    // }
 
-    leftPrevState = leftState; // * Update the state of the left limit switch.
+    // leftPrevState = leftState; // * Update the state of the left limit switch.
   
-    // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
-    runVelocityRamping();
+    // // * speed limiting near soft limits. tolerance (distance when ramping starts) is 20 rotations. speed at hard limits is 0.2 (percent output).
+    // runVelocityRamping();
   }
 
   public void runVelocityRamping() {

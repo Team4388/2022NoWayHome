@@ -300,6 +300,7 @@ void configureExtenderMotors() {
     
     void configureStorageMotors() {
         storageMotor.restoreFactoryDefaults();
+        storageMotor.setIdleMode(IdleMode.kCoast);
     }
     
 }

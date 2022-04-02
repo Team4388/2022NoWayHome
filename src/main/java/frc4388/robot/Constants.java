@@ -156,7 +156,7 @@ public final class Constants {
   }
 
   public static final class ExtenderConstants {
-    public static final double EXTENDER_FORWARD_LIMIT = 235.0;//250.0;
+    public static final double EXTENDER_FORWARD_LIMIT = 200.3;//250.0;
     public static final double EXTENDER_REVERSE_LIMIT = 0.0;
   }
 
@@ -164,7 +164,7 @@ public final class Constants {
     public static final int STORAGE_CAN_ID = 18;
     public static final int BEAM_SENSOR_SHOOTER = 28; //TODO
     public static final int BEAM_SENSOR_INTAKE = 29; //TODO
-    public static final double STORAGE_SPEED = 0.9;
+    public static final double STORAGE_SPEED = 1.0;//0.9;
   }
   public static final class LEDConstants {
     public static final int LED_SPARK_ID = 0;
