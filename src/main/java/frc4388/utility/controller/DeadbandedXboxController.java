@@ -13,27 +13,6 @@ public class DeadbandedXboxController extends XboxController {
   @Override public double getLeftY() { return skewToDeadzonedCircle(super.getLeftX(), super.getLeftY()).getY(); }
   @Override public double getRightX() { return skewToDeadzonedCircle(super.getRightX(), super.getRightY()).getX(); }
   @Override public double getRightY() { return skewToDeadzonedCircle(super.getRightX(), super.getRightY()).getY(); }
-
-  public int getDpadAngle() {
-    return getPOV(0);
-  }
-
-  public boolean getDPadLeft(){
-    return (getRawAxis(6) < -0.9);
-  }
-
-  public boolean getDPadRight(){
-    return (getRawAxis(6) > 0.9);
-  }
-
-  public boolean getDPadTop(){
-    return (getRawAxis(6) < 0.9);
-  }
-
-  public boolean getDPadBottom(){
-    return (getRawAxis(6) > -0.9);
-  }
-
   public static Translation2d skewToDeadzonedCircle(double x, double y) {
     Translation2d translation2d = new Translation2d(x, y);
     double magnitude = translation2d.getNorm();

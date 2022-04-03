@@ -21,6 +21,9 @@
     {
       "label": "pathPlanner",
       "type": "shell",
+      "windows": {
+        "command": "explorer.exe shell:AppsFolder\\39956MichaelJansen.FRCPathPlanner_x7a2cjep50mda!pathplanner"
+      },
       "osx": {
         "command": "open -n /Applications/PathPlanner.app"
       },
@@ -31,7 +34,8 @@
         "panel": "dedicated",
         "showReuseMessage": false,
         "clear": true
-      }
+      },
+      "problemMatcher": []
     }
   ]
 }
