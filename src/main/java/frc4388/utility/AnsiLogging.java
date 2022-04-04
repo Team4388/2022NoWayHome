@@ -4,9 +4,11 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -25,6 +27,9 @@ import com.diffplug.common.base.Errors;
 
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.Ansi.Color;
+
+import edu.wpi.first.hal.HAL;
+
 import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiPrintStream;
 
@@ -56,7 +61,7 @@ public class AnsiLogging {
       // This is registering a plugin that will log Durian errors to the console using a logger.
       DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
       // Store the handler for HAL to use when sending errors to DriverStation.
-      halLoggerHandler = new LoggingAnsiConsoleHandler();
+      halLoggerHandler = new LoggingAnsiConsoleHandler(new HalOutputStream());
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }
@@ -68,6 +73,10 @@ public class AnsiLogging {
   public static class LoggingAnsiConsoleHandler extends StreamHandler {
     public LoggingAnsiConsoleHandler() {
       super(ANSI_CONSOLE_STREAM, new LoggingAnsiFormatter());
+      setLevel(LEVEL);
+    }
+    public LoggingAnsiConsoleHandler(OutputStream out) {
+      super(out, new LoggingAnsiFormatter());
       setLevel(LEVEL);
     }
 
@@ -128,5 +137,19 @@ public class AnsiLogging {
         reset();
       }
     }, true);
+  }
+
+  private static class HalOutputStream extends ByteArrayOutputStream {
+    @Override
+    public synchronized void write(int b) {
+      if (b == '\n') flush();
+      else super.write(b);
+    }
+    @Override
+    public void flush() {
+      String s = toString();
+      HAL.sendError(false, 0, false, s.substring(0, s.length() - 1), "", "", true);
+      reset();
+    }
   }
 }

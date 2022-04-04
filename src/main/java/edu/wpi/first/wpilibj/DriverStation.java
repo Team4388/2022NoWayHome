@@ -584,9 +584,7 @@ public class DriverStation {
         logRecord.setThrown(throwable);
       });
       if (!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord)) return;
-      // java.util.logging.Logger.getLogger(HAL.class.getSimpleName()).log(logRecord);
-      String msg = frc4388.utility.AnsiLogging.halLoggerHandler.getFormatter().format(logRecord);
-      HAL.sendError(isError, code, false, msg.substring(0, msg.length() - 1), "", "", true);
+      frc4388.utility.AnsiLogging.halLoggerHandler.publish(logRecord);
     } else {
       String locString;
       if (stackTrace.length >= stackTraceFirst + 1) {
