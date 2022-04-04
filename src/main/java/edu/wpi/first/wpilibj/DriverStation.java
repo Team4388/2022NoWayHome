@@ -563,7 +563,7 @@ public class DriverStation {
       boolean printTrace,
       StackTraceElement[] stackTrace,
       int stackTraceFirst) {
-    if (frc4388.utility.AnsiLogging.LEVEL.equals(java.util.logging.Level.OFF)) {
+    if (!frc4388.utility.AnsiLogging.LEVEL.equals(java.util.logging.Level.OFF)) {
       java.util.logging.LogRecord logRecord = new java.util.logging.LogRecord(isError ? java.util.logging.Level.SEVERE : java.util.logging.Level.FINER, error.stripTrailing());
       logRecord.setLoggerName("HAL");
       if (!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord)) return;
