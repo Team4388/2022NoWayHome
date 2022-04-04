@@ -6,6 +6,7 @@ package frc4388.robot.commands.ShooterCommands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import frc4388.utility.Vector2D;
 import frc4388.utility.desmos.DesmosServer;
 
 public class TrackTarget extends CommandBase {
+  private static final Logger LOGGER = Logger.getLogger(TrackTarget.class.getSimpleName());
   /** Creates a new TrackTarget. */
   SwerveDrive m_swerve;
   Turret m_turret;
@@ -88,51 +90,50 @@ public class TrackTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {    
-    try {
-      points = m_visionOdometry.getTargetPoints();
-      // points = getFakePoints();
-      //// points = filterPoints(points);
-      Point average = VisionOdometry.averagePoint(points);
-      
-      double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-      output *= 2.1;
-      
-      m_turret.runTurretWithInput(output);
-      // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
-
-      // if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
-      //       Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
-      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
-      // else
-      //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
-      //                           RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
-      //                           true);
-
-      
-      double regressedDistance = getDistance(average.y);
-      
-      // ! no longer a +30 lol -aarav
-      double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
-      velocity = m_boomBoom.getVelocity(regressedDistance + distAdj);
-      hoodPosition = m_boomBoom.getHood(regressedDistance + distAdj);
-      
-      m_boomBoom.runDrumShooterVelocityPID(velocity);
-      m_hood.runAngleAdjustPID(hoodPosition);
-      
-      double currentDrumVel = this.m_boomBoom.m_shooterFalconLeft.getSelectedSensorVelocity();
-      double currentHood = this.m_hood.getEncoderPosition();
-  
-      targetLocked = (Math.abs(currentDrumVel - velocity) < velocityTolerance) && (Math.abs(currentHood - hoodPosition) < hoodTolerance) && (output < 0.2);
-
-
-      SmartDashboard.putNumber("Distance", regressedDistance - 35);
-      SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
-      SmartDashboard.putNumber("Vel Target Track", velocity);
-      SmartDashboard.putBoolean("Target Locked", targetLocked);
-    } catch (Exception e){
-      e.printStackTrace();
+    points = m_visionOdometry.getTargetPoints();
+    if (points.isEmpty()) {
+      LOGGER.severe("Vision Obscured");
+      return;
     }
+    // points = getFakePoints();
+    //// points = filterPoints(points);
+    Point average = VisionOdometry.averagePoint(points);
     
+    double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
+    output *= 2.1;
+    
+    m_turret.runTurretWithInput(output);
+    // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
+
+    // if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
+    //       Math.abs(position - ShooterConstants.TURRET_REVERSE_SOFT_LIMIT) < 5)
+    //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), output, true);
+    // else
+    //   m_swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(),
+    //                           RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
+    //                           true);
+
+    
+    double regressedDistance = getDistance(average.y);
+    
+    // ! no longer a +30 lol -aarav
+    double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
+    velocity = m_boomBoom.getVelocity(regressedDistance + distAdj);
+    hoodPosition = m_boomBoom.getHood(regressedDistance + distAdj);
+    
+    m_boomBoom.runDrumShooterVelocityPID(velocity);
+    m_hood.runAngleAdjustPID(hoodPosition);
+    
+    double currentDrumVel = this.m_boomBoom.m_shooterFalconLeft.getSelectedSensorVelocity();
+    double currentHood = this.m_hood.getEncoderPosition();
+
+    targetLocked = (Math.abs(currentDrumVel - velocity) < velocityTolerance) && (Math.abs(currentHood - hoodPosition) < hoodTolerance) && (output < 0.2);
+
+
+    SmartDashboard.putNumber("Distance", regressedDistance - 35);
+    SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
+    SmartDashboard.putNumber("Vel Target Track", velocity);
+    SmartDashboard.putBoolean("Target Locked", targetLocked);    
   }
 
   public ArrayList<Point> filterPoints(ArrayList<Point> points) {

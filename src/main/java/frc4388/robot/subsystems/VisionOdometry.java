@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.VisionConstants;
-import frc4388.utility.VisionObscuredException;
 
 /** Represents the limelight and odometry related functionality
  * @author Daniel McGrath
@@ -61,16 +60,15 @@ public class VisionOdometry extends SubsystemBase {
    * @return Vision points on the rim of the target in screen space
    * @throws VisionObscuredException
    */
-  public ArrayList<Point> getTargetPoints() throws VisionObscuredException {
+  public ArrayList<Point> getTargetPoints() {
     PhotonPipelineResult result = m_camera.getLatestResult();
     latency = result.getLatencyMillis();
 
     System.out.println("Result: " + result.hasTargets() + ", latency: " + latency);
-  
-    if(!result.hasTargets())
-      throw new VisionObscuredException();
-    
+
     ArrayList<Point> points = new ArrayList<>();
+    if(!result.hasTargets())
+      return points;
 
     for(PhotonTrackedTarget target : result.getTargets()) {
       List<TargetCorner> corners = target.getCorners();
@@ -102,11 +100,11 @@ public class VisionOdometry extends SubsystemBase {
     m_camera.setDriverMode(driverMode);
   }
 
-  public Point getTargetOffset() throws VisionObscuredException {
+  public Point getTargetOffset() {
     ArrayList<Point> screenPoints = getTargetPoints();
 
     if(screenPoints.size() < 3)
-      throw new VisionObscuredException("Less than 3 vision points available");
+      return null;
 
     ArrayList<Point3> points3d = get3dPoints(screenPoints);
     ArrayList<Point> points = topView(points3d);
@@ -125,8 +123,10 @@ public class VisionOdometry extends SubsystemBase {
    * @return The estimated odometry pose, including gyro rotation
    * @throws VisionObscuredException
    */
-  public Pose2d getVisionOdometry() throws VisionObscuredException {
+  public Pose2d getVisionOdometry() {
     Point targetOffset = getTargetOffset();
+    if (targetOffset == null)
+      return null;
 
     targetOffset = correctGuessForCenter(targetOffset, m_shooter.getBoomBoomAngleDegrees());
     targetOffset = correctGuessForGyro(targetOffset, m_drive.getRegGyro().getDegrees());
