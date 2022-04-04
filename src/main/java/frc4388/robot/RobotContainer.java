@@ -96,8 +96,8 @@ public class RobotContainer {
 
   private final ShooterTuner m_shooterTuner = new ShooterTuner(m_robotBoomBoom);
   // Controllers
-  private final static XboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
-  private final static XboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
+  private final static DeadbandedXboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
+  private final static DeadbandedXboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
   private final ButtonBox m_buttonBox = new ButtonBox(OIConstants.BUTTON_BOX_ID);
   
   public static boolean softLimits = true;
@@ -225,25 +225,19 @@ public class RobotContainer {
 
     configureButtonBindings();
     /* Default Commands */
-      // Swerve Drive with Input
-      m_robotSwerveDrive.setDefaultCommand(
+    // Swerve Drive with Input
+    m_robotSwerveDrive.setDefaultCommand(
         new RunCommand(() -> {
-          if (currentDriveMode.equals(DriveMode.ON)) {
-            m_robotSwerveDrive.driveWithInput( getDriverController().getLeftX(), 
-                                               getDriverController().getLeftY(),
-                                               getDriverController().getRightX(),
-                                               getDriverController().getRightY(),
-                                               true); }
-          if (currentDriveMode.equals(DriveMode.OFF)) {
-            m_robotSwerveDrive.driveWithInput( 0, 
-                                               0,
-                                               0,
-                                               0,
-                                               false);
-         }}
-          , m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
+          if (currentDriveMode == DriveMode.ON) {
+            m_robotSwerveDrive.driveWithInput(getDriverController().getLeft(),
+                getDriverController().getRight(), true);
+          }
+          if (currentDriveMode == DriveMode.OFF) {
+            m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, false);
+          }
+        }, m_robotSwerveDrive).withName("Swerve driveWithInput defaultCommand"));
 
-      // Intake with Triggers
+    // Intake with Triggers
     m_robotIntake.setDefaultCommand(
         new RunCommand(() -> m_robotIntake.runWithTriggers(
             getOperatorController().getLeftTriggerAxis(), 
@@ -631,11 +625,11 @@ public class RobotContainer {
     }
   }
 
-  public static XboxController getDriverController() {
+  public static DeadbandedXboxController getDriverController() {
     return m_driverXbox;
   }
 
-  public XboxController getOperatorController() {
+  public static DeadbandedXboxController getOperatorController() {
     return m_operatorXbox;
   }
 

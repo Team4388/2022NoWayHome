@@ -81,6 +81,11 @@ public class SwerveDrive extends SubsystemBase {
     SmartDashboard.putData("Field", m_field);
   }
 
+  public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative) {
+    Translation2d speed = new Translation2d(speedX, speedY);
+    driveWithInput(speed, rot, fieldRelative);
+  }
+
   /**
    * Method to drive the robot using joystick info.
    * @link https://github.com/ZachOrr/MK3-Swerve-Example
@@ -90,10 +95,9 @@ public class SwerveDrive extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
    */
-  public void driveWithInput(double speedX, double speedY, double rot, boolean fieldRelative) {
-    ignoreAngles = (speedX == 0) && (speedY == 0) && (rot == 0);
-    
-    Translation2d speed = new Translation2d(speedX, speedY);
+  public void driveWithInput(Translation2d speed, double rot, boolean fieldRelative) {
+    ignoreAngles = (speed.getX() == 0) && (speed.getY() == 0) && (rot == 0);
+
     double mag = speed.getNorm();
     speed = speed.times(mag * speedAdjust);
 
@@ -108,23 +112,28 @@ public class SwerveDrive extends SubsystemBase {
     setModuleStates(states);
   }
 
-  // new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
   public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative) {
-    ignoreAngles = leftX == 0 && leftY == 0 && rightX == 0 && rightY == 0;
     Translation2d speed = new Translation2d(leftX, leftY);
-    speed = speed.times(speed.getNorm() * speedAdjust);
-    if (Math.abs(rightX) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightY) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightX, -rightY).minus(new Rotation2d(0,1));
+    Translation2d head = new Translation2d(rightX, rightY);
+    driveWithInput(speed, head, fieldRelative);
+  }
+
+  // new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
+  public void driveWithInput(Translation2d leftStick, Translation2d rightStick, boolean fieldRelative) {    
+    ignoreAngles = leftStick.getX() == 0 && leftStick.getY() == 0 && rightStick.getX() == 0 && rightStick.getY() == 0;
+    leftStick = leftStick.times(leftStick.getNorm() * speedAdjust);
+    if (Math.abs(rightStick.getX()) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightStick.getY()) > OIConstants.RIGHT_AXIS_DEADBAND)
+      rotTarget = new Rotation2d(rightStick.getX(), -rightStick.getY()).minus(new Rotation2d(0,1));
     double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
     if (ignoreAngles) {
       rot = 0;
     }
-    double xSpeedMetersPerSecond = speed.getX();
-    double ySpeedMetersPerSecond = speed.getY();
+    double xSpeedMetersPerSecond = leftStick.getX();
+    double ySpeedMetersPerSecond = leftStick.getY();
     chassisSpeeds = fieldRelative
         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
             rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
-        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightX * SwerveDriveConstants.ROTATION_SPEED * 2);
+        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightStick.getX() * SwerveDriveConstants.ROTATION_SPEED * 2);
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
         chassisSpeeds);
     // if (ignoreAngles) {

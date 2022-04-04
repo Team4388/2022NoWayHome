@@ -186,7 +186,7 @@ public class Shoot extends CommandBase {
     SmartDashboard.putNumber("Normalized Output", this.normOutput);
 
     this.turret.runTurretWithCustomPID(normOutput);
-    this.swerve.driveWithInput(RobotContainer.getDriverController().getLeftX(), RobotContainer.getDriverController().getLeftY(), normOutput * (this.swerveGains.kP/this.turretGains.kP), true); // ? should the output be field relative
+    this.swerve.driveWithInput(RobotContainer.getDriverController().getLeft(), normOutput * (this.swerveGains.kP/this.turretGains.kP), true); // ? should the output be field relative
 
     if (this.toShoot) {
       this.hood.runAngleAdjustPID(this.targetHood);

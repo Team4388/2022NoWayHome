@@ -7,10 +7,12 @@ import frc4388.robot.Constants.OIConstants;
 
 public class DeadbandedRawXboxController extends RawXboxController {
   public DeadbandedRawXboxController(int port) { super(port); }
-  @Override public double getLeftX() { return skewToDeadzonedCircle(super.getLeftX(), super.getLeftY()).getX(); }
-  @Override public double getLeftY() { return skewToDeadzonedCircle(super.getLeftX(), super.getLeftY()).getY(); }
-  @Override public double getRightX() { return skewToDeadzonedCircle(super.getRightX(), super.getRightY()).getX(); }
-  @Override public double getRightY() { return skewToDeadzonedCircle(super.getRightX(), super.getRightY()).getY(); }
+  @Override public double getLeftX() { return getLeft().getX(); }
+  @Override public double getLeftY() { return getLeft().getY(); }
+  @Override public double getRightX() { return getRight().getX(); }
+  @Override public double getRightY() { return getRight().getY(); }
+  public Translation2d getLeft() { return skewToDeadzonedCircle(super.getLeftX(), super.getLeftY()); }
+  public Translation2d getRight() { return skewToDeadzonedCircle(super.getRightX(), super.getRightY()); }
   public static Translation2d skewToDeadzonedCircle(double x, double y) {
     Translation2d translation2d = new Translation2d(x, y);
     double magnitude = translation2d.getNorm();
