@@ -29,14 +29,12 @@ import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiPrintStream;
 
 public class AnsiLogging {
-  public static final boolean ENABLED = true;
+  public static final Level LEVEL = Level.ALL;
   private static final AnsiPrintStream ANSI_CONSOLE_STREAM = AnsiConsole.err();
-  private static final Level LEVEL = Level.ALL;
 
   public static Handler halLoggerHandler = new ConsoleHandler();
-
   public static void systemInstall() {
-    if (!ENABLED) return;
+    if (LEVEL.equals(Level.OFF)) return;
     try {
       // Configure java.util.logging.Logger to output additional colored information.
       LogManager.getLogManager().updateConfiguration(key -> (o, n) -> {
