@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -28,10 +29,14 @@ import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiPrintStream;
 
 public class AnsiLogging {
-  private static final AnsiPrintStream ANSI_CONSOLE_STREAM = AnsiConsole.out();
+  public static final boolean ENABLED = true;
+  private static final AnsiPrintStream ANSI_CONSOLE_STREAM = AnsiConsole.err();
   private static final Level LEVEL = Level.ALL;
 
+  public static Handler halLoggerHandler = new ConsoleHandler();
+
   public static void systemInstall() {
+    if (!ENABLED) return;
     try {
       // Configure java.util.logging.Logger to output additional colored information.
       LogManager.getLogManager().updateConfiguration(key -> (o, n) -> {
@@ -52,6 +57,8 @@ public class AnsiLogging {
       System.setErr(printStreamLogger(Logger.getGlobal(), "err", Level.SEVERE));
       // This is registering a plugin that will log Durian errors to the console using a logger.
       DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
+      // Store the handler for HAL to use when sending errors to DriverStation.
+      halLoggerHandler = new LoggingAnsiConsoleHandler();
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }
