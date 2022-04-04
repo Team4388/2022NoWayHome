@@ -177,14 +177,14 @@ public class SwerveDrive extends SubsystemBase {
   public void periodic() {
 
     updateOdometry();
-    // updateSmartDash();
+    updateSmartDash();
 
     // SmartDashboard.putNumber("Pigeon getRotation2d", m_gyro.getRotation2d().getDegrees());
     // SmartDashboard.putNumber("Pigeon getAngle", m_gyro.getAngle());
     // SmartDashboard.putNumber("Pigeon Yaw", m_gyro.getYaw());
     // SmartDashboard.putNumber("Pigeon Yaw (0 to 360)", m_gyro.getYaw() % 360);
 
-    m_field.setRobotPose(m_odometry.getPoseMeters());
+    m_field.setRobotPose(getOdometry());
     super.periodic();
   }
 
@@ -220,6 +220,11 @@ public class SwerveDrive extends SubsystemBase {
     // return m_poseEstimator.getEstimatedPosition();
   }
 
+  public Pose2d getAutoOdo() {
+    Pose2d workingPose = getOdometry();
+    return new Pose2d(-workingPose.getX(), workingPose.getY(), workingPose.getRotation());
+  }
+
   /**
    * Gets the current gyro using regression formula.
    * 
@@ -244,13 +249,13 @@ public class SwerveDrive extends SubsystemBase {
    * Updates the field relative position of the robot.
    */
   public void updateOdometry() {
-    Rotation2d actualDWI = new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI/2));
-    Rotation2d actual =  new Rotation2d(-1 * m_gyro.getRotation2d().getRadians());
+    Rotation2d actualDWI = new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2)); //+ (Math.PI/2));
+    Rotation2d actual =  new Rotation2d(m_gyro.getRotation2d().getRadians());
 
     SmartDashboard.putNumber("AUTO ACTUAL GYRO", actual.getDegrees());
     SmartDashboard.putNumber("AUTO DWI GYRO", actual.getDegrees());
 
-    m_odometry.update( m_gyro.getRotation2d(),//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
+    m_odometry.update( actual,//m_gyro.getRotation2d(),//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
                        modules[0].getState(),
                        modules[1].getState(),
                        modules[2].getState(),

@@ -85,7 +85,7 @@ public final class Constants {
     // swerve auto constants
     public static final PIDController X_CONTROLLER = new PIDController(0.5, 0.0, 0.0);
     public static final PIDController Y_CONTROLLER = new PIDController(2.0, 0.0, 0.0);
-    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(2.0, 0, 0.01,//0.1, 0.3,
+    public static final ProfiledPIDController THETA_CONTROLLER = new ProfiledPIDController(15.0, 0, 0.0,//0.1, 0.3,
         new TrapezoidProfile.Constraints(Math.PI, Math.PI/2));
     public static final boolean PATH_RECORD_VELOCITY = true;
     public static final double PATH_MAX_VELOCITY = 5.0;

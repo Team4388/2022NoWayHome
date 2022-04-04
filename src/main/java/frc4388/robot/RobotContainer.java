@@ -34,6 +34,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -347,8 +349,10 @@ public class RobotContainer {
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //  .whenPressed(new Shoot(m_robotSwerveDrive, m_robotBoomBoom, m_robotTurret, m_robotHood, m_robotVisionOdometry, false, false));
       
+    // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
+    //  .whenPressed(new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-Math.atan2((219.25 / 2.00) - 10, (82.83 / 2.00) - 15.56)), m_robotTurret), 1.0));
     new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
-     .whileHeld(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry));
+     .whileHeld(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret)); // * aim with turret to target);
 
     // new JoystickButton(getOperatorController(), XboxController.Button.kY.value)
     //  .whileHeld(new RunCommand(() -> m_robotClaws.setOpen(true)));
@@ -447,12 +451,13 @@ public class RobotContainer {
    * @param inputs strings (paths) or commands you want to run (in order)
    * @return array of commands
    */
-  public Command[] buildAuto(Double maxVel, Double maxAccel, Object... inputs) {
+  public SequentialCommandGroup buildAuto(Double maxVel, Double maxAccel, Object... inputs) {
     maxVel = Objects.requireNonNullElse(maxVel, SwerveDriveConstants.PATH_MAX_VELOCITY);
     maxAccel = Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.PATH_MAX_ACCELERATION);
 
     ArrayList<Command> commands = new ArrayList<Command>();
-    commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive));
+    // commands.add(new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive));
+    // commands.add(new InstantCommand(() -> m_robotSwerveDrive.m, m_robotSwerveDrive));
 
     PIDController xController = SwerveDriveConstants.X_CONTROLLER;
     PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
@@ -485,10 +490,11 @@ public class RobotContainer {
       }
     }
     
-    commands.add(new InstantCommand(() -> m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, true), m_robotSwerveDrive));
+    commands.add(new InstantCommand(() -> m_robotSwerveDrive.stopModules(), m_robotSwerveDrive));
     Command[] ret = new Command[commands.size()];
     ret = commands.toArray(ret);
-    return ret;
+    SequentialCommandGroup seqCG = new SequentialCommandGroup(ret);
+    return seqCG;
   }
 
   /**
@@ -522,7 +528,13 @@ public class RobotContainer {
     SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
                                                                                new ParallelCommandGroup(
                                                                                  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-                                                                                 new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 5.0)
+                                                                                 new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.0, true)
+                                                                               )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
+
+    SequentialCommandGroup weirdAutoShootingGroup2 = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                                                               new ParallelCommandGroup(
+                                                                                 new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                                                                 new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.0, true)
                                                                                )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
   
     // ! DRIVE BACKWARDS AND SHOOT (HOPEFULLY)
@@ -605,7 +617,19 @@ public class RobotContainer {
 
     //                                    );
     // ! PathPlanner Testing
-    return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Move Forward"));
+    ParallelDeadlineGroup intakeWithPath = new ParallelDeadlineGroup(new RunCommandForTime(new RunCommand(() -> m_robotIntake.runAtOutput(-1.0), m_robotIntake), 3.0, true), 
+                                                                     new RunCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer), 
+                                                                     buildAuto(1.0, 1.0, "JMove"));
+    // return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Move Forward"));
+    return new SequentialCommandGroup(new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
+                                      weirdAutoShootingGroup, // * shoot
+                                      new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5, true),
+                                      new ExtenderIntakeGroup(m_robotIntake, m_robotExtender),
+                                      intakeWithPath,
+                                      weirdAutoShootingGroup2,
+                                      // new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true)); // * aim with turret to target); // * shoot
+                                      new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.5, true));
+                                      
     // return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Diamond"));
   }
 

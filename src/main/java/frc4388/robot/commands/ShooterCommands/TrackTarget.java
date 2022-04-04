@@ -196,14 +196,14 @@ public class TrackTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // if (this.isAuto) {
-    //   if (targetLocked && !timerStarted) {
-    //     timerStarted = true;
-    //     startTime = System.currentTimeMillis();
-    //   }
-    //   return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
-    // } else {
+    if (this.isAuto) {
+      if (targetLocked && !timerStarted) {
+        timerStarted = true;
+        startTime = System.currentTimeMillis();
+      }
+      return (targetLocked && timerStarted && ((System.currentTimeMillis() - startTime) > timeTolerance));
+    } else {
       return false;
-    // }
+    }
   }
 }
