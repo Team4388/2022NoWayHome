@@ -534,9 +534,15 @@ public class RobotContainer {
     SequentialCommandGroup weirdAutoShootingGroup2 = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
                                                                                new ParallelCommandGroup(
                                                                                  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
-                                                                                 new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 4.0, true)
+                                                                                 new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 2.3, true)
                                                                                )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
   
+    SequentialCommandGroup weirdAutoShootingGroup3 = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                                                               new ParallelCommandGroup(
+                                                                                 new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, true),
+                                                                                 new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 4.0, true)
+                                                                               )); // * weird way of shooting, i think we should make a new TrackTarget with built-in Storage control instead.
+
     // ! DRIVE BACKWARDS AND SHOOT (HOPEFULLY)
     // return new SequentialCommandGroup( new InstantCommand(() -> m_robotSwerveDrive.resetGyro(), m_robotSwerveDrive), // * reset gyro before moving
     //                                    new DriveWithInputForTime(m_robotSwerveDrive, new double[] {1.0, 0.0, 0.0, 0.0}, (5.0 * 12) / distancePerSecond),//0.269), // * go backwards three feet
@@ -617,13 +623,27 @@ public class RobotContainer {
 
     //                                    );
     // ! PathPlanner Testing
-    ParallelDeadlineGroup intakeWithPath = new ParallelDeadlineGroup(new RunCommandForTime(new RunCommand(() -> m_robotIntake.runAtOutput(-1.0), m_robotIntake), 3.0, true), 
+    ParallelDeadlineGroup intakeWithPath1 = new ParallelDeadlineGroup(new RunCommandForTime(new RunCommand(() -> m_robotIntake.runAtOutput(-1.0), m_robotIntake), 3.0, true), 
                                                                      new RunCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer), 
-                                                                     buildAuto(1.0, 1.0, "JMove"));
+                                                                     buildAuto(3.0, 3.0, "JMove"));
+
+    ParallelDeadlineGroup intakeWithPath2 = new ParallelDeadlineGroup(new RunCommandForTime(new RunCommand(() -> m_robotIntake.runAtOutput(-1.0), m_robotIntake), 5.0, true), 
+                                                                     new RunCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer), 
+                                                                     buildAuto(3.0, 3.0, "JMove2"));
+
     ParallelCommandGroup extendWhileTurretIsAiming = new ParallelCommandGroup(new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
-    ParallelCommandGroup intakeWithPathAndTrackTarget = new ParallelCommandGroup(intakeWithPath, weirdAutoShootingGroup2);
+    ParallelCommandGroup intakeWithPathAndTrackTarget = new ParallelCommandGroup(intakeWithPath1, weirdAutoShootingGroup2);
+    // ParallelCommandGroup intakeWithPath2AndTrackTarget = new ParallelCommandGroup(intakeWithPath2, weirdAutoShootingGroup3);
+
+    ParallelDeadlineGroup intakeWithPath2AndAimTurret = new ParallelDeadlineGroup(intakeWithPath2, new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom), new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret), 0.7, true));
+
+    SequentialCommandGroup extendThenAimTurret = new SequentialCommandGroup(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true));
+    ParallelDeadlineGroup idleDrumUntilShootingFirstBall = new ParallelDeadlineGroup(extendThenAimTurret, new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom));
+
     // return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Move Forward"));
-    return new SequentialCommandGroup(extendWhileTurretIsAiming,//new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
+    return new SequentialCommandGroup(idleDrumUntilShootingFirstBall,
+                                      //new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true),
+                                      // extendWhileTurretIsAiming,//new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), // * aim with turret to target
                                       weirdAutoShootingGroup, // * shoot
                                       // extendWhileTurretIsAiming,
                                       new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.1, true),
@@ -632,6 +652,13 @@ public class RobotContainer {
                                       // intakeWithPath,
                                       // weirdAutoShootingGroup2,
                                       // new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true)); // * aim with turret to target); // * shoot
+                                      new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.1, true),
+                                      // intakeWithPath2,
+                                      // new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret), 1.0, true),
+                                      // new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret), 0.7, true),
+                                      // intakeWithPath2AndTrackTarget,
+                                      intakeWithPath2AndAimTurret,
+                                      weirdAutoShootingGroup3,
                                       new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(0.0), m_robotStorage), 0.1, true));
                                       
     // return new SequentialCommandGroup(buildAuto(1.0, 1.0, "Diamond"));
