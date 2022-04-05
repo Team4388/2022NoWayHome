@@ -51,6 +51,7 @@ public class VisionOdometry extends SubsystemBase {
 
     setLEDs(false);
     setDriverMode(false);
+    PhotonCamera.setVersionCheckEnabled(false);
   }
 
   /** Gets the vision points from the limelight
