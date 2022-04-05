@@ -20,7 +20,7 @@ public class ExtenderIntakeGroup extends ParallelRaceGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     
-    ExtenderIntakeGroup.direction = 1; // assume extender starts retracted completely
+    // ExtenderIntakeGroup.direction = 1; // assume extender starts retracted completely
     addCommands(new RunIntakeConditionally(intake), new RunExtender(extender));
   }
 
@@ -28,7 +28,7 @@ public class ExtenderIntakeGroup extends ParallelRaceGroup {
     ExtenderIntakeGroup.direction = 1;
   }
 
-  public static void changeDirection() { // Never implemented?
+  public static void changeDirection() {
     ExtenderIntakeGroup.direction *= -1;
   }
 }

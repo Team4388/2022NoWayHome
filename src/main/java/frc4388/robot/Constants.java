@@ -287,8 +287,8 @@ public final class Constants {
     // ID
     public static final int TURRET_MOTOR_CAN_ID = 19;
       //Gains for turret
-    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.1, 0.0, 0.1, 0.0, 0, 0.3/*TURRET_SPEED_MULTIPLIER*/);
-    public static final double SHOOTER_TURRET_MIN = -0.3;//-TURRET_SPEED_MULTIPLIER;
+    public static final Gains SHOOTER_TURRET_GAINS = new Gains(0.1, 0.0, 0.1, 0.0, 0, 0.6/*TURRET_SPEED_MULTIPLIER*/);
+    public static final double SHOOTER_TURRET_MIN = -0.6;//-TURRET_SPEED_MULTIPLIER;
       //Gains for hood
     public static final Gains SHOOTER_ANGLE_GAINS = new Gains(0.1, 0.0, 0.0, 0.0, 0, 0.7);
 
