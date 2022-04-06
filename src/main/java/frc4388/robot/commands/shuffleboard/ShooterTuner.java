@@ -1,4 +1,4 @@
-package frc4388.robot.commands;
+package frc4388.robot.commands.shuffleboard;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.BoomBoom.ShooterTableEntry;
-import frc4388.utility.SendableTable;
+import frc4388.utility.shuffleboard.SendableTable;
+import frc4388.utility.shuffleboard.ShuffleboardHelper;
 
 public class ShooterTuner extends CommandBase {
   private static final Logger LOGGER = Logger.getLogger(ShooterTuner.class.getSimpleName());
@@ -60,7 +61,7 @@ public class ShooterTuner extends CommandBase {
     tableOverrideEntry.drumVelocity = 0.0;
     m_boomBoom.m_shooterTable = new ShooterTableEntry[] { tableOverrideEntry };
     Shuffleboard.selectTab("Shooter Tuner");
-    SmartDashboard.putData("TABLE", m_tableEditor);
+    SmartDashboard.putData("Shooter Table", m_tableEditor);
   }
   @Override
   public void execute() {
@@ -71,6 +72,7 @@ public class ShooterTuner extends CommandBase {
   public void end(boolean interrupted) {
     m_boomBoom.loadShooterTable();
     LOGGER.info(Errors.log().wrapWithDefault(() -> Files.readString(PATH), "Failed to read CSV"));
+    ShuffleboardHelper.purgeShuffleboardTab("Shooter Tuner");
   }
   @Override
   public final boolean isFinished() {

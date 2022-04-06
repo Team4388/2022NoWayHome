@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 // package edu.wpi.first.wpilibj.smartdashboard;
-package frc4388.utility;
+package frc4388.utility.shuffleboard;
 
 import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 

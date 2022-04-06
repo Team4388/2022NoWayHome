@@ -1,4 +1,4 @@
-package frc4388.utility;
+package frc4388.utility.shuffleboard;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

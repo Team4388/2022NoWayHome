@@ -1,4 +1,4 @@
-package frc4388.robot.commands;
+package frc4388.robot.commands.shuffleboard;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -20,14 +20,11 @@ import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -36,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc4388.utility.shuffleboard.ShuffleboardHelper;
 
 public final class CommandSchedule extends CommandBase {
   private static final Logger LOGGER = Logger.getLogger(CommandSchedule.class.getSimpleName());
@@ -51,6 +49,7 @@ public final class CommandSchedule extends CommandBase {
   private final int maxHeight;
   private final boolean showGroupStatus;
 
+  /** The maxWidth and maxHeight must be less than or equal to the number of full grid cells in the Shuffleboard tab. This amount will vary depending on window size. */
   public CommandSchedule(int maxWidth, int maxHeight, boolean showGroupStatus) {
     this.maxWidth = maxWidth;
     this.maxHeight = maxHeight;
@@ -74,8 +73,8 @@ public final class CommandSchedule extends CommandBase {
       parallelDeadlineGroupCommandsMethod = lookup.unreflectGetter(parallelDeadlineGroupCommandsField);
       parallelRaceGroupCommandsMethod = lookup.unreflectGetter(parallelRaceGroupCommandsField);
       scheduledCommands = ((LinkedHashMap<Command, Object>) lookup.unreflectGetter(scheduledCommandsField).invoke(CommandScheduler.getInstance()));
-    } catch (Throwable e) {
-      LOGGER.log(Level.SEVERE, "Failed to reflect necessary fields to run the command schedule.", e);
+    } catch (Throwable exception) {
+      LOGGER.log(Level.SEVERE, "Failed to reflect necessary fields to run the command schedule.", exception);
       cancel();
       return;
     }
@@ -102,7 +101,7 @@ public final class CommandSchedule extends CommandBase {
     root = null;
     ungroupedLayout = null;
     scheduledCommands = null;
-    purgeShuffleboardTab("Command Schedule");
+    ShuffleboardHelper.purgeShuffleboardTab("Command Schedule");
   }
 
   @Override
@@ -157,36 +156,5 @@ public final class CommandSchedule extends CommandBase {
       if (target.getComponents().stream().map(ShuffleboardComponent::getTitle).noneMatch(name::equals))
         target.addBoolean(name, running);
     }
-  }
-
-  private static void purgeShuffleboardTab(String name) {
-    Shuffleboard.getTab(name).getComponents().clear();
-    NetworkTable rootTable = NetworkTableInstance.getDefault().getTable("Shuffleboard");
-    NetworkTable rootMetaTable = rootTable.getSubTable(".metadata");
-    recursiveClearTable(rootMetaTable.getSubTable(name));
-    recursiveClearTable(rootTable.getSubTable(name));
-    rootMetaTable.getEntry("Selected").setString("");
-    rootMetaTable.delete(name);
-    rootTable.delete(name);
-    try {
-      Field shuffleboardRootField = Shuffleboard.class.getDeclaredField("root");
-      shuffleboardRootField.trySetAccessible();
-      Object shuffleboardRoot = shuffleboardRootField.get(null);
-      Field shuffleboardTabsField = shuffleboardRoot.getClass().getDeclaredField("m_tabs");
-      Field shuffleboardTabsChangedField = shuffleboardRoot.getClass().getDeclaredField("m_tabsChanged");
-      shuffleboardTabsField.trySetAccessible();
-      shuffleboardTabsChangedField.trySetAccessible();
-      ((LinkedHashMap<String, ShuffleboardTab>) shuffleboardTabsField.get(shuffleboardRoot)).remove(name);
-      shuffleboardTabsChangedField.set(shuffleboardRoot, true);
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      LOGGER.log(Level.SEVERE, "Failed to purge Shuffleboard tab " + name + ".", e);
-    }
-    Shuffleboard.update();
-  }
-
-  private static void recursiveClearTable(NetworkTable table) {
-    table.getSubTables().forEach(name -> recursiveClearTable(table.getSubTable(name)));
-    table.getSubTables().forEach(table::delete);
-    table.getKeys().forEach(table::delete);
   }
 }

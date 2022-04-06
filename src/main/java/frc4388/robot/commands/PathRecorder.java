@@ -42,9 +42,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.subsystems.SwerveDrive;
-import frc4388.utility.ListeningSendableChooser;
 import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.PathPlannerUtil.Path.Waypoint;
+import frc4388.utility.shuffleboard.ListeningSendableChooser;
 
 public class PathRecorder extends CommandBase {
   private static final Logger LOGGER = Logger.getLogger(PathRecorder.class.getSimpleName());
