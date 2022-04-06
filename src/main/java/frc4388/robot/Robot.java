@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
-import frc4388.utility.Commander;
 import frc4388.utility.RobotTime;
 import frc4388.utility.Vector2D;
 
@@ -58,7 +57,6 @@ public class Robot extends TimedRobot {
     LOGGER.log(Level.FINE, "Logging Test 6/8");
     LOGGER.log(Level.FINER, "Logging Test 7/8");
     LOGGER.log(Level.FINEST, "Logging Test 8/8");
-    Commander.initialize();
     // var path =
     // PathPlannerUtil.Path.read(Filesystem.getDeployDirectory().toPath().resolve("pathplanner").resolve("Move
     // Forward.path").toFile());
@@ -94,7 +92,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     m_robotTime.updateTimes();
-    Commander.periodic();
     Vector2D firstBallPosition = new Vector2D(15.56 - (82.83 / 2.00), 11.21 - 162.00);
     Vector2D secondBallPosition = new Vector2D(-(40.44 * (Math.sqrt(2.00) / 2.00)) - ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (82.83 / 2.00), -(40.44 * (Math.sqrt(2.00) / 2.00)) + ((82.83 - 7.58) * (Math.sqrt(2.00) / 2.00)) - (219.25 / 2.00)); // * position of second ball, relative to hub.
     Vector2D firstToSecond = Vector2D.subtract(secondBallPosition, firstBallPosition);
@@ -169,9 +166,7 @@ public class Robot extends TimedRobot {
    * This function is called periodically during autonomous.
    */
   @Override
-  public void autonomousPeriodic() {
-    final int a = 1;
-  }
+  public void autonomousPeriodic() {}
 
   @Override
   public void teleopInit() {

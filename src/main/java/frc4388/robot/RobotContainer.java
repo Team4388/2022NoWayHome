@@ -42,6 +42,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.commands.CommandSchedule;
 import frc4388.robot.commands.PathRecorder;
 import frc4388.robot.commands.RunCommandForTime;
 import frc4388.robot.commands.ShooterTuner;
@@ -97,6 +98,7 @@ public class RobotContainer {
   private final PathRecorder m_pathChooser = new PathRecorder(m_robotSwerveDrive);
 
   private final ShooterTuner m_shooterTuner = new ShooterTuner(m_robotBoomBoom);
+  private final CommandSchedule m_commandSchedule = new CommandSchedule(13, 6, false);
   // Controllers
   private final static DeadbandedXboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final static DeadbandedXboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
@@ -121,9 +123,6 @@ public class RobotContainer {
   private DriveMode currentDriveMode = DriveMode.ON;
 
   private SendableChooser<SequentialCommandGroup> quickAutoChooser = new SendableChooser<>();
-
-  private final SequentialCommandGroup autoJMove1 = buildAuto(3.0, 3.0, "JMove1");
-  private final SequentialCommandGroup autoJMove2 = buildAuto(3.0, 3.0, "JMove2");
 
 /**
  * SmartDash
@@ -283,6 +282,7 @@ public class RobotContainer {
       );
 
     SmartDashboard.putData("Shooter Tuner", m_shooterTuner);
+    SmartDashboard.putData("Command Schedule", m_commandSchedule);
   }
 
   /**
@@ -628,11 +628,11 @@ public class RobotContainer {
     // ! PathPlanner Testing
     ParallelDeadlineGroup intakeWithPath1 = new ParallelDeadlineGroup(new RunCommandForTime(new RunCommand(() -> m_robotIntake.runAtOutput(-1.0), m_robotIntake), 3.0, true), 
                                                                      new RunCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer), 
-                                                                     autoJMove1);
+                                                                     buildAuto(3.0, 3.0, "JMove1"));
 
     ParallelDeadlineGroup intakeWithPath2 = new ParallelDeadlineGroup(new RunCommandForTime(new RunCommand(() -> m_robotIntake.runAtOutput(-1.0), m_robotIntake), 5.0, true), 
                                                                      new RunCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer), 
-                                                                     autoJMove2);
+                                                                     buildAuto(3.0, 3.0, "JMove2"));
 
     ParallelCommandGroup extendWhileTurretIsAiming = new ParallelCommandGroup(new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true), new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
     ParallelCommandGroup intakeWithPathAndTrackTarget = new ParallelCommandGroup(intakeWithPath1, weirdAutoShootingGroup2);

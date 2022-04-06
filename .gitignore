@@ -162,3 +162,5 @@ bin/
 simgui*.json
 
 src/main/deploy/config.json
+
+.OutlineViewer
