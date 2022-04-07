@@ -35,7 +35,7 @@ import frc4388.utility.LEDPatterns;
 public final class Constants {
   public static final double TICKS_PER_ROTATION_FX = 2048;
   public static final double LOOP_TIME = 0.02;
-  public static final String DRIVE_CAN_NAME = "driveTrain";
+  public static final String DRIVE_CAN_NAME = "rio";
 
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 2.3;
@@ -168,9 +168,10 @@ public final class Constants {
     public static final double STORAGE_SPEED = 1.0;//0.9;
   }
   public static final class LEDConstants {
-    public static final int LED_SPARK_ID = 0;
+    public static final int LED_SPARK_ID = 3;
 
-    public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.FOREST_WAVES;
+    public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.SOLID_RED;
+    public static final LEDPatterns SHOOTING_PATTERN = LEDPatterns.SOLID_GREEN;
   }
 
   public static final class ClimberConstants {

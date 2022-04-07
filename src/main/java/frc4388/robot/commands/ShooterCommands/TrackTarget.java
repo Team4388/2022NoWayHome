@@ -17,14 +17,17 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.RobotContainer;
+import frc4388.robot.Constants.LEDConstants;
 import frc4388.robot.Constants.ShooterConstants;
 import frc4388.robot.Constants.VisionConstants;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
+import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.Vision;
 import frc4388.robot.subsystems.VisionOdometry;
+import frc4388.utility.LEDPatterns;
 import frc4388.utility.Vector2D;
 import frc4388.utility.desmos.DesmosServer;
 
@@ -36,6 +39,7 @@ public class TrackTarget extends CommandBase {
   VisionOdometry m_visionOdometry;
   BoomBoom m_boomBoom;
   Hood m_hood;
+  LED m_leds;
 
   boolean isAuto;
 
@@ -57,11 +61,12 @@ public class TrackTarget extends CommandBase {
   long startTime;
   private double timeTolerance;
 
-  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry, boolean isAuto) {
+  public TrackTarget (Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry, LED leds, boolean isAuto) {
     m_turret = turret;
     m_boomBoom = boomBoom;
     m_hood = hood;
     m_visionOdometry = visionOdometry;
+    m_leds = leds;
 
     this.isAuto = isAuto;
     this.timeTolerance = 1000;
@@ -71,8 +76,8 @@ public class TrackTarget extends CommandBase {
     SmartDashboard.putBoolean("Target Locked", false);
   }
 
-  public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry) {
-    this(turret, boomBoom, hood, visionOdometry, false);
+  public TrackTarget(Turret turret, BoomBoom boomBoom, Hood hood, VisionOdometry visionOdometry, LED leds) {
+    this(turret, boomBoom, hood, visionOdometry, leds, false);
   }
 
   // Called when the command is initially scheduled.
@@ -134,6 +139,13 @@ public class TrackTarget extends CommandBase {
     SmartDashboard.putNumber("Hood Target Angle Track", hoodPosition);
     SmartDashboard.putNumber("Vel Target Track", velocity);
     SmartDashboard.putBoolean("Target Locked", targetLocked);    
+
+    if (targetLocked){
+      m_leds.setPattern(LEDConstants.SHOOTING_PATTERN);
+    }
+    else{
+      m_leds.setPattern(LEDConstants.DEFAULT_PATTERN);
+    }
   }
 
   public ArrayList<Point> filterPoints(ArrayList<Point> points) {
