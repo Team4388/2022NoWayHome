@@ -87,7 +87,7 @@ public final class CommandSchedule extends CommandBase {
     int size = scheduledCommands.size();
     root.withProperties(Map.of("Number of columns", size, "Number of rows", 1, "Label position", "TOP"));
     for (Command command : scheduledCommands.keySet()) {
-      putCommand(command, root, size, command::isScheduled);
+      putCommand(command, root, size, -1, command::isScheduled);
     }
   }
 
@@ -119,18 +119,20 @@ public final class CommandSchedule extends CommandBase {
     return true;
   }
 
-  private void putCommand(Command command, ShuffleboardContainer layout, int siblings, BooleanSupplier running) {
+  private void putCommand(Command command, ShuffleboardContainer layout, int siblings, int index, BooleanSupplier running) {
     boolean isRoot = root == layout;
     String n1 = command.getName();
     String n2 = command.getClass().getSimpleName();
-    String name = (n1.equals(n2) ? n1 : n1 + " " + n2) + "@" + Integer.toHexString(command.hashCode());
+    String name = (index < 0 ? "" : index + " ") + (n1.equals(n2) ? n1 : n1 + " " + n2) + "@" + Integer.toHexString(command.hashCode());
     if (command instanceof CommandGroupBase) {
       Collection<Command> commands = List.of();
       Function<Command, BooleanSupplier> nestedRunningMaker = c -> () -> !c.isFinished();
+      boolean ordered = false;
       if (command instanceof SequentialCommandGroup) {
         ArrayList<Command> commandsList = Errors.log().getWithDefault(() -> (ArrayList<Command>) sequentialCommandGroupCommandsMethod.invoke(command), new ArrayList<>());
         commands = commandsList;
         nestedRunningMaker = c -> () -> Errors.log().getWithDefault(() -> (int) sequentialCommandGroupCurrentCommandIndexMethod.invoke(command) == commandsList.indexOf(c), false);
+        ordered = true;
       } else if (command instanceof ParallelCommandGroup) {
         HashMap<Command, Boolean> commandsMap = Errors.log().getWithDefault(() -> (HashMap<Command, Boolean>) parallelCommandGroupCommandsMethod.invoke(command), new HashMap<Command, Boolean>());
         commands = commandsMap.keySet();
@@ -150,8 +152,10 @@ public final class CommandSchedule extends CommandBase {
         nestedLayout = layout.getLayout(name, BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", size, "Number of rows", 1));
       if (showGroupStatus && nestedLayout.getComponents().stream().map(ShuffleboardComponent::getTitle).noneMatch("_self_"::equals))
         nestedLayout.addBoolean("_self_", running);
+      int i = 0;
       for (Command nestedCommand : commands) {
-        putCommand(nestedCommand, nestedLayout, size, nestedRunningMaker.apply(nestedCommand));
+        putCommand(nestedCommand, nestedLayout, size, ordered ? i : -1, nestedRunningMaker.apply(nestedCommand));
+        i++;
       }
     } else if (command instanceof CommandBase) {
       ShuffleboardContainer target = isRoot ? Objects.requireNonNullElseGet(ungroupedLayout, () -> ungroupedLayout = root.getLayout("Ungrouped", BuiltInLayouts.kList)) : layout;

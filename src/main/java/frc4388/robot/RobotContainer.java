@@ -98,7 +98,7 @@ public class RobotContainer {
   private final PathRecorder m_pathChooser = new PathRecorder(m_robotSwerveDrive);
 
   private final ShooterTuner m_shooterTuner = new ShooterTuner(m_robotBoomBoom);
-  private final CommandSchedule m_commandSchedule = new CommandSchedule(13, 6, false);
+  private final CommandSchedule m_commandSchedule = new CommandSchedule(10, 5, false);
   // Controllers
   private final static DeadbandedXboxController m_driverXbox = new DeadbandedXboxController(OIConstants.XBOX_DRIVER_ID);
   private final static DeadbandedXboxController m_operatorXbox = new DeadbandedXboxController(OIConstants.XBOX_OPERATOR_ID);
