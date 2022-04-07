@@ -53,9 +53,9 @@ public class RobotMap {
   }
 
   /* LED Subsystem */
-//   public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
+  public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
 
-//   void configureLEDMotorControllers() {}
+  void configureLEDMotorControllers() {}
 
 
 /* Swerve Subsystem */

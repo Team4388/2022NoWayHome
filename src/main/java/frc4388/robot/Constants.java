@@ -168,9 +168,10 @@ public final class Constants {
     public static final double STORAGE_SPEED = 1.0;//0.9;
   }
   public static final class LEDConstants {
-    public static final int LED_SPARK_ID = 0;
+    public static final int LED_SPARK_ID = 3;
 
-    public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.FOREST_WAVES;
+    public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.FOREST_BPM;
+    public static final LEDPatterns SHOOTING_PATTERN = LEDPatterns.SOLID_GREEN;
   }
 
   public static final class ClimberConstants {

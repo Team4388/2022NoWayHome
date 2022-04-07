@@ -7,6 +7,7 @@ package frc4388.robot.commands.ShooterCommands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Hood;
+import frc4388.robot.subsystems.LED;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.VisionOdometry;
@@ -21,10 +22,10 @@ public class Seek extends SequentialCommandGroup {
    * @author Aarav Shah
    * @blame Aarav Shah (thomas did this)
   */
-  public Seek(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry) {
+  public Seek(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry, LED leds) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new Shoot(swerve, drum, turret, hood, visionOdometry, false, false), new TrackTarget(turret, drum, hood, visionOdometry));
+    addCommands(new Shoot(swerve, drum, turret, hood, visionOdometry, false, false), new TrackTarget(turret, drum, hood, visionOdometry, leds));
   }
   
   /** Seeks. 
@@ -32,9 +33,9 @@ public class Seek extends SequentialCommandGroup {
    * @author Aarav Shah
    * @blame Aarav Shah (thomas did this)
   */
-  public Seek(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry, double[] fakeOdo) {
+  public Seek(SwerveDrive swerve, BoomBoom drum, Turret turret, Hood hood, VisionOdometry visionOdometry, LED leds, double[] fakeOdo) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(new Shoot(swerve, drum, turret, hood, visionOdometry, fakeOdo, false, false), new TrackTarget(turret, drum, hood, visionOdometry));
+    addCommands(new Shoot(swerve, drum, turret, hood, visionOdometry, fakeOdo, false, false), new TrackTarget(turret, drum, hood, visionOdometry, leds));
   }
 }
