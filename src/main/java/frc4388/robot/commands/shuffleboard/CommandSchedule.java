@@ -121,7 +121,9 @@ public final class CommandSchedule extends CommandBase {
 
   private void putCommand(Command command, ShuffleboardContainer layout, int siblings, BooleanSupplier running) {
     boolean isRoot = root == layout;
-    String name = command.getName() + "@" + Integer.toHexString(command.hashCode());
+    String n1 = command.getName();
+    String n2 = command.getClass().getSimpleName();
+    String name = (n1.equals(n2) ? n1 : n1 + " " + n2) + "@" + Integer.toHexString(command.hashCode());
     if (command instanceof CommandGroupBase) {
       Collection<Command> commands = List.of();
       Function<Command, BooleanSupplier> nestedRunningMaker = c -> () -> !c.isFinished();
