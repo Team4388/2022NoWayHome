@@ -35,7 +35,7 @@ import frc4388.utility.LEDPatterns;
 public final class Constants {
   public static final double TICKS_PER_ROTATION_FX = 2048;
   public static final double LOOP_TIME = 0.02;
-  public static final String DRIVE_CAN_NAME = "driveTrain";
+  public static final String DRIVE_CAN_NAME = "rio";
 
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 2.3;
