@@ -458,7 +458,17 @@ public class RobotContainer {
     );
   }
 
-    SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
+  private SequentialCommandGroup shoot(double storageRunTime, double timeout) {
+    return new SequentialCommandGroup(
+      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withTimeout(timeout),
+      new ParallelCommandGroup(
+        new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).until(TrackTarget::isTargetNotLocked),
+        new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), storageRunTime, true)
+      )
+    );
+  }
+
+  SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
                                                                                new ParallelCommandGroup(
                                                                                  new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
                                                                                  new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), 1.0, true)
@@ -540,10 +550,10 @@ public class RobotContainer {
   // ! TWO BALL AUTO (ASSUMES ROBOT IS FACING DIRECTLY TOWARDS THE FIRST BALL OUTSIDE THE TARMAC, BUMPERS FLUSH WITH THE EDGE)
   SequentialCommandGroup twoBallAuto = new SequentialCommandGroup(
     idleDrumUntilShootingFirstBall(),
-    shoot(1.0), // TODO: optimize time
+    shoot(1.0, 4.0), // TODO: optimize time
     brakeStorage(0.1),
     intakeWithPath1(3.0), // * this line and the one underneath it can be replaced with intakeWithPathAndTrackTarget
-    shoot(2.3), // TODO: optimize time
+    shoot(5.0), // TODO: optimize time
     brakeStorage(0.1)
   );
 

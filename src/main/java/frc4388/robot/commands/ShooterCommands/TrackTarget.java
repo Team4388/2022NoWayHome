@@ -48,7 +48,10 @@ public class TrackTarget extends CommandBase {
 
   ArrayList<Point> points = new ArrayList<>();
 
-  private boolean targetLocked = false;
+  private static boolean targetLocked = false;
+  public static boolean isTargetNotLocked() {
+    return !targetLocked;
+  }
   private double velocityTolerance = 300.0;
   private double hoodTolerance = 5.0;
 
