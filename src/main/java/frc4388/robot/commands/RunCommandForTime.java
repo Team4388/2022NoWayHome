@@ -56,7 +56,6 @@ public class RunCommandForTime extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("RUNNING");
     this.elapsed = System.currentTimeMillis() - this.start;
     this.command.execute();
   }
@@ -71,8 +70,6 @@ public class RunCommandForTime extends CommandBase {
   @Override
   public boolean isFinished() {
     if (this.override) {
-      System.out.println("Duration: " + duration);
-      System.out.println("Elapsed: " + elapsed);
       return (this.elapsed >= this.duration);
     } else {
       return (this.command.isFinished() && (this.elapsed >= this.duration));

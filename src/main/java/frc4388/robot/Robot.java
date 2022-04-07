@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.utility.RobotTime;
 import frc4388.utility.Vector2D;
@@ -34,8 +36,6 @@ public class Robot extends TimedRobot {
 
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
-
-  // private SendableChooser<Command> autoChooser = new SendableChooser<Command>();
   
   // private double current;
 
@@ -78,7 +78,6 @@ public class Robot extends TimedRobot {
     // desmosServer.start();
     m_robotContainer.m_robotVisionOdometry.setLEDs(false);
     ExtenderIntakeGroup.setDirectionToOut();
-    // DesmosServer.putTable("table", "x1", new double[] {44}, "y1", new double[] {0});
   }
 
   /**
