@@ -20,15 +20,15 @@ import frc4388.utility.LEDPatterns;
 public class LED extends SubsystemBase {
 
   private LEDPatterns m_currentPattern;
-  private PWM newLED;
-  // private Spark m_LEDController;
+  // private PWM newLED;
+  private Spark m_LEDController;
 
   /**
    * Add your docs here.
    */
-  public LED(PWM newLED){
-    // m_LEDController = LEDController;
-    this.newLED = newLED;
+  public LED(Spark LEDController){
+    m_LEDController = LEDController;
+    // this.newLED = newLED;
     setPattern(LEDConstants.DEFAULT_PATTERN);
     updateLED();
     Logger.getLogger(LED.class.getSimpleName()).finer("In the Beginning, there was Joe.\nAnd he said, 'Let there be LEDs.'\nAnd it was good.");
@@ -43,8 +43,8 @@ public class LED extends SubsystemBase {
    * Add your docs here.
    */
   public void updateLED(){
-    newLED.setRaw((int) m_currentPattern.percentToPWM());
-    // m_LEDController.set(m_currentPattern.getValue());
+    // newLED.setRaw((int) m_currentPattern.percentToPWM());
+    m_LEDController.set(m_currentPattern.getValue());
   }
 
   /**
@@ -52,8 +52,8 @@ public class LED extends SubsystemBase {
    */
   public void setPattern(LEDPatterns pattern){
     m_currentPattern = pattern;
-    newLED.setRaw((int) m_currentPattern.percentToPWM());
-    // m_LEDController.set(m_currentPattern.getValue());
+    // newLED.setRaw((int) m_currentPattern.percentToPWM());
+    m_LEDController.set(m_currentPattern.getValue());
   }
 
   /**

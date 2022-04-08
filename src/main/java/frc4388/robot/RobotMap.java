@@ -54,8 +54,8 @@ public class RobotMap {
   }
 
   /* LED Subsystem */
-//   public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
-  public final PWM newLED = new Servo(LEDConstants.LED_SPARK_ID);
+  public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
+//   public final PWM newLED = new Servo(LEDConstants.LED_SPARK_ID);
 
   void configureLEDMotorControllers() {}
 
