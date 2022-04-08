@@ -4,15 +4,10 @@
 
 package frc4388.robot;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import com.diffplug.common.base.Errors;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -22,22 +17,15 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -51,8 +39,8 @@ import frc4388.robot.commands.DriveCommands.DriveWithInputForTime;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 import frc4388.robot.commands.ExtenderIntakeCommands.RunExtender;
 import frc4388.robot.commands.ShooterCommands.TrackTarget;
-import frc4388.robot.commands.shuffleboard.ShooterTuner;
 import frc4388.robot.commands.shuffleboard.CommandSchedule;
+import frc4388.robot.commands.shuffleboard.ShooterTuner;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Camera;
 import frc4388.robot.subsystems.Claws;
@@ -157,8 +145,8 @@ public class RobotContainer {
     autoChooser.addOption("OneBallAuto", oneBallAuto);
     autoChooser.setDefaultOption("TwoBallAuto", twoBallAuto);
     autoChooser.addOption("ThreeBallAuto", threeBallAuto);
-    autoChooser.addOption("nathanThreeBallSlow", nathanThreeBallSlow);
-    autoChooser.addOption("nathanThreeBallFast", nathanThreeBallFast);
+    autoChooser.addOption("instantThreeBallSingleShotAutoSequence", instantThreeBallSingleShotAutoSequence);
+    autoChooser.addOption("instantThreeBallDoubleSingleShotAutoSequence", instantThreeBallDoubleSingleShotAutoSequence);
 
     SmartDashboard.putData("AutoChooser", autoChooser);
 
@@ -578,7 +566,7 @@ public class RobotContainer {
     brakeStorage(0.1)
   );
 
-  private final CommandGroupBase nathanThreeBallSlow = CommandGroupBase.sequence(
+  private final CommandGroupBase instantThreeBallSingleShotAutoSequence = CommandGroupBase.sequence(
     // Preloaded Ball
     new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
     new InstantCommand(() -> m_robotIntake.runAtOutput(-1), m_robotIntake).withName("StartRunningIntake"),
@@ -607,7 +595,7 @@ public class RobotContainer {
     new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("ThirdBallStopFeed")
   );
 
-  private final CommandGroupBase nathanThreeBallFast = CommandGroupBase.sequence(
+  private final CommandGroupBase instantThreeBallDoubleSingleShotAutoSequence = CommandGroupBase.sequence(
     new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
     new InstantCommand(() -> m_robotIntake.runAtOutput(-1), m_robotIntake).withName("StartRunningIntake"),
     new RunExtender(m_robotExtender).withName("DeployExtender"),
@@ -616,7 +604,7 @@ public class RobotContainer {
     buildAuto(3.0, 3.0, "JMove1").withName("JMove1"),
     new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("FirstSecondBallTarget"),
     new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("FirstSecondBallFeed"),
-    new WaitCommand(5.0).withName("FirstSecondBallShootTimer"),
+    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, false).withName("FirstSecondBallTarget").deadlineWith(new WaitCommand(3.0).withName("FirstSecondBallShootTimer")),
     new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("FirstSecondBallStopFeed"),
     // Third Ball
     new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
@@ -624,7 +612,7 @@ public class RobotContainer {
     buildAuto(3.0, 3.0, "JMove2").withName("JMove2"),
     new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("ThirdBallTarget"),
     new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("ThirdBallFeed"),
-    new WaitCommand(3.0).withName("ThirdBallShootTimer"),
+    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, false).withName("FirstSecondBallTarget").deadlineWith(new WaitCommand(1.0).withName("ThirdBallShootTimer")),
     new InstantCommand(() -> m_robotIntake.runAtOutput(0), m_robotIntake).withName("StartRunningIntake"),
     new InstantCommand(() -> m_robotSerializer.setSerializer(0.0), m_robotSerializer).withName("StopRunningSerializer"),
     new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("ThirdBallStopFeed")
