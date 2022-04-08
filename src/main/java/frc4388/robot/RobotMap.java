@@ -23,6 +23,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import frc4388.robot.Constants.ClimberConstants;
@@ -54,7 +55,7 @@ public class RobotMap {
 
   /* LED Subsystem */
 //   public final Spark LEDController = new Spark(LEDConstants.LED_SPARK_ID);
-  public final Servo newLED = new Servo(LEDConstants.LED_SPARK_ID);
+  public final PWM newLED = new Servo(LEDConstants.LED_SPARK_ID);
 
   void configureLEDMotorControllers() {}
 

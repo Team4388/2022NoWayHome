@@ -6,6 +6,7 @@ package frc4388.robot.subsystems;
 
 import java.util.logging.Logger;
 
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,13 +20,13 @@ import frc4388.utility.LEDPatterns;
 public class LED extends SubsystemBase {
 
   private LEDPatterns m_currentPattern;
-  private Servo newLED;
+  private PWM newLED;
   // private Spark m_LEDController;
 
   /**
    * Add your docs here.
    */
-  public LED(Servo newLED){
+  public LED(PWM newLED){
     // m_LEDController = LEDController;
     this.newLED = newLED;
     setPattern(LEDConstants.DEFAULT_PATTERN);
