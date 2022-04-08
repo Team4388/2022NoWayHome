@@ -496,7 +496,7 @@ public class RobotContainer {
   SequentialCommandGroup extendThenAimTurret() {
     return new SequentialCommandGroup(
       new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), 
-      new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-180), m_robotTurret), 0.5, true) // TODO: optimize time
+      new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-175), m_robotTurret), 0.5, true) // TODO: optimize time
     );
   }
   

@@ -118,19 +118,18 @@ public class TrackTarget extends CommandBase {
     //                           true);
 
     double regressedDistance = getDistance(average.y);
-
+    double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
     // ! offset trig solution
-    double desiredOffset = 10; // * inches
-    double angleOffset = Math.toDegrees(Math.atan(desiredOffset / regressedDistance)); // * degrees
+    double desiredOffset = 2; // * inches
+    double angleOffset = Math.toDegrees(Math.atan(desiredOffset / (regressedDistance + distAdj))); // * degrees
     double pixelOffset = angleOffset * VisionConstants.PIXELS_PER_DEGREE;
     
-    double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
+    double output = ((average.x - pixelOffset) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
     output *= 2.1;
     
     m_turret.runTurretWithInput(output);
 
     // ! no longer a +30 lol -aarav
-    double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
     velocity = m_boomBoom.getVelocity(regressedDistance + distAdj);
     hoodPosition = m_boomBoom.getHood(regressedDistance + distAdj);
     
