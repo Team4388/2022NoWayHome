@@ -54,7 +54,7 @@ public class SwerveDrive extends SubsystemBase {
   public Rotation2d rotTarget = new Rotation2d();
   private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
-  private final Field2d m_field = new Field2d();
+  public final Field2d m_field = new Field2d();
 
   public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack,
       WPI_Pigeon2 gyro) {

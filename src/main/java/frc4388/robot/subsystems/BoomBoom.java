@@ -6,6 +6,8 @@ package frc4388.robot.subsystems;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.stream.IntStream;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
+import com.diffplug.common.base.StringPrinter;
 
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -55,7 +58,14 @@ public class BoomBoom extends SubsystemBase {
     public Double distance, hoodExt, drumVelocity;
   }
 
-  public ShooterTableEntry[] m_shooterTable;
+  private ShooterTableEntry[] m_shooterTable;
+
+  public ShooterTableEntry[] getShooterTable() {
+    return m_shooterTable;
+  }
+  public void setShooterTable(ShooterTableEntry[] shooterTable) {
+    m_shooterTable = shooterTable;
+  }
 
   /** Creates a new BoomBoom, which has a drum shooter and angle adjuster. */
   public BoomBoom(WPI_TalonFX shooterFalconLeft, WPI_TalonFX shooterFalconRight) {
@@ -140,30 +150,31 @@ public class BoomBoom extends SubsystemBase {
     // m_shooterFalconLeft.set(m_controller.calculate(m_shooterFalconLeft.get(), targetVel));
   }
 
+  // This is a helper class that allows us to read a CSV file into a Java array.
+  private CSV<ShooterTableEntry> m_csv = new CSV<>(ShooterTableEntry::new) {
+    // This is a regular expression that removes all parentheses from the header of the CSV file.
+    private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
+
+    /**
+     * Removes the parentheses from the CSV header
+     * 
+     * @param header The header to be sanitized.
+     * @return The headerSanitizer method is overriding the headerSanitizer method in the parent class.
+     *         The parentheses.matcher(header) is matching the header with the parentheses regular
+     *         expression. The replaceAll method is replacing all of the parentheses with an empty
+     *         string. The super.headerSanitizer(parentheses.matcher(header).replaceAll("")) is calling
+     *         the parent sanitizer.
+     */
+    @Override
+    protected String headerSanitizer(String header) {
+      return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
+    }
+  };
+
   public void loadShooterTable() {
     try {
-      // This is a helper class that allows us to read a CSV file into a Java array.
-      CSV<ShooterTableEntry> csv = new CSV<>(ShooterTableEntry::new) {
-        // This is a regular expression that removes all parentheses from the header of the CSV file.
-        private final Pattern parentheses = Pattern.compile("\\([^\\)]*+\\)");
-
-        /**
-         * Removes the parentheses from the CSV header
-         * 
-         * @param header The header to be sanitized.
-         * @return The headerSanitizer method is overriding the headerSanitizer method in the parent class.
-         *         The parentheses.matcher(header) is matching the header with the parentheses regular
-         *         expression. The replaceAll method is replacing all of the parentheses with an empty
-         *         string. The super.headerSanitizer(parentheses.matcher(header).replaceAll("")) is calling
-         *         the parent sanitizer.
-         */
-        @Override
-        protected String headerSanitizer(String header) {
-          return super.headerSanitizer(parentheses.matcher(header).replaceAll(""));
-        }
-      };
       // This is reading the CSV file into a Java array.
-      m_shooterTable = Arrays.stream(csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath())).sorted(Comparator.comparingDouble(e -> e.distance)).toArray(ShooterTableEntry[]::new);
+      m_shooterTable = Arrays.stream(m_csv.read(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath())).sorted(Comparator.comparingDouble(e -> e.distance)).toArray(ShooterTableEntry[]::new);
     } catch (IOException exception) {
       ShooterTableEntry dummyEntry = new ShooterTableEntry();
       dummyEntry.distance = 0.0;
@@ -172,6 +183,14 @@ public class BoomBoom extends SubsystemBase {
       LOGGER.log(Level.SEVERE, "Exception while reading shooter CSV table.", exception);
       m_shooterTable = new ShooterTableEntry[] { dummyEntry };
     }
+  }
+
+  public void saveShooterTable() {
+    StringPrinter sp = new StringPrinter(Errors.log().wrap(s -> {
+      Files.writeString(new File(Filesystem.getDeployDirectory(), "ShooterData.csv").toPath(), s);
+      System.err.println(s);
+    }));
+    Errors.log().run(() -> m_csv.write(sp.toWriter(), "Distance (in) ,Hood Ext. (u) ,Drum Velocity (u/ds)", m_shooterTable, true));
   }
 
   public void updateOffset(double change) {

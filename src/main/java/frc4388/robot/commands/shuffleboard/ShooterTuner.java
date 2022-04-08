@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.BoomBoom.ShooterTableEntry;
 import frc4388.utility.shuffleboard.SendableTable;
@@ -41,7 +42,7 @@ public class ShooterTuner extends CommandBase {
     m_shotEditor = new ShotEditor();
     m_shotCsvAppender = new CSVAppender();
     tableOverrideEntry = new ShooterTableEntry();
-    m_tableEditor = new SendableTable(() -> m_boomBoom.m_shooterTable);
+    m_tableEditor = new SendableTable(m_boomBoom::getShooterTable, m_boomBoom::setShooterTable);
     setName("Shooter Data Mode");
   }
 
@@ -54,12 +55,18 @@ public class ShooterTuner extends CommandBase {
       manual.add("Manual Data Appender", m_shotCsvAppender);
       var csv = tab.getLayout("Shooter Table", BuiltInLayouts.kList).withPosition(2, 0).withSize(7, 5);
       csv.add("Shooter Table", m_tableEditor);
-      csv.add("Shooter Tuner State", this);
+      csv.add("Save to CSV File", new InstantCommand(m_boomBoom::saveShooterTable) {
+        @Override
+        public boolean runsWhenDisabled() {
+          return true;
+        }
+      });
+      csv.add("Shooter Tuner State (Disable to Reload)", this);
     }
     tableOverrideEntry.distance = 0.0;
     tableOverrideEntry.hoodExt = 0.0;
     tableOverrideEntry.drumVelocity = 0.0;
-    m_boomBoom.m_shooterTable = new ShooterTableEntry[] { tableOverrideEntry };
+    m_boomBoom.setShooterTable(new ShooterTableEntry[] { tableOverrideEntry });
     Shuffleboard.selectTab("Shooter Tuner");
     SmartDashboard.putData("Shooter Table", m_tableEditor);
   }
@@ -72,7 +79,7 @@ public class ShooterTuner extends CommandBase {
   public void end(boolean interrupted) {
     m_boomBoom.loadShooterTable();
     LOGGER.info(Errors.log().wrapWithDefault(() -> Files.readString(PATH), "Failed to read CSV"));
-    ShuffleboardHelper.purgeShuffleboardTab("Shooter Tuner");
+    // ShuffleboardHelper.purgeShuffleboardTab("Shooter Tuner");
   }
   @Override
   public final boolean isFinished() {

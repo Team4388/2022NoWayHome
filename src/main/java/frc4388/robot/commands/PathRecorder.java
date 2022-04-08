@@ -169,6 +169,7 @@ public class PathRecorder extends CommandBase {
     if (pathName != null) {
       LOGGER.log(Level.WARNING, "Loading path {0}.", pathName);
       loadedPathTrajectory = PathPlanner.loadPath(PATH_EXTENSION_REMOVER.apply(pathName), SwerveDriveConstants.PATH_MAX_VELOCITY, SwerveDriveConstants.PATH_MAX_ACCELERATION);
+      m_swerveDrive.m_field.getObject("traj").setTrajectory(loadedPathTrajectory);
       LOGGER.info("Done loading.");
     } else {
       LOGGER.severe("No path to load.");

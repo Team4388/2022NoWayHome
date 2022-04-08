@@ -9,6 +9,7 @@ package frc4388.utility;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.invoke.MethodHandleProxies;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -47,20 +49,28 @@ public class CSV<R> {
   private final Map<String, BiConsumer<R, String>> setters;
 
   /**
-   * A binary string operator to be applied to the entire header of the CSV.
+   * A string operator to be applied to the entire header of the CSV when reading.
    */
   protected String headerSanitizer(final String header) {
     return SANITIZER.matcher(header).replaceAll("");
   }
 
   /**
-   * A binary string operator to be applied to each name in the header of the CSV.
+   * A string operator to be applied to each name in the header of the CSV when reading.
    */
   protected String nameProcessor(final String name) {
     return Character.toLowerCase(name.charAt(0)) + name.substring(1);
   }
 
   /**
+   * A string operator to be applied to each cell value in the body of the CSV when writing.
+   */
+  protected String fieldStringifier(final Object fieldValue) {
+    final String fieldString = Objects.toString(fieldValue, "");
+    return fieldString.contains(",") ? "\"" + fieldString.replace("\"", "\"\"") + "\"" : fieldString;
+  }
+
+/**
    * Creates a new {@code CSV} instance and prepares for populating the fields of objects created by
    * the given generator. Private fields and fields of primitive types are not supported.
    * @param generator a parameterless supplier which produces a new object with any number of fields
@@ -105,6 +115,17 @@ public class CSV<R> {
     }
   }
 
+  public void write(final Writer output, final String originalHeader, final R[] data, final boolean prettyPrint) throws IOException {
+    final String[] fieldNames = Stream.of(headerSanitizer(originalHeader).split(",")).map(this::nameProcessor).toArray(String[]::new);
+    final Stream<Stream<String>> header = Stream.of(Stream.of(originalHeader.split(",")));
+    final Stream<Stream<String>> body = Stream.of(data).map(element -> Stream.of(fieldNames).map(fieldName -> getFieldAsString(element, fieldName)));
+    if (prettyPrint) {
+      final String[][] rows = Stream.concat(header, body).map(s -> s.toArray(String[]::new)).toArray(String[][]::new);
+      final int[] columnWidths = Stream.of(rows).map(row -> Stream.of(row).mapToInt(String::length).toArray()).reduce(new int[fieldNames.length], (result, row) -> IntStream.range(0, row.length).map(i -> Math.max(result[i], row[i])).toArray());
+      output.write(Stream.of(rows).map(row -> IntStream.range(0, row.length).mapToObj(i -> String.format("%-" + columnWidths[i] + "s", row[i])).collect(Collectors.joining(",")).stripTrailing()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator());
+    } else output.write(Stream.concat(header, body).map(fields -> fields.collect(Collectors.joining(","))).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator());
+  }
+
   @SuppressWarnings("unchecked")
   private static Function<String, ?> getTypeParser(final Class<?> type) {
     try {
@@ -141,6 +162,14 @@ public class CSV<R> {
     while (str.charAt(l - count - 1) == c && count < l)
       count++;
     return count;
+  }
+
+  private String getFieldAsString(final R element, final String fieldName) {
+    try {
+      return fieldStringifier(element.getClass().getField(fieldName).get(element));
+    } catch (IllegalAccessException | NoSuchFieldException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public static final class ReflectionTable {
