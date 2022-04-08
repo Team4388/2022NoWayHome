@@ -124,7 +124,7 @@ public class TrackTarget extends CommandBase {
     double angleOffset = Math.toDegrees(Math.atan(desiredOffset / regressedDistance)); // * degrees
     double pixelOffset = angleOffset * VisionConstants.PIXELS_PER_DEGREE;
     
-    double output = ((average.x + pixelOffset) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
+    double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
     output *= 2.1;
     
     m_turret.runTurretWithInput(output);
