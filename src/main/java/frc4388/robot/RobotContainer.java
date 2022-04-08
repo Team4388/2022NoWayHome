@@ -458,14 +458,14 @@ public class RobotContainer {
     );
   }
 
-  private SequentialCommandGroup shoot(double storageRunTime, double timeout) {
+  private ParallelRaceGroup shoot(double storageRunTime, double timeout) {
     return new SequentialCommandGroup(
-      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withTimeout(timeout),
+      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
       new ParallelCommandGroup(
-        new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).until(TrackTarget::isTargetNotLocked),
+        new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
         new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), storageRunTime, true)
       )
-    );
+    ).withTimeout(timeout + storageRunTime);
   }
 
   SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
@@ -496,7 +496,7 @@ public class RobotContainer {
   SequentialCommandGroup extendThenAimTurret() {
     return new SequentialCommandGroup(
       new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), 
-      new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true) // TODO: optimize time
+      new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-180), m_robotTurret), 1.0, true) // TODO: optimize time
     );
   }
   
