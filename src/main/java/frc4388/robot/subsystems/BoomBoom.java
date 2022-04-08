@@ -55,7 +55,7 @@ public class BoomBoom extends SubsystemBase {
   // SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(69, 42, 0); //get real values later
 
   public static class ShooterTableEntry {
-    public Double distance, hoodExt, drumVelocity;
+    public Double distance, hoodExt, drumVelocity, turretOffset;
   }
 
   private ShooterTableEntry[] m_shooterTable;
@@ -99,6 +99,17 @@ public class BoomBoom extends SubsystemBase {
    */
   public Double getHood(final Double distance) {
     return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.hoodExt).doubleValue();
+  }
+
+  /**
+   * This is a function that takes a value (distance) and returns a value (turretOffset) that is a linear
+   * interpolation of the two values (turretOffset) at the two closest points in the table (m_shooterTable)
+   * to the given value (distance).
+   * @param distance Distance in shooter table
+   * @return Turret offset in degrees
+   */
+  public Double getOffset(final Double distance) {
+    return NumericData.linearInterpolate(m_shooterTable, distance, e -> e.distance, e -> e.turretOffset).doubleValue();
   }
 
   @Override
