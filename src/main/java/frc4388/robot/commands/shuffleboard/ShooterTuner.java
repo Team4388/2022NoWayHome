@@ -67,6 +67,7 @@ public class ShooterTuner extends CommandBase {
     tableOverrideEntry.distance = 0.0;
     tableOverrideEntry.hoodExt = 0.0;
     tableOverrideEntry.drumVelocity = 0.0;
+    tableOverrideEntry.turretOffset = 0.0;
     m_boomBoom.setShooterTable(new ShooterTableEntry[] { tableOverrideEntry });
     Shuffleboard.selectTab("Shooter Tuner");
     SmartDashboard.putData("Shooter Table", m_tableEditor);

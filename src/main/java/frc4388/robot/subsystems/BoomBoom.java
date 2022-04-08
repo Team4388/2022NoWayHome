@@ -191,6 +191,7 @@ public class BoomBoom extends SubsystemBase {
       dummyEntry.distance = 0.0;
       dummyEntry.hoodExt = 0.0;
       dummyEntry.drumVelocity = 0.0;
+      dummyEntry.turretOffset = 0.0;
       LOGGER.log(Level.SEVERE, "Exception while reading shooter CSV table.", exception);
       m_shooterTable = new ShooterTableEntry[] { dummyEntry };
     }

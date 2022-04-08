@@ -24,17 +24,18 @@ public class SendableTable implements Sendable {
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Table");
     builder.addRawProperty("table", this::getTableAsBytes, this::setTableFromBytes);
-    builder.addStringArrayProperty("header", () -> new String[] { "distance", "hoodExt", "drumVelocity" }, null);
+    builder.addStringArrayProperty("header", () -> new String[] { "distance", "hoodExt", "drumVelocity", "turretOffset" }, null);
   }
 
   private byte[] getTableAsBytes() {
     ShooterTableEntry[] table = m_tableGetter.get();
     if (!Arrays.equals(tableCache, table)) {
-      ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 3 * table.length);
+      ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES * 4 * table.length);
       Arrays.stream(table).forEach(e -> {
         byteBuffer.putDouble(e.distance);
         byteBuffer.putDouble(e.hoodExt);
         byteBuffer.putDouble(e.drumVelocity);
+        byteBuffer.putDouble(e.turretOffset);
       });
       tableCache = table;
       bytesCache = byteBuffer.array();
@@ -45,11 +46,12 @@ public class SendableTable implements Sendable {
   private void setTableFromBytes(byte[] bytes) {
     if (bytes.length > 0 && !Arrays.equals(bytesCache, bytes)) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-      ShooterTableEntry[] table = new ShooterTableEntry[bytes.length / (3 * Double.BYTES)];
+      ShooterTableEntry[] table = new ShooterTableEntry[bytes.length / (4 * Double.BYTES)];
       for (int i = 0; i < table.length; i++) {
         table[i].distance = byteBuffer.getDouble();
         table[i].hoodExt = byteBuffer.getDouble();
         table[i].drumVelocity = byteBuffer.getDouble();
+        table[i].turretOffset = byteBuffer.getDouble();
       }
       m_tableSetter.accept(table);
     }
