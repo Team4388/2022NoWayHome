@@ -602,7 +602,7 @@ public class RobotContainer {
     // Preload and Second Ball
     new InstantCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer).withName("StartRunningSerializer"),
     buildAuto(3.0, 3.0, "JMove1").withName("JMove1"),
-    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("FirstSecondBallTarget"),
+    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("FirstSecondBallTarget").withTimeout(2.0),
     new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("FirstSecondBallFeed"),
     new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, false).withName("FirstSecondBallTarget").deadlineWith(new WaitCommand(3.0).withName("FirstSecondBallShootTimer")),
     new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("FirstSecondBallStopFeed"),
@@ -610,7 +610,7 @@ public class RobotContainer {
     new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
     new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret).withName("StartTurningShooter"),
     buildAuto(3.0, 3.0, "JMove2").withName("JMove2"),
-    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("ThirdBallTarget"),
+    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("ThirdBallTarget").withTimeout(2.0),
     new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("ThirdBallFeed"),
     new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, false).withName("FirstSecondBallTarget").deadlineWith(new WaitCommand(1.0).withName("ThirdBallShootTimer")),
     new InstantCommand(() -> m_robotIntake.runAtOutput(0), m_robotIntake).withName("StartRunningIntake"),
