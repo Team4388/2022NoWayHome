@@ -105,12 +105,8 @@ public class TrackTarget extends CommandBase {
     }
     // points = getFakePoints();
     //// points = filterPoints(points);
+
     Point average = VisionOdometry.averagePoint(points);
-    
-    double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
-    output *= 2.1;
-    
-    m_turret.runTurretWithInput(output);
     // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
 
     // if(Math.abs(position - ShooterConstants.TURRET_FORWARD_SOFT_LIMIT) < 5 ||
@@ -121,9 +117,18 @@ public class TrackTarget extends CommandBase {
     //                           RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
     //                           true);
 
-    
     double regressedDistance = getDistance(average.y);
+
+    // ! offset trig solution
+    double desiredOffset = 10; // * inches
+    double angleOffset = Math.toDegrees(Math.atan(desiredOffset / regressedDistance)); // * degrees
+    double pixelOffset = angleOffset * VisionConstants.PIXELS_PER_DEGREE;
     
+    double output = ((average.x + pixelOffset) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
+    output *= 2.1;
+    
+    m_turret.runTurretWithInput(output);
+
     // ! no longer a +30 lol -aarav
     double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
     velocity = m_boomBoom.getVelocity(regressedDistance + distAdj);
