@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ExtenderConstants;
 
@@ -34,6 +35,7 @@ public class Extender extends SubsystemBase {
     m_extenderMotor.setSoftLimit(SoftLimitDirection.kForward, (float) ExtenderConstants.EXTENDER_FORWARD_LIMIT);
     m_extenderMotor.setSoftLimit(SoftLimitDirection.kReverse, (float) ExtenderConstants.EXTENDER_REVERSE_LIMIT);
     setExtenderSoftLimits(true);
+    SmartDashboard.putData(new InstantCommand(() -> m_extenderMotor.getEncoder().setPosition(0)));
   }
 
   /**
