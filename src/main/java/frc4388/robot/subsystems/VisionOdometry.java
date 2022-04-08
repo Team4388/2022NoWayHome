@@ -45,7 +45,7 @@ public class VisionOdometry extends SubsystemBase {
   public VisionOdometry(SwerveDrive drive, Turret shooter) {
     // do{
       m_camera = new PhotonCamera(VisionConstants.NAME);
-    // }while(m_camera.getLatestResult().getLatencyMillis() == 0.d);
+    // } while (m_camera.getLatestResult().getLatencyMillis() == 0.d);
     m_drive = drive;
     m_shooter = shooter;
 
