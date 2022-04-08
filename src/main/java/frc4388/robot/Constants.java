@@ -168,7 +168,7 @@ public final class Constants {
     public static final double STORAGE_SPEED = 1.0;//0.9;
   }
   public static final class LEDConstants {
-    public static final int LED_SPARK_ID = 3;
+    public static final int LED_SPARK_ID = 4;//3;
 
     public static final LEDPatterns DEFAULT_PATTERN = LEDPatterns.SOLID_RED;
     public static final LEDPatterns SHOOTING_PATTERN = LEDPatterns.SOLID_GREEN;
@@ -343,6 +343,6 @@ public final class Constants {
     public static final double SHOOTER_CORRECTION = 1.d;
 
     public static final double PIXELS_PER_DEGREE = LIME_HIXELS / H_FOV;
-    public static final double DEGREES_PER_PIXELS = 1 / PIXELS_PER_DEGREE;
+    public static final double DEGREES_PER_PIXEL = 1 / PIXELS_PER_DEGREE;
   }
 }

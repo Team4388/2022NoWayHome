@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -454,14 +455,14 @@ public class RobotContainer {
     );
   }
 
-  private SequentialCommandGroup shoot(double storageRunTime, double timeout) {
+  private ParallelRaceGroup shoot(double storageRunTime, double timeout) {
     return new SequentialCommandGroup(
-      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withTimeout(timeout),
+      new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
       new ParallelCommandGroup(
-        new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).until(TrackTarget::isTargetNotLocked),
+        new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
         new RunCommandForTime(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage), storageRunTime, true)
       )
-    );
+    ).withTimeout(timeout + storageRunTime);
   }
 
   SequentialCommandGroup weirdAutoShootingGroup = new SequentialCommandGroup(new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true),
@@ -492,14 +493,14 @@ public class RobotContainer {
   SequentialCommandGroup extendThenAimTurret() {
     return new SequentialCommandGroup(
       new ExtenderIntakeGroup(m_robotIntake, m_robotExtender), 
-      new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID((180.0 / Math.PI) * Math.atan2(-(82.83 / 2.00) + 15.56, -(219.25 / 2.00) - 40.44 + 10.00)), m_robotTurret), 1.0, true) // TODO: optimize time
+      new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-180), m_robotTurret), 0.5, true) // TODO: optimize time
     );
   }
   
   ParallelDeadlineGroup idleDrumUntilShootingFirstBall() {
     return new ParallelDeadlineGroup(
       extendThenAimTurret(), 
-      new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom)
+      new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(9000), m_robotBoomBoom)
     );
   }
 
@@ -523,7 +524,7 @@ public class RobotContainer {
   // ParallelCommandGroup intakeWithPath2AndTrackTarget = new ParallelCommandGroup(intakeWithPath2, weirdAutoShootingGroup3);
 
   ParallelDeadlineGroup intakeWithPath2AndIdleShooterAndAimTurret = new ParallelDeadlineGroup(
-    intakeWithPath2(4.2),
+    intakeWithPath2(2.8),
     new RunCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom), 
     new RunCommandForTime(new RunCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret), 0.7, true)
   );
@@ -556,10 +557,11 @@ public class RobotContainer {
   // ! THREE BALL AUTO (ASSUMES ROBOT IS FACING DIRECTLY TOWARDS THE FIRST BALL OUTSIDE THE TARMAC, BUMPERS FLUSH WITH THE EDGE)
   SequentialCommandGroup threeBallAuto = new SequentialCommandGroup(
     idleDrumUntilShootingFirstBall(),
-    shoot(1.0), // TODO: optimize time
+    shoot(0.8), // TODO: optimize time
     brakeStorage(0.1),
-    intakeWithPath1(3.0), // * this line and the one underneath it can be replaced with intakeWithPathAndTrackTarget
-    shoot(2.3), // TODO: optimize time
+    intakeWithPathAndTrackTarget,
+    // intakeWithPath1(3.0), // * this line and the one underneath it can be replaced with intakeWithPathAndTrackTarget
+    shoot(0.8), // TODO: optimize time
     brakeStorage(0.1),
     intakeWithPath2AndIdleShooterAndAimTurret,
     shoot(4.0), // TODO: optimize time

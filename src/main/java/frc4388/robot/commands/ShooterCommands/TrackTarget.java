@@ -105,6 +105,7 @@ public class TrackTarget extends CommandBase {
     }
     // points = getFakePoints();
     //// points = filterPoints(points);
+
     Point average = VisionOdometry.averagePoint(points);
     // double position = m_turret.m_boomBoomRotateEncoder.getPosition();
 
@@ -116,7 +117,6 @@ public class TrackTarget extends CommandBase {
     //                           RobotContainer.getDriverController().getRightX(), RobotContainer.getDriverController().getRightY(),
     //                           true);
 
-    
     double regressedDistance = getDistance(average.y);
 
     // ! offset trig solution

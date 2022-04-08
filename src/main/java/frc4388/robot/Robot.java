@@ -139,7 +139,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    // m_robotContainer.m_robotVisionOdometry.setLEDs(false);
+    m_robotContainer.m_robotVisionOdometry.setLEDs(false);
   }
 
   /**
