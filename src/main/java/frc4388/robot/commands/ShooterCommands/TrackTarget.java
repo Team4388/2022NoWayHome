@@ -120,9 +120,13 @@ public class TrackTarget extends CommandBase {
     double regressedDistance = getDistance(average.y);
 
     // ! offset trig solution
-    double desiredOffset = 10; // * inches
-    double angleOffset = Math.toDegrees(Math.atan(desiredOffset / regressedDistance)); // * degrees
-    double pixelOffset = angleOffset * VisionConstants.PIXELS_PER_DEGREE;
+    double trigDesiredOffset = 10; // * inches
+    double trigAngleOffset = Math.toDegrees(Math.atan(trigDesiredOffset / regressedDistance)); // * degrees
+    double trigPixelOffset = trigAngleOffset * VisionConstants.PIXELS_PER_DEGREE; // * pixels
+
+    // ! offset csv solution
+    double csvAngleOffset = m_boomBoom.getOffset(regressedDistance); // * degrees
+    double csvPixelOffset = csvAngleOffset * VisionConstants.PIXELS_PER_DEGREE; // * pixels
 
     double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
     output *= 2.1;
