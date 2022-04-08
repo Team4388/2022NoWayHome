@@ -36,6 +36,7 @@ public class ShooterTuner extends CommandBase {
   private final ShooterTableEntry tableOverrideEntry;
   private final SendableTable m_tableEditor;
   private boolean measureDistance = false;
+  private boolean triedTakeOwnership = false;
 
   public ShooterTuner(BoomBoom boomBoom) {
     m_boomBoom = boomBoom;
@@ -102,6 +103,7 @@ public class ShooterTuner extends CommandBase {
       builder.setSmartDashboardType("RobotPreferences");
       builder.addDoubleProperty("Drum Velocity", () -> tableOverrideEntry.drumVelocity, d -> tableOverrideEntry.drumVelocity = d);
       builder.addDoubleProperty("Hood Extension", () -> tableOverrideEntry.hoodExt, d -> tableOverrideEntry.hoodExt = d);
+      builder.addDoubleProperty("Turret Offset", () -> tableOverrideEntry.turretOffset, d -> tableOverrideEntry.turretOffset = d);
       builder.addDoubleProperty("Distance", () -> tableOverrideEntry.distance, d -> tableOverrideEntry.distance = d);
       builder.addBooleanProperty("Measure Distance", () -> measureDistance, b -> measureDistance = b);
     }
@@ -110,7 +112,10 @@ public class ShooterTuner extends CommandBase {
   private class CSVAppender extends CommandBase {
     @Override
     public void execute() {
-      if (RobotBase.isReal()) Errors.log().run(() -> Files.getFileAttributeView(PATH, FileOwnerAttributeView.class).setOwner(FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName("admin")));
+      if (!triedTakeOwnership && RobotBase.isReal()) {
+        triedTakeOwnership = true;
+        Errors.log().run(() -> Files.getFileAttributeView(PATH, FileOwnerAttributeView.class).setOwner(FileSystems.getDefault().getUserPrincipalLookupService().lookupPrincipalByName("admin")));
+      }
       try (OutputStream csvOutputStream = Files.newOutputStream(PATH, StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
         csvOutputStream.write(String.format("%s,%s,%s%n", tableOverrideEntry.distance, tableOverrideEntry.hoodExt, tableOverrideEntry.drumVelocity).getBytes());
       } catch (IOException e) {

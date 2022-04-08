@@ -130,8 +130,9 @@ public class TrackTarget extends CommandBase {
 
     double output = ((average.x + 40) - VisionConstants.LIME_HIXELS/2.d) / VisionConstants.LIME_HIXELS;
     output *= 2.1;
-    
-    m_turret.runTurretWithInput(output);
+
+    // m_turret.runTurretWithInput(output - trigPixelOffset);
+    m_turret.runTurretWithInput(output - csvPixelOffset);
 
     // ! no longer a +30 lol -aarav
     double distAdj = SmartDashboard.getNumber("Distance Adjust", -35);
