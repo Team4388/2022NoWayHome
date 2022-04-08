@@ -157,7 +157,8 @@ public class RobotContainer {
     autoChooser.addOption("OneBallAuto", oneBallAuto);
     autoChooser.setDefaultOption("TwoBallAuto", twoBallAuto);
     autoChooser.addOption("ThreeBallAuto", threeBallAuto);
-    autoChooser.addOption("testAuto", testAuto);
+    autoChooser.addOption("nathanThreeBallSlow", nathanThreeBallSlow);
+    autoChooser.addOption("nathanThreeBallFast", nathanThreeBallFast);
 
     SmartDashboard.putData("AutoChooser", autoChooser);
 
@@ -577,13 +578,14 @@ public class RobotContainer {
     brakeStorage(0.1)
   );
 
-  private final CommandGroupBase testAuto = CommandGroupBase.sequence(
+  private final CommandGroupBase nathanThreeBallSlow = CommandGroupBase.sequence(
     // Preloaded Ball
     new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
     new InstantCommand(() -> m_robotIntake.runAtOutput(-1), m_robotIntake).withName("StartRunningIntake"),
+    new RunExtender(m_robotExtender).withName("DeployExtender"),
     new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("FirstBallTarget"),
     new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("FirstBallFeed"),
-    new WaitCommand(3.0).withName("FirstBallShootTimer").alongWith(new RunExtender(m_robotExtender).withName("DeployExtender")).withName("ShootDeployExtender"),
+    new WaitCommand(3.0).withName("FirstBallShootTimer"),
     new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("FirstBallStopFeed"),
     // Second Ball
     new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
@@ -593,6 +595,29 @@ public class RobotContainer {
     new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("SecondBallFeed"),
     new WaitCommand(3.0).withName("SecondBallShootTimer"),
     new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("SecondBallStopFeed"),
+    // Third Ball
+    new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
+    new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret).withName("StartTurningShooter"),
+    buildAuto(3.0, 3.0, "JMove2").withName("JMove2"),
+    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("ThirdBallTarget"),
+    new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("ThirdBallFeed"),
+    new WaitCommand(3.0).withName("ThirdBallShootTimer"),
+    new InstantCommand(() -> m_robotIntake.runAtOutput(0), m_robotIntake).withName("StartRunningIntake"),
+    new InstantCommand(() -> m_robotSerializer.setSerializer(0.0), m_robotSerializer).withName("StopRunningSerializer"),
+    new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("ThirdBallStopFeed")
+  );
+
+  private final CommandGroupBase nathanThreeBallFast = CommandGroupBase.sequence(
+    new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
+    new InstantCommand(() -> m_robotIntake.runAtOutput(-1), m_robotIntake).withName("StartRunningIntake"),
+    new RunExtender(m_robotExtender).withName("DeployExtender"),
+    // Preload and Second Ball
+    new InstantCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer).withName("StartRunningSerializer"),
+    buildAuto(3.0, 3.0, "JMove1").withName("JMove1"),
+    new TrackTarget(m_robotTurret, m_robotBoomBoom, m_robotHood, m_robotVisionOdometry, m_robotLED, true).withName("FirstSecondBallTarget"),
+    new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)).withName("FirstSecondBallFeed"),
+    new WaitCommand(5.0).withName("FirstSecondBallShootTimer"),
+    new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("FirstSecondBallStopFeed"),
     // Third Ball
     new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
     new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret).withName("StartTurningShooter"),
