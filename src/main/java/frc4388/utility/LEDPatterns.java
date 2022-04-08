@@ -42,4 +42,8 @@ public enum LEDPatterns {
   public float getValue() {
     return id;
   }
+
+  public float percentToPWM() {
+    return (1000 + (getValue() * 1000));
+  }
 }

@@ -6,6 +6,7 @@ package frc4388.robot.subsystems;
 
 import java.util.logging.Logger;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.LEDConstants;
@@ -18,13 +19,15 @@ import frc4388.utility.LEDPatterns;
 public class LED extends SubsystemBase {
 
   private LEDPatterns m_currentPattern;
-  private Spark m_LEDController;
+  private Servo newLED;
+  // private Spark m_LEDController;
 
   /**
    * Add your docs here.
    */
-  public LED(Spark LEDController){
-    m_LEDController = LEDController;
+  public LED(Servo newLED){
+    // m_LEDController = LEDController;
+    this.newLED = newLED;
     setPattern(LEDConstants.DEFAULT_PATTERN);
     updateLED();
     Logger.getLogger(LED.class.getSimpleName()).finer("In the Beginning, there was Joe.\nAnd he said, 'Let there be LEDs.'\nAnd it was good.");
@@ -39,7 +42,8 @@ public class LED extends SubsystemBase {
    * Add your docs here.
    */
   public void updateLED(){
-    m_LEDController.set(m_currentPattern.getValue());
+    newLED.setRaw((int) m_currentPattern.percentToPWM());
+    // m_LEDController.set(m_currentPattern.getValue());
   }
 
   /**
@@ -47,7 +51,8 @@ public class LED extends SubsystemBase {
    */
   public void setPattern(LEDPatterns pattern){
     m_currentPattern = pattern;
-    m_LEDController.set(m_currentPattern.getValue());
+    newLED.setRaw((int) m_currentPattern.percentToPWM());
+    // m_LEDController.set(m_currentPattern.getValue());
   }
 
   /**
