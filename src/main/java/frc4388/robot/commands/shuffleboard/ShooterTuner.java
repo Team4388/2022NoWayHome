@@ -61,7 +61,7 @@ public class ShooterTuner extends CommandBase {
         public boolean runsWhenDisabled() {
           return true;
         }
-      });
+      }.withName("DO NOT RUN WHILE TUNER IS ENABLED"));
       csv.add("Shooter Tuner State (Disable to Reload)", this);
     }
     tableOverrideEntry.distance = 0.0;
