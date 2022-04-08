@@ -341,5 +341,8 @@ public final class Constants {
     public static final double EDGE_TO_CENTER = 20;
     public static final double LIMELIGHT_RADIUS = 8;
     public static final double SHOOTER_CORRECTION = 1.d;
+
+    public static final double PIXELS_PER_DEGREE = LIME_HIXELS / H_FOV;
+    public static final double DEGREES_PER_PIXEL = 1 / PIXELS_PER_DEGREE;
   }
 }
