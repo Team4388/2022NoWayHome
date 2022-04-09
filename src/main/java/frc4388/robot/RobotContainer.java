@@ -237,9 +237,13 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
         .whenPressed(() -> m_robotSwerveDrive.highSpeed(true));
 
+    // new JoystickButton(getDriverController(), XboxController.Button.kA.value)
+    //     .whenPressed(new InstantCommand(() -> switchControlMode()))
+    //     .whenReleased(new InstantCommand(() -> switchControlMode()));
+
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-        .whenPressed(new InstantCommand(() -> switchControlMode()))
-        .whenReleased(new InstantCommand(() -> switchControlMode()));
+        .whenPressed(new InstantCommand(() -> currentControlMode = ControlMode.CLIMBER))
+        .whenReleased(new InstantCommand(() -> currentControlMode = ControlMode.SHOOTER));
 
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
         .whenPressed(new InstantCommand(() -> switchDriveMode()))
@@ -560,14 +564,14 @@ public class RobotContainer {
   // ! THREE BALL AUTO (ASSUMES ROBOT IS FACING DIRECTLY TOWARDS THE FIRST BALL OUTSIDE THE TARMAC, BUMPERS FLUSH WITH THE EDGE)
   SequentialCommandGroup threeBallAuto = new SequentialCommandGroup(
     idleDrumUntilShootingFirstBall(),
-    shoot(0.8), // TODO: optimize time
+    shoot(0.8), 
     brakeStorage(0.1),
     intakeWithPathAndTrackTarget,
     // intakeWithPath1(3.0), // * this line and the one underneath it can be replaced with intakeWithPathAndTrackTarget
-    shoot(0.8), // TODO: optimize time
+    shoot(0.8), 
     brakeStorage(0.1),
     intakeWithPath2AndIdleShooterAndAimTurret,
-    shoot(4.0), // TODO: optimize time
+    shoot(4.0), 
     brakeStorage(0.1)
   );
 
