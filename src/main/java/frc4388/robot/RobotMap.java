@@ -22,6 +22,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.networktables.NetworkTableType;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Servo;
@@ -294,15 +295,19 @@ void configureExtenderMotors() {
   }
   
   void configureSerializerMotors() {
-      serializerBelt.restoreFactoryDefaults();
-    }
+    // SendableRegistry.add(new SendableCANSparkMax(serializerBelt), "Intake", "Serializer Belt");
+    // SendableRegistry.setName(serializerBeam, "Intake", "Serializer Beam");
+    serializerBelt.restoreFactoryDefaults();
+    serializerBelt.setIdleMode(IdleMode.kBrake);
+  }
 
-    /* Storage Subsystem */
-    public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
+  /* Storage Subsystem */
+  public final CANSparkMax storageMotor = new CANSparkMax(StorageConstants.STORAGE_CAN_ID, MotorType.kBrushless);
+  
+  void configureStorageMotors() {
+    // SendableRegistry.add(new SendableCANSparkMax(storageMotor), "Intake", "Storage Motor");
+    storageMotor.restoreFactoryDefaults();
+    storageMotor.setIdleMode(IdleMode.kCoast);
     
-    void configureStorageMotors() {
-        storageMotor.restoreFactoryDefaults();
-        storageMotor.setIdleMode(IdleMode.kCoast);
-    }
-    
+  }
 }
