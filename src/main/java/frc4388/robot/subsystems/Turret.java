@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc4388.robot.Constants.ShooterConstants;
-import frc4388.robot.commands.ShooterCommands.Shoot;
 import frc4388.robot.subsystems.BoomBoom.ShooterTableEntry;
 import frc4388.utility.Gains;
 
@@ -253,5 +252,10 @@ public class Turret extends SubsystemBase {
   public double getCurrent(){
     return m_boomBoomRotateMotor.getOutputCurrent();
   }
-
+  public boolean isLockedOn() {
+    double currentTurret = getBoomBoomAngleDegrees();
+    double targetTurret = m_boomBoomRotateMotor.get();
+    return Math.abs(currentTurret - targetTurret) > TURRET_TOLERANCE;
+  }
+  private static final double TURRET_TOLERANCE = 0.2;
 }

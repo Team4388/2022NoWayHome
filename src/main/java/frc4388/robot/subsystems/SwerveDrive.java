@@ -25,10 +25,10 @@ import frc4388.utility.Gains;
 
 public class SwerveDrive extends SubsystemBase {
 
-  private SwerveModule m_leftFront;
-  private SwerveModule m_leftBack;
-  private SwerveModule m_rightFront;
-  private SwerveModule m_rightBack;
+  private SwerveModule m_frontLeft;
+  private SwerveModule m_frontRight;
+  private SwerveModule m_backLeft;
+  private SwerveModule m_backRight;
 
   double halfWidth = SwerveDriveConstants.WIDTH / 2.d;
   double halfHeight = SwerveDriveConstants.HEIGHT / 2.d;
@@ -56,16 +56,18 @@ public class SwerveDrive extends SubsystemBase {
 
   public final Field2d m_field = new Field2d();
 
-  public SwerveDrive(SwerveModule leftFront, SwerveModule leftBack, SwerveModule rightFront, SwerveModule rightBack,
-      WPI_Pigeon2 gyro) {
+  public SwerveDrive(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule backLeft, SwerveModule backRight, WPI_Pigeon2 gyro) {
+    //XXX:
+    setName("Swerve Drive");
+    addChild("Gyro", m_gyro);
 
-    m_leftFront = leftFront;
-    m_leftBack = leftBack;
-    m_rightFront = rightFront;
-    m_rightBack = rightBack;
+    m_frontLeft = frontLeft;
+    m_frontRight = frontRight;
+    m_backLeft = backLeft;
+    m_backRight = backRight;
     m_gyro = gyro;
 
-    modules = new SwerveModule[] {m_leftFront, m_rightFront, m_leftBack, m_rightBack};
+    modules = new SwerveModule[] {m_frontLeft, m_frontRight, m_backLeft, m_backRight};
     
     // m_poseEstimator = new SwerveDrivePoseEstimator(
     //     getRegGyro(),//m_gyro.getRotation2d(),
@@ -295,10 +297,10 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   public double getCurrent(){
-    return m_leftFront.getCurrent() + m_rightFront.getCurrent() + m_rightBack.getCurrent() + m_leftBack.getCurrent();
+    return m_frontLeft.getCurrent() + m_frontRight.getCurrent() + m_backRight.getCurrent() + m_backLeft.getCurrent();
   }
 
   public double getVoltage(){
-    return m_leftFront.getVoltage() + m_rightFront.getVoltage() + m_rightBack.getVoltage() + m_leftBack.getVoltage();
+    return m_frontLeft.getVoltage() + m_frontRight.getVoltage() + m_backRight.getVoltage() + m_backLeft.getVoltage();
   }
 }

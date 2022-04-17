@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -27,11 +26,10 @@ import com.diffplug.common.base.Errors;
 
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.Ansi.Color;
-
-import edu.wpi.first.hal.HAL;
-
 import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiPrintStream;
+
+import edu.wpi.first.hal.HAL;
 
 public class AnsiLogging {
   public static final Level LEVEL = Level.ALL;
@@ -62,6 +60,7 @@ public class AnsiLogging {
       DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
       // Store the handler for HAL to use when sending errors to DriverStation.
       halLoggerHandler = new LoggingAnsiConsoleHandler(new HalOutputStream());
+      // Logger.getLogger(name)
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }

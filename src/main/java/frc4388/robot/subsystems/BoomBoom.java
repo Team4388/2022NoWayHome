@@ -24,6 +24,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -37,8 +38,7 @@ import frc4388.utility.NumericData;
 public class BoomBoom extends SubsystemBase {
   private static final Logger LOGGER = Logger.getLogger(BoomBoom.class.getSimpleName());
   public WPI_TalonFX m_shooterFalconLeft;
-  public WPI_TalonFX m_shooterFalconRight;
-  public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
+  public WPI_TalonFX m_shooterFalconRight;  public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
   public static BoomBoom m_boomBoom;
   double speed2;
 
@@ -217,4 +217,11 @@ public class BoomBoom extends SubsystemBase {
   public double getCurrent(){
     return m_shooterFalconLeft.getSupplyCurrent() + m_shooterFalconRight.getSupplyCurrent();
   }
+
+  public boolean isLockedOn() {
+    double currentDrum = Math.min(m_shooterFalconLeft.getSelectedSensorVelocity(), m_shooterFalconRight.getSelectedSensorVelocity());
+    double targetDrum = Math.max(m_shooterFalconLeft.get(), m_shooterFalconRight.get());
+    return Math.abs(currentDrum - targetDrum) > VELOCITY_TOLERANCE;
+  }
+  private static final double VELOCITY_TOLERANCE = 300.0;
 }

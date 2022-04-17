@@ -143,4 +143,11 @@ public class Hood extends SubsystemBase {
   public double getCurrent(){
     return m_angleAdjusterMotor.getOutputCurrent();
   }
+
+  public boolean isLockedOn() {
+    double currentHood = getEncoderPosition();
+    double targetHood = m_angleAdjusterMotor.get();
+    return Math.abs(currentHood - targetHood) > HOOD_TOLERANCE;
+  }
+  private static final double HOOD_TOLERANCE = 5.0;
 }

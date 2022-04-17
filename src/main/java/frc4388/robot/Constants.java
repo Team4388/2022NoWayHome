@@ -345,4 +345,13 @@ public final class Constants {
     public static final double PIXELS_PER_DEGREE = LIME_HIXELS / H_FOV;
     public static final double DEGREES_PER_PIXEL = 1 / PIXELS_PER_DEGREE;
   }
+
+  public static final class AutoConstants {
+    public static final double PATH_MAX_VEL = 3.0;
+    public static final double PATH_MAX_ACCEL = 3.0;
+    public static final double LOCK_ON_DURATION = 0.8;
+    public static final double LOCK_ON_TIME_ALLOWANCE = 1.6;
+    public static final double STORAGE_TIME_TWO_BALLS = 1.5;
+    public static final double STORAGE_TIME_ONE_BALL = 0.8;
+  }
 }

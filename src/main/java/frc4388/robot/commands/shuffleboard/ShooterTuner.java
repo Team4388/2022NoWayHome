@@ -13,12 +13,16 @@ import java.util.logging.Logger;
 
 import com.diffplug.common.base.Errors;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -52,7 +56,15 @@ public class ShooterTuner extends CommandBase {
     var tab = Shuffleboard.getTab("Shooter Tuner");
     if (tab.getComponents().isEmpty()) {
       var manual = tab.getLayout("Manual Shooter Data", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 5);
-      manual.add("Manual Shooter Data", m_shotEditor);
+      //XXX:
+      var sbi = new SendableBuilderImpl();
+      sbi.setTable(NetworkTableInstance.getDefault().getTable("ShooterTuner/Manual Shooter Data"));
+      sbi.addDoubleProperty("Drum Velocity", () -> tableOverrideEntry.drumVelocity, d -> tableOverrideEntry.drumVelocity = d);
+      sbi.addDoubleProperty("Hood Extension", () -> tableOverrideEntry.hoodExt, d -> tableOverrideEntry.hoodExt = d);
+      sbi.addDoubleProperty("Turret Offset", () -> tableOverrideEntry.turretOffset, d -> tableOverrideEntry.turretOffset = d);
+      sbi.addDoubleProperty("Distance", () -> tableOverrideEntry.distance, d -> tableOverrideEntry.distance = d);
+      sbi.addBooleanProperty("Measure Distance", () -> measureDistance, b -> measureDistance = b);
+      // manual.add("Manual Shooter Data", m_shotEditor);
       manual.add("Manual Data Appender", m_shotCsvAppender);
       var csv = tab.getLayout("Shooter Table", BuiltInLayouts.kList).withPosition(2, 0).withSize(7, 5);
       csv.add("Shooter Table", m_tableEditor);

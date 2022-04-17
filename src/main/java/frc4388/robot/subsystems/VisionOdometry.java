@@ -20,6 +20,7 @@ import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -67,6 +68,12 @@ public class VisionOdometry extends SubsystemBase {
     System.out.println("Result: " + result.hasTargets() + ", latency: " + latency);
 
     ArrayList<Point> points = new ArrayList<>();
+    //XXX: REMOVE
+    if (RobotBase.isSimulation()) {
+      points = new ArrayList<>();
+      points.add(new Point(320, 240));
+      return points;
+    }
     if(!result.hasTargets())
       return points;
 
@@ -84,7 +91,6 @@ public class VisionOdometry extends SubsystemBase {
           points.add(new Point(corner.x, VisionConstants.LIME_VIXELS - corner.y));
       }
     }
-
     return points;
   }
 

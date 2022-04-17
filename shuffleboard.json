@@ -1,0 +1,393 @@
+{
+  "tabPane": [
+    {
+      "title": "SmartDashboard",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
+      }
+    },
+    {
+      "title": "LiveWindow",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "LiveWindow/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
+      }
+    },
+    {
+      "title": "Robot",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 60.0,
+        "showGrid": true,
+        "hgap": 10.0,
+        "vgap": 10.0,
+        "titleType": 1,
+        "tiles": {
+          "0,0": {
+            "size": [
+              6,
+              8
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Match",
+              "Layout/Number of columns": 1,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "HIDDEN",
+              "_children": {
+                "0,0": {
+                  "_type": "Basic FMS Info",
+                  "_title": "Basic FMS Info"
+                },
+                "0,1": {
+                  "_type": "Field",
+                  "_title": "Field",
+                  "Game/Game": "A2021_Infinite_Recharge",
+                  "Visuals/Robot Icon Size": 50.0,
+                  "Visuals/Show Outside Circles": false
+                },
+                "0,2": {
+                  "_type": "Grid Layout",
+                  "_title": "Match Time",
+                  "Layout/Number of columns": 3,
+                  "Layout/Number of rows": 1,
+                  "Layout/Label position": "BOTTOM",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Number Bar",
+                      "_title": "Autonomous",
+                      "Range/Min": 0.0,
+                      "Range/Max": 15.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 4,
+                      "Visuals/Show text": true
+                    },
+                    "1,0": {
+                      "_type": "Number Bar",
+                      "_title": "Teleoperated",
+                      "Range/Min": 0.0,
+                      "Range/Max": 90.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 5,
+                      "Visuals/Show text": true
+                    },
+                    "2,0": {
+                      "_type": "Number Bar",
+                      "_title": "Climb",
+                      "Range/Min": 0.0,
+                      "Range/Max": 30.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 5,
+                      "Visuals/Show text": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "0,8": {
+            "size": [
+              6,
+              5
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Power",
+              "Layout/Label position": "HIDDEN",
+              "_children": [
+                {
+                  "_type": "Graph",
+                  "_title": "Graph",
+                  "Graph/Visible time": 30.0,
+                  "Graph/X-axis auto scrolling": true,
+                  "Y-axis/Automatic bounds": true,
+                  "Y-axis/Upper bound": 1.0,
+                  "Y-axis/Lower bound": -1.0,
+                  "Y-axis/Unit": "ul"
+                },
+                {
+                  "_type": "PDP",
+                  "_title": "PDP",
+                  "Visuals/Show voltage and current values": true
+                }
+              ]
+            }
+          },
+          "6,0": {
+            "size": [
+              3,
+              4
+            ],
+            "content": {
+              "_type": "Robot Preferences",
+              "_title": "Robot Preferences",
+              "Miscellaneous/Show search box": false
+            }
+          },
+          "9,0": {
+            "size": [
+              7,
+              8
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_title": "Drive",
+              "Layout/Label position": "HIDDEN",
+              "_children": [
+                {
+                  "_type": "Swerve Drivebase",
+                  "_title": "",
+                  "Visuals/Show velocity vectors": true
+                },
+                {
+                  "_type": "Grid Layout",
+                  "_title": "Layout",
+                  "Layout/Number of columns": 2,
+                  "Layout/Number of rows": 1,
+                  "Layout/Label position": "HIDDEN",
+                  "_children": {
+                    "1,0": {
+                      "_type": "Grid Layout",
+                      "_title": "Layout",
+                      "Layout/Number of columns": 1,
+                      "Layout/Number of rows": 2,
+                      "Layout/Label position": "BOTTOM",
+                      "_children": {
+                        "0,1": {
+                          "_type": "Split Button Chooser",
+                          "_title": "Speed"
+                        },
+                        "0,0": {
+                          "_type": "3-Axis Accelerometer",
+                          "_title": "Accelerometer",
+                          "Accelerometer/Range": "k16G",
+                          "Visuals/Show value": true,
+                          "Visuals/Precision": 2,
+                          "Visuals/Show tick marks": true
+                        }
+                      }
+                    },
+                    "0,0": {
+                      "_type": "Gyro",
+                      "_title": "Gyro",
+                      "Visuals/Major tick spacing": 45.0,
+                      "Visuals/Starting angle": 180.0,
+                      "Visuals/Show tick mark ring": true,
+                      "Visuals/Counter clockwise": false
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "16,0": {
+            "size": [
+              7,
+              8
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_title": "Camera",
+              "Crosshair/Show crosshair": false,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": false,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "10,8": {
+            "size": [
+              6,
+              5
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Turret",
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 1,
+              "Layout/Label position": "HIDDEN",
+              "_children": {
+                "1,0": {
+                  "_type": "Boolean Box",
+                  "_title": "Shooter Safety",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "0,0": {
+                  "_type": "List Layout",
+                  "_title": "Layout",
+                  "Layout/Label position": "BOTTOM",
+                  "_children": [
+                    {
+                      "_type": "Number Bar",
+                      "_title": "Speed",
+                      "Range/Min": 0.0,
+                      "Range/Max": 100.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 0,
+                      "Visuals/Show text": true
+                    },
+                    {
+                      "_type": "Number Bar",
+                      "_title": "Angle",
+                      "Range/Min": 0.0,
+                      "Range/Max": 100.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 0,
+                      "Visuals/Show text": true
+                    },
+                    {
+                      "_type": "Number Bar",
+                      "_title": "Hood",
+                      "Range/Min": 0.0,
+                      "Range/Max": 100.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 0,
+                      "Visuals/Show text": true
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "6,8": {
+            "size": [
+              4,
+              5
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Cargo",
+              "Layout/Number of columns": 1,
+              "Layout/Number of rows": 2,
+              "Layout/Label position": "HIDDEN",
+              "_children": {
+                "0,1": {
+                  "_type": "Grid Layout",
+                  "_title": "Layout",
+                  "Layout/Number of columns": 3,
+                  "Layout/Number of rows": 1,
+                  "Layout/Label position": "BOTTOM",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Number Bar",
+                      "_title": "Intake",
+                      "Range/Min": -1.0,
+                      "Range/Max": 1.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 5,
+                      "Visuals/Show text": true
+                    },
+                    "1,0": {
+                      "_type": "Number Bar",
+                      "_title": "Serializer",
+                      "Range/Min": -1.0,
+                      "Range/Max": 1.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 5,
+                      "Visuals/Show text": true
+                    },
+                    "2,0": {
+                      "_type": "Number Bar",
+                      "_title": "Storage",
+                      "Range/Min": -1.0,
+                      "Range/Max": 1.0,
+                      "Range/Center": 0.0,
+                      "Visuals/Num tick marks": 5,
+                      "Visuals/Show text": true
+                    }
+                  }
+                },
+                "0,0": {
+                  "_type": "Grid Layout",
+                  "_title": "Layout",
+                  "Layout/Number of columns": 1,
+                  "Layout/Number of rows": 1,
+                  "Layout/Label position": "BOTTOM",
+                  "_children": {
+                    "0,0": {
+                      "_type": "Split Button Chooser",
+                      "_title": "Extender"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "6,4": {
+            "size": [
+              3,
+              4
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Climber",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Number Bar",
+                  "_title": "Claws",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true
+                },
+                {
+                  "_type": "Number Bar",
+                  "_title": "Arm",
+                  "Range/Min": -1.0,
+                  "Range/Max": 1.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 5,
+                  "Visuals/Show text": true
+                }
+              ]
+            }
+          },
+          "16,8": {
+            "size": [
+              7,
+              5
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_title": "Limelight",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": false,
+              "Controls/Rotation": "NONE",
+              "compression": -1.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": 0.0,
+    "y": 25.0,
+    "width": 1680.0,
+    "height": 1025.0
+  }
+}
