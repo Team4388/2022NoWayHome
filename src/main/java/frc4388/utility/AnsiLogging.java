@@ -130,7 +130,7 @@ public class AnsiLogging {
     return new PrintStream(new ByteArrayOutputStream() {
       @Override
       public void flush() throws IOException {
-        String s = new String(buf, 0, strip ? count - 1 : count);
+        String s = new String(buf, 0, strip ? Math.max(0, count - 1) : count);
         if (!s.isBlank()) logger.accept(s);
         reset();
       }
