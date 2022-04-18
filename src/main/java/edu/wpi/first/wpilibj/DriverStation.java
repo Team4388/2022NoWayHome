@@ -563,28 +563,30 @@ public class DriverStation {
       boolean printTrace,
       StackTraceElement[] stackTrace,
       int stackTraceFirst) {
-    if (!frc4388.utility.AnsiLogging.LEVEL.equals(java.util.logging.Level.OFF)) {
-      java.util.logging.LogRecord logRecord = new java.util.logging.LogRecord(isError ? java.util.logging.Level.SEVERE : java.util.logging.Level.FINER, error.stripTrailing());
-      logRecord.setLoggerName("HAL");
-      if (!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord)) return;
-      java.util.Optional.ofNullable(stackTrace).filter(s -> s.length >= stackTraceFirst + 1).map(s -> java.util.Arrays.copyOfRange(s, Math.min(Math.max(0, stackTraceFirst), s.length - 1), s.length - 1)).ifPresent(presentStackTrace -> {
-        logRecord.setSourceMethodName(presentStackTrace[0].getMethodName());
-        String throwableMessage;
-        if (presentStackTrace[0].toString().equals("edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:63)")) {
-          throwableMessage = "Epochs" + System.lineSeparator() + logRecord.getMessage();
-          presentStackTrace = new java.lang.StackTraceElement[0];
-          logRecord.setLevel(java.util.logging.Level.FINEST);
-          logRecord.setMessage("Execution times:");
-        } else if (printTrace) {
-          long lineCount = logRecord.getMessage().lines().count();
-          throwableMessage = (lineCount > 1 ? logRecord.getMessage().lines().findFirst().map(s -> s + " + " + lineCount + " more lines...").orElse("") : logRecord.getMessage()).stripLeading();
-        } else return;
-        java.lang.Throwable throwable = new java.lang.Throwable(throwableMessage);
-        throwable.setStackTrace(presentStackTrace);
-        logRecord.setThrown(throwable);
-      });
-      if (!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord)) return;
-      frc4388.utility.AnsiLogging.halLoggerHandler.publish(logRecord);
+    if (frc4388.utility.AnsiLogging.halLoggerHandler != null) {
+      if (!frc4388.utility.AnsiLogging.LEVEL.equals(java.util.logging.Level.OFF)) {
+        java.util.logging.LogRecord logRecord = new java.util.logging.LogRecord(isError ? java.util.logging.Level.SEVERE : java.util.logging.Level.FINER, error.stripTrailing());
+        logRecord.setLoggerName("HAL");
+        if (!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord)) return;
+        java.util.Optional.ofNullable(stackTrace).filter(s -> s.length >= stackTraceFirst + 1).map(s -> java.util.Arrays.copyOfRange(s, Math.min(Math.max(0, stackTraceFirst), s.length - 1), s.length - 1)).ifPresent(presentStackTrace -> {
+          logRecord.setSourceMethodName(presentStackTrace[0].getMethodName());
+          String throwableMessage;
+          if (presentStackTrace[0].toString().equals("edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:63)")) {
+            throwableMessage = "Epochs" + System.lineSeparator() + logRecord.getMessage();
+            presentStackTrace = new java.lang.StackTraceElement[0];
+            logRecord.setLevel(java.util.logging.Level.FINEST);
+            logRecord.setMessage("Execution times:");
+          } else if (printTrace) {
+            long lineCount = logRecord.getMessage().lines().count();
+            throwableMessage = (lineCount > 1 ? logRecord.getMessage().lines().findFirst().map(s -> s + " + " + lineCount + " more lines...").orElse("") : logRecord.getMessage()).stripLeading();
+          } else return;
+          java.lang.Throwable throwable = new java.lang.Throwable(throwableMessage);
+          throwable.setStackTrace(presentStackTrace);
+          logRecord.setThrown(throwable);
+        });
+        if (!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord)) return;
+        frc4388.utility.AnsiLogging.halLoggerHandler.publish(logRecord);
+      }
     } else {
       String locString;
       if (stackTrace.length >= stackTraceFirst + 1) {

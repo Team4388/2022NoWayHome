@@ -35,9 +35,8 @@ public class AnsiLogging {
   public static final Level LEVEL = Level.ALL;
   private static final AnsiPrintStream ANSI_CONSOLE_STREAM = AnsiConsole.err();
 
-  public static Handler halLoggerHandler = new ConsoleHandler();
+  public static Handler halLoggerHandler = null;
   public static void systemInstall() {
-    if (LEVEL.equals(Level.OFF)) return;
     try {
       // Configure java.util.logging.Logger to output additional colored information.
       LogManager.getLogManager().updateConfiguration(key -> (o, n) -> {
@@ -60,7 +59,6 @@ public class AnsiLogging {
       DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
       // Store the handler for HAL to use when sending errors to DriverStation.
       halLoggerHandler = new LoggingAnsiConsoleHandler(new HalOutputStream());
-      // Logger.getLogger(name)
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }
@@ -132,7 +130,7 @@ public class AnsiLogging {
       @Override
       public void flush() throws IOException {
         String s = toString();
-        if (!s.isBlank()) logger.logp(level, null, source, toString());
+        if (!s.isBlank()) logger.logp(level, null, source, s);
         reset();
       }
     }, true);
@@ -146,8 +144,7 @@ public class AnsiLogging {
     }
     @Override
     public void flush() {
-      String s = toString();
-      HAL.sendError(false, 0, false, s.substring(0, s.length() - 1), "", "", true);
+      HAL.sendError(false, 0, false, new String(buf, 0, count - 1), "", "", true);
       reset();
     }
   }
