@@ -12,7 +12,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.ConsoleHandler;
+import java.util.function.Consumer;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -52,13 +52,13 @@ public class AnsiLogging {
       // Set the console to process ANSI escape codes.
       ANSI_CONSOLE_STREAM.install();
       // Sends standard output stream messages through a logger.
-      System.setOut(printStreamLogger(Logger.getGlobal(), "out", Level.INFO));
+      System.setOut(printStreamLogger(false, s -> Logger.getGlobal().logp(Level.INFO, null, "out", s)));
       // Sends standard error output stream messages through a logger.
-      System.setErr(printStreamLogger(Logger.getGlobal(), "err", Level.SEVERE));
+      System.setErr(printStreamLogger(false, s -> Logger.getGlobal().logp(Level.SEVERE, null, "err", s)));
       // This is registering a plugin that will log Durian errors to the console using a logger.
       DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
       // Store the handler for HAL to use when sending errors to DriverStation.
-      halLoggerHandler = new LoggingAnsiConsoleHandler(new HalOutputStream());
+      halLoggerHandler = new LoggingAnsiConsoleHandler(printStreamLogger(true, s -> HAL.sendError(false, 0, false, s, "", "", true)));
     } catch (IOException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }
@@ -90,7 +90,8 @@ public class AnsiLogging {
           printWriter.println();
           throwable.printStackTrace(printWriter);
         }
-        return stringWriter.toString();
+        StringBuffer stringBuffer = stringWriter.getBuffer();
+        return stringBuffer.substring(0, Math.max(0, stringBuffer.length() - 1));
       }
 
       @Override
@@ -98,7 +99,7 @@ public class AnsiLogging {
         ZonedDateTime time = ZonedDateTime.ofInstant(logRecord.getInstant(), ZONE_ID);
         // Get the logger name, source class name, and/or source method name.
         String source = Optional.ofNullable(logRecord.getLoggerName()).or(() -> Optional.ofNullable(logRecord.getSourceClassName())).map(s -> s + " ").orElse("") + Optional.ofNullable(logRecord.getSourceMethodName()).orElse("");
-        String message = formatMessage(logRecord);
+        String message = logRecord.getMessage();
         // Get the stack trace of the exception if it was thrown.
         String throwable = Optional.ofNullable(logRecord.getThrown()).map(LoggingAnsiFormatter::makeStackTraceString).orElse("");
         // Select the appropriate format string for the log level.
@@ -125,27 +126,14 @@ public class AnsiLogging {
     }
   }
 
-  private static PrintStream printStreamLogger(Logger logger, String source, Level level) {
+  private static PrintStream printStreamLogger(boolean strip, Consumer<String> logger) {
     return new PrintStream(new ByteArrayOutputStream() {
       @Override
       public void flush() throws IOException {
-        String s = toString();
-        if (!s.isBlank()) logger.logp(level, null, source, s);
+        String s = new String(buf, 0, strip ? count - 1 : count);
+        if (!s.isBlank()) logger.accept(s);
         reset();
       }
     }, true);
-  }
-
-  private static class HalOutputStream extends ByteArrayOutputStream {
-    @Override
-    public synchronized void write(int b) {
-      if (b == '\n') flush();
-      else super.write(b);
-    }
-    @Override
-    public void flush() {
-      HAL.sendError(false, 0, false, new String(buf, 0, count - 1), "", "", true);
-      reset();
-    }
   }
 }
