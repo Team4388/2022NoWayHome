@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc4388.robot.RobotContainer;
 import frc4388.robot.Constants.AutoConstants;
 import frc4388.robot.Constants.StorageConstants;
+import frc4388.robot.commands.extender.DeployExtender;
 import frc4388.robot.commands.shooter.TimedWaitUntilCommand;
 import frc4388.robot.commands.shooter.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
@@ -85,8 +86,8 @@ public class AutonomousBuilder {
   private Command buildStartupCommandPart() {
     return CommandGroupBase.sequence(
       new InstantCommand(() -> m_boomBoom.runDrumShooterVelocityPID(8000), m_boomBoom).withName("StartIdlingShooter"),
-      new InstantCommand(() -> m_intake.runAtOutput(-1), m_intake).withName("StartRunningIntake")
-      // new RunExtender(m_extender).withName("DeployExtender")
+      new InstantCommand(() -> m_intake.runAtOutput(-1), m_intake).withName("StartRunningIntake"),
+      new DeployExtender(m_extender, m_intake).withName("DeployExtender")
     );
   }
 

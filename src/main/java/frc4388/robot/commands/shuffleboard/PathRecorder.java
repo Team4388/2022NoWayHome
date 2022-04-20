@@ -1,4 +1,4 @@
-package frc4388.robot.commands;
+package frc4388.robot.commands.shuffleboard;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.commands.PathPlannerCommand;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.PathPlannerUtil.Path.Waypoint;

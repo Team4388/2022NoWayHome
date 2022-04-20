@@ -6,7 +6,6 @@ package frc4388.robot;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +24,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -33,10 +33,11 @@ import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.commands.AutonomousBuilder;
-import frc4388.robot.commands.PathRecorder;
-import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
+import frc4388.robot.commands.extender.DeployExtender;
+import frc4388.robot.commands.extender.RetractExtender;
 import frc4388.robot.commands.shooter.TrackTarget;
 import frc4388.robot.commands.shuffleboard.CommandSchedule;
+import frc4388.robot.commands.shuffleboard.PathRecorder;
 import frc4388.robot.commands.shuffleboard.ShooterTuner;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Camera;
@@ -264,7 +265,7 @@ public class RobotContainer {
         button.whenPressed(m_robotClaws::toggleClaws, m_robotClaws);
       } else if (binding == XboxController.Button.kX) {
         /* X > Toggle Extender Deployment */
-        button.whenPressed(new ExtenderIntakeGroup(m_robotIntake, m_robotExtender));
+        button.whenPressed(new ConditionalCommand(new DeployExtender(m_robotExtender, m_robotIntake), new RetractExtender(m_robotExtender), m_robotExtender::isRetracted));
       } else if (binding == XboxController.Button.kY) {
         /* Y > Track Target */
         button.whileHeld(new TrackTarget(m_robotVisionOdometry, m_robotTurret, m_robotHood, m_robotBoomBoom));
@@ -328,7 +329,6 @@ public class RobotContainer {
         button.whenReleased(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret);
         button.whenReleased(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood);
         button.whenReleased(() -> m_robotExtender.setEncoder(0), m_robotExtender);
-        button.whenReleased(ExtenderIntakeGroup::setDirectionToOut, m_robotIntake, m_robotExtender);
         button.whenReleased(() -> m_robotClimber.setEncoders(0), m_robotClimber);
       } else if (binding == ButtonBox.Button.kRightButton) {
         /* Right Button > Extender Out */

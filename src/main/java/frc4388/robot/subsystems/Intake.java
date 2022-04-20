@@ -9,7 +9,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.IntakeConstants;
-import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
 
 public class Intake extends SubsystemBase {
 
@@ -24,7 +23,6 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Intake Percent Output", m_intakeMotor.get());
-    SmartDashboard.putNumber("Extender Direction", ExtenderIntakeGroup.direction);
   }
   /**
    * Runs The Intake With Triggers as input

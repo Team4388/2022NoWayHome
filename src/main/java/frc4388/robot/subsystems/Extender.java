@@ -17,7 +17,6 @@ import frc4388.robot.Constants.ExtenderConstants;
 public class Extender extends SubsystemBase {
   
   private CANSparkMax m_extenderMotor;
-  private double m_invert = 1;
 
   // private SparkMaxLimitSwitch m_inLimit;
   // private SparkMaxLimitSwitch m_outLimit;
@@ -47,10 +46,6 @@ public class Extender extends SubsystemBase {
     m_extenderMotor.enableSoftLimit(SoftLimitDirection.kReverse, set);
   }
 
-  public void invertExtender(double invert){
-    m_invert = invert;
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -58,8 +53,15 @@ public class Extender extends SubsystemBase {
   }
 
   public void runExtender(double input) {
-    // if (!m_serializer.getBeam() && input < 0.) return;
-    m_extenderMotor.set(input * m_invert);
+    m_extenderMotor.set(input);
+  }
+
+  public boolean isDeployed() {
+    return Math.abs(getPosition() - ExtenderConstants.EXTENDER_FORWARD_LIMIT) < ExtenderConstants.EXTENDER_TOLERANCE;
+  }
+
+  public boolean isRetracted() {
+    return Math.abs(getPosition() - ExtenderConstants.EXTENDER_REVERSE_LIMIT) < ExtenderConstants.EXTENDER_TOLERANCE;
   }
 
   public double getPosition() {
