@@ -190,19 +190,19 @@ public class RobotContainer {
     /* Right Stick > Unbound */
     new JoystickButton(getDriverController(), XboxController.Button.kRightStick.value)
         .whenPressed(new PrintCommand("Unbound"));
-    /* A > Unbound */
+    /* A > Toggle Climber */
     new JoystickButton(getDriverController(), XboxController.Button.kA.value)
-        .whenPressed(this::switchControlMode)
-        .whenReleased(this::switchControlMode);
-    /* B > Unbound */
+        .whenPressed(this::toggleClimberControlMode)
+        .whenReleased(this::toggleClimberControlMode);
+    /* B > Switch Drive Mode */
     new JoystickButton(getDriverController(), XboxController.Button.kB.value)
         .whenPressed(this::switchDriveMode)
         .whenReleased(this::switchDriveMode);
-    /* X > Unbound */
+    /* X > Run Extender Out */
     new JoystickButton(getDriverController(), XboxController.Button.kX.value)
         .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
         .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-    /* Y > Unbound */
+    /* Y > Run Extender In */
     new JoystickButton(getDriverController(), XboxController.Button.kY.value)
         .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
         .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
@@ -225,37 +225,37 @@ public class RobotContainer {
 
   private void configureOperatorButtonBindings() {
     /* Left Bumper > Storage In */
-    new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value).whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
+    new JoystickButton(getOperatorController(), XboxController.Button.kLeftBumper.value).whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
     /* Right Bumper > Storage Out */
-    new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value).whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
+    new JoystickButton(getOperatorController(), XboxController.Button.kRightBumper.value).whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
         .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
     /* Left Stick > Unbound */
-    new JoystickButton(getDriverController(), XboxController.Button.kLeftStick.value).whenPressed(new PrintCommand("Unbound"));
+    new JoystickButton(getOperatorController(), XboxController.Button.kLeftStick.value).whenPressed(new PrintCommand("Unbound"));
     /* Right Stick > Unbound */
-    new JoystickButton(getDriverController(), XboxController.Button.kRightStick.value).whenPressed(new PrintCommand("Unbound"));
+    new JoystickButton(getOperatorController(), XboxController.Button.kRightStick.value).whenPressed(new PrintCommand("Unbound"));
     /* A > Spit Out Ball */
-    new JoystickButton(getDriverController(), XboxController.Button.kA.value).whileHeld(new RunCommand(m_robotTurret::gotoMidpoint, m_robotTurret))
+    new JoystickButton(getOperatorController(), XboxController.Button.kA.value).whileHeld(new RunCommand(m_robotTurret::gotoMidpoint, m_robotTurret))
         .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)));
     /* B > Toggle Claws */
-    new JoystickButton(getDriverController(), XboxController.Button.kB.value).whenPressed(m_robotClaws::toggleClaws, m_robotClaws);
+    new JoystickButton(getOperatorController(), XboxController.Button.kB.value).whenPressed(m_robotClaws::toggleClaws, m_robotClaws);
     /* X > Toggle Extender Deployment */
-    new JoystickButton(getDriverController(), XboxController.Button.kX.value).whenPressed(new ConditionalCommand(new DeployExtender(m_robotExtender, m_robotIntake), new RetractExtender(m_robotExtender), m_robotExtender::isRetracted));
+    new JoystickButton(getOperatorController(), XboxController.Button.kX.value).whenPressed(new ConditionalCommand(new DeployExtender(m_robotExtender, m_robotIntake), new RetractExtender(m_robotExtender), m_robotExtender::isRetracted));
     /* Y > Track Target */
-    new JoystickButton(getDriverController(), XboxController.Button.kY.value).whileHeld(new TrackTarget(m_robotVisionOdometry, m_robotTurret, m_robotHood, m_robotBoomBoom));
+    new JoystickButton(getOperatorController(), XboxController.Button.kY.value).whileHeld(new TrackTarget(m_robotVisionOdometry, m_robotTurret, m_robotHood, m_robotBoomBoom));
     /* Back > Unbound */
-    new JoystickButton(getDriverController(), XboxController.Button.kBack.value).whenPressed(new PrintCommand("Unbound"));
+    new JoystickButton(getOperatorController(), XboxController.Button.kBack.value).whenPressed(new PrintCommand("Unbound"));
     /* Start > Unbound */
-    new JoystickButton(getDriverController(), XboxController.Button.kStart.value).whenPressed(new PrintCommand("Unbound"));
+    new JoystickButton(getOperatorController(), XboxController.Button.kStart.value).whenPressed(new PrintCommand("Unbound"));
 
     /* D-pad Up > Unbound */
-    new POVButton(getDriverController(), 0).whenPressed(new PrintCommand("Unbound"));
+    new POVButton(getOperatorController(), 0).whenPressed(new PrintCommand("Unbound"));
     /* D-pad Right > Unbound */
-    new POVButton(getDriverController(), 90).whenPressed(new PrintCommand("Unbound"));
+    new POVButton(getOperatorController(), 90).whenPressed(new PrintCommand("Unbound"));
     /* D-pad Down > Unbound */
-    new POVButton(getDriverController(), 180).whenPressed(new PrintCommand("Unbound"));
+    new POVButton(getOperatorController(), 180).whenPressed(new PrintCommand("Unbound"));
     /* D-pad Left > Unbound */
-    new POVButton(getDriverController(), 270).whenPressed(new PrintCommand("Unbound"));
+    new POVButton(getOperatorController(), 270).whenPressed(new PrintCommand("Unbound"));
   }
 
   private void configureBoxButtonBindings() {
@@ -306,7 +306,7 @@ public class RobotContainer {
     return m_robotTurret.isLockedOn() || m_robotHood.isLockedOn() || m_robotBoomBoom.isLockedOn();
   }
 
-  public void switchControlMode() {
+  public void toggleClimberControlMode() {
     isClimberControlMode = !isClimberControlMode;
   }
 

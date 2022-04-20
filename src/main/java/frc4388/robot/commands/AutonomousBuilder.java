@@ -32,6 +32,7 @@ public class AutonomousBuilder {
   private final Turret m_turret;
   private final Hood m_hood;
   private final VisionOdometry m_visionOdometry;
+
   public AutonomousBuilder(RobotContainer robotContainer) {
     m_robotContainer = robotContainer;
     m_drive = m_robotContainer.m_robotSwerveDrive;
@@ -44,6 +45,7 @@ public class AutonomousBuilder {
     m_hood = m_robotContainer.m_robotHood;
     m_visionOdometry = m_robotContainer.m_robotVisionOdometry;
   }
+
   public Command buildOneBallCommand() {
     return CommandGroupBase.sequence(
       buildStartupCommandPart(),

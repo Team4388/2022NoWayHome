@@ -1,5 +1,6 @@
 package frc4388.robot.commands.extender;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.subsystems.Extender;
 import frc4388.robot.subsystems.Intake;
@@ -28,6 +29,6 @@ public class DeployExtender extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_extender.isDeployed();
+    return RobotBase.isSimulation() || m_extender.isDeployed();
   }
 }
