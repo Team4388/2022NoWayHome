@@ -10,15 +10,16 @@
 - [x] Change SparkMax sendable implementation to be an extension.
 - [x] Add Shuffleboard layout plan.
 - [ ] Organize constants.
-- [ ] Efficiently load path files.
-- [ ] Change the path chooser to select autonomous commands.
+- [x] Efficiently load path files.
+- [x] Change the path chooser to select autonomous commands.
 - [ ] Remove unused commands.
-- [ ] Rewrite controller bindings.
-- [ ] Write new-style autonomous programs for lower ball counts.
+- [x] Rewrite controller bindings.
+- [x] Write new-style autonomous programs for lower ball counts.
 - [ ] Fix all XXX comments.
 - [ ] Visit TODO comments.
 - [ ] Forward the limelight port so it can be accessed over a USB tether.
 - [x] Remove turret offset from shooter tables.
+- [ ] AutonomousBuilder *could* be static.
 ## Planned
 - [ ] Shuffleboard replacements options:
   - [ ] Run a web server on the robot and bypass network tables.

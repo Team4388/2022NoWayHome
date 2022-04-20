@@ -215,7 +215,7 @@
               "_children": [
                 {
                   "_type": "Graph",
-                  "_source0": "network_table:///Robot/Values/Voltage",
+                  "_source0": "network_table:///Robot/PDP/Voltage",
                   "_title": "Graph",
                   "Graph/Visible time": 15.0,
                   "Graph/X-axis auto scrolling": true,

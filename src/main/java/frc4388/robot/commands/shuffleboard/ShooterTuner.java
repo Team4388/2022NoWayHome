@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -53,11 +55,11 @@ public class ShooterTuner extends CommandBase {
 
   @Override
   public void initialize() {
-    var tab = Shuffleboard.getTab("Shooter Tuner");
+    ShuffleboardTab tab = Shuffleboard.getTab("Shooter Tuner");
     if (tab.getComponents().isEmpty()) {
-      var manual = tab.getLayout("Manual Shooter Data", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 5);
+      ShuffleboardLayout manual = tab.getLayout("Manual Shooter Data", BuiltInLayouts.kList).withPosition(0, 0).withSize(2, 5);
       //XXX:
-      var sbi = new SendableBuilderImpl();
+      SendableBuilderImpl sbi = new SendableBuilderImpl();
       sbi.setTable(NetworkTableInstance.getDefault().getTable("ShooterTuner/Manual Shooter Data"));
       sbi.addDoubleProperty("Drum Velocity", () -> tableOverrideEntry.drumVelocity, d -> tableOverrideEntry.drumVelocity = d);
       sbi.addDoubleProperty("Hood Extension", () -> tableOverrideEntry.hoodExt, d -> tableOverrideEntry.hoodExt = d);
@@ -65,7 +67,7 @@ public class ShooterTuner extends CommandBase {
       sbi.addBooleanProperty("Measure Distance", () -> measureDistance, b -> measureDistance = b);
       // manual.add("Manual Shooter Data", m_shotEditor);
       manual.add("Manual Data Appender", m_shotCsvAppender);
-      var csv = tab.getLayout("Shooter Table", BuiltInLayouts.kList).withPosition(2, 0).withSize(7, 5);
+      ShuffleboardLayout csv = tab.getLayout("Shooter Table", BuiltInLayouts.kList).withPosition(2, 0).withSize(7, 5);
       csv.add("Shooter Table", m_tableEditor);
       csv.add("Save to CSV File", new InstantCommand(m_boomBoom::saveShooterTable) {
         @Override
