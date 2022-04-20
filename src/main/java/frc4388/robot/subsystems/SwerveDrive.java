@@ -57,10 +57,6 @@ public class SwerveDrive extends SubsystemBase {
   public final Field2d m_field = new Field2d();
 
   public SwerveDrive(SwerveModule frontLeft, SwerveModule frontRight, SwerveModule backLeft, SwerveModule backRight, WPI_Pigeon2 gyro) {
-    //XXX:
-    setName("Swerve Drive");
-    addChild("Gyro", m_gyro);
-
     m_frontLeft = frontLeft;
     m_frontRight = frontRight;
     m_backLeft = backLeft;

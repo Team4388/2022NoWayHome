@@ -4,37 +4,42 @@
 
 package frc4388.robot;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NTSendable;
+import edu.wpi.first.networktables.NTSendableBuilder;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableValue;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc4388.robot.Constants.AutoConstants;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.robot.commands.PathPlannerCommand;
 import frc4388.robot.commands.PathRecorder;
 import frc4388.robot.commands.ExtenderIntakeCommands.ExtenderIntakeGroup;
+import frc4388.robot.commands.ExtenderIntakeCommands.RunExtender;
 import frc4388.robot.commands.shooter.TimedWaitUntilCommand;
 import frc4388.robot.commands.shooter.TrackTarget;
 import frc4388.robot.commands.shuffleboard.CommandSchedule;
@@ -54,6 +59,7 @@ import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.VisionOdometry;
 import frc4388.utility.controller.ButtonBox;
 import frc4388.utility.controller.DeadbandedXboxController;
+import frc4388.utility.shuffleboard.CachingSendableChooser;
 
 //TODO: Try using ConditionalCommand for subsystem default commands.
 //TODO: Replace Path Recorder with Auto Chooser.
@@ -88,8 +94,8 @@ public class RobotContainer {
   public final VisionOdometry m_robotVisionOdometry = new VisionOdometry(m_robotSwerveDrive, m_robotTurret);
 
   /* Dashboard Tools */
-  private final PathRecorder m_pathChooser = new PathRecorder(m_robotSwerveDrive);
-  private final SendableChooser<Command> autoChooser = new SendableChooser<Command>();
+  private final CachingSendableChooser<Command> m_autoChooser = new CachingSendableChooser<>();
+  private final PathRecorder m_pathRecorder = new PathRecorder(m_robotSwerveDrive, m_autoChooser);
   private final ShooterTuner m_shooterTuner = new ShooterTuner(m_robotBoomBoom);
   private final CommandSchedule m_commandSchedule = new CommandSchedule(10, 5, false);
 
@@ -114,16 +120,115 @@ public class RobotContainer {
 
   private DriveMode currentDriveMode = DriveMode.ON;
 
+
+
+  private final Map<String, Sendable> tablesToData = new HashMap<>();
+  private final NetworkTable networkTable = NetworkTableInstance.getDefault().getTable("Robot");
+
+  private synchronized void putData(String key, Sendable data) {
+    Sendable sddata = tablesToData.get(key);
+    if (sddata == null || sddata != data) {
+      tablesToData.put(key, data);
+      NetworkTable dataTable = networkTable.getSubTable(key);
+      SendableBuilderImpl builder = new SendableBuilderImpl();
+      builder.setTable(dataTable);
+      SendableRegistry.publish(data, builder);
+      builder.startListeners();
+      dataTable.getEntry(".name").setString(key);
+    }
+  }
+
+  public synchronized void updateValues() {
+    for (Sendable data : tablesToData.values()) {
+      SendableRegistry.update(data);
+    }
+  }
+
+
+  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    autoChooser.addOption("threeBallPlus", threeBallPlus);
+    m_autoChooser.addOption("OneBall", this::makeOneBallCommand);
+    m_autoChooser.addOption("TwoBall", this::makeTwoBallCommand);
+    m_autoChooser.setDefaultOption("ThreeBall", this::makeThreeBallCommand);
 
-    SmartDashboard.putData("AutoChooser", autoChooser);
+    SmartDashboard.putData("Autonomous", m_autoChooser);
+    SmartDashboard.putData("Path Recorder", m_pathRecorder);
 
-    Preferences.initString("Autonomous", "Three Ball");
+    // Preferences.initString("Autonomous", "Three Ball");
 
+
+
+    var pdp = new PowerDistribution() {
+      @Override
+      public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.setSmartDashboardType("PowerDistributionPanel");
+      }
+    };
+    putData("Values", builder -> {
+      builder.addDoubleProperty("Match Time", DriverStation::getMatchTime, null);
+      builder.addDoubleProperty("Voltage", pdp::getVoltage, null);
+      builder.addDoubleProperty("Claws", m_robotClaws.m_rightClaw::get, null);
+      builder.addDoubleProperty("Arm", m_robotMap.elbow::get, null);
+      builder.addDoubleProperty("Intake", m_robotMap.intakeMotor::get, null);
+      builder.addDoubleProperty("Serializer", m_robotMap.serializerBelt::get, null);
+      builder.addDoubleProperty("Storage", m_robotMap.storageMotor::get, null);
+      builder.addDoubleProperty("Drum", m_robotMap.shooterFalconRight::get, null);
+      builder.addDoubleProperty("Angle", m_robotMap.shooterTurret::get, null);
+      builder.addDoubleProperty("Hood", m_robotMap.angleAdjusterMotor::get, null);
+      builder.addBooleanProperty("Shooter Safety", this::isLockedOn, null);
+    });
+    putData("Field", m_robotSwerveDrive.m_field);
+    putData("PDP", pdp);
+    putData("Extender", new NTSendable() {
+      @Override
+      public void initSendable(NTSendableBuilder builder) {
+        builder.setSmartDashboardType("String Chooser");
+        builder.getEntry(".instance").setDouble(0);
+        builder.addStringProperty("default", () -> "Retracted", null);
+        builder.addStringArrayProperty("options", () -> new String[] {"Retracted", "Extended"}, null);
+        builder.addStringProperty("active", () -> m_robotExtender.getPosition() <= 0 ? "Retracted" : "Extended", null);
+        builder.addStringProperty("selected", null, null);
+      }
+    });
+    putData("Drivebase", m_robotSwerveDrive);
+    putData("Gyro", m_robotSwerveDrive.m_gyro);
+    putData("Drive Speed", new NTSendable() {
+      @Override
+      public void initSendable(NTSendableBuilder builder) {
+        builder.setSmartDashboardType("String Chooser");
+        builder.getEntry(".instance").setDouble(0);
+        builder.addStringProperty("default", () -> "Low", null);
+        builder.addStringArrayProperty("options", () -> new String[] {"Low", "High"}, null);
+        builder.addStringProperty("active", () -> m_robotSwerveDrive.speedAdjust == SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW ? "Low" : "High", null);
+        builder.addStringProperty("selected", null, val -> m_robotSwerveDrive.speedAdjust = val.equals("Low") ? SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW : SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST);
+      }
+    });
+    putData("Accelerometer", new NTSendable() {
+      @Override
+      public void initSendable(NTSendableBuilder builder) {
+        builder.setSmartDashboardType("3AxisAccelerometer");
+        NetworkTableEntry entryX = builder.getEntry("X");
+        NetworkTableEntry entryY = builder.getEntry("Y");
+        NetworkTableEntry entryZ = builder.getEntry("Z");
+        builder.setUpdateTable(() -> {
+          short[] data = new short[3];
+          m_robotSwerveDrive.m_gyro.getBiasedAccelerometer(data);
+          entryX.setDouble(data[0]);
+          entryY.setDouble(data[1]);
+          entryZ.setDouble(data[2]);
+        });
+      }
+    });
+    putData("Drive Camera", m_robotCamera);
+
+
+
+
+    
     configureButtonBindings();
     /* Default Commands */
     // Swerve Drive with Input
@@ -328,7 +433,7 @@ public class RobotContainer {
     new JoystickButton(getDriverController(), XboxController.Button.kY.value).whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender)).whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
   }
 
-  private boolean isLockedOn() {
+  public boolean isLockedOn() {
     return m_robotTurret.isLockedOn() || m_robotHood.isLockedOn() || m_robotBoomBoom.isLockedOn();
   }
 
@@ -338,30 +443,63 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return m_autoChooser.getSelected();
   }
 
-  private final CommandGroupBase threeBallPlus = CommandGroupBase.sequence(
-    new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
-    new InstantCommand(() -> m_robotIntake.runAtOutput(-1), m_robotIntake).withName("StartRunningIntake"),
-    // new RunExtender(m_robotExtender).withName("DeployExtender"),
-    new InstantCommand(() -> m_robotSerializer.setSerializer(0.8), m_robotSerializer).withName("StartRunningSerializer"),
-    // Get Second Ball
-    new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-180), m_robotTurret).withName("StartTurningShooter"),
-    makePathingGroup(AutoConstants.PATH_MAX_VEL, AutoConstants.PATH_MAX_ACCEL, "JMove1").withName("JMove1"),
-    // Shoot Preloaded and Second Ball
-    makeTimeoutTrackShotGroup(AutoConstants.LOCK_ON_DURATION, AutoConstants.LOCK_ON_TIME_ALLOWANCE, AutoConstants.STORAGE_TIME_TWO_BALLS, "FirstSecondBall"),
-    // Get Third Ball
-    new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
-    new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret).withName("StartTurningShooter"),
-    makePathingGroup(AutoConstants.PATH_MAX_VEL, AutoConstants.PATH_MAX_ACCEL, "JMove2").withName("JMove2"),
-    // Shoot Third Ball
-    makeTimeoutTrackShotGroup(AutoConstants.LOCK_ON_DURATION, AutoConstants.LOCK_ON_TIME_ALLOWANCE, AutoConstants.STORAGE_TIME_ONE_BALL, "ThirdBall"),
-    // Stop
-    new InstantCommand(() -> m_robotIntake.runAtOutput(0), m_robotIntake).withName("StopRunningIntake"),
-    new InstantCommand(() -> m_robotSerializer.setSerializer(0.0), m_robotSerializer).withName("StopRunningSerializer"),
-    new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("ThirdBallStopFeed")
-  );
+  private Command makeOneBallCommand() {
+    return CommandGroupBase.sequence(
+      makeStartupCommandPart(),
+      // Shoot Preloaded Ball
+      makeTimeoutTrackShotGroup(AutoConstants.LOCK_ON_DURATION, AutoConstants.LOCK_ON_TIME_ALLOWANCE, AutoConstants.STORAGE_TIME_ONE_BALL, "FirstBall"),
+      makeStopCommandPart()
+    ).withName("OneBall");
+  }
+
+  private Command makeTwoBallCommand() {
+    return CommandGroupBase.sequence(
+      makeStartupCommandPart(),
+      // Get Second Ball
+      new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-180), m_robotTurret).withName("StartTurningShooter"),
+      new PathPlannerCommand("JMove1", AutoConstants.PATH_MAX_VEL, AutoConstants.PATH_MAX_ACCEL, m_robotSwerveDrive).withName("JMove1"),
+      // Shoot Preloaded and Second Ball
+      makeTimeoutTrackShotGroup(AutoConstants.LOCK_ON_DURATION, AutoConstants.LOCK_ON_TIME_ALLOWANCE, AutoConstants.STORAGE_TIME_TWO_BALLS, "FirstSecondBall"),
+      makeStopCommandPart()
+    ).withName("TwoBall");
+  }
+
+  private Command makeThreeBallCommand() {
+    return CommandGroupBase.sequence(
+      makeStartupCommandPart(),
+      // Get Second Ball
+      new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-180), m_robotTurret).withName("StartTurningShooter"),
+      new PathPlannerCommand("JMove1", AutoConstants.PATH_MAX_VEL, AutoConstants.PATH_MAX_ACCEL, m_robotSwerveDrive).withName("JMove1"),
+      // Shoot Preloaded and Second Ball
+      makeTimeoutTrackShotGroup(AutoConstants.LOCK_ON_DURATION, AutoConstants.LOCK_ON_TIME_ALLOWANCE, AutoConstants.STORAGE_TIME_TWO_BALLS, "FirstSecondBall"),
+      // Get Third Ball
+      new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
+      new InstantCommand(() -> m_robotTurret.runShooterRotatePID(-120), m_robotTurret).withName("StartTurningShooter"),
+      new PathPlannerCommand("JMove2", AutoConstants.PATH_MAX_VEL, AutoConstants.PATH_MAX_ACCEL, m_robotSwerveDrive).withName("JMove2"),
+      // Shoot Third Ball
+      makeTimeoutTrackShotGroup(AutoConstants.LOCK_ON_DURATION, AutoConstants.LOCK_ON_TIME_ALLOWANCE, AutoConstants.STORAGE_TIME_ONE_BALL, "ThirdBall"),
+      makeStopCommandPart()
+    ).withName("ThreeBall");
+  }
+
+  private Command makeStartupCommandPart() {
+    return CommandGroupBase.sequence(
+      new InstantCommand(() -> m_robotBoomBoom.runDrumShooterVelocityPID(8000), m_robotBoomBoom).withName("StartIdlingShooter"),
+      new InstantCommand(() -> m_robotIntake.runAtOutput(-1), m_robotIntake).withName("StartRunningIntake")
+      // new RunExtender(m_robotExtender).withName("DeployExtender")
+    );
+  }
+
+  private Command makeStopCommandPart() {
+    return CommandGroupBase.sequence(
+      new InstantCommand(() -> m_robotIntake.runAtOutput(0), m_robotIntake).withName("StopRunningIntake"),
+      new InstantCommand(() -> m_robotSerializer.setSerializer(0.0), m_robotSerializer).withName("StopRunningSerializer"),
+      new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName("StopRunningStorage")
+    );
+  }
 
   private ParallelDeadlineGroup makeTimeoutTrackShotGroup(double lockOnDuration, double lockOnTimeAllowance, double storageRunTime, String name) {
     return CommandGroupBase.sequence(
@@ -369,30 +507,6 @@ public class RobotContainer {
       new InstantCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED), m_robotStorage).withName(name + "Feed"),
       new WaitCommand(storageRunTime).withName(name + "ShootTimer"),
       new InstantCommand(() -> m_robotStorage.runStorage(0.0)).withName(name + "StopFeed")).deadlineWith(new TrackTarget(m_robotVisionOdometry, m_robotTurret, m_robotHood, m_robotBoomBoom).withName(name + "Track")
-    );
-  }
-
-  /**
-   * Generate autonomous
-   * @param maxVel max velocity for the path (null to override default value of 5.0)
-   * @param maxAccel max acceleration for the path (null to override default value of 5.0)
-   * @param inputs strings (paths) or commands you want to run (in order)
-   * @return array of commands
-   */
-  private SequentialCommandGroup makePathingGroup(Double maxVel, Double maxAccel, String input) {
-    PIDController xController = SwerveDriveConstants.X_CONTROLLER;
-    PIDController yController = SwerveDriveConstants.Y_CONTROLLER;
-    ProfiledPIDController thetaController = SwerveDriveConstants.THETA_CONTROLLER;
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    PathPlannerTrajectory pathTrajectory = PathPlanner.loadPath(input, Objects.requireNonNullElse(maxVel, SwerveDriveConstants.PATH_MAX_VELOCITY), Objects.requireNonNullElse(maxAccel, SwerveDriveConstants.PATH_MAX_ACCELERATION));
-    PathPlannerState initialState = pathTrajectory.getInitialState();
-    Pose2d initialPosition = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
-
-    return new SequentialCommandGroup(
-      new InstantCommand(() -> m_robotSwerveDrive.resetOdometry(initialPosition), m_robotSwerveDrive),
-      new PPSwerveControllerCommand(pathTrajectory, m_robotSwerveDrive::getOdometry, m_robotSwerveDrive.m_kinematics, xController, yController, thetaController, m_robotSwerveDrive::setModuleStates, m_robotSwerveDrive),
-      new InstantCommand(m_robotSwerveDrive::stopModules, m_robotSwerveDrive)
     );
   }
 

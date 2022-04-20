@@ -18,16 +18,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.diffplug.common.base.Errors;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,7 +31,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
@@ -44,24 +39,22 @@ import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.PathPlannerUtil.Path.Waypoint;
-import frc4388.utility.shuffleboard.ListeningSendableChooser;
-
+import frc4388.utility.shuffleboard.CachingSendableChooser;
+// TODO: Fix naming inconsistency with fields.
 public class PathRecorder extends CommandBase {
   private static final Logger LOGGER = Logger.getLogger(PathRecorder.class.getSimpleName());
-  private static double PATH_POLLING_PERIOD = 0.5;
+  private static final double PATH_POLLING_PERIOD = 0.5;
   private static final Clock SYSTEM_CLOCK = Clock.system(ZoneId.systemDefault());
   private static final Path PATHPLANNER_DIRECTORY = Filesystem.getDeployDirectory().toPath().resolve("pathplanner");
   private static final String PATHPLANNER_EXTENSION = ".path";
-  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("'Recording' yyyy-MM-dd HH-mm-ss.SSS'.path'");
-  // Function that removes the ".path" from the end of a string.
-  private static final Function<CharSequence, String> PATH_EXTENSION_REMOVER = ((Function<CharSequence, Matcher>) Pattern.compile(PATHPLANNER_EXTENSION)::matcher).andThen(m -> m.replaceFirst(""));
+  private static final String RECORDING_PREFIX = "Recording";
+  private static final DateTimeFormatter RECORDING_FILE_NAME_FORMATTER = DateTimeFormatter.ofPattern("'" + RECORDING_PREFIX + "' yyyy-MM-dd HH-mm-ss.SSS'.path'");
 
-  private PathPlannerTrajectory loadedPathTrajectory = null;
   private WatchKey m_watchKey;
-  private final ListeningSendableChooser<File> pathChooser = new ListeningSendableChooser<>(this::loadPath);
+  private final CachingSendableChooser<Command> m_autoChooser;
   private final List<Waypoint> pathPoints = new ArrayList<>();
   private final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
-  private final NetworkTable recordingNetworkTable = networkTableInstance.getTable("Recording");
+  private final NetworkTable recordingNetworkTable = networkTableInstance.getTable(RECORDING_PREFIX);
   private final SwerveDrive m_swerveDrive;
   private final CommandBase m_pathWatcher = new NotifierCommand(this::updatePathChooser, PATH_POLLING_PERIOD) {
     @Override
@@ -76,8 +69,9 @@ public class PathRecorder extends CommandBase {
     }
   }.withName("Save Recording");
 
-  public PathRecorder(SwerveDrive swerveDrive) {
+  public PathRecorder(SwerveDrive swerveDrive, CachingSendableChooser<Command> autoChooser) {
     m_swerveDrive = swerveDrive;
+    m_autoChooser = autoChooser;
     addRequirements(swerveDrive);
     setName("Record Path (Cancel to Save)");
   }
@@ -85,7 +79,7 @@ public class PathRecorder extends CommandBase {
   /**
    * Creates a WatchKey for the path planner directory and registers it with the WatchService. Then
    * creates a NotifierCommand that will update the path chooser with the latest path files. Finally,
-   * adds the existing path files to the path chooser
+   * adds the existing recorded path files to the path chooser
    */
   @Override
   public void initialize() {
@@ -95,8 +89,7 @@ public class PathRecorder extends CommandBase {
     } catch (IOException exception) {
       LOGGER.log(Level.SEVERE, "Exception with path file watcher.", exception);
     }
-    Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles()).filter(file -> file.getName().endsWith(PATHPLANNER_EXTENSION)).sorted(Comparator.comparingLong(File::lastModified)).forEachOrdered(file -> pathChooser.addOption(file.getName(), file));
-    SmartDashboard.putData("Path Chooser", pathChooser);
+    Arrays.stream(PATHPLANNER_DIRECTORY.toFile().listFiles()).filter(file -> file.getName().endsWith(PATHPLANNER_EXTENSION) && file.getName().startsWith(RECORDING_PREFIX)).sorted(Comparator.comparingLong(File::lastModified)).forEachOrdered(file -> m_autoChooser.addOption(file.getName(), () -> new PathPlannerCommand(file.getName(), m_swerveDrive)));
   }
 
   /**
@@ -107,7 +100,7 @@ public class PathRecorder extends CommandBase {
   public void execute() {
     Translation2d position = m_swerveDrive.m_odometry.getPoseMeters().getTranslation();
     Rotation2d rotation = m_swerveDrive.m_gyro.getRotation2d();
-    // FIXME: Chassis speeds are created from joystick inputs and do not reflect actual robot velocity.
+    // FIXME: Chassis speeds are created from joystick inputs and may not reflect actual robot velocity.
     Translation2d velocity = new Translation2d(m_swerveDrive.getChassisSpeeds().vxMetersPerSecond, m_swerveDrive.getChassisSpeeds().vyMetersPerSecond);
     Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false, SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);
     pathPoints.add(waypoint);
@@ -123,10 +116,6 @@ public class PathRecorder extends CommandBase {
   public void end(boolean interrupted) {
     LOGGER.info("End recording.");
     m_pathSaver.schedule();
-  }
-
-  public PathPlannerTrajectory getPath() {
-    return loadedPathTrajectory;
   }
 
   /**
@@ -145,12 +134,12 @@ public class PathRecorder extends CommandBase {
           if (watchEventFileName.endsWith(PATHPLANNER_EXTENSION)) {
             if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
               LOGGER.log(Level.WARNING, "PathPlanner file {0} created. Options added to SendableChooser.", watchEventFileName);
-              pathChooser.addOption(watchEventFile.getName(), watchEventFile);
+              m_autoChooser.addOption(watchEventFile.getName(), () -> new PathPlannerCommand(watchEventFile.getName(), m_swerveDrive));
             } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
               LOGGER.log(Level.WARNING, "PathPlanner file {0} modified.", watchEventFileName);
-              if (watchEventFileName.equals(pathChooser.getSelected().getName())) {
+              if (watchEventFileName.equals(m_autoChooser.getSelected().getName())) {
                 LOGGER.log(Level.SEVERE, "PathPlanner file {0} already selected. Reloading path.", watchEventFileName);
-                loadPath(watchEventFileName);
+                m_autoChooser.reloadSelected();
               }
             } else if (pathWatchEvent.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
               LOGGER.log(Level.SEVERE, "PathPlanner file {0} deleted. Removing options from SendableChooser not yet implemented.", watchEventFileName);
@@ -159,20 +148,6 @@ public class PathRecorder extends CommandBase {
         }
       }
       if (!m_watchKey.reset()) LOGGER.severe("File watch key invalid.");
-    }
-  }
-
-  private void loadPath(String pathName) {
-    LOGGER.warning("Unloading path.");
-    loadedPathTrajectory = null;
-    LOGGER.info("Done unloading.");
-    if (pathName != null) {
-      LOGGER.log(Level.WARNING, "Loading path {0}.", pathName);
-      loadedPathTrajectory = PathPlanner.loadPath(PATH_EXTENSION_REMOVER.apply(pathName), SwerveDriveConstants.PATH_MAX_VELOCITY, SwerveDriveConstants.PATH_MAX_ACCELERATION);
-      m_swerveDrive.m_field.getObject("traj").setTrajectory(loadedPathTrajectory);
-      LOGGER.info("Done loading.");
-    } else {
-      LOGGER.severe("No path to load.");
     }
   }
 
@@ -217,7 +192,6 @@ public class PathRecorder extends CommandBase {
       StringWriter writer = new StringWriter();
       path.write(writer);
       recordingNetworkTable.getEntry(outputFile.getName()).setString(writer.toString());
-      pathChooser.setDefaultOption(outputFile.getName(), outputFile);
       LOGGER.log(Level.INFO, "Recorded path to {0}.", outputFile.getPath());
     } else LOGGER.log(Level.SEVERE, "Unable to record path to {0}", outputFile.getPath());
   }

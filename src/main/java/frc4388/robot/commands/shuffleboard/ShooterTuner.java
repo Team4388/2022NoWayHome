@@ -61,7 +61,6 @@ public class ShooterTuner extends CommandBase {
       sbi.setTable(NetworkTableInstance.getDefault().getTable("ShooterTuner/Manual Shooter Data"));
       sbi.addDoubleProperty("Drum Velocity", () -> tableOverrideEntry.drumVelocity, d -> tableOverrideEntry.drumVelocity = d);
       sbi.addDoubleProperty("Hood Extension", () -> tableOverrideEntry.hoodExt, d -> tableOverrideEntry.hoodExt = d);
-      sbi.addDoubleProperty("Turret Offset", () -> tableOverrideEntry.turretOffset, d -> tableOverrideEntry.turretOffset = d);
       sbi.addDoubleProperty("Distance", () -> tableOverrideEntry.distance, d -> tableOverrideEntry.distance = d);
       sbi.addBooleanProperty("Measure Distance", () -> measureDistance, b -> measureDistance = b);
       // manual.add("Manual Shooter Data", m_shotEditor);
@@ -79,7 +78,6 @@ public class ShooterTuner extends CommandBase {
     tableOverrideEntry.distance = 0.0;
     tableOverrideEntry.hoodExt = 0.0;
     tableOverrideEntry.drumVelocity = 0.0;
-    tableOverrideEntry.turretOffset = 0.0;
     m_boomBoom.setShooterTable(new ShooterTableEntry[] { tableOverrideEntry });
     Shuffleboard.selectTab("Shooter Tuner");
     SmartDashboard.putData("Shooter Table", m_tableEditor);
@@ -116,7 +114,6 @@ public class ShooterTuner extends CommandBase {
       builder.setSmartDashboardType("RobotPreferences");
       builder.addDoubleProperty("Drum Velocity", () -> tableOverrideEntry.drumVelocity, d -> tableOverrideEntry.drumVelocity = d);
       builder.addDoubleProperty("Hood Extension", () -> tableOverrideEntry.hoodExt, d -> tableOverrideEntry.hoodExt = d);
-      builder.addDoubleProperty("Turret Offset", () -> tableOverrideEntry.turretOffset, d -> tableOverrideEntry.turretOffset = d);
       builder.addDoubleProperty("Distance", () -> tableOverrideEntry.distance, d -> tableOverrideEntry.distance = d);
       builder.addBooleanProperty("Measure Distance", () -> measureDistance, b -> measureDistance = b);
     }

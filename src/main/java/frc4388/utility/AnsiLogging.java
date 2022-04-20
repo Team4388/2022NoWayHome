@@ -99,7 +99,7 @@ public class AnsiLogging {
         ZonedDateTime time = ZonedDateTime.ofInstant(logRecord.getInstant(), ZONE_ID);
         // Get the logger name, source class name, and/or source method name.
         String source = Optional.ofNullable(logRecord.getLoggerName()).or(() -> Optional.ofNullable(logRecord.getSourceClassName())).map(s -> s + " ").orElse("") + Optional.ofNullable(logRecord.getSourceMethodName()).orElse("");
-        String message = logRecord.getMessage();
+        String message = formatMessage(logRecord);
         // Get the stack trace of the exception if it was thrown.
         String throwable = Optional.ofNullable(logRecord.getThrown()).map(LoggingAnsiFormatter::makeStackTraceString).orElse("");
         // Select the appropriate format string for the log level.

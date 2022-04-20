@@ -255,14 +255,14 @@ public class RobotMap {
   }
 
   private void registerDevices() {
-    SendableRegistry.setName(frontLeftSteerMotor, "SwerveDrive", "Left Front Steer Motor");
-    SendableRegistry.setName(frontLeftDriveMotor, "SwerveDrive", "Left Front Drive Motor");
-    SendableRegistry.setName(frontRightSteerMotor, "SwerveDrive", "Right Front Steer Motor");
-    SendableRegistry.setName(frontRightDriveMotor, "SwerveDrive", "Right Front Drive Motor");
-    SendableRegistry.setName(backLeftSteerMotor, "SwerveDrive", "Left Back Steer Motor");
-    SendableRegistry.setName(backLeftDriveMotor, "SwerveDrive", "Left Back Drive Motor");
-    SendableRegistry.setName(backRightSteerMotor, "SwerveDrive", "Right Back Steer Motor");
-    SendableRegistry.setName(backRightDriveMotor, "SwerveDrive", "Right Back Drive Motor");
+    SendableRegistry.setName(frontLeftSteerMotor, "Drive", "Left Front Steer Motor");
+    SendableRegistry.setName(frontLeftDriveMotor, "Drive", "Left Front Drive Motor");
+    SendableRegistry.setName(frontRightSteerMotor, "Drive", "Right Front Steer Motor");
+    SendableRegistry.setName(frontRightDriveMotor, "Drive", "Right Front Drive Motor");
+    SendableRegistry.setName(backLeftSteerMotor, "Drive", "Left Back Steer Motor");
+    SendableRegistry.setName(backLeftDriveMotor, "Drive", "Left Back Drive Motor");
+    SendableRegistry.setName(backRightSteerMotor, "Drive", "Right Back Steer Motor");
+    SendableRegistry.setName(backRightDriveMotor, "Drive", "Right Back Drive Motor");
 
     SendableRegistry.setName(intakeMotor, "Intake", "Intake Motor");
     SendableRegistry.setName((SendableCANSparkMax) extenderMotor, "Intake", "Extender Motor");

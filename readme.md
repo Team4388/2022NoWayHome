@@ -18,6 +18,7 @@
 - [ ] Fix all XXX comments.
 - [ ] Visit TODO comments.
 - [ ] Forward the limelight port so it can be accessed over a USB tether.
+- [x] Remove turret offset from shooter tables.
 ## Planned
 - [ ] Shuffleboard replacements options:
   - [ ] Run a web server on the robot and bypass network tables.

@@ -18,12 +18,178 @@
       "autoPopulate": true,
       "autoPopulatePrefix": "LiveWindow/",
       "widgetPane": {
-        "gridSize": 128.0,
+        "gridSize": 60.0,
         "showGrid": true,
-        "hgap": 16.0,
-        "vgap": 16.0,
+        "hgap": 10.0,
+        "vgap": 10.0,
         "titleType": 0,
-        "tiles": {}
+        "tiles": {
+          "4,5": {
+            "size": [
+              4,
+              6
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Climber",
+              "_title": "LiveWindow/Climber",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Climber/Left Claw/Value",
+                  "_title": "Left Claw/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Climber/Right Claw/Value",
+                  "_title": "Right Claw/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Climber/Elbow/Value",
+                  "_title": "Elbow/Value"
+                }
+              ]
+            }
+          },
+          "0,0": {
+            "size": [
+              4,
+              13
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Drive",
+              "_title": "LiveWindow/Drive",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Left Front Drive Motor/Value",
+                  "_title": "Left Front Drive Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Right Front Steer Motor/Value",
+                  "_title": "Right Front Steer Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Right Back Steer Motor/Value",
+                  "_title": "Right Back Steer Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Right Back Drive Motor/Value",
+                  "_title": "Right Back Drive Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Left Back Steer Motor/Value",
+                  "_title": "Left Back Steer Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Left Front Steer Motor/Value",
+                  "_title": "Left Front Steer Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Left Back Drive Motor/Value",
+                  "_title": "Left Back Drive Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Drive/Right Front Drive Motor/Value",
+                  "_title": "Right Front Drive Motor/Value"
+                }
+              ]
+            }
+          },
+          "4,11": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Intake",
+              "_title": "LiveWindow/Intake",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Intake/Intake Motor/Value",
+                  "_title": "Intake Motor/Value"
+                }
+              ]
+            }
+          },
+          "4,0": {
+            "size": [
+              4,
+              5
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Shooter",
+              "_title": "LiveWindow/Shooter",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Shooter/BoomBoom Left Motor/Value",
+                  "_title": "BoomBoom Left Motor/Value"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Shooter/BoomBoom Right Motor/Value",
+                  "_title": "BoomBoom Right Motor/Value"
+                }
+              ]
+            }
+          },
+          "8,0": {
+            "size": [
+              5,
+              13
+            ],
+            "content": {
+              "_type": "Subsystem Layout",
+              "_source0": "network_table:///LiveWindow/Ungrouped",
+              "_title": "LiveWindow/Ungrouped",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Spark[4]/Value",
+                  "_title": "Spark[4]/Value"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[1]",
+                  "_title": "PIDController[1]"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[3]",
+                  "_title": "PIDController[3]"
+                },
+                {
+                  "_type": "Text View",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Pigeon 2 [14]/Heading",
+                  "_title": "Pigeon 2 [14]/Heading"
+                },
+                {
+                  "_type": "PID Controller",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/PIDController[2]",
+                  "_title": "PIDController[2]"
+                }
+              ]
+            }
+          }
+        }
       }
     },
     {
@@ -37,68 +203,6 @@
         "vgap": 10.0,
         "titleType": 1,
         "tiles": {
-          "0,0": {
-            "size": [
-              6,
-              8
-            ],
-            "content": {
-              "_type": "Grid Layout",
-              "_title": "Match",
-              "Layout/Number of columns": 1,
-              "Layout/Number of rows": 3,
-              "Layout/Label position": "HIDDEN",
-              "_children": {
-                "0,0": {
-                  "_type": "Basic FMS Info",
-                  "_title": "Basic FMS Info"
-                },
-                "0,1": {
-                  "_type": "Field",
-                  "_title": "Field",
-                  "Game/Game": "A2021_Infinite_Recharge",
-                  "Visuals/Robot Icon Size": 50.0,
-                  "Visuals/Show Outside Circles": false
-                },
-                "0,2": {
-                  "_type": "Grid Layout",
-                  "_title": "Match Time",
-                  "Layout/Number of columns": 3,
-                  "Layout/Number of rows": 1,
-                  "Layout/Label position": "BOTTOM",
-                  "_children": {
-                    "0,0": {
-                      "_type": "Number Bar",
-                      "_title": "Autonomous",
-                      "Range/Min": 0.0,
-                      "Range/Max": 15.0,
-                      "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 4,
-                      "Visuals/Show text": true
-                    },
-                    "1,0": {
-                      "_type": "Number Bar",
-                      "_title": "Teleoperated",
-                      "Range/Min": 0.0,
-                      "Range/Max": 90.0,
-                      "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 5,
-                      "Visuals/Show text": true
-                    },
-                    "2,0": {
-                      "_type": "Number Bar",
-                      "_title": "Climb",
-                      "Range/Min": 0.0,
-                      "Range/Max": 30.0,
-                      "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 5,
-                      "Visuals/Show text": true
-                    }
-                  }
-                }
-              }
-            }
-          },
           "0,8": {
             "size": [
               6,
@@ -111,16 +215,18 @@
               "_children": [
                 {
                   "_type": "Graph",
+                  "_source0": "network_table:///Robot/Values/Voltage",
                   "_title": "Graph",
-                  "Graph/Visible time": 30.0,
+                  "Graph/Visible time": 15.0,
                   "Graph/X-axis auto scrolling": true,
                   "Y-axis/Automatic bounds": true,
-                  "Y-axis/Upper bound": 1.0,
-                  "Y-axis/Lower bound": -1.0,
-                  "Y-axis/Unit": "ul"
+                  "Y-axis/Upper bound": 14.0,
+                  "Y-axis/Lower bound": 0.0,
+                  "Y-axis/Unit": "V"
                 },
                 {
                   "_type": "PDP",
+                  "_source0": "network_table:///Robot/PDP",
                   "_title": "PDP",
                   "Visuals/Show voltage and current values": true
                 }
@@ -134,6 +240,7 @@
             ],
             "content": {
               "_type": "Robot Preferences",
+              "_source0": "network_table:///Preferences",
               "_title": "Robot Preferences",
               "Miscellaneous/Show search box": false
             }
@@ -150,7 +257,8 @@
               "_children": [
                 {
                   "_type": "Swerve Drivebase",
-                  "_title": "",
+                  "_source0": "network_table:///Robot/Drivebase",
+                  "_title": "/Robot/Drive/Drivebase",
                   "Visuals/Show velocity vectors": true
                 },
                 {
@@ -169,10 +277,12 @@
                       "_children": {
                         "0,1": {
                           "_type": "Split Button Chooser",
+                          "_source0": "network_table:///Robot/Drive Speed",
                           "_title": "Speed"
                         },
                         "0,0": {
                           "_type": "3-Axis Accelerometer",
+                          "_source0": "network_table:///Robot/Accelerometer",
                           "_title": "Accelerometer",
                           "Accelerometer/Range": "k16G",
                           "Visuals/Show value": true,
@@ -183,6 +293,7 @@
                     },
                     "0,0": {
                       "_type": "Gyro",
+                      "_source0": "network_table:///Robot/Gyro",
                       "_title": "Gyro",
                       "Visuals/Major tick spacing": 45.0,
                       "Visuals/Starting angle": 180.0,
@@ -201,6 +312,7 @@
             ],
             "content": {
               "_type": "Camera Stream",
+              "_source0": "network_table:///Robot/Driver Camera",
               "_title": "Camera",
               "Crosshair/Show crosshair": false,
               "Crosshair/Crosshair color": "#FFFFFFFF",
@@ -226,6 +338,7 @@
               "_children": {
                 "1,0": {
                   "_type": "Boolean Box",
+                  "_source0": "network_table:///Robot/Values/Shooter Safety",
                   "_title": "Shooter Safety",
                   "Colors/Color when true": "#7CFC00FF",
                   "Colors/Color when false": "#8B0000FF"
@@ -237,30 +350,31 @@
                   "_children": [
                     {
                       "_type": "Number Bar",
+                      "_source0": "network_table:///Robot/Values/Drum",
                       "_title": "Speed",
                       "Range/Min": 0.0,
                       "Range/Max": 100.0,
                       "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 0,
+                      "Visuals/Num tick marks": 6,
                       "Visuals/Show text": true
                     },
                     {
-                      "_type": "Number Bar",
+                      "_type": "Number Slider",
+                      "_source0": "network_table:///Robot/Values/Angle",
                       "_title": "Angle",
-                      "Range/Min": 0.0,
-                      "Range/Max": 100.0,
-                      "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 0,
-                      "Visuals/Show text": true
+                      "Slider Settings/Min": -180.0,
+                      "Slider Settings/Max": 180.0,
+                      "Slider Settings/Block increment": 1.0,
+                      "Visuals/Display value": true
                     },
                     {
-                      "_type": "Number Bar",
+                      "_type": "Number Slider",
+                      "_source0": "network_table:///Robot/Values/Hood",
                       "_title": "Hood",
-                      "Range/Min": 0.0,
-                      "Range/Max": 100.0,
-                      "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 0,
-                      "Visuals/Show text": true
+                      "Slider Settings/Min": 0.0,
+                      "Slider Settings/Max": 120.0,
+                      "Slider Settings/Block increment": 1.0,
+                      "Visuals/Display value": true
                     }
                   ]
                 }
@@ -288,29 +402,32 @@
                   "_children": {
                     "0,0": {
                       "_type": "Number Bar",
+                      "_source0": "network_table:///Robot/Values/Intake",
                       "_title": "Intake",
                       "Range/Min": -1.0,
                       "Range/Max": 1.0,
                       "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 5,
+                      "Visuals/Num tick marks": 3,
                       "Visuals/Show text": true
                     },
                     "1,0": {
                       "_type": "Number Bar",
+                      "_source0": "network_table:///Robot/Values/Serializer",
                       "_title": "Serializer",
                       "Range/Min": -1.0,
                       "Range/Max": 1.0,
                       "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 5,
+                      "Visuals/Num tick marks": 3,
                       "Visuals/Show text": true
                     },
                     "2,0": {
                       "_type": "Number Bar",
+                      "_source0": "network_table:///Robot/Values/Storage",
                       "_title": "Storage",
                       "Range/Min": -1.0,
                       "Range/Max": 1.0,
                       "Range/Center": 0.0,
-                      "Visuals/Num tick marks": 5,
+                      "Visuals/Num tick marks": 3,
                       "Visuals/Show text": true
                     }
                   }
@@ -324,6 +441,7 @@
                   "_children": {
                     "0,0": {
                       "_type": "Split Button Chooser",
+                      "_source0": "network_table:///Robot/Extender",
                       "_title": "Extender"
                     }
                   }
@@ -342,16 +460,17 @@
               "Layout/Label position": "BOTTOM",
               "_children": [
                 {
-                  "_type": "Number Bar",
+                  "_type": "Number Slider",
+                  "_source0": "network_table:///Robot/Values/Claws",
                   "_title": "Claws",
-                  "Range/Min": -1.0,
-                  "Range/Max": 1.0,
-                  "Range/Center": 0.0,
-                  "Visuals/Num tick marks": 5,
-                  "Visuals/Show text": true
+                  "Slider Settings/Min": 0.0,
+                  "Slider Settings/Max": 1.0,
+                  "Slider Settings/Block increment": 0.0625,
+                  "Visuals/Display value": true
                 },
                 {
                   "_type": "Number Bar",
+                  "_source0": "network_table:///Robot/Values/Arm",
                   "_title": "Arm",
                   "Range/Min": -1.0,
                   "Range/Max": 1.0,
@@ -369,6 +488,7 @@
             ],
             "content": {
               "_type": "Camera Stream",
+              "_source0": "network_table:///photonvision/photoncamera",
               "_title": "Limelight",
               "Crosshair/Show crosshair": true,
               "Crosshair/Crosshair color": "#FFFFFFFF",
@@ -378,6 +498,48 @@
               "fps": -1,
               "imageWidth": -1,
               "imageHeight": -1
+            }
+          },
+          "0,0": {
+            "size": [
+              6,
+              4
+            ],
+            "content": {
+              "_type": "List Layout",
+              "_title": "Match",
+              "Layout/Label position": "BOTTOM",
+              "_children": [
+                {
+                  "_type": "Basic FMS Info",
+                  "_source0": "network_table:///FMSInfo",
+                  "_title": "Basic FMS Info"
+                },
+                {
+                  "_type": "Number Bar",
+                  "_source0": "network_table:///Robot/Values/Match Time",
+                  "_title": "Match Time",
+                  "Range/Min": 0.0,
+                  "Range/Max": 30.0,
+                  "Range/Center": 0.0,
+                  "Visuals/Num tick marks": 4,
+                  "Visuals/Show text": true
+                }
+              ]
+            }
+          },
+          "0,4": {
+            "size": [
+              6,
+              4
+            ],
+            "content": {
+              "_type": "Field",
+              "_source0": "network_table:///Robot/Field",
+              "_title": "Field",
+              "Game/Game": "A2021_Infinite_Recharge",
+              "Visuals/Robot Icon Size": 50.0,
+              "Visuals/Show Outside Circles": false
             }
           }
         }
