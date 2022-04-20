@@ -178,168 +178,119 @@ public class RobotContainer {
   }
 
   private void configureDriverButtonBindings() {
-    // Iterate over and assign commands to all Xbox controller buttons.
-    for (XboxController.Button binding : XboxController.Button.values()) {
-      /* ------------------------------------ Driver ------------------------------------ */
-      JoystickButton button = new JoystickButton(getDriverController(), binding.value);
-      if (binding == XboxController.Button.kLeftBumper) {
-        /* Left Bumper > Shift Down */
-        button.whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
-      } else if (binding == XboxController.Button.kRightBumper) {
-        /* Right Bumper > Shift Up */
-        button.whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
-      } else if (binding == XboxController.Button.kLeftStick) {
-        /* Left Stick > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxController.Button.kRightStick) {
-        /* Right Stick > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxController.Button.kA) {
-        /* A > Unbound */
-        button.whenPressed(this::switchControlMode);
-        button.whenReleased(this::switchControlMode);
-      } else if (binding == XboxController.Button.kB) {
-        /* B > Unbound */
-        button.whenPressed(this::switchDriveMode);
-        button.whenReleased(this::switchDriveMode);
-      } else if (binding == XboxController.Button.kX) {
-        /* X > Unbound */
-        button.whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender));
-        button.whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-      } else if (binding == XboxController.Button.kY) {
-        /* Y > Unbound */
-        button.whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender));
-        button.whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-      } else if (binding == XboxController.Button.kBack) {
-        /* Back > Calibrate Odometry */
-        button.whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
-      } else if (binding == XboxController.Button.kStart) {
-        /* Start > Calibrate Odometry */
-        button.whenPressed(m_robotSwerveDrive::resetGyro);
-      }
-    }
-    // Iterate over and assign commands to cardinal Xbox controller d-pad directions.
-    for (XboxControllerPOV binding : XboxControllerPOV.values()) {
-      POVButton button = new POVButton(getDriverController(), binding.value);
-      if (binding == XboxControllerPOV.kUp) {
-        /* D-pad Up > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxControllerPOV.kRight) {
-        /* D-pad Right > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxControllerPOV.kDown) {
-        /* D-pad Down > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxControllerPOV.kLeft) {
-        /* D-pad Left > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      }
-    }
+    /* Left Bumper > Shift Down */
+    new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
+        .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+    /* Right Bumper > Shift Up */
+    new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
+        .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+    /* Left Stick > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kLeftStick.value)
+        .whenPressed(new PrintCommand("Unbound"));
+    /* Right Stick > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kRightStick.value)
+        .whenPressed(new PrintCommand("Unbound"));
+    /* A > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kA.value)
+        .whenPressed(this::switchControlMode)
+        .whenReleased(this::switchControlMode);
+    /* B > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kB.value)
+        .whenPressed(this::switchDriveMode)
+        .whenReleased(this::switchDriveMode);
+    /* X > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kX.value)
+        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+    /* Y > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kY.value)
+        .whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+    /* Back > Calibrate Odometry */
+    new JoystickButton(getDriverController(), XboxController.Button.kBack.value)
+        .whenPressed(() -> resetOdometry(new Pose2d(0, 0, new Rotation2d(0))));
+    /* Start > Calibrate Odometry */
+    new JoystickButton(getDriverController(), XboxController.Button.kStart.value)
+        .whenPressed(m_robotSwerveDrive::resetGyro);
+
+    /* D-pad Up > Unbound */
+    new POVButton(getDriverController(), 0).whenPressed(new PrintCommand("Unbound"));
+    /* D-pad Right > Unbound */
+    new POVButton(getDriverController(), 90).whenPressed(new PrintCommand("Unbound"));
+    /* D-pad Down > Unbound */
+    new POVButton(getDriverController(), 180).whenPressed(new PrintCommand("Unbound"));
+    /* D-pad Left > Unbound */
+    new POVButton(getDriverController(), 270).whenPressed(new PrintCommand("Unbound"));
   }
 
   private void configureOperatorButtonBindings() {
-    // Iterate over and assign commands to all Xbox controller buttons.
-    for (XboxController.Button binding : XboxController.Button.values()) {
-      /* ------------------------------------ Operator ------------------------------------ */
-      JoystickButton button = new JoystickButton(getDriverController(), binding.value);
-      if (binding == XboxController.Button.kLeftBumper) {
-        /* Left Bumper > Storage In */
-        button.whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)));
-        button.whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-      } else if (binding == XboxController.Button.kRightBumper) {
-        /* Right Bumper > Storage Out */
-        button.whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)));
-        button.whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
-      } else if (binding == XboxController.Button.kLeftStick) {
-        /* Left Stick > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxController.Button.kRightStick) {
-        /* Right Stick > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxController.Button.kA) {
-        /* A > Spit Out Ball */
-        button.whileHeld(new RunCommand(m_robotTurret::gotoMidpoint, m_robotTurret));
-        button.whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)));
-      } else if (binding == XboxController.Button.kB) {
-        /* B > Toggle Claws */
-        button.whenPressed(m_robotClaws::toggleClaws, m_robotClaws);
-      } else if (binding == XboxController.Button.kX) {
-        /* X > Toggle Extender Deployment */
-        button.whenPressed(new ConditionalCommand(new DeployExtender(m_robotExtender, m_robotIntake), new RetractExtender(m_robotExtender), m_robotExtender::isRetracted));
-      } else if (binding == XboxController.Button.kY) {
-        /* Y > Track Target */
-        button.whileHeld(new TrackTarget(m_robotVisionOdometry, m_robotTurret, m_robotHood, m_robotBoomBoom));
-      } else if (binding == XboxController.Button.kBack) {
-        /* Back > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxController.Button.kStart) {
-        /* Start > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      }
-    }
-    // Iterate over and assign commands to cardinal Xbox controller d-pad directions.
-    for (XboxControllerPOV binding : XboxControllerPOV.values()) {
-      POVButton button = new POVButton(getDriverController(), binding.value);
-      if (binding == XboxControllerPOV.kUp) {
-        /* D-pad Up > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxControllerPOV.kRight) {
-        /* D-pad Right > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxControllerPOV.kDown) {
-        /* D-pad Down > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == XboxControllerPOV.kLeft) {
-        /* D-pad Left > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      }
-    }
+    /* Left Bumper > Storage In */
+    new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value).whileHeld(new RunCommand(() -> m_robotStorage.runStorage(StorageConstants.STORAGE_SPEED)))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
+    /* Right Bumper > Storage Out */
+    new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value).whileHeld(new RunCommand(() -> m_robotStorage.runStorage(-StorageConstants.STORAGE_SPEED)))
+        .whenReleased(new RunCommand(() -> m_robotStorage.runStorage(0.0)));
+    /* Left Stick > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kLeftStick.value).whenPressed(new PrintCommand("Unbound"));
+    /* Right Stick > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kRightStick.value).whenPressed(new PrintCommand("Unbound"));
+    /* A > Spit Out Ball */
+    new JoystickButton(getDriverController(), XboxController.Button.kA.value).whileHeld(new RunCommand(m_robotTurret::gotoMidpoint, m_robotTurret))
+        .whileHeld(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.25)));
+    /* B > Toggle Claws */
+    new JoystickButton(getDriverController(), XboxController.Button.kB.value).whenPressed(m_robotClaws::toggleClaws, m_robotClaws);
+    /* X > Toggle Extender Deployment */
+    new JoystickButton(getDriverController(), XboxController.Button.kX.value).whenPressed(new ConditionalCommand(new DeployExtender(m_robotExtender, m_robotIntake), new RetractExtender(m_robotExtender), m_robotExtender::isRetracted));
+    /* Y > Track Target */
+    new JoystickButton(getDriverController(), XboxController.Button.kY.value).whileHeld(new TrackTarget(m_robotVisionOdometry, m_robotTurret, m_robotHood, m_robotBoomBoom));
+    /* Back > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kBack.value).whenPressed(new PrintCommand("Unbound"));
+    /* Start > Unbound */
+    new JoystickButton(getDriverController(), XboxController.Button.kStart.value).whenPressed(new PrintCommand("Unbound"));
+
+    /* D-pad Up > Unbound */
+    new POVButton(getDriverController(), 0).whenPressed(new PrintCommand("Unbound"));
+    /* D-pad Right > Unbound */
+    new POVButton(getDriverController(), 90).whenPressed(new PrintCommand("Unbound"));
+    /* D-pad Down > Unbound */
+    new POVButton(getDriverController(), 180).whenPressed(new PrintCommand("Unbound"));
+    /* D-pad Left > Unbound */
+    new POVButton(getDriverController(), 270).whenPressed(new PrintCommand("Unbound"));
   }
 
   private void configureBoxButtonBindings() {
-    // Iterate over and assign commands to all button box buttons.
-    for (ButtonBox.Button binding : ButtonBox.Button.values()) {
-      /* ---------------------------------- Button Box ---------------------------------- */
-      JoystickButton button = new JoystickButton(getButtonBox(), binding.value);
-      if (binding == ButtonBox.Button.kRightSwitch) {
-        /* Right Switch > Unbound */
-        button.whenPressed(new PrintCommand("Unbound"));
-      } else if (binding == ButtonBox.Button.kMiddleSwitch) {
-        /* Middle Switch > Climber and Shooter mode switching */
-        button.whenPressed(() -> isClimberControlMode = true);
-        button.whenReleased(() -> isClimberControlMode = false);
-      } else if (binding == ButtonBox.Button.kLeftSwitch) {
-        /* Left Switch > Disables soft limits on press, release resets encoders (all for turret, hood, climber, and extender) */
-        button.whenPressed(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret);
-        button.whenPressed(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret);
+    /* Right Switch > Unbound */
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightSwitch.value).whenPressed(new PrintCommand("Unbound"));
+    /* Middle Switch > Climber and Shooter mode switching */
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kMiddleSwitch.value).whenPressed(() -> isClimberControlMode = true)
+        .whenReleased(() -> isClimberControlMode = false);
+    /* Left Switch > Disables soft limits on press, release resets encoders (all for turret, hood, climber, and extender) */
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value).whenPressed(() -> m_robotTurret.setTurretSoftLimits(false), m_robotTurret)
+          .whenPressed(() -> m_robotTurret.calibrationSpeed = 0.3, m_robotTurret);
 
-        button.whenPressed(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood);
-        button.whenPressed(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood);
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value).whenPressed(() -> m_robotHood.setHoodSoftLimits(false), m_robotHood)
+          .whenPressed(() -> m_robotHood.calibrationSpeed = 0.3, m_robotHood);
 
-        button.whenPressed(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender);
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value).whenPressed(() -> m_robotExtender.setExtenderSoftLimits(false), m_robotExtender);
 
-        button.whenReleased(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret);
-        button.whenReleased(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret);
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value).whenReleased(() -> m_robotTurret.setTurretSoftLimits(true), m_robotTurret)
+        .whenReleased(() -> m_robotTurret.calibrationSpeed = 1.0, m_robotTurret);
 
-        button.whenReleased(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood);
-        button.whenReleased(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood);
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value).whenReleased(() -> m_robotHood.setHoodSoftLimits(true), m_robotHood)
+        .whenReleased(() -> m_robotHood.calibrationSpeed = 1.0, m_robotHood);
 
-        button.whenReleased(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender);
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value).whenReleased(() -> m_robotExtender.setExtenderSoftLimits(true), m_robotExtender);
 
-        button.whenReleased(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret);
-        button.whenReleased(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood);
-        button.whenReleased(() -> m_robotExtender.setEncoder(0), m_robotExtender);
-        button.whenReleased(() -> m_robotClimber.setEncoders(0), m_robotClimber);
-      } else if (binding == ButtonBox.Button.kRightButton) {
-        /* Right Button > Extender Out */
-        button.whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender));
-        button.whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-      } else if (binding == ButtonBox.Button.kLeftButton) {
-        /* Left Button > Extender In */
-        button.whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender));
-        button.whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
-      }
-    }
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftSwitch.value).whenReleased(() -> m_robotTurret.m_boomBoomRotateEncoder.setPosition(0), m_robotTurret)
+        .whenReleased(() -> m_robotHood.m_angleEncoder.setPosition(0), m_robotHood)
+        .whenReleased(() -> m_robotExtender.setEncoder(0), m_robotExtender)
+        .whenReleased(() -> m_robotClimber.setEncoders(0), m_robotClimber);
+    /* Right Button > Extender Out */
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kRightButton.value).whileHeld(new RunCommand(() -> m_robotExtender.runExtender(1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
+    /* Left Button > Extender In */
+    new JoystickButton(getButtonBox(), ButtonBox.Button.kLeftButton.value).whileHeld(new RunCommand(() -> m_robotExtender.runExtender(-1.0), m_robotExtender))
+        .whenReleased(new RunCommand(() -> m_robotExtender.runExtender(0.0), m_robotExtender));
   }
 
   /**
