@@ -31,7 +31,7 @@ import org.fusesource.jansi.AnsiPrintStream;
 
 import edu.wpi.first.hal.HAL;
 
-public class AnsiLogging {
+public final class AnsiLogging {
   public static final Level LEVEL = Level.ALL;
   private static final AnsiPrintStream ANSI_CONSOLE_STREAM = AnsiConsole.err();
 

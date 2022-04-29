@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -108,7 +107,7 @@ public class CSV<R> {
    */
   @SuppressWarnings("unchecked")
   public R[] read(final Path path) throws IOException {
-    try (final BufferedReader reader = Files.newBufferedReader(path)) {
+    try (BufferedReader reader = Files.newBufferedReader(path)) {
       final BiConsumer<R, String>[] fieldSetters = Stream.of(headerSanitizer(reader.readLine()).split(",")).map(this::nameProcessor).map(setters::get).toArray(BiConsumer[]::new);
       final Stream<String> lines = reader.lines();
       return lines.filter(Predicate.not(String::isBlank)).map(line -> deserializeRecordString(line, fieldSetters, generator.get())).toArray(arrayGenerator);

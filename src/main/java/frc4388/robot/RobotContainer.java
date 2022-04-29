@@ -18,7 +18,6 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
@@ -54,7 +53,6 @@ import frc4388.robot.subsystems.Turret;
 import frc4388.robot.subsystems.VisionOdometry;
 import frc4388.utility.controller.ButtonBox;
 import frc4388.utility.controller.DeadbandedXboxController;
-import frc4388.utility.controller.XboxControllerPOV;
 import frc4388.utility.shuffleboard.CachingSendableChooser;
 
 /**
@@ -377,7 +375,7 @@ public class RobotContainer {
         builder.addStringProperty("default", () -> "Low", null);
         builder.addStringArrayProperty("options", () -> new String[] {"Low", "High"}, null);
         builder.addStringProperty("active", () -> m_robotSwerveDrive.speedAdjust == SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW ? "Low" : "High", null);
-        builder.addStringProperty("selected", null, val -> m_robotSwerveDrive.speedAdjust = val.equals("Low") ? SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW : SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST);
+        builder.addStringProperty("selected", null, val -> m_robotSwerveDrive.speedAdjust = "Low".equals(val) ? SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW : SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST);
       }
     });
     putData("Accelerometer", new NTSendable() {
