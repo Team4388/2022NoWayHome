@@ -14,29 +14,29 @@ public class VelocityCorrection {
   BoomBoom boomBoom;
 
   // vectors (in ft and ft/sec)
-  public Vector2D position;
-  public Vector2D cartesianVelocity;
+  public Vector2dExt position;
+  public Vector2dExt cartesianVelocity;
 
   // find
-  public Vector2D target;
+  public Vector2dExt target;
 
   public VelocityCorrection(SwerveDrive swerve, BoomBoom boomBoom) {
 
     this.swerve = swerve;
     this.boomBoom = boomBoom;
 
-    position = new Vector2D(5, 0);//new Vector2D(this.swerve.getOdometry().getX(), this.swerve.getOdometry().getY());
-    cartesianVelocity = new Vector2D(-2, 3);//new Vector2D(this.swerve.getChassisSpeeds().vxMetersPerSecond, this.swerve.getChassisSpeeds().vyMetersPerSecond);
+    position = new Vector2dExt(5, 0);//new Vector2D(this.swerve.getOdometry().getX(), this.swerve.getOdometry().getY());
+    cartesianVelocity = new Vector2dExt(-2, 3);//new Vector2D(this.swerve.getChassisSpeeds().vxMetersPerSecond, this.swerve.getChassisSpeeds().vyMetersPerSecond);
 
     target = getTargetPoint();
   }
 
-  private Vector2D getTargetPoint() {
+  private Vector2dExt getTargetPoint() {
     double approxShotTime = 1; // TODO: get shot time from shooter tables
     
-    Vector2D targetPoint = Vector2D.multiply(this.cartesianVelocity, -1 * approxShotTime);
+    Vector2dExt targetPoint = Vector2dExt.multiply(this.cartesianVelocity, -1 * approxShotTime);
     
-    return Vector2D.round(targetPoint, 5);
+    return Vector2dExt.round(targetPoint, 5);
   }
 
 }

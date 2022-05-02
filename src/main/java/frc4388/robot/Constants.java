@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc4388.utility.Gains;
@@ -39,8 +40,18 @@ public final class Constants {
 
   public static final class SwerveDriveConstants {
     public static final double ROTATION_SPEED = 2.3;
-    public static final double WIDTH = 23.75;
-    public static final double HEIGHT = 23.75;
+    /** Distance between centers of right and left wheels on robot */
+    public static final double TRACK_WIDTH = Units.inchesToMeters(23.75);
+    /** Distance between centers of front and back wheels on robot */
+    public static final double WHEEL_BASE = Units.inchesToMeters(23.75);
+
+    public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
+        new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),
+        new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2),
+        new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),
+        new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)
+    );
+
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
     public static final double JOYSTICK_TO_METERS_PER_SECOND_SLOW = 2;
     public static final double MAX_SPEED_FEET_PER_SEC = 20; // TODO: redundant constant?
@@ -55,10 +66,10 @@ public final class Constants {
     public static final int LEFT_BACK_WHEEL_CAN_ID = 7;
     public static final int RIGHT_BACK_STEER_CAN_ID = 8;
     public static final int RIGHT_BACK_WHEEL_CAN_ID = 9;
-    public static final int LEFT_FRONT_STEER_CAN_ENCODER_ID = 10;
-    public static final int RIGHT_FRONT_STEER_CAN_ENCODER_ID = 11;
-    public static final int LEFT_BACK_STEER_CAN_ENCODER_ID = 12;
-    public static final int RIGHT_BACK_STEER_CAN_ENCODER_ID = 13;
+    public static final int LEFT_FRONT_STEER_ENCODER_CAN_ID = 10;
+    public static final int RIGHT_FRONT_STEER_ENCODER_CAN_ID = 11;
+    public static final int LEFT_BACK_STEER_ENCODER_CAN_ID = 12;
+    public static final int RIGHT_BACK_STEER_ENCODER_CAN_ID = 13;
     public static final int GYRO_ID = 14;
 
     // offsets are in degrees
@@ -268,8 +279,8 @@ public final class Constants {
     public static final int SHOOTER_TIMEOUT_MS = 32;
     public static final int SHOOTER_SLOT_IDX = 0;
     public static final int SHOOTER_PID_LOOP_IDX = 1;
-    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER = new SupplyCurrentLimitConfiguration(
-        true, 10, 0, 0);
+    public static final SupplyCurrentLimitConfiguration SUPPLY_CURRENT_LIMIT_CONFIG_SHOOTER = 
+        new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     public static final StatorCurrentLimitConfiguration STATOR_CURRENT_LIMIT_CONFIG_SHOOTER = new StatorCurrentLimitConfiguration(
         true, 27, 0, 0);
     public static final int SHOOTER_FALCON_LEFT_CAN_ID = 21;

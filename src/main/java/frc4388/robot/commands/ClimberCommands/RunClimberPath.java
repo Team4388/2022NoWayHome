@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc4388.robot.Constants.ClimberConstants;
 import frc4388.robot.subsystems.Claws;
 import frc4388.robot.subsystems.Climber;
-import frc4388.utility.Vector2D;
+import frc4388.utility.Vector2dExt;
 
 public class RunClimberPath extends CommandBase {
   Climber climber;

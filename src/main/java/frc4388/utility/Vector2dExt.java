@@ -14,25 +14,19 @@ import edu.wpi.first.wpilibj.drive.Vector2d;
 /** Aarav's good vector class (better than WPILib)
  * @author Aarav Shah */
 
-public class Vector2D extends Vector2d {
-
-  public double x;
-  public double y;
-  public double angle;
-
-  public Vector2D() {
+public class Vector2dExt extends Vector2d {
+  public Vector2dExt() {
     this(0, 0);
   }
 
-  public Vector2D(double x, double y) {
+  public Vector2dExt(double x, double y) {
     super(x, y);
 
     this.x = x;
     this.y = y;
-    this.angle = Math.atan2(this.y, this.x);
   }
 
-  public Vector2D(double[] vec) {
+  public Vector2dExt(double[] vec) {
     this(vec[0], vec[1]);
 
     if (vec.length != 2) {
@@ -40,11 +34,11 @@ public class Vector2D extends Vector2d {
     }
   }
 
-  public Vector2D(Point p) {
+  public Vector2dExt(Point p) {
     this(p.x, p.y);
   }
 
-  public Vector2D(Translation2d t) {
+  public Vector2dExt(Translation2d t) {
     this(t.getX(), t.getY());
   }
 
@@ -54,15 +48,15 @@ public class Vector2D extends Vector2d {
    * @param v2 Second vector in the addition.
    * @return New vector which is the sum.
    */
-  public static Vector2D add(Vector2D v1, Vector2D v2) {
-    return new Vector2D(v1.x + v2.x, v1.y + v2.y);
+  public static Vector2dExt add(Vector2dExt v1, Vector2dExt v2) {
+    return new Vector2dExt(v1.x + v2.x, v1.y + v2.y);
   }
 
   /**
    * Adds vector to current object
    * @param v Vector to add
    */
-  public void add(Vector2D v) {
+  public void add(Vector2dExt v) {
     this.x += v.x;
     this.y += v.x;
   }
@@ -73,15 +67,15 @@ public class Vector2D extends Vector2d {
    * @param v2 Second vector in the subtraction.
    * @return New vector which is the difference.
    */
-  public static Vector2D subtract(Vector2D v1, Vector2D v2) {
-    return new Vector2D(v1.x - v2.x, v1.y - v2.y);
+  public static Vector2dExt subtract(Vector2dExt v1, Vector2dExt v2) {
+    return new Vector2dExt(v1.x - v2.x, v1.y - v2.y);
   }
 
   /**
    * Subtracts vector from current object
    * @param v Vector to subtract
    */
-  public void subtract(Vector2D v) {
+  public void subtract(Vector2dExt v) {
     this.x -= v.x;
     this.y -= v.x;
   }
@@ -92,8 +86,8 @@ public class Vector2D extends Vector2d {
    * @param v2 Scalar to multiply.
    * @return New vector which is the product.
    */
-  public static Vector2D multiply(Vector2D v1, double scalar) {
-    return new Vector2D(scalar * v1.x, scalar * v1.y);
+  public static Vector2dExt multiply(Vector2dExt v1, double scalar) {
+    return new Vector2dExt(scalar * v1.x, scalar * v1.y);
   }
 
   /**
@@ -111,8 +105,8 @@ public class Vector2D extends Vector2d {
    * @param v2 Scalar to divide.
    * @return New vector which is the division.
    */
-  public static Vector2D divide(Vector2D v1, double scalar) {
-    return new Vector2D(v1.x / scalar, v1.y / scalar);
+  public static Vector2dExt divide(Vector2dExt v1, double scalar) {
+    return new Vector2dExt(v1.x / scalar, v1.y / scalar);
   }
 
   /**
@@ -128,8 +122,8 @@ public class Vector2D extends Vector2d {
    * Find unit vector.
    * @return The unit vector.
    */
-  public Vector2D unit() {
-    return new Vector2D(this.x / this.magnitude(), this.y / this.magnitude());
+  public Vector2dExt unit() {
+    return new Vector2dExt(this.x / this.magnitude(), this.y / this.magnitude());
   }
 
   /**
@@ -138,10 +132,10 @@ public class Vector2D extends Vector2d {
    * @param places Number of places to round to.
    * @return New rounded vector.
    */
-  public static Vector2D round(Vector2D v, int places) {
+  public static Vector2dExt round(Vector2dExt v, int places) {
     int scale = (int) Math.pow(10, places);
 
-    v = Vector2D.multiply(v, scale);
+    v = Vector2dExt.multiply(v, scale);
 
     v.x = Math.round(v.x);
     v.y = Math.round(v.y);

@@ -6,8 +6,6 @@ package frc4388.robot.subsystems;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import frc4388.utility.Gains;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -29,19 +26,6 @@ public class SwerveDrive extends SubsystemBase {
   private SwerveModule m_frontRight;
   private SwerveModule m_backLeft;
   private SwerveModule m_backRight;
-
-  double halfWidth = SwerveDriveConstants.WIDTH / 2.d;
-  double halfHeight = SwerveDriveConstants.HEIGHT / 2.d;
-
-  public static Gains m_swerveGains = SwerveDriveConstants.SWERVE_GAINS;
-
-  Translation2d m_frontLeftLocation = new Translation2d(Units.inchesToMeters(halfWidth), Units.inchesToMeters(-halfHeight));
-  Translation2d m_frontRightLocation = new Translation2d(Units.inchesToMeters(halfWidth), Units.inchesToMeters(halfHeight));
-  Translation2d m_backLeftLocation = new Translation2d(Units.inchesToMeters(-halfWidth), Units.inchesToMeters(-halfHeight));
-  Translation2d m_backRightLocation = new Translation2d(Units.inchesToMeters(-halfWidth), Units.inchesToMeters(halfHeight));
-
-  public SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation,
-      m_backLeftLocation, m_backRightLocation);
 
   public SwerveModule[] modules;
   public WPI_Pigeon2 m_gyro;
@@ -51,7 +35,7 @@ public class SwerveDrive extends SubsystemBase {
 
   public double speedAdjust = SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW;
   public boolean ignoreAngles;
-  public Rotation2d rotTarget = new Rotation2d();
+  public double rotTarget;
   private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
 
   public final Field2d m_field = new Field2d();
@@ -73,7 +57,7 @@ public class SwerveDrive extends SubsystemBase {
     //     VecBuilder.fill(Units.degreesToRadians(1)),            // TODO: tune
     //     VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
     
-    m_odometry = new SwerveDriveOdometry(m_kinematics, m_gyro.getRotation2d());
+    m_odometry = new SwerveDriveOdometry(SwerveDriveConstants.DRIVE_KINEMATICS, m_gyro.getRotation2d());
 
     m_gyro.reset();
     SmartDashboard.putData("Field", m_field);
@@ -106,7 +90,7 @@ public class SwerveDrive extends SubsystemBase {
             -rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
         : new ChassisSpeeds(ySpeedMetersPerSecond, -xSpeedMetersPerSecond,
             -rot * SwerveDriveConstants.ROTATION_SPEED * 2);
-    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveModuleState[] states = SwerveDriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
 
@@ -117,23 +101,16 @@ public class SwerveDrive extends SubsystemBase {
   }
 
   // new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
-  public void driveWithInput(Translation2d leftStick, Translation2d rightStick, boolean fieldRelative) {    
+  public void driveWithInput(Translation2d leftStick, Translation2d rightStick, boolean fieldRelative) {
     ignoreAngles = leftStick.getX() == 0 && leftStick.getY() == 0 && rightStick.getX() == 0 && rightStick.getY() == 0;
     leftStick = leftStick.times(leftStick.getNorm() * speedAdjust);
     if (Math.abs(rightStick.getX()) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightStick.getY()) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = new Rotation2d(rightStick.getX(), -rightStick.getY()).minus(new Rotation2d(0,1));
-    double rot = rotTarget.minus(m_gyro.getRotation2d()).getRadians();
-    if (ignoreAngles) {
-      rot = 0;
-    }
-    double xSpeedMetersPerSecond = leftStick.getX();
-    double ySpeedMetersPerSecond = leftStick.getY();
+      rotTarget = -(Math.atan2(rightStick.getY(), rightStick.getX()) - Math.PI / 2);
+    double rot = ignoreAngles ? rotTarget - m_gyro.getRotation2d().getRadians() : 0;
     chassisSpeeds = fieldRelative
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
-        : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rightStick.getX() * SwerveDriveConstants.ROTATION_SPEED * 2);
-    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(
-        chassisSpeeds);
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(leftStick.getX(), leftStick.getY(), rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI * 2) + (Math.PI / 2)))
+        : new ChassisSpeeds(leftStick.getX(), leftStick.getY(), rightStick.getX() * SwerveDriveConstants.ROTATION_SPEED * 2);
+    SwerveModuleState[] states = SwerveDriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     // if (ignoreAngles) {
     //   SwerveModuleState[] lockedStates = new SwerveModuleState[states.length];
     //   for (int i = 0; i < states.length; i ++) {
@@ -143,8 +120,6 @@ public class SwerveDrive extends SubsystemBase {
     //   setModuleStates(lockedStates);
     // }
     setModuleStates(states);
-    // SmartDashboard.putNumber("rot", rot);
-    // SmartDashboard.putNumber("rotarget", rotTarget.getDegrees());
   }
 
   /**
@@ -266,7 +241,7 @@ public class SwerveDrive extends SubsystemBase {
    */
   public void resetGyro() {
     m_gyro.reset();
-    rotTarget = new Rotation2d(0);
+    rotTarget = 0;
   }
 
   /**

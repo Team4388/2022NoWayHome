@@ -40,10 +40,10 @@ public class RobotMap {
   public final WPI_TalonFX backLeftDriveMotor = new WPI_TalonFX(SwerveDriveConstants.LEFT_BACK_WHEEL_CAN_ID);
   public final WPI_TalonFX backRightSteerMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ID);
   public final WPI_TalonFX backRightDriveMotor = new WPI_TalonFX(SwerveDriveConstants.RIGHT_BACK_WHEEL_CAN_ID);
-  public final CANCoder frontLeftEncoder = new CANCoder(SwerveDriveConstants.LEFT_FRONT_STEER_CAN_ENCODER_ID);
-  public final CANCoder frontRightEncoder = new CANCoder(SwerveDriveConstants.RIGHT_FRONT_STEER_CAN_ENCODER_ID);
-  public final CANCoder backLeftEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_CAN_ENCODER_ID);
-  public final CANCoder backRightEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_CAN_ENCODER_ID);
+  public final CANCoder frontLeftEncoder = new CANCoder(SwerveDriveConstants.LEFT_FRONT_STEER_ENCODER_CAN_ID);
+  public final CANCoder frontRightEncoder = new CANCoder(SwerveDriveConstants.RIGHT_FRONT_STEER_ENCODER_CAN_ID);
+  public final CANCoder backLeftEncoder = new CANCoder(SwerveDriveConstants.LEFT_BACK_STEER_ENCODER_CAN_ID);
+  public final CANCoder backRightEncoder = new CANCoder(SwerveDriveConstants.RIGHT_BACK_STEER_ENCODER_CAN_ID);
 
   public SwerveModule frontLeft;
   public SwerveModule frontRight;

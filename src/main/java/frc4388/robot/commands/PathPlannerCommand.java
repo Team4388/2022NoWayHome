@@ -49,7 +49,7 @@ public class PathPlannerCommand extends SequentialCommandGroup {
 
       addCommands(
         new InstantCommand(() -> m_swerveDrive.resetOdometry(initialPosition), m_swerveDrive),
-        new PPSwerveControllerCommand(pathTrajectory, m_swerveDrive::getOdometry, m_swerveDrive.m_kinematics, xController, yController, thetaController, m_swerveDrive::setModuleStates, m_swerveDrive),
+        new PPSwerveControllerCommand(pathTrajectory, m_swerveDrive::getOdometry, SwerveDriveConstants.DRIVE_KINEMATICS, xController, yController, thetaController, m_swerveDrive::setModuleStates, m_swerveDrive),
         new InstantCommand(m_swerveDrive::stopModules, m_swerveDrive)
       );
     } else {
