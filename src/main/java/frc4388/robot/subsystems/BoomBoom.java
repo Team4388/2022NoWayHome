@@ -1,31 +1,19 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc4388.robot.subsystems;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.diffplug.common.base.Errors;
 import com.diffplug.common.base.StringPrinter;
 
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,7 +26,8 @@ import frc4388.utility.NumericData;
 public class BoomBoom extends SubsystemBase {
   private static final Logger LOGGER = Logger.getLogger(BoomBoom.class.getSimpleName());
   public WPI_TalonFX m_shooterFalconLeft;
-  public WPI_TalonFX m_shooterFalconRight;  public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
+  public WPI_TalonFX m_shooterFalconRight;
+  public static Gains m_drumShooterGains = ShooterConstants.DRUM_SHOOTER_GAINS;
   public static BoomBoom m_boomBoom;
   double speed2;
 

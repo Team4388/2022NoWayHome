@@ -1,17 +1,9 @@
 package frc4388.robot.subsystems;
 
-import java.nio.file.ClosedWatchServiceException;
-
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxLimitSwitch;
-
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.ClawConstants;
-import frc4388.robot.Constants.ClimberConstants;
 
 public class Claws extends SubsystemBase {
 
