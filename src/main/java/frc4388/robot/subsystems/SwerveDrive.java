@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
+import frc4388.utility.Gains;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -44,7 +45,7 @@ public class SwerveDrive extends SubsystemBase {
     m_gyro = gyro;
 
     modules = new SwerveModule[] { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
-
+    SmartDashboard.putNumber("OMEGA", 0.0);
     // m_poseEstimator = new SwerveDrivePoseEstimator(
     // getRegGyro(),//m_gyro.getRotation2d(),
     // new Pose2d(),
@@ -90,7 +91,7 @@ public class SwerveDrive extends SubsystemBase {
       if (rightStick.getNorm() > OIConstants.RIGHT_AXIS_DEADBAND) rotTarget = -Math.atan2(rightStick.getY(), rightStick.getX());
       double rotDifference = rotTarget - m_gyro.getRotation2d().getRadians();
       leftStick = leftStick.times(leftStick.getNorm() * speedAdjust);
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(leftStick.getX(), leftStick.getY(), rotDifference * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI * 2) + (Math.PI / 2)));
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(leftStick.getX(), leftStick.getY(), rotDifference, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI * 2) + (Math.PI / 2)));
     } else chassisSpeeds = new ChassisSpeeds(leftStick.getX(), leftStick.getY(), rightStick.getX() * SwerveDriveConstants.ROTATION_SPEED * 2);
     setModuleStates(SwerveDriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds));
   }

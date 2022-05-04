@@ -123,7 +123,7 @@ public class RobotContainer {
     m_robotIntake.setDefaultCommand(new RunCommand(() -> m_robotIntake.runWithTriggers(getOperatorController().getLeftTriggerAxis(), getOperatorController().getRightTriggerAxis()), m_robotIntake).withName("Intake DefaultCommand"));
 
     // Shooter Idle
-    m_robotBoomBoom.setDefaultCommand(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.45), m_robotBoomBoom).withName("BoomBoom DefaultCommand"));
+    // m_robotBoomBoom.setDefaultCommand(new RunCommand(() -> m_robotBoomBoom.runDrumShooter(0.45), m_robotBoomBoom).withName("BoomBoom DefaultCommand"));
 
     // Serializer Manual
     m_robotSerializer.setDefaultCommand(new RunCommand(() -> m_robotSerializer.setSerializer(getOperatorController().getLeftTriggerAxis() * 0.8), m_robotSerializer).withName("Serializer DefaultCommand"));
@@ -340,13 +340,13 @@ public class RobotContainer {
       builder.addBooleanProperty("Shooter Safety", this::isLockedOn, null);
     });
     putData("Field", m_robotSwerveDrive.m_field);
-    putData("PDP", new PowerDistribution() {
-      @Override
-      public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-        builder.setSmartDashboardType("PowerDistributionPanel");
-      }
-    });
+    // putData("PDP", new PowerDistribution() {
+    //   @Override
+    //   public void initSendable(SendableBuilder builder) {
+    //     super.initSendable(builder);
+    //     builder.setSmartDashboardType("PowerDistributionPanel");
+    //   }
+    // });
     putData("Extender", new NTSendable() {
       @Override
       public void initSendable(NTSendableBuilder builder) {

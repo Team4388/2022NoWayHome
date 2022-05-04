@@ -40,10 +40,10 @@ public final class Constants {
     public static final double WHEEL_BASE = Units.inchesToMeters(23.75);
 
     public static final SwerveDriveKinematics DRIVE_KINEMATICS = new SwerveDriveKinematics(
-        new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),
         new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2),
-        new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),
-        new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)
+        new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),
+        new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2),
+        new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2)
     );
 
     public static final double JOYSTICK_TO_METERS_PER_SECOND_FAST = 11;
