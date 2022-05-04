@@ -43,16 +43,16 @@ public class SwerveDrive extends SubsystemBase {
     m_backRight = backRight;
     m_gyro = gyro;
 
-    modules = new SwerveModule[] {m_frontLeft, m_frontRight, m_backLeft, m_backRight};
-    
+    modules = new SwerveModule[] { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
+
     // m_poseEstimator = new SwerveDrivePoseEstimator(
-    //     getRegGyro(),//m_gyro.getRotation2d(),
-    //     new Pose2d(),
-    //     m_kinematics,
-    //     VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)),  // TODO: tune
-    //     VecBuilder.fill(Units.degreesToRadians(1)),            // TODO: tune
-    //     VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
-    
+    // getRegGyro(),//m_gyro.getRotation2d(),
+    // new Pose2d(),
+    // m_kinematics,
+    // VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1)), // TODO: tune
+    // VecBuilder.fill(Units.degreesToRadians(1)), // TODO: tune
+    // VecBuilder.fill(1.0, 1.0, Units.degreesToRadians(1))); // TODO: tune
+
     m_odometry = new SwerveDriveOdometry(SwerveDriveConstants.DRIVE_KINEMATICS, m_gyro.getRotation2d());
 
     m_gyro.reset();
@@ -67,11 +67,10 @@ public class SwerveDrive extends SubsystemBase {
   /**
    * Method to drive the robot using joystick info.
    * @link https://github.com/ZachOrr/MK3-Swerve-Example
-   * @param speeds[0]     Speed of the robot in the x direction (forward).
-   * @param speeds[1]     Speed of the robot in the y direction (sideways).
-   * @param rot           Angular rate of the robot.
-   * @param fieldRelative Whether the provided x and y speeds are relative to the
-   *                      field.
+   * @param speeds[0] Speed of the robot in the x direction (forward).
+   * @param speeds[1] Speed of the robot in the y direction (sideways).
+   * @param rot Angular rate of the robot.
+   * @param fieldRelative Whether the provided x and y speeds are relative to the field.
    */
   public void driveWithInput(Translation2d speed, double rot, boolean fieldRelative) {
     ignoreAngles = (speed.getX() == 0) && (speed.getY() == 0) && (rot == 0);
@@ -81,41 +80,19 @@ public class SwerveDrive extends SubsystemBase {
 
     double xSpeedMetersPerSecond = speed.getX();
     double ySpeedMetersPerSecond = speed.getY();
-    chassisSpeeds = fieldRelative
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond,
-            -rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2) + (Math.PI /2)))
-        : new ChassisSpeeds(ySpeedMetersPerSecond, -xSpeedMetersPerSecond,
-            -rot * SwerveDriveConstants.ROTATION_SPEED * 2);
+    chassisSpeeds = fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, -rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI * 2) + (Math.PI / 2))) : new ChassisSpeeds(ySpeedMetersPerSecond, -xSpeedMetersPerSecond, -rot * SwerveDriveConstants.ROTATION_SPEED * 2);
     SwerveModuleState[] states = SwerveDriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
 
-  public void driveWithInput(double leftX, double leftY, double rightX, double rightY, boolean fieldRelative) {
-    Translation2d speed = new Translation2d(leftX, leftY);
-    Translation2d head = new Translation2d(rightX, rightY);
-    driveWithInput(speed, head, fieldRelative);
-  }
-
-  // new Rotation2d((360 - m_gyro.getRotation2d().getDegrees() + 90) * (Math.PI/180)))
   public void driveWithInput(Translation2d leftStick, Translation2d rightStick, boolean fieldRelative) {
-    ignoreAngles = leftStick.getX() == 0 && leftStick.getY() == 0 && rightStick.getX() == 0 && rightStick.getY() == 0;
-    leftStick = leftStick.times(leftStick.getNorm() * speedAdjust);
-    if (Math.abs(rightStick.getX()) > OIConstants.RIGHT_AXIS_DEADBAND || Math.abs(rightStick.getY()) > OIConstants.RIGHT_AXIS_DEADBAND)
-      rotTarget = -(Math.atan2(rightStick.getY(), rightStick.getX()) - Math.PI / 2);
-    double rot = ignoreAngles ? rotTarget - m_gyro.getRotation2d().getRadians() : 0;
-    chassisSpeeds = fieldRelative
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(leftStick.getX(), leftStick.getY(), rot * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI * 2) + (Math.PI / 2)))
-        : new ChassisSpeeds(leftStick.getX(), leftStick.getY(), rightStick.getX() * SwerveDriveConstants.ROTATION_SPEED * 2);
-    SwerveModuleState[] states = SwerveDriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-    // if (ignoreAngles) {
-    //   SwerveModuleState[] lockedStates = new SwerveModuleState[states.length];
-    //   for (int i = 0; i < states.length; i ++) {
-    //     SwerveModuleState state = states[i];
-    //     lockedStates[i]= new SwerveModuleState(0, state.angle);
-    //   }
-    //   setModuleStates(lockedStates);
-    // }
-    setModuleStates(states);
+    if (fieldRelative) {
+      if (rightStick.getNorm() > OIConstants.RIGHT_AXIS_DEADBAND) rotTarget = -Math.atan2(rightStick.getY(), rightStick.getX());
+      double rotDifference = rotTarget - m_gyro.getRotation2d().getRadians();
+      leftStick = leftStick.times(leftStick.getNorm() * speedAdjust);
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(leftStick.getX(), leftStick.getY(), rotDifference * SwerveDriveConstants.ROTATION_SPEED * 2, new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI * 2) + (Math.PI / 2)));
+    } else chassisSpeeds = new ChassisSpeeds(leftStick.getX(), leftStick.getY(), rightStick.getX() * SwerveDriveConstants.ROTATION_SPEED * 2);
+    setModuleStates(SwerveDriveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds));
   }
 
   /**
@@ -124,8 +101,7 @@ public class SwerveDrive extends SubsystemBase {
    * @param desiredStates Array of module states to set.
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates,
-        Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
     // int i = 2; {
     for (int i = 0; i < desiredStates.length; i++) {
       SwerveModule module = modules[i];
@@ -199,7 +175,7 @@ public class SwerveDrive extends SubsystemBase {
    * 
    * @return Rotation2d object holding current gyro in radians
    */
-  public Rotation2d getRegGyro() { 
+  public Rotation2d getRegGyro() {
     // * test chassis regression
     // double regCur = 0.6552670369 + m_gyro.getRotation2d().getDegrees() * 0.9926871527;
     // * new robot regression
@@ -218,20 +194,16 @@ public class SwerveDrive extends SubsystemBase {
    * Updates the field relative position of the robot.
    */
   public void updateOdometry() {
-    Rotation2d actualDWI = new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI*2)); //+ (Math.PI/2));
-    Rotation2d actual =  new Rotation2d(m_gyro.getRotation2d().getRadians());
+    Rotation2d actualDWI = new Rotation2d(-m_gyro.getRotation2d().getRadians() + (Math.PI * 2)); // + (Math.PI/2));
+    Rotation2d actual = new Rotation2d(m_gyro.getRotation2d().getRadians());
 
     SmartDashboard.putNumber("AUTO ACTUAL GYRO", actual.getDegrees());
     SmartDashboard.putNumber("AUTO DWI GYRO", actual.getDegrees());
 
-    m_odometry.update( actual,//m_gyro.getRotation2d(),//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
-                       modules[0].getState(),
-                       modules[1].getState(),
-                       modules[2].getState(),
-                       modules[3].getState());
+    m_odometry.update(actual, // m_gyro.getRotation2d(),//new Rotation2d((2 * Math.PI) - getRegGyro().getRadians()),
+        modules[0].getState(), modules[1].getState(), modules[2].getState(), modules[3].getState());
   }
-  
-  
+
   /**
    * Resets pigeon.
    */
@@ -263,11 +235,11 @@ public class SwerveDrive extends SubsystemBase {
     }
   }
 
-  public double getCurrent(){
+  public double getCurrent() {
     return m_frontLeft.getCurrent() + m_frontRight.getCurrent() + m_backRight.getCurrent() + m_backLeft.getCurrent();
   }
 
-  public double getVoltage(){
+  public double getVoltage() {
     return m_frontLeft.getVoltage() + m_frontRight.getVoltage() + m_backRight.getVoltage() + m_backLeft.getVoltage();
   }
 }

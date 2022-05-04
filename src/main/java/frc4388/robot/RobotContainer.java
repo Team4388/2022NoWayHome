@@ -116,11 +116,7 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     // Swerve Drive with Input
     m_robotSwerveDrive.setDefaultCommand(new RunCommand(() -> {
-      if (driveControlEnabled) {
-        m_robotSwerveDrive.driveWithInput(getDriverController().getLeft(), getDriverController().getRight(), true);
-      } else {
-        m_robotSwerveDrive.driveWithInput(0, 0, 0, 0, false);
-      }
+      if (driveControlEnabled) m_robotSwerveDrive.driveWithInput(getDriverController().getLeft(), getDriverController().getRight(), true);
     }, m_robotSwerveDrive).withName("SwerveDrive DefaultCommand"));
 
     // Intake with Triggers
