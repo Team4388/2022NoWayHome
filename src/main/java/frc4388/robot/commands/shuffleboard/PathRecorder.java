@@ -36,7 +36,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.NotifierCommand;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import frc4388.robot.commands.PathPlannerCommand;
+import frc4388.robot.commands.autonomous.PathPlannerCommand;
 import frc4388.robot.subsystems.SwerveDrive;
 import frc4388.utility.PathPlannerUtil;
 import frc4388.utility.PathPlannerUtil.Path.Waypoint;
@@ -99,8 +99,8 @@ public class PathRecorder extends CommandBase {
    */
   @Override
   public void execute() {
-    Translation2d position = m_swerveDrive.m_odometry.getPoseMeters().getTranslation();
-    Rotation2d rotation = m_swerveDrive.m_gyro.getRotation2d();
+    Translation2d position = m_swerveDrive.getPoseMeters().getTranslation();
+    Rotation2d rotation = m_swerveDrive.getRotation2d();
     // FIXME: Chassis speeds are created from joystick inputs and may not reflect actual robot velocity.
     Translation2d velocity = new Translation2d(m_swerveDrive.getChassisSpeeds().vxMetersPerSecond, m_swerveDrive.getChassisSpeeds().vyMetersPerSecond);
     Waypoint waypoint = new Waypoint(position, position, position, rotation.getDegrees(), false, SwerveDriveConstants.PATH_RECORD_VELOCITY ? velocity.getNorm() : null, false);

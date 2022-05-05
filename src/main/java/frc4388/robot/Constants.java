@@ -33,7 +33,7 @@ public final class Constants {
   public static final String DRIVE_CAN_NAME = "rio";
 
   public static final class SwerveDriveConstants {
-    public static final double ROTATION_SPEED = 2.3;
+    public static final double ROTATION_SPEED = 2.3 * 2;
     /** Distance between centers of right and left wheels on robot */
     public static final double TRACK_WIDTH = Units.inchesToMeters(23.75);
     /** Distance between centers of front and back wheels on robot */

@@ -1,4 +1,4 @@
-package frc4388.robot.commands.shooter;
+package frc4388.robot.commands;
 
 import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 

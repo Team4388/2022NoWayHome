@@ -1,4 +1,4 @@
-package frc4388.robot.commands;
+package frc4388.robot.commands.autonomous;
 
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -49,7 +49,7 @@ public class PathPlannerCommand extends SequentialCommandGroup {
 
       addCommands(
         new InstantCommand(() -> m_swerveDrive.resetOdometry(initialPosition), m_swerveDrive),
-        new PPSwerveControllerCommand(pathTrajectory, m_swerveDrive::getOdometry, SwerveDriveConstants.DRIVE_KINEMATICS, xController, yController, thetaController, m_swerveDrive::setModuleStates, m_swerveDrive),
+        new PPSwerveControllerCommand(pathTrajectory, m_swerveDrive::getPoseMeters, SwerveDriveConstants.DRIVE_KINEMATICS, xController, yController, thetaController, m_swerveDrive::setModuleStates, m_swerveDrive),
         new InstantCommand(m_swerveDrive::stopModules, m_swerveDrive)
       );
     } else {

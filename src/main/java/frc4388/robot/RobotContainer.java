@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc4388.robot.Constants.OIConstants;
 import frc4388.robot.Constants.StorageConstants;
 import frc4388.robot.Constants.SwerveDriveConstants;
-import frc4388.robot.commands.AutonomousBuilder;
+import frc4388.robot.commands.autonomous.AutonomousBuilder;
 import frc4388.robot.commands.extender.DeployExtender;
 import frc4388.robot.commands.extender.RetractExtender;
 import frc4388.robot.commands.shooter.TrackTarget;
@@ -169,12 +169,12 @@ public class RobotContainer {
   }
 
   private void configureDriverButtonBindings() {
-    /* Left Bumper > Shift Down */
+    /* Left Bumper > Shift To Low */
     new JoystickButton(getDriverController(), XboxController.Button.kLeftBumper.value)
-        .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
-    /* Right Bumper > Shift Up */
+        .whenPressed(() -> m_robotSwerveDrive.setSpeedMode(false));
+    /* Right Bumper > Shift To High */
     new JoystickButton(getDriverController(), XboxController.Button.kRightBumper.value)
-        .whenPressed(() -> m_robotSwerveDrive.highSpeed(false));
+        .whenPressed(() -> m_robotSwerveDrive.setSpeedMode(true));
     /* Left Stick > Unbound */
     new JoystickButton(getDriverController(), XboxController.Button.kLeftStick.value)
         .whenPressed(new PrintCommand("Unbound"));
@@ -340,6 +340,7 @@ public class RobotContainer {
       builder.addBooleanProperty("Shooter Safety", this::isLockedOn, null);
     });
     putData("Field", m_robotSwerveDrive.m_field);
+    // TODO: Make the PDP dashboard entry work.
     // putData("PDP", new PowerDistribution() {
     //   @Override
     //   public void initSendable(SendableBuilder builder) {
@@ -359,7 +360,7 @@ public class RobotContainer {
       }
     });
     putData("Drivebase", m_robotSwerveDrive);
-    putData("Gyro", m_robotSwerveDrive.m_gyro);
+    putData("Gyro", m_robotMap.gyro);
     putData("Drive Speed", new NTSendable() {
       @Override
       public void initSendable(NTSendableBuilder builder) {
@@ -367,8 +368,8 @@ public class RobotContainer {
         builder.getEntry(".instance").setDouble(0);
         builder.addStringProperty("default", () -> "Low", null);
         builder.addStringArrayProperty("options", () -> new String[] {"Low", "High"}, null);
-        builder.addStringProperty("active", () -> m_robotSwerveDrive.speedAdjust == SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW ? "Low" : "High", null);
-        builder.addStringProperty("selected", null, val -> m_robotSwerveDrive.speedAdjust = "Low".equals(val) ? SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_SLOW : SwerveDriveConstants.JOYSTICK_TO_METERS_PER_SECOND_FAST);
+        builder.addStringProperty("active", () -> m_robotSwerveDrive.getSpeedMode() ? "High" : "Low", null);
+        builder.addStringProperty("selected", null, val -> m_robotSwerveDrive.setSpeedMode("High".equals(val)));
       }
     });
     putData("Accelerometer", new NTSendable() {
@@ -380,7 +381,7 @@ public class RobotContainer {
         NetworkTableEntry entryZ = builder.getEntry("Z");
         builder.setUpdateTable(() -> {
           short[] data = new short[3];
-          m_robotSwerveDrive.m_gyro.getBiasedAccelerometer(data);
+          m_robotMap.gyro.getBiasedAccelerometer(data);
           entryX.setDouble(data[0]);
           entryY.setDouble(data[1]);
           entryZ.setDouble(data[2]);

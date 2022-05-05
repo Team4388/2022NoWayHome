@@ -1,4 +1,4 @@
-package frc4388.robot.commands;
+package frc4388.robot.commands.autonomous;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc4388.robot.RobotContainer;
 import frc4388.robot.Constants.AutoConstants;
 import frc4388.robot.Constants.StorageConstants;
+import frc4388.robot.commands.TimedWaitUntilCommand;
 import frc4388.robot.commands.extender.DeployExtender;
-import frc4388.robot.commands.shooter.TimedWaitUntilCommand;
 import frc4388.robot.commands.shooter.TrackTarget;
 import frc4388.robot.subsystems.BoomBoom;
 import frc4388.robot.subsystems.Extender;
