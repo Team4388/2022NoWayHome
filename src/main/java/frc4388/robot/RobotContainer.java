@@ -353,10 +353,10 @@ public class RobotContainer {
       public void initSendable(NTSendableBuilder builder) {
         builder.setSmartDashboardType("String Chooser");
         builder.getEntry(".instance").setDouble(0);
-        builder.addStringProperty("default", () -> "Retracted", null);
+        builder.addStringProperty("default", () -> m_robotExtender.getPosition() <= 0 ? "Retracted" : "Extended", null);
         builder.addStringArrayProperty("options", () -> new String[] {"Retracted", "Extended"}, null);
         builder.addStringProperty("active", () -> m_robotExtender.getPosition() <= 0 ? "Retracted" : "Extended", null);
-        builder.addStringProperty("selected", null, null);
+        builder.addStringProperty("selected", () -> m_robotExtender.getPosition() <= 0 ? "Retracted" : "Extended", null);
       }
     });
     putData("Drivebase", m_robotSwerveDrive);
@@ -366,10 +366,10 @@ public class RobotContainer {
       public void initSendable(NTSendableBuilder builder) {
         builder.setSmartDashboardType("String Chooser");
         builder.getEntry(".instance").setDouble(0);
-        builder.addStringProperty("default", () -> "Low", null);
+        builder.addStringProperty("default", () -> m_robotSwerveDrive.getSpeedMode() ? "High" : "Low", null);
         builder.addStringArrayProperty("options", () -> new String[] {"Low", "High"}, null);
         builder.addStringProperty("active", () -> m_robotSwerveDrive.getSpeedMode() ? "High" : "Low", null);
-        builder.addStringProperty("selected", null, val -> m_robotSwerveDrive.setSpeedMode("High".equals(val)));
+        builder.addStringProperty("selected", () -> m_robotSwerveDrive.getSpeedMode() ? "High" : "Low", null);
       }
     });
     putData("Accelerometer", new NTSendable() {
