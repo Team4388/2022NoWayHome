@@ -30,6 +30,10 @@ import org.fusesource.jansi.AnsiConsole;
 import org.fusesource.jansi.AnsiPrintStream;
 
 import edu.wpi.first.hal.HAL;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.NotFoundException;
 
 public final class AnsiLogging {
   public static final Level LEVEL = Level.ALL;
@@ -59,7 +63,72 @@ public final class AnsiLogging {
       DurianPlugins.register(Errors.Plugins.Log.class, e -> Logger.getLogger(e.getStackTrace()[0].getClassName().substring(e.getStackTrace()[0].getClassName().lastIndexOf('.') + 1)).log(Level.SEVERE, e, e::getLocalizedMessage));
       // Store the handler for HAL to use when sending errors to DriverStation.
       halLoggerHandler = new LoggingAnsiConsoleHandler(printStreamLogger(true, s -> HAL.sendError(false, 0, false, s, "", "", true)));
-    } catch (IOException exception) {
+      // Use Javassist to replace the DriverStation class bytecode with our own.
+      ClassPool classPool = ClassPool.getDefault();
+      CtClass ctClassDriverStation = classPool.get("edu.wpi.first.wpilibj.DriverStation");
+      ctClassDriverStation.getDeclaredMethod("reportErrorImpl", new CtClass[] { CtClass.booleanType, CtClass.intType, classPool.get("java.lang.String"), CtClass.booleanType, classPool.get("java.lang.StackTraceElement[]"), CtClass.intType }).setBody("{boolean isError=$1;int code=$2;String error=$3;boolean printTrace=$4;StackTraceElement[] stackTrace=$5;int stackTraceFirst=$6;if(frc4388.utility.AnsiLogging.halLoggerHandler!=null){if(!frc4388.utility.AnsiLogging.LEVEL.equals(java.util.logging.Level.OFF)){java.util.logging.LogRecord logRecord=new java.util.logging.LogRecord(isError?java.util.logging.Level.SEVERE:java.util.logging.Level.FINER,error.stripTrailing());logRecord.setLoggerName(\"HAL\");if(stackTrace!=null&&stackTrace.length>=stackTraceFirst+1){int from=Math.min(Math.max(0,stackTraceFirst),stackTrace.length-1);java.lang.StackTraceElement[] presentStackTrace=new java.lang.StackTraceElement[stackTrace.length-from-1];System.arraycopy(stackTrace,from,presentStackTrace,0,presentStackTrace.length);logRecord.setSourceMethodName(presentStackTrace[0].getMethodName());boolean isEpochs=!printTrace&&presentStackTrace[0].toString().equals(\"edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:63)\");if(printTrace||isEpochs){String throwableMessage=\"\";if(isEpochs){throwableMessage=\"Epochs\"+System.lineSeparator()+logRecord.getMessage();presentStackTrace=new java.lang.StackTraceElement[0];logRecord.setLevel(java.util.logging.Level.FINEST);logRecord.setMessage(\"Execution times:\");}else{long lineCount=logRecord.getMessage().lines().count();}java.lang.Throwable throwable=new java.lang.Throwable(throwableMessage);throwable.setStackTrace(presentStackTrace);logRecord.setThrown(throwable);}}if(!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord))return;frc4388.utility.AnsiLogging.halLoggerHandler.publish(logRecord);}}else{String locString=\"\";if(stackTrace.length>=stackTraceFirst+1){locString=stackTrace[stackTraceFirst].toString();}else{locString=\"\";}StringBuilder traceString=new StringBuilder();if(printTrace){boolean haveLoc=false;for(int i=stackTraceFirst;i<stackTrace.length;i++){String loc=stackTrace[i].toString();traceString.append(\"\\tat \").append(loc).append('\\n');if(!haveLoc&&!loc.startsWith(\"edu.wpi.first\")){locString=loc;haveLoc=true;}}}edu.wpi.first.hal.HAL.sendError(isError,code,false,error,locString,traceString.toString(),true);}}");
+      /*
+      {
+        boolean isError = $1;
+        int code = $2;
+        String error = $3;
+        boolean printTrace = $4;
+        StackTraceElement[] stackTrace = $5;
+        int stackTraceFirst = $6;
+        if (frc4388.utility.AnsiLogging.halLoggerHandler != null) {
+          if (!frc4388.utility.AnsiLogging.LEVEL.equals(java.util.logging.Level.OFF)) {
+            java.util.logging.LogRecord logRecord = new java.util.logging.LogRecord(isError ? java.util.logging.Level.SEVERE : java.util.logging.Level.FINER, error.stripTrailing());
+            logRecord.setLoggerName("HAL");
+            if (stackTrace != null && stackTrace.length >= stackTraceFirst + 1) {
+              int from = Math.min(Math.max(0, stackTraceFirst), stackTrace.length - 1);
+              java.lang.StackTraceElement[] presentStackTrace = new java.lang.StackTraceElement[stackTrace.length - from - 1];
+              System.arraycopy(stackTrace, from, presentStackTrace, 0, presentStackTrace.length);
+              logRecord.setSourceMethodName(presentStackTrace[0].getMethodName());
+              boolean isEpochs = !printTrace && presentStackTrace[0].toString().equals("edu.wpi.first.wpilibj.Tracer.lambda$printEpochs$0(Tracer.java:63)");
+              if (printTrace || isEpochs) {
+                String throwableMessage = "";
+                if (isEpochs) {
+                  throwableMessage = "Epochs" + System.lineSeparator() + logRecord.getMessage();
+                  presentStackTrace = new java.lang.StackTraceElement[0];
+                  logRecord.setLevel(java.util.logging.Level.FINEST);
+                  logRecord.setMessage("Execution times:");
+                } else {
+                  long lineCount = logRecord.getMessage().lines().count();
+                }
+                java.lang.Throwable throwable = new java.lang.Throwable(throwableMessage);
+                throwable.setStackTrace(presentStackTrace);
+                logRecord.setThrown(throwable);
+              }
+            }
+            if (!frc4388.utility.AnsiLogging.halLoggerHandler.isLoggable(logRecord)) return;
+            frc4388.utility.AnsiLogging.halLoggerHandler.publish(logRecord);
+          }
+        } else {
+          String locString = "";
+          if (stackTrace.length >= stackTraceFirst + 1) {
+            locString = stackTrace[stackTraceFirst].toString();
+          } else {
+            locString = "";
+          }
+          StringBuilder traceString = new StringBuilder();
+          if (printTrace) {
+            boolean haveLoc = false;
+            for (int i = stackTraceFirst; i < stackTrace.length; i++) {
+              String loc = stackTrace[i].toString();
+              traceString.append("\tat ").append(loc).append('\n');
+              // get first user function
+              if (!haveLoc && !loc.startsWith("edu.wpi.first")) {
+                locString = loc;
+                haveLoc = true;
+              }
+            }
+          }
+          edu.wpi.first.hal.HAL.sendError(isError, code, false, error, locString, traceString.toString(), true);
+        }
+      }
+      */
+      ctClassDriverStation.toClass();
+    } catch (IOException | NotFoundException | CannotCompileException exception) {
       exception.printStackTrace(AnsiConsole.sysErr());
     }
   }

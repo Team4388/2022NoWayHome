@@ -58,6 +58,7 @@ dependencies {
     implementation 'com.diffplug.durian:durian:3.4.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.13.1'
     implementation 'org.fusesource.jansi:jansi:2.4.0'
+    implementation files('libs/javassist.jar')
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
