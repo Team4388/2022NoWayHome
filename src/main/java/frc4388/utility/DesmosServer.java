@@ -208,7 +208,7 @@ public class DesmosServer extends Thread {
      * Adds point to desmos queue
      * 
      * @param name Name of desmos variable
-     * @param value Point value
+     * @param point Point value
      * */
     public static void putPoint(String name, Point point) {
         desmosQueue.put(name, new String[] {"point", "(" + point.x + "," + point.y + ")"});

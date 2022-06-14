@@ -29,18 +29,6 @@ public class RobotContainer {
   /* RobotMap */
   private final RobotMap m_robotMap = new RobotMap();
 
-  /* Subsystems */
-  // private final SwerveDrive m_robotSwerveDrive = new SwerveDrive(
-  //   m_robotMap.leftFrontSteerMotor, m_robotMap.leftFrontWheelMotor,
-  //   m_robotMap.rightFrontSteerMotor, m_robotMap.rightFrontWheelMotor,
-  //   m_robotMap.leftBackSteerMotor, m_robotMap.leftBackWheelMotor,
-  //   m_robotMap.rightBackSteerMotor, m_robotMap.rightBackWheelMotor,
-  //   m_robotMap.leftFrontEncoder,
-  //   m_robotMap.rightFrontEncoder,
-  //   m_robotMap.leftBackEncoder,
-  //   m_robotMap.rightBackEncoder
-  // );
-
   private final TestMotor m_testMotor = new TestMotor(m_robotMap.testMotor);
   private final LED m_robotLED = new LED(m_robotMap.LEDController);
 
@@ -55,11 +43,7 @@ public class RobotContainer {
     configureButtonBindings();
 
     /* Default Commands */
-    // // drives the swerve drive with a two-axis input from the driver controller
-    // m_robotSwerveDrive.setDefaultCommand(
-    //     new RunCommand(() -> m_robotSwerveDrive.driveWithInput(-getDriverController().getLeftXAxis(),
-    //         getDriverController().getLeftYAxis(), -getDriverController().getRightXAxis(), false), m_robotSwerveDrive));
-    m_testMotor.setDefaultCommand(new RunCommand(() -> m_testMotor.testDesmos(), m_testMotor));
+//    m_testMotor.setDefaultCommand(new RunCommand(() -> m_testMotor.testDesmos(), m_testMotor));
     
     // continually sends updates to the Blinkin LED controller to keep the lights on
     m_robotLED.setDefaultCommand(new RunCommand(m_robotLED::updateLED, m_robotLED));

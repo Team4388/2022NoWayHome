@@ -55,6 +55,6 @@ public class Gains {
     m_kIzone = kIzone;
     m_kminOutput = kMinOutput;
     m_kmaxOutput = kMaxOutput;
-    m_kPeakOutput = (Math.abs(m_kminOutput) > Math.abs(m_kmaxOutput)) ? Math.abs(m_kminOutput) : Math.abs(m_kmaxOutput);
+    m_kPeakOutput = Math.max(Math.abs(m_kminOutput), Math.abs(m_kmaxOutput));
   }
 }

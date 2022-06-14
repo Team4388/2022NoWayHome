@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.robot.Constants.SwerveDriveConstants;
 import frc4388.utility.Gains;
-import frc4388.utility.RobotGyro;
+//import frc4388.utility.RobotGyro;
 
 public class SwerveDrive extends SubsystemBase {
   SwerveDriveKinematics m_kinematics;
@@ -59,7 +59,7 @@ public class SwerveDrive extends SubsystemBase {
       
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(m_frontLeftLocation, m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
   public SwerveModule[] modules;
-  public RobotGyro gyro; //TODO Add Gyro Lol
+//  public RobotGyro gyro; //TODO Add Gyro Lol
 
 
 //   public SwerveDrive(WPI_TalonFX leftFrontSteerMotor,WPI_TalonFX leftFrontWheelMotor,WPI_TalonFX rightFrontSteerMotor,WPI_TalonFX rightFrontWheelMotor,
@@ -107,7 +107,7 @@ public class SwerveDrive extends SubsystemBase {
       SwerveModuleState[] states =
           kinematics.toSwerveModuleStates(
               fieldRelative
-                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, gyro.getRotation2d())
+                ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3, new Rotation2d())//, gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeedMetersPerSecond, ySpeedMetersPerSecond, rot*3));
        SwerveDriveKinematics.desaturateWheelSpeeds(states, Units.feetToMeters(SwerveDriveConstants.MAX_SPEED_FEET_PER_SEC));
        for (int i = 0; i < states.length; i++) {

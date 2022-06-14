@@ -1,14 +1,57 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [6]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/LED": "Subsystem",
       "/LiveWindow/TestMotor": "Subsystem",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler"
+    },
+    "windows": {
+      "/FMSInfo": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
     "SmartDashboard": {
+      "open": true
+    },
+    "TunerTables": {
+      "LoggerTable": {
+        "open": true
+      },
+      "TestMotor": {
+        "ControllerTable": {
+          "open": true
+        },
+        "GainsTable": {
+          "open": true
+        },
+        "ReaderTable": {
+          "open": true
+        },
+        "open": true
+      },
+      "open": true
+    },
+    "tunertable": {
+      "TestMotor": {
+        "controllertable": {
+          "open": true
+        },
+        "open": true
+      },
       "open": true
     }
   }

@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc4388.utility.DesmosServer;
 import frc4388.utility.RobotTime;
+import frc4388.utility.tuner.CANBusReader;
+import frc4388.utility.tuner.TunerTablesHandler;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,7 +21,9 @@ import frc4388.utility.RobotTime;
  */
 public class Robot extends TimedRobot {
   Command m_autonomousCommand;
-  
+
+  private TunerTablesHandler m_tunerTablesHandler = TunerTablesHandler.getInstance();
+
   private RobotTime m_robotTime = RobotTime.getInstance();
   private RobotContainer m_robotContainer;
 
@@ -34,11 +38,13 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    
-    desmosServer = new DesmosServer(8000);
-    desmosServer.start();
 
-    DesmosServer.putTable("table", "x1", new double[] {1, 2, 3.1, 3.9}, "y1", new double[] {1, 2, 2.9, 4.1});
+    CANBusReader.readCANBus();
+
+//    desmosServer = new DesmosServer(8000);
+//    desmosServer.start();
+
+//    DesmosServer.putTable("table", "x1", new double[] {1, 2, 3.1, 3.9}, "y1", new double[] {1, 2, 2.9, 4.1});
   }
 
   /**
@@ -51,6 +57,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    // * Necessary for communication with Tuner application
+    m_tunerTablesHandler.updateReaders();
+
     m_robotTime.updateTimes();
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,

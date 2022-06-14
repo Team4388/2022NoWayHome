@@ -5,6 +5,7 @@
 package frc4388.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -94,6 +95,6 @@ public class RobotMap {
     //rightBackSteerMotor.configRemoteFeedbackFilter(rightBackEncoder.getDeviceID(), RemoteSensorSource.CANCoder, SwerveDriveConstants.REMOTE_0, SwerveDriveConstants.SWERVE_TIMEOUT_MS);
   }
 
-  public final CANSparkMax testMotor = new CANSparkMax(6, MotorType.kBrushless);
+  public final WPI_TalonSRX testMotor = new WPI_TalonSRX(6);
 
 }
