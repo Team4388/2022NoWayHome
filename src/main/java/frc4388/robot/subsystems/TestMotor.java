@@ -2,6 +2,10 @@ package frc4388.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc4388.utility.Gains;
 import frc4388.utility.tuner.TunerLogger;
@@ -18,7 +22,7 @@ public class TestMotor extends SubsystemBase {
     private final WPI_TalonSRX m_testMotor;
 
     @GainsField(id="TestMotor")
-    public Gains gains = new Gains(1, 1, 1, 1, 1, 1);
+    public Gains gains = new Gains(5, 4, 3, 2, 1, 1);
 
     @Loggable(id="test")
     public double logable = 4;
@@ -40,14 +44,19 @@ public class TestMotor extends SubsystemBase {
 //        m_testMotor.set(DesmosServer.readDouble("Speed"));
 //    }
 
+    @Override
+    public void periodic() {
+	logable = Math.random()*2 -1;
+    }
+
     @Reader(id="TestMotor", value="velocity")
     public double velocityReader() {
-        return m_testMotor.getSelectedSensorVelocity();
+        return logable;
     }
 
     @Reader(id="TestMotor", value="position")
     public double positionReader() {
-        return m_testMotor.getSelectedSensorPosition();
+        return Math.random() * 2 - 1;
     }
 
     @Controller(id="TestMotor", value="velocity")

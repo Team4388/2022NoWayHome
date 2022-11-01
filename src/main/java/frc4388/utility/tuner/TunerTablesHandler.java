@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.lang.Math;
+
 public class TunerTablesHandler {
     private final NetworkTable tunerTable;
     private final NetworkTableEntry activeEntry;
